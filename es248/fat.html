@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAT — Demo Slides</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; text-align: left; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal .center-content { text-align: center; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em;
+        }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c;
+        }
+        .reveal .key-point {
+            background: #fff3cd; border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em;
+        }
+        .reveal .warning-box {
+            background: #ffe5e5; border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em;
+        }
+        .reveal .success-box {
+            background: #d4edda; border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em;
+        }
+        .reveal .info-box {
+            background: #dae8fc; border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em;
+        }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 0.8em 1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+
+        /* ── disk diagram ── */
+        .disk-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 4px;
+            margin: 0.6em auto;
+            max-width: 95%;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.6em;
+        }
+        .disk-cell {
+            border: 2px solid #bdc3c7;
+            padding: 0.35em 0.2em;
+            text-align: center;
+            border-radius: 4px;
+            min-height: 2.8em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .disk-cell .cell-idx {
+            font-size: 0.75em;
+            color: #95a5a6;
+            margin-bottom: 0.15em;
+        }
+        .disk-cell.file-a { background: #d5e8d4; border-color: #82b366; }
+        .disk-cell.file-b { background: #dae8fc; border-color: #6c8ebf; }
+        .disk-cell.free    { background: #f8f9fa; border-color: #ddd; color: #ccc; }
+
+        /* FAT table */
+        .fat-table {
+            border-collapse: collapse;
+            margin: 0.5em auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.62em;
+            width: 96%;
+        }
+        .fat-table td, .fat-table th {
+            border: 2px solid #bdc3c7;
+            padding: 0.3em 0.4em;
+            text-align: center;
+            min-width: 3em;
+        }
+        .fat-table .lbl {
+            border: none !important;
+            text-align: right;
+            font-weight: 700;
+            color: #7f8c8d;
+            padding-right: 0.6em;
+            font-size: 0.95em;
+        }
+        .fat-table .idx { background: #ecf0f1; color: #7f8c8d; font-size: 0.85em; }
+        .fat-table .fa { background: #d5e8d4; color: #27ae60; font-weight: bold; }
+        .fat-table .fb { background: #dae8fc; color: #2980b9; font-weight: bold; }
+        .fat-table .ff { background: #f8f9fa; color: #ccc; }
+
+        .dir-table {
+            border-collapse: collapse;
+            margin: 0.5em auto;
+            font-size: 0.72em;
+            width: 80%;
+        }
+        .dir-table th {
+            background: var(--main-color); color: white; padding: 0.45em 0.7em;
+        }
+        .dir-table td {
+            padding: 0.4em 0.7em; border: 1px solid #dee2e6;
+        }
+        .dir-table tr:nth-child(even) { background: var(--light-bg); }
+
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Your USB Drive Is a Linked List</h1>
+    <p style="color:#7f8c8d; margin-top:1em;">A visual walkthrough</p>
+</section>
+
+<!-- SLIDE 1 — the disk is a flat row of boxes -->
+<section>
+    <h2>A Disk Is Just a Row of Boxes</h2>
+
+    <p>Your USB drive is divided into fixed-size blocks called <strong>clusters</strong> (typically 4 KB each).</p>
+    <p>They are numbered 0, 1, 2, 3, ...</p>
+
+    <div class="disk-grid" style="margin-top:1em;">
+        <div class="disk-cell free"><span class="cell-idx">0</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">1</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">2</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">3</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">4</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">5</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">6</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">7</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">8</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">9</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">10</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">11</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">12</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">13</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">14</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">15</span>—</div>
+    </div>
+
+    <p class="fragment" style="margin-top:0.8em;">A brand new, empty drive. Every cluster is free.</p>
+
+    <div class="fragment key-point">
+        <strong>Question:</strong> You save two files. The OS picks whichever clusters happen to be free.
+        The clusters of a single file may <em>not</em> be next to each other. How does the OS remember which cluster comes after which?
+    </div>
+</section>
+
+<!-- SLIDE 2 — save two files, scattered -->
+<section>
+    <h2>Two Files, Scattered Across the Disk</h2>
+
+    <p>You save <strong style="color:#27ae60;">essay.txt</strong> (3 clusters) and <strong style="color:#2980b9;">photo.jpg</strong> (3 clusters).</p>
+    <p>The OS placed them wherever it found space:</p>
+
+    <div class="disk-grid" style="margin-top:0.8em;">
+        <div class="disk-cell free"><span class="cell-idx">0</span>—</div>
+        <div class="disk-cell file-a"><span class="cell-idx">1</span><strong>essay</strong><br>part 1</div>
+        <div class="disk-cell free"><span class="cell-idx">2</span>—</div>
+        <div class="disk-cell file-b"><span class="cell-idx">3</span><strong>photo</strong><br>part 1</div>
+        <div class="disk-cell file-a"><span class="cell-idx">4</span><strong>essay</strong><br>part 2</div>
+        <div class="disk-cell free"><span class="cell-idx">5</span>—</div>
+        <div class="disk-cell file-b"><span class="cell-idx">6</span><strong>photo</strong><br>part 2</div>
+        <div class="disk-cell free"><span class="cell-idx">7</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">8</span>—</div>
+        <div class="disk-cell file-a"><span class="cell-idx">9</span><strong>essay</strong><br>part 3</div>
+        <div class="disk-cell file-b"><span class="cell-idx">10</span><strong>photo</strong><br>part 3</div>
+        <div class="disk-cell free"><span class="cell-idx">11</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">12</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">13</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">14</span>—</div>
+        <div class="disk-cell free"><span class="cell-idx">15</span>—</div>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong style="color:#27ae60;">essay.txt</strong> is in clusters 1, 4, 9 — scattered.</p>
+        <p><strong style="color:#2980b9;">photo.jpg</strong> is in clusters 3, 6, 10 — also scattered.</p>
+    </div>
+
+    <div class="fragment warning-box">
+        The data is there, but how does the OS know that cluster 4 comes after cluster 1 for essay.txt?
+    </div>
+</section>
+
+<!-- SLIDE 3 — the FAT array -->
+<section>
+    <h2>The File Allocation Table (FAT)</h2>
+
+    <p>The drive keeps a special array — the <strong>FAT</strong>. One entry per cluster.</p>
+    <p><code>FAT[i]</code> = "what cluster comes after cluster <code>i</code>?"</p>
+
+    <table class="fat-table" style="margin-top:0.8em;">
+        <tr>
+            <td class="lbl">Cluster</td>
+            <td class="idx">0</td><td class="idx">1</td><td class="idx">2</td><td class="idx">3</td>
+            <td class="idx">4</td><td class="idx">5</td><td class="idx">6</td><td class="idx">7</td>
+            <td class="idx">8</td><td class="idx">9</td><td class="idx">10</td><td class="idx">11</td>
+            <td class="idx">12</td><td class="idx">13</td><td class="idx">14</td><td class="idx">15</td>
+        </tr>
+        <tr>
+            <td class="lbl">FAT[ ]</td>
+            <td class="ff">0</td>
+            <td class="fa">4</td>
+            <td class="ff">0</td>
+            <td class="fb">6</td>
+            <td class="fa">9</td>
+            <td class="ff">0</td>
+            <td class="fb">10</td>
+            <td class="ff">0</td>
+            <td class="ff">0</td>
+            <td class="fa">EOF</td>
+            <td class="fb">EOF</td>
+            <td class="ff">0</td>
+            <td class="ff">0</td>
+            <td class="ff">0</td>
+            <td class="ff">0</td>
+            <td class="ff">0</td>
+        </tr>
+    </table>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.9;">
+        <span style="color:#27ae60; font-weight:bold;">essay.txt:</span> &nbsp;
+        FAT[1]=4 &rarr; FAT[4]=9 &rarr; FAT[9]=EOF &nbsp; &nbsp; <em>chain: 1 &rarr; 4 &rarr; 9 &rarr; stop</em><br>
+        <span style="color:#2980b9; font-weight:bold;">photo.jpg:</span> &nbsp;
+        FAT[3]=6 &rarr; FAT[6]=10 &rarr; FAT[10]=EOF &nbsp; <em>chain: 3 &rarr; 6 &rarr; 10 &rarr; stop</em>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        <code>FAT[i] = 0</code> means cluster <code>i</code> is free. <code>FAT[i] = EOF</code> means last cluster of a file.
+    </div>
+</section>
+
+<!-- SLIDE 4 — directory entry = head pointer -->
+<section>
+    <h2>But Where Does the Chain Start?</h2>
+
+    <p>The drive also has a <strong>directory</strong> — a table of files. Each entry stores the file's name, size, and <strong>first cluster</strong>.</p>
+
+    <table class="dir-table" style="margin-top:0.8em;">
+        <tr><th>Filename</th><th>Size</th><th>First Cluster</th></tr>
+        <tr><td style="color:#27ae60; font-weight:bold;">essay.txt</td><td>11 KB</td><td><strong>1</strong></td></tr>
+        <tr><td style="color:#2980b9; font-weight:bold;">photo.jpg</td><td>10 KB</td><td><strong>3</strong></td></tr>
+    </table>
+
+    <div class="fragment" style="margin-top:1em;">
+        <p>To read <strong style="color:#27ae60;">essay.txt</strong>:</p>
+        <ol style="font-size:0.88em;">
+            <li>Directory says first cluster = <strong>1</strong></li>
+            <li>Read cluster 1. &nbsp;FAT[1] = 4 &rarr; next cluster is 4.</li>
+            <li>Read cluster 4. &nbsp;FAT[4] = 9 &rarr; next cluster is 9.</li>
+            <li>Read cluster 9. &nbsp;FAT[9] = EOF &rarr; done.</li>
+        </ol>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        The directory entry is the <code>head</code>. The FAT array is <code>nxt[]</code>. Each cluster's data is <code>data[]</code>.
+    </div>
+</section>
+
+<!-- SLIDE 5 — side by side -->
+<section>
+    <h2>Our Code vs. a Real USB Drive</h2>
+
+    <table style="margin-top:0.6em;">
+        <tr><th>What we built in class</th><th>What a USB drive does</th></tr>
+        <tr><td><code>data[i]</code> — value stored at slot i</td><td>Contents of cluster i on disk</td></tr>
+        <tr><td><code>nxt[i]</code> — index of the next slot</td><td><code>FAT[i]</code> — number of the next cluster</td></tr>
+        <tr><td><code>nxt[i] = -1</code> — end of list</td><td><code>FAT[i] = EOF</code> — last cluster of file</td></tr>
+        <tr><td><code>head</code> — starting index</td><td>First cluster stored in directory entry</td></tr>
+    </table>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        <strong>One difference:</strong> Our code tracks free slots with an <code>avail</code> chain — a second linked list.
+        FAT doesn't do this. Free clusters are just entries where <code>FAT[i] = 0</code>.
+        To find space, the OS scans the array for zeros. No free chain.
+    </div>
+</section>
+
+<!-- SLIDE 6 — where is FAT used -->
+<section>
+    <h2>Where Is FAT Used?</h2>
+
+    <p>FAT is <strong>not</strong> the filesystem on your laptop's internal drive.</p>
+
+    <ul>
+        <li class="fragment"><strong>Windows</strong> uses NTFS (since 1993)</li>
+        <li class="fragment"><strong>Linux</strong> uses ext4</li>
+        <li class="fragment"><strong>macOS</strong> uses APFS (since 2017)</li>
+    </ul>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p>But FAT is still <strong>everywhere</strong>:</p>
+        <ul>
+            <li><strong>Every USB flash drive</strong> you have ever plugged in — FAT32</li>
+            <li><strong>Every SD card</strong> in a camera, phone, or Raspberry Pi — FAT32</li>
+            <li><strong>Every computer's boot partition</strong> (UEFI) — FAT32</li>
+        </ul>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        FAT is the <strong>one format every OS can read and write</strong>. That's why portable storage still uses it. When you copy files to a USB drive, you are writing data into a linked list.
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+    });
+</script>
+</body>
+</html>

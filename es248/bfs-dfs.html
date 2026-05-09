@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BFS, DFS &amp; Backtracking</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>BFS, DFS &amp; Backtracking</h1>
+    <h3 style="color:#7f8c8d;">Three Ways to Explore a Maze</h3>
+    <p style="color:#7f8c8d; font-size:1.2em; margin-top:1em;">ES 248 — Data Structures</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     THE MAZE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>The Maze</h2>
+
+    <p>A 5&times;5 grid. <code>0</code> = open, <code>1</code> = wall. Start at (0,0), goal at (4,4).</p>
+
+    <pre style="font-size:0.5em;"><code class="language-c">int maze[5][5] = {
+    {0, 0, 1, 0, 0},     //  S  .  █  .  .
+    {1, 0, 1, 0, 1},     //  █  .  █  .  █
+    {0, 0, 0, 0, 0},     //  .  .  .  .  .
+    {0, 1, 1, 1, 0},     //  .  █  █  █  .
+    {0, 0, 0, 0, 0}      //  .  .  .  .  G
+};</code></pre>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p>Three questions we can ask about this maze:</p>
+        <ol>
+            <li class="fragment"><strong>Is there a path</strong> from S to G? &nbsp; (yes/no)</li>
+            <li class="fragment"><strong>What is the shortest path</strong> from S to G? &nbsp; (minimum steps)</li>
+            <li class="fragment"><strong>How many distinct paths</strong> exist from S to G? &nbsp; (count all)</li>
+        </ol>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Each question requires a different approach — and the difference comes down to <strong>how we manage visited cells</strong>.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     THE COMMON STRUCTURE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>The Common Structure</h2>
+
+    <p>All three approaches share this skeleton:</p>
+
+    <pre><code class="language-c">int dx[] = {0, 0, 1, -1};   // right, left, down, up
+int dy[] = {1, -1, 0, 0};
+
+// For each cell:
+//   1. Check if it's the goal
+//   2. Mark it (so we don't loop forever)
+//   3. Try all 4 neighbours
+//   4. Maybe unmark it (this is where things diverge)</code></pre>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        The difference between DFS, BFS, and backtracking is:
+        <ul style="margin-top:0.3em;">
+            <li><strong>What container</strong> holds the cells to process? (stack vs queue)</li>
+            <li><strong>What does "visited" mean?</strong> (permanent stamp vs temporary footprint)</li>
+        </ul>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     DFS — FIND A PATH
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>DFS — Find <em>a</em> Path (Stack)</h2>
+
+    <pre><code class="language-c">int dfsMaze(int maze[5][5]) {
+    int visited[5][5] = {0};
+
+    push(0 * 5 + 0);          // encode (row, col) as row*5 + col
+    visited[0][0] = 1;
+
+    while (!isEmpty()) {
+        int pos = pop();
+        int r = pos / 5, c = pos % 5;
+
+        if (r == 4 && c == 4) return 1;   // found goal!
+
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dx[d], nc = c + dy[d];
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+                && maze[nr][nc] == 0 && !visited[nr][nc]) {
+                visited[nr][nc] = 1;       // mark PERMANENTLY
+                push(nr * 5 + nc);
+            }
+        }
+    }
+    return 0;   // stack empty, no path
+}</code></pre>
+
+    <div class="fragment key-point">
+        <code>visited</code> is <strong>permanent</strong>. Once marked, never unmarked. A cell is processed at most once.
+    </div>
+</section>
+
+<!-- DFS trace -->
+<section>
+    <h2>DFS — How It Explores</h2>
+
+    <p>The stack is LIFO — the <strong>most recently pushed</strong> cell is processed first. So it dives deep down one path.</p>
+
+    <div style="font-family:monospace; font-size:0.68em; line-height:1.8;">
+        <div class="fragment">Pop (0,0). Push (0,1). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(0,1)]</div>
+        <div class="fragment">Pop (0,1). Push (1,1). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(1,1)]</div>
+        <div class="fragment">Pop (1,1). Push (2,1). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,1)]</div>
+        <div class="fragment">Pop (2,1). Push (2,0), (2,2). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,0), (2,2)]</div>
+        <div class="fragment">Pop (2,2). Push (2,3). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,0), (2,3)] &larr; (2,0) waits</div>
+        <div class="fragment">Pop (2,3). Push (1,3), (2,4). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,0), (1,3), (2,4)]</div>
+        <div class="fragment">Pop (2,4). Push (3,4). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,0), (1,3), (3,4)]</div>
+        <div class="fragment">Pop (3,4). Push (4,4). &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Stack: [(2,0), (1,3), (4,4)]</div>
+        <div class="fragment" style="color:var(--success-color); font-weight:bold;">Pop (4,4). GOAL! &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(2,0) and (1,3) never explored</div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        DFS went deep along one corridor. It found <em>a</em> path — but not necessarily the shortest. Cells like (2,0) were pushed but never popped because the goal was found first.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BFS — SHORTEST PATH
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>BFS — Find the <em>Shortest</em> Path (Queue)</h2>
+
+    <pre><code class="language-c">int bfsMaze(int maze[5][5]) {
+    int visited[5][5] = {0};
+    int dist[5][5] = {0};      // distance from start
+
+    enqueue(0 * 5 + 0);
+    visited[0][0] = 1;
+
+    while (!isEmpty()) {
+        int pos = dequeue();
+        int r = pos / 5, c = pos % 5;
+
+        if (r == 4 && c == 4) return dist[r][c];  // shortest distance!
+
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dx[d], nc = c + dy[d];
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+                && maze[nr][nc] == 0 && !visited[nr][nc]) {
+                visited[nr][nc] = 1;               // mark PERMANENTLY
+                dist[nr][nc] = dist[r][c] + 1;     // one step further
+                enqueue(nr * 5 + nc);
+            }
+        }
+    }
+    return -1;   // no path
+}</code></pre>
+
+    <div class="fragment key-point">
+        Same permanent <code>visited</code>. Only change: <code>push</code>/<code>pop</code> &rarr; <code>enqueue</code>/<code>dequeue</code>, plus a <code>dist</code> array.
+    </div>
+</section>
+
+<!-- BFS trace -->
+<section>
+    <h2>BFS — How It Explores</h2>
+
+    <p>The queue is FIFO — the <strong>earliest enqueued</strong> cell is processed first. So it explores layer by layer.</p>
+
+    <div style="font-family:monospace; font-size:0.68em; line-height:1.8;">
+        <div class="fragment">Dequeue (0,0) dist=0. Enqueue (0,1).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(0,1)]</div>
+        <div class="fragment">Dequeue (0,1) dist=1. Enqueue (1,1).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(1,1)]</div>
+        <div class="fragment">Dequeue (1,1) dist=2. Enqueue (2,1).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(2,1)]</div>
+        <div class="fragment">Dequeue (2,1) dist=3. Enqueue (2,0),(2,2).&nbsp;&nbsp;Queue: [(2,0),(2,2)]</div>
+        <div class="fragment">Dequeue (2,0) dist=4. Enqueue (3,0).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(2,2),(3,0)] &larr; dist 4 first!</div>
+        <div class="fragment">Dequeue (2,2) dist=4. Enqueue (2,3).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(3,0),(2,3)]</div>
+        <div class="fragment">Dequeue (3,0) dist=5. Enqueue (4,0).&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(2,3),(4,0)]</div>
+        <div class="fragment">... all dist-5, then dist-6, then dist-7 ...</div>
+        <div class="fragment" style="color:var(--success-color); font-weight:bold;">Dequeue (4,4) dist=8. GOAL! Shortest path = 8 steps.</div>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        BFS guarantees shortest path because it visits <strong>all cells at distance d</strong> before any cell at distance d+1. The first time you reach the goal is the shortest way.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     WHY PERMANENT VISITED?
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Why Is Visited Permanent?</h2>
+
+    <p>In both DFS and BFS, once a cell is marked visited, it is <strong>never unmarked</strong>. Why?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Reason 1 — Prevent infinite loops.</strong></p>
+        <p>Without permanent visited, cells get pushed/enqueued repeatedly:</p>
+        <p class="mono" style="margin:0.3em 0;">(0,0) pushes (0,1). &nbsp;(0,1) pushes (0,0). &nbsp;(0,0) pushes (0,1). &nbsp;Forever.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Reason 2 — We only need one answer.</strong></p>
+        <p>"Is there a path?" needs just one yes. "What's the shortest?" needs just the first arrival. There is no reason to visit a cell twice — the first visit is enough.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>For BFS specifically:</strong> The first time BFS reaches a cell, it has found the shortest distance to that cell. Any later path to the same cell would be longer or equal. Re-visiting can never improve the answer.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        Think of permanent visited as: <strong>"Been there, done that."</strong> A stamp that says this cell has been fully accounted for.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     THE THIRD QUESTION — ALL PATHS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2>The Third Question</h2>
+
+    <div style="margin-top:1.5em;">
+        <p class="big-q">How many distinct paths exist from S to G?</p>
+    </div>
+
+    <div class="fragment" style="text-align:left; max-width:640px; margin:1em auto 0;">
+        <p>This question changes everything. We can't stop at the first path. We need <em>all</em> of them.</p>
+        <p class="fragment" style="margin-top:0.5em;">And that means we can't mark cells permanently — because different paths may need to pass through the same cell.</p>
+    </div>
+</section>
+
+<!-- Why permanent visited fails -->
+<section>
+    <h2>Why Permanent Visited Fails for All Paths</h2>
+
+    <p>Consider two paths in our maze:</p>
+
+    <div class="two-col fragment" style="margin-top:0.5em;">
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4>Path A</h4>
+            <p class="mono">(0,0) &rarr; (0,1) &rarr; (1,1) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3) &rarr; (2,4) &rarr; (3,4) &rarr; (4,4)</p>
+        </div>
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4>Path B</h4>
+            <p class="mono">(0,0) &rarr; (0,1) &rarr; (1,1) &rarr; (2,1) &rarr; (2,0) &rarr; (3,0) &rarr; (4,0) &rarr; (4,1) &rarr; ... &rarr; (4,4)</p>
+        </div>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p>Both paths go through (2,1). If we permanently mark (2,1) as visited during Path A, then Path B can never reach (2,1). We lose a valid path.</p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.6em;">
+        Permanent visited says "don't come back here ever." For all-paths, we need "don't come back here <em>on this particular path</em>" — a temporary mark.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BACKTRACKING
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Backtracking — Mark, Explore, Unmark</h2>
+
+    <p>The key idea: <code>visited</code> now means <strong>"I'm standing here right now"</strong> — a footprint you erase when you leave.</p>
+
+    <pre><code class="language-c">int count = 0;
+
+void allPaths(int maze[5][5], int visited[5][5], int r, int c) {
+    if (r == 4 && c == 4) {
+        count++;            // found one complete path!
+        return;
+    }
+
+    visited[r][c] = 1;     // mark: "I'm on this cell right now"
+
+    for (int d = 0; d < 4; d++) {
+        int nr = r + dx[d], nc = c + dy[d];
+        if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+            && maze[nr][nc] == 0 && !visited[nr][nc]) {
+            allPaths(maze, visited, nr, nc);
+        }
+    }
+
+    visited[r][c] = 0;     // UNMARK: "I'm leaving, others can use this cell"
+}
+
+// Call: allPaths(maze, visited, 0, 0);</code></pre>
+</section>
+
+<!-- Backtracking trace -->
+<section>
+    <h2>Backtracking — Step by Step</h2>
+
+    <div style="font-family:monospace; font-size:0.62em; line-height:1.7;">
+        <div class="fragment">allPaths(0,0) &mdash; mark (0,0)</div>
+        <div class="fragment">&nbsp;&nbsp;allPaths(0,1) &mdash; mark (0,1)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;allPaths(1,1) &mdash; mark (1,1)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allPaths(2,1) &mdash; mark (2,1)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allPaths(2,2) &rarr; ... &rarr; allPaths(4,4) &mdash; count++! (Path A)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returns from (2,2) branch. <strong>unmark (2,2), (2,3), ...</strong></div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;allPaths(2,0) &rarr; ... &rarr; allPaths(4,4) &mdash; count++! (Path B)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;returns from (2,0) branch. <strong>unmark (2,0), (3,0), ...</strong></div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>unmark (2,1)</strong> &mdash; leaving, other paths can use (2,1)</div>
+        <div class="fragment">&nbsp;&nbsp;&nbsp;&nbsp;... continues trying other directions from (1,1) ...</div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Each recursive call marks a cell on entry and <strong>unmarks it on exit</strong>. This is the "backtrack" — you undo your footprint so the next path can walk through the same cell.
+    </div>
+</section>
+
+<!-- Two meanings of visited -->
+<section>
+    <h2>Two Meanings of "Visited"</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4 style="color:#e67e22;">DFS / BFS — Permanent</h4>
+            <p><strong>Meaning:</strong> "This cell has been scheduled for processing."</p>
+            <p style="margin-top:0.4em;"><strong>When marked:</strong> When the cell is pushed/enqueued.</p>
+            <p style="margin-top:0.4em;"><strong>When unmarked:</strong> Never.</p>
+            <p style="margin-top:0.4em;"><strong>Purpose:</strong> Prevent infinite loops. One visit is enough.</p>
+            <p style="margin-top:0.4em;" class="mono">"Been there, done that."</p>
+        </div>
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4 style="color:#27ae60;">Backtracking — Temporary</h4>
+            <p><strong>Meaning:</strong> "This cell is on my current path."</p>
+            <p style="margin-top:0.4em;"><strong>When marked:</strong> When we step onto the cell.</p>
+            <p style="margin-top:0.4em;"><strong>When unmarked:</strong> When we step off the cell (return).</p>
+            <p style="margin-top:0.4em;"><strong>Purpose:</strong> Prevent loops <em>within one path</em>, but allow different paths to reuse the cell.</p>
+            <p style="margin-top:0.4em;" class="mono">"I'm standing here right now."</p>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.7em;">
+        The mark/unmark pattern is the defining feature of backtracking. It's what makes "find all" possible.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     WHY IS BACKTRACKING RECURSIVE?
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Why Is Backtracking Recursive?</h2>
+
+    <p>The unmark must happen <strong>after all directions from this cell have been explored</strong>. Recursion gives this for free:</p>
+
+    <pre><code class="language-c">visited[r][c] = 1;       // mark on entry
+
+for (int d = 0; d < 4; d++) {
+    // try each direction (recursive calls)
+}
+
+visited[r][c] = 0;       // unmark on exit — automatic!
+</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>When the function returns, you're <em>automatically</em> back in the caller's frame. The unmark happens at exactly the right moment — after all four directions have been tried.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>Could we do this iteratively?</strong> Yes — but we'd have to manually track "which direction was I trying?" for each cell on the stack. Each stack entry becomes a <em>frame</em>:</p>
+    </div>
+
+    <pre class="fragment"><code class="language-c">struct Frame {
+    int r, c;
+    int dir;   // next direction to try (0, 1, 2, 3)
+};</code></pre>
+
+    <div class="fragment small">
+        This is literally re-implementing the call stack by hand. Recursion does it for you.
+    </div>
+</section>
+
+<!-- Iterative backtracking -->
+<section>
+    <h2>Iterative Backtracking — For Completeness</h2>
+
+    <pre><code class="language-c">struct Frame { int r, c, dir; };
+
+int allPathsIterative(int maze[5][5]) {
+    int visited[5][5] = {0};
+    struct Frame stack[100];
+    int top = -1, count = 0;
+
+    top++;
+    stack[top] = (struct Frame){0, 0, 0};
+    visited[0][0] = 1;
+
+    while (top >= 0) {
+        struct Frame *f = &stack[top];
+
+        if (f->r == 4 && f->c == 4) {     // reached goal
+            count++;
+            visited[f->r][f->c] = 0;       // unmark
+            top--;                          // backtrack
+            continue;
+        }
+
+        if (f->dir >= 4) {                 // tried all directions
+            visited[f->r][f->c] = 0;       // unmark
+            top--;                          // backtrack
+            continue;
+        }
+
+        int nr = f->r + dx[f->dir];
+        int nc = f->c + dy[f->dir];
+        f->dir++;                           // advance for next time
+
+        if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+            && maze[nr][nc] == 0 && !visited[nr][nc]) {
+            visited[nr][nc] = 1;            // mark
+            top++;
+            stack[top] = (struct Frame){nr, nc, 0};
+        }
+    }
+    return count;
+}</code></pre>
+</section>
+
+<!-- Recursive vs iterative comparison -->
+<section>
+    <h2>Recursive vs. Iterative Backtracking</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4>Recursive</h4>
+            <pre style="font-size:0.48em; box-shadow:none;"><code class="language-c">visited[r][c] = 1;
+for (int d = 0; d < 4; d++) {
+    if (valid(nr, nc))
+        allPaths(nr, nc);
+}
+visited[r][c] = 0;</code></pre>
+            <p class="small" style="margin-top:0.5em;">6 lines. The call stack manages frames. Mark/unmark is symmetric and obvious.</p>
+        </div>
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4>Iterative</h4>
+            <pre style="font-size:0.48em; box-shadow:none;"><code class="language-c">// 35 lines with struct Frame,
+// manual stack, dir tracking,
+// two separate backtrack cases
+// (goal reached vs all dirs tried)</code></pre>
+            <p class="small" style="margin-top:0.5em;">Same logic, 6&times; more code. You're hand-rolling what recursion gives for free.</p>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        Both produce the same result. Recursion is clearer for backtracking because the mark/unmark naturally wraps around the recursive calls. Use iterative only if recursion depth is a concern (very large grids).
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CAN BFS BE RECURSIVE?
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Can BFS Be Done Recursively?</h2>
+
+    <p><strong>Not naturally.</strong></p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>Recursion uses the <strong>function call stack</strong> — which is a stack — which is LIFO. Recursion naturally gives you DFS.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>You <em>could</em> write it as:</p>
+        <pre style="font-size:0.5em;"><code class="language-c">void bfsRecursive(Queue *q, int maze[5][5], int visited[5][5]) {
+    if (isEmpty(q)) return;
+    int pos = dequeue(q);
+    // ... enqueue neighbours ...
+    bfsRecursive(q, maze, visited);   // just a loop in disguise
+}</code></pre>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>But this is fake — the recursion isn't doing any work. The queue is. You're just replacing <code>while (!isEmpty())</code> with a recursive call. You gain nothing and risk stack overflow.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        <strong>Recursion = Stack = LIFO = DFS.</strong><br>
+        <strong>Queue = FIFO = BFS = Iterative.</strong><br>
+        They don't mix naturally.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CAN ALL PATHS USE BFS?
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Can We Find All Paths with BFS?</h2>
+
+    <p><strong>Technically yes, but it's expensive.</strong></p>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>The problem: BFS uses permanent visited. If we remove permanent visited, the queue explodes — the same cell gets enqueued via every possible route.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>To make it work, each queue entry would need to carry the <strong>entire path so far</strong> (or its own copy of the visited array). This uses enormous memory.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>Backtracking (DFS with unmark) is the natural fit because:</p>
+        <ul>
+            <li>Only one path is "active" at a time</li>
+            <li>The visited array represents only the current path</li>
+            <li>Unmark reuses the same array — O(n) space, not O(paths &times; n)</li>
+        </ul>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.5em;">
+        BFS finds all <em>shortest</em> paths efficiently. Backtracking finds <em>all</em> paths efficiently. Use the right tool for the question.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SUMMARY TABLE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>The Full Picture</h2>
+
+    <table style="margin-top:0.5em; font-size:0.7em;">
+        <tr><th></th><th>DFS</th><th>BFS</th><th>Backtracking</th></tr>
+        <tr><td><strong>Question</strong></td><td>Is there a path?</td><td>What's the shortest?</td><td>How many paths?</td></tr>
+        <tr><td><strong>Container</strong></td><td>Stack (LIFO)</td><td>Queue (FIFO)</td><td>Recursion (call stack)</td></tr>
+        <tr><td><strong>Iterative?</strong></td><td>Yes (stack)</td><td>Yes (queue)</td><td>Yes, but painful</td></tr>
+        <tr><td><strong>Recursive?</strong></td><td>Yes (natural)</td><td>No (forced/fake)</td><td>Yes (natural)</td></tr>
+        <tr><td><strong>Visited</strong></td><td>Permanent</td><td>Permanent</td><td>Temporary (mark/unmark)</td></tr>
+        <tr><td><strong>Visited means</strong></td><td>"Been there, done that"</td><td>"Been there, done that"</td><td>"I'm standing here now"</td></tr>
+        <tr><td><strong>Explores</strong></td><td>Deep first</td><td>Wide first (layer by layer)</td><td>All possibilities</td></tr>
+        <tr><td><strong>Guarantees shortest?</strong></td><td>No</td><td>Yes</td><td>Finds all (incl. shortest)</td></tr>
+    </table>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        Same grid. Same neighbours. Three different questions require three different visited strategies. The data structure and the visited policy together determine the algorithm's behaviour.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:1em;">Recap</h2>
+
+    <div class="fragment" style="text-align:left; max-width:660px; margin:0 auto;">
+        <ul>
+            <li><strong>DFS (stack)</strong> — goes deep, finds <em>a</em> path. Permanent visited.</li>
+            <li><strong>BFS (queue)</strong> — goes wide, finds the <em>shortest</em> path. Permanent visited.</li>
+            <li><strong>Backtracking (recursion)</strong> — explores everything, finds <em>all</em> paths. Temporary visited (mark/unmark).</li>
+            <li><strong>Recursion = stack = DFS.</strong> BFS is inherently iterative.</li>
+            <li><strong>Iterative backtracking</strong> is possible but is just hand-rolling the call stack.</li>
+        </ul>
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>

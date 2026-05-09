@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked Lists — Part II</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Linked Lists</h1>
+    <h3 style="color:#7f8c8d;">Part II — Pointer-Based Linked Lists</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 248 &middot; Introduction to DSA in C</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — FROM ARRAYS TO POINTERS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">From Arrays to Pointers</p>
+</section>
+
+<!-- Bridge -->
+<section>
+    <h2>Last Time: Two Separate Arrays</h2>
+
+    <p>We stored a linked list using <code>data[]</code> and <code>nxt[]</code> — two parallel arrays.</p>
+    <p>Each "node" was split across two memory locations.</p>
+
+    <div class="fragment" style="margin-top:1em;">
+        <p class="big-q">What if we bundled a node's data<br>and its "next" into a single object?</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p>That's what a <strong>struct</strong> does.</p>
+        <p>And the integer index becomes a <strong>pointer</strong> to that struct.</p>
+    </div>
+</section>
+
+<!-- The struct -->
+<section>
+    <h2>The Node — A Self-Referential Struct</h2>
+
+    <pre><code class="language-c">struct Node {
+    int data;
+    struct Node *next;  // pointer to the next node
+};</code></pre>
+
+    <div class="two-col fragment" style="margin-top:0.8em;">
+        <div class="card">
+            <h4>Array-based (Part I)</h4>
+            <p class="mono">data[i] &nbsp;&rarr; the value</p>
+            <p class="mono">nxt[i] &nbsp;&nbsp;&rarr; integer index</p>
+            <p class="mono">head &nbsp;&nbsp;&nbsp;&rarr; int</p>
+        </div>
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4>Pointer-based (Part II)</h4>
+            <p class="mono">node-&gt;data &nbsp;&rarr; the value</p>
+            <p class="mono">node-&gt;next &nbsp;&rarr; pointer to struct</p>
+            <p class="mono">head &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&rarr; struct Node *</p>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        Same logic. Same operations. But now each node is one self-contained block in memory, allocated with <code>malloc</code>.
+    </div>
+</section>
+
+<!-- Memory visual -->
+<section>
+    <h2>Memory Layout</h2>
+
+    <p>Each node lives at its own <code>malloc</code>'d address. Connected only by pointers.</p>
+
+    <div style="margin:1em 0; font-family:monospace; font-size:0.72em; line-height:2;">
+        <div class="fragment">
+            <span style="background:#dae8fc; padding:0.3em 0.6em; border-radius:4px; border:2px solid #6c8ebf;">
+                head = 0x7A20
+            </span>
+        </div>
+        <div class="fragment" style="margin-top:0.5em;">
+            <span style="background:#d5e8d4; padding:0.3em 0.6em; border-radius:4px; border:2px solid #82b366;">
+                [0x7A20] data=8 | next=0x3F10
+            </span>
+            &rarr;
+            <span style="background:#d5e8d4; padding:0.3em 0.6em; border-radius:4px; border:2px solid #82b366;">
+                [0x3F10] data=15 | next=0x5C48
+            </span>
+            &rarr;
+            <span style="background:#d5e8d4; padding:0.3em 0.6em; border-radius:4px; border:2px solid #82b366;">
+                [0x5C48] data=23 | next=NULL
+            </span>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        Addresses are <em>not</em> consecutive — each <code>malloc</code> returns whatever is available. The pointers stitch them together.
+    </div>
+
+    <div class="fragment small" style="margin-top:0.5em;">
+        Compare: in Part I, everything lived inside <code>data[0..9]</code> and <code>nxt[0..9]</code> — fixed, pre-allocated arrays.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — IMPLEMENT TOGETHER
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Implement Together</p>
+</section>
+
+<!-- createNode -->
+<section>
+    <h2>1 — <code>createNode(int value)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Allocate a new node, set its data, set next to NULL.
+    </div>
+    <pre class="fragment"><code class="language-c">struct Node *createNode(int value) {
+    struct Node *node = malloc(sizeof(struct Node));
+    if (node == NULL) {
+        printf("Error: malloc failed\n");
+        return NULL;
+    }
+    node->data = value;
+    node->next = NULL;
+    return node;
+}</code></pre>
+
+    <div class="fragment info-box">
+        This is the pointer-based equivalent of <code>fetch_from_avail()</code> from Part I. Instead of grabbing a slot from our avail chain, we ask the OS for memory.
+    </div>
+</section>
+
+<!-- insertFront -->
+<section>
+    <h2>2 — <code>insertFront(struct Node **head, int val)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Create a node and prepend it to the list.
+    </div>
+    <p class="fragment"><strong>Why <code>struct Node **head</code>?</strong> We need to modify the caller's <code>head</code> pointer. A single pointer (<code>struct Node *head</code>) would only change the local copy.</p>
+    <pre class="fragment"><code class="language-c">void insertFront(struct Node **head, int val) {
+    struct Node *node = createNode(val);
+    if (node == NULL) return;
+
+    node->next = *head;   // new node points to old first node
+    *head = node;          // head now points to new node
+}</code></pre>
+
+    <div class="fragment small">
+        Compare Part I: <code>nxt[slot] = head; head = slot;</code> — same two assignments, different syntax.
+    </div>
+</section>
+
+<!-- insertEnd -->
+<section>
+    <h2>3 — <code>insertEnd(struct Node **head, int val)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Traverse to the last node, then link the new node after it.
+    </div>
+    <pre class="fragment"><code class="language-c">void insertEnd(struct Node **head, int val) {
+    struct Node *node = createNode(val);
+    if (node == NULL) return;
+
+    if (*head == NULL) {       // empty list
+        *head = node;
+        return;
+    }
+
+    struct Node *curr = *head;
+    while (curr->next != NULL)
+        curr = curr->next;     // walk to the last node
+
+    curr->next = node;         // link new node at the end
+}</code></pre>
+</section>
+
+<!-- deleteNode -->
+<section>
+    <h2>4 — <code>deleteNode(struct Node **head, int val)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Find the node, unlink it, free its memory.
+    </div>
+    <pre class="fragment"><code class="language-c">void deleteNode(struct Node **head, int val) {
+    struct Node *prev = NULL, *curr = *head;
+
+    while (curr != NULL && curr->data != val) {
+        prev = curr;
+        curr = curr->next;
+    }
+    if (curr == NULL) return;          // not found
+
+    if (prev == NULL) *head = curr->next;   // removing head
+    else              prev->next = curr->next;  // bypass
+
+    free(curr);    // return memory to the OS
+}</code></pre>
+
+    <div class="fragment info-box">
+        <code>free(curr)</code> is the pointer-based equivalent of <code>return_to_avail()</code>. The OS reclaims the memory.
+    </div>
+</section>
+
+<!-- traverse -->
+<section>
+    <h2>5 — <code>traverse(struct Node *head)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Walk the list, print each value.
+    </div>
+    <pre class="fragment"><code class="language-c">void traverse(struct Node *head) {
+    struct Node *curr = head;
+    while (curr != NULL) {
+        printf("%d ", curr->data);
+        curr = curr->next;
+    }
+    printf("\n");
+}</code></pre>
+
+    <div class="fragment small">
+        Notice: <code>traverse</code> takes <code>Node *</code> (single pointer) — it only reads, never modifies <code>head</code>.
+    </div>
+</section>
+
+<!-- freeList -->
+<section>
+    <h2>6 — <code>freeList(struct Node **head)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Free every node. Set head to NULL. Without this, you have a <strong>memory leak</strong>.
+    </div>
+    <pre class="fragment"><code class="language-c">void freeList(struct Node **head) {
+    struct Node *curr = *head;
+    while (curr != NULL) {
+        struct Node *next = curr->next;  // save next BEFORE freeing
+        free(curr);
+        curr = next;
+    }
+    *head = NULL;
+}</code></pre>
+
+    <div class="fragment warning-box">
+        Why save <code>curr->next</code> first? After <code>free(curr)</code>, accessing <code>curr->next</code> is <strong>undefined behavior</strong> — the memory may already be reused.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — WHY LINKED LISTS STILL MATTER
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Why Linked Lists Still Matter</p>
+</section>
+
+<!-- Honest take -->
+<section>
+    <h2>The Honest Truth</h2>
+
+    <p>Arrays are usually <strong>faster on modern hardware</strong>.</p>
+    <p class="small">CPUs love sequential memory — cache lines, prefetching, branch prediction all favor arrays.</p>
+
+    <div class="fragment" style="margin-top:1em;">
+        <p>So why learn linked lists?</p>
+        <p>Because the <em>concept</em> of linking nodes with pointers is <strong>everywhere</strong>.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <table>
+            <tr><th>Data Structure</th><th>What It Really Is</th></tr>
+            <tr><td><strong>Trees</strong></td><td>A node with <em>two</em> next pointers (<code>left</code>, <code>right</code>)</td></tr>
+            <tr><td><strong>Hash tables</strong></td><td>Array of buckets, each bucket is a linked list (chaining)</td></tr>
+            <tr><td><strong>Graphs</strong></td><td>Adjacency list = one linked list per vertex</td></tr>
+            <tr><td><strong>Memory allocators</strong></td><td>Free list — you already built one in Part I (<code>avail</code>)</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.7em;">
+        Master the linked list, and trees, graphs, and hash tables will feel like extensions — not new topics.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — WOW PROBLEMS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Some Interesting Problems</p>
+</section>
+
+<!-- Floyd's Cycle Detection — setup -->
+<section>
+    <h2>Problem 1 — Detecting a Cycle</h2>
+
+    <p>Someone corrupted your list. The last node points back to a middle node instead of NULL.</p>
+
+    <div style="margin:0.8em 0; font-family:monospace; font-size:0.78em; line-height:1.8;">
+        <span>1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 3 &rarr; ...</span>
+    </div>
+
+    <p class="fragment"><strong>How do you detect this — without extra memory?</strong></p>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p>One approach: store every visited node's address in an array. Before visiting a node, check if you've seen it before.</p>
+        <p>That works — but uses O(n) extra memory.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        <strong>Floyd's Tortoise and Hare:</strong> Two pointers, both starting at <code>head</code>.<br>
+        <code>slow</code> moves 1 step. <code>fast</code> moves 2 steps.<br>
+        If there's a cycle, <code>fast</code> gains 1 step per iteration — they <em>must</em> meet.<br>
+        If no cycle, <code>fast</code> hits NULL.
+    </div>
+</section>
+
+<!-- Floyd's code -->
+<section>
+    <h2>Floyd's Cycle Detection — Code</h2>
+
+    <pre><code class="language-c">int hasCycle(struct Node *head) {
+    struct Node *slow = head;
+    struct Node *fast = head;
+
+    while (fast != NULL && fast->next != NULL) {
+        slow = slow->next;          // 1 step
+        fast = fast->next->next;    // 2 steps
+
+        if (slow == fast)
+            return 1;    // they met — cycle exists
+    }
+    return 0;    // fast reached NULL — no cycle
+}</code></pre>
+
+    <div class="fragment success-box" style="margin-top:0.7em;">
+        <strong>O(n) time, O(1) space.</strong> No extra array, no marking nodes, no extra memory. Just two pointers.
+    </div>
+
+    <div class="fragment small">
+        Why must they meet? In the cycle, <code>fast</code> closes the gap by 1 each iteration. After at most one full loop, they collide.
+    </div>
+</section>
+
+<!-- Reverse — setup -->
+<section>
+    <h2>Problem 2 — Reverse a Linked List</h2>
+
+    <p>The most asked linked list interview question.</p>
+
+    <p class="mono" style="margin:0.6em 0;">Before: &nbsp;1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; NULL</p>
+    <p class="mono">After: &nbsp;&nbsp;4 &rarr; 3 &rarr; 2 &rarr; 1 &rarr; NULL</p>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>Idea:</strong> Walk through the list. At each node, flip the <code>next</code> pointer backward.</p>
+        <p>Three pointers: <code>prev</code>, <code>curr</code>, <code>next</code>.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em; font-family:monospace; font-size:0.7em; line-height:2;">
+        <p>Step 1: &nbsp;NULL &larr; 1 &nbsp;&nbsp; 2 &rarr; 3 &rarr; 4 &rarr; NULL</p>
+        <p>Step 2: &nbsp;NULL &larr; 1 &larr; 2 &nbsp;&nbsp; 3 &rarr; 4 &rarr; NULL</p>
+        <p>Step 3: &nbsp;NULL &larr; 1 &larr; 2 &larr; 3 &nbsp;&nbsp; 4 &rarr; NULL</p>
+        <p>Step 4: &nbsp;NULL &larr; 1 &larr; 2 &larr; 3 &larr; 4</p>
+    </div>
+</section>
+
+<!-- Reverse — code -->
+<section>
+    <h2>Reverse — Code</h2>
+
+    <pre><code class="language-c">void reverse(struct Node **head) {
+    struct Node *prev = NULL;
+    struct Node *curr = *head;
+
+    while (curr != NULL) {
+        struct Node *next = curr->next;   // save next
+        curr->next = prev;                // flip the arrow
+        prev = curr;                      // advance prev
+        curr = next;                      // advance curr
+    }
+    *head = prev;    // prev is now the first node
+}</code></pre>
+
+    <div class="fragment success-box">
+        Four lines in the loop. O(n) time, O(1) space. No extra list, no recursion needed.
+    </div>
+</section>
+
+<!-- Reverse — recursive thinking -->
+<section>
+    <h2>Reverse — Can We Do It Recursively?</h2>
+
+    <p>The iterative version is clean. Why bother with recursion?</p>
+
+    <div class="fragment info-box" style="margin-top:0.6em;">
+        <strong>Why this matters:</strong> Reversing a linked list is the canonical problem where you can see the <em>exact same logic</em> written in two completely different recursive styles. Understanding the difference teaches you how to <em>think</em> recursively.
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>The recursive question:</strong> Break it into one step + the rest.</p>
+        <p class="mono" style="margin:0.4em 0;">1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; NULL</p>
+        <p class="fragment">"If I <em>trust</em> recursion to reverse <code>2→3→4</code>, what do I need to do with <code>1</code>?"</p>
+        <p class="fragment">&rarr; After recursion: &nbsp;<code>4 → 3 → 2 →</code> (<code>1</code> is dangling, still pointing at <code>2</code>)</p>
+        <p class="fragment">&rarr; Fix: make <code>2</code> point back at <code>1</code>, then cut <code>1</code>'s forward link.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Two ways to arrange this work: fix <strong>on the way back</strong>, or carry state <strong>going forward</strong>.
+    </div>
+</section>
+
+<!-- Reverse — classic recursive -->
+<section>
+    <h2>Approach 1 — Fix on the Way Back</h2>
+
+    <pre><code class="language-c">struct Node* reverse_rec(struct Node *head) {
+    // Base case: empty list or last node — return as the new head
+    if (head == NULL || head->next == NULL) return head;
+
+    // Trust recursion to reverse everything after head
+    struct Node *new_head = reverse_rec(head->next);
+
+    // NOW on the way back: head->next still points at the old second node
+    // That node should now point BACK at head
+    head->next->next = head;
+    head->next = NULL;    // head is now the tail — cut its forward link
+
+    return new_head;      // bubble up the true new head all the way
+}</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.7em; line-height:1.8;">
+        <p>reverse_rec(1) calls reverse_rec(2) calls reverse_rec(3) calls reverse_rec(4)</p>
+        <p class="fragment">&nbsp;&nbsp;&larr; returns 4 as new_head. &nbsp;Now fix: 4→3 already done, fix 3→2: <code>3.next.next = 3</code> &rarr; 3→2→3? No — <code>2.next = 3</code></p>
+        <p class="fragment">&nbsp;&nbsp;&larr; Each frame fixes one arrow, then passes new_head up unchanged.</p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.4em;">
+        The work happens <strong>on the return trip</strong>. You must hold the whole call stack in memory before doing anything.
+        Call stack depth: O(n).
+    </div>
+</section>
+
+<!-- Reverse — tail recursive -->
+<section>
+    <h2>Approach 2 — Carry State Forward (Tail Recursive)</h2>
+
+    <pre><code class="language-c">struct Node* reverse_tail(struct Node *curr, struct Node *prev) {
+    if (curr == NULL) return prev;   // prev is now the new head — done
+
+    struct Node *next = curr->next;  // save next before we overwrite it
+    curr->next = prev;               // flip the arrow right now
+
+    return reverse_tail(next, curr); // move forward, carrying work done so far
+}
+
+// Caller: head = reverse_tail(head, NULL);</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em; font-family:monospace; font-size:0.72em; line-height:1.8;">
+        <p>reverse_tail(1, NULL) &rarr; flips 1, calls reverse_tail(2, 1)</p>
+        <p class="fragment">reverse_tail(2, 1)&nbsp; &rarr; flips 2, calls reverse_tail(3, 2)</p>
+        <p class="fragment">reverse_tail(3, 2)&nbsp; &rarr; flips 3, calls reverse_tail(4, 3)</p>
+        <p class="fragment">reverse_tail(4, 3)&nbsp; &rarr; flips 4, calls reverse_tail(NULL, 4) &rarr; returns <strong>4</strong></p>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.4em;">
+        The work happens <strong>going forward</strong>. The recursive call is the <em>last</em> thing each frame does — that is what <strong>tail recursion</strong> means. The result just passes straight back up without further processing.
+    </div>
+</section>
+
+<!-- Reverse — comparison -->
+<section>
+    <h2>Two Styles — One Problem</h2>
+
+    <table style="margin-top:0.6em;">
+        <tr><th></th><th>Classic Recursive</th><th>Tail Recursive</th></tr>
+        <tr><td><strong>Work happens</strong></td><td>On the return trip (back up)</td><td>Going forward (down)</td></tr>
+        <tr><td><strong>State carried</strong></td><td>Implicitly in the call stack</td><td>Explicitly as a parameter (<code>prev</code>)</td></tr>
+        <tr><td><strong>Reads like</strong></td><td>Pure recursion — trust, then fix</td><td>Iterative loop in disguise</td></tr>
+        <tr><td><strong>Stack depth</strong></td><td>O(n)</td><td>O(n) — same in C*</td></tr>
+        <tr><td><strong>Base case returns</strong></td><td>The new head (bubbles up)</td><td>The new head (passes straight through)</td></tr>
+    </table>
+
+    <div class="fragment small" style="margin-top:0.5em;">
+        *Some languages/compilers optimize tail calls to O(1) stack space. C does not guarantee this.
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        <strong>Which to learn first?</strong> Classic — it forces you to think about what the call stack is doing.
+        Once that clicks, tail recursion reveals itself as "I moved the state from the stack into a parameter."
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        <strong>Pattern you will see again:</strong> Any time a recursive function carries an accumulator forward (running total, running max, built-up result), that is tail recursion in spirit.
+    </div>
+</section>
+
+<!-- Josephus — the problem -->
+<section>
+    <h2>Problem 3 — The Josephus Problem</h2>
+
+    <p><strong>Story (1st century AD):</strong> N soldiers stand in a circle. Starting from a chosen position, every k-th person is eliminated. The last one standing survives.</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Example:</strong> N=6, k=3</p>
+        <p class="mono" style="line-height:2;">
+            Circle: 1, 2, 3, 4, 5, 6 &nbsp;(standing in a circle)<br>
+            Eliminate 3: &nbsp;1, 2, _, 4, 5, 6<br>
+            Eliminate 6: &nbsp;1, 2, _, 4, 5, _<br>
+            Eliminate 4: &nbsp;1, 2, _, _, 5, _<br>
+            Eliminate 2: &nbsp;1, _, _, _, 5, _<br>
+            Eliminate 5: &nbsp;<strong>1 survives</strong>
+        </p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        <strong>Your task:</strong> Write a function that takes N and k, and returns the survivor's number.
+    </div>
+
+    <div class="fragment small">
+        <strong>Fun fact:</strong> Flavius Josephus (37 AD) reportedly used this reasoning to choose the safe position and survive.
+    </div>
+</section>
+
+<!-- Josephus — array solution -->
+<section>
+    <h2>Josephus — Array Solution</h2>
+
+    <p>The natural first approach: use an array and mark eliminated people.</p>
+
+    <pre class="fragment"><code class="language-c">int josephus_array(int n, int k) {
+    int alive[n];
+    for (int i = 0; i < n; i++)
+        alive[i] = 1;          // everyone starts alive
+
+    int remaining = n;
+    int pos = 0;                // current position in the circle
+
+    while (remaining > 1) {
+        // Count k alive people
+        int count = 0;
+        while (count < k) {
+            if (alive[pos])
+                count++;
+            if (count < k)
+                pos = (pos + 1) % n;   // wrap around
+        }
+        printf("Eliminated %d\n", pos + 1);
+        alive[pos] = 0;
+        remaining--;
+        pos = (pos + 1) % n;
+    }
+
+    // Find the survivor
+    for (int i = 0; i < n; i++)
+        if (alive[i]) return i + 1;
+    return -1;
+}</code></pre>
+</section>
+
+<!-- Josephus — array problems -->
+<section>
+    <h2>Josephus — What's Wrong With the Array?</h2>
+
+    <ul>
+        <li class="fragment"><strong>Skipping dead people:</strong> Every time you count k, you must step over eliminated slots. As more people die, you skip more and more empty slots.</li>
+        <li class="fragment"><strong>Wrap-around logic:</strong> <code>(pos + 1) % n</code> everywhere — easy to get wrong.</li>
+        <li class="fragment"><strong>Wasteful:</strong> The array never shrinks. With 1000 people and 999 eliminated, you're still walking past 999 dead slots to find the last two alive.</li>
+    </ul>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        What if we could <strong>actually remove</strong> a person from the circle when they're eliminated — so we never skip anyone?
+    </div>
+</section>
+
+<!-- Josephus — circular linked list idea -->
+<section>
+    <h2>Josephus — A Circular Linked List</h2>
+
+    <p>Make the last node's <code>next</code> point back to the first node. A circle — no NULL, no end.</p>
+
+    <p class="mono" style="margin:0.6em 0; font-size:0.82em;">
+        1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; (back to 1)
+    </p>
+
+    <ul>
+        <li class="fragment">To eliminate someone: <code>prev->next = curr->next</code> — they're gone from the circle. O(1).</li>
+        <li class="fragment">No skipping dead slots. Every step lands on a living person.</li>
+        <li class="fragment">Counting k steps means exactly k pointer follows.</li>
+        <li class="fragment">One person left? <code>curr->next == curr</code> — done.</li>
+    </ul>
+
+    <div class="fragment success-box" style="margin-top:0.6em;">
+        The circle shrinks as people are eliminated. No wasted work.
+    </div>
+</section>
+
+<!-- Josephus — linked list code -->
+<section>
+    <h2>Josephus — Linked List Code</h2>
+
+    <pre><code class="language-c">int josephus(int n, int k) {
+    // Build circular linked list: 1 → 2 → ... → n → (back to 1)
+    struct Node *head = createNode(1);
+    struct Node *curr = head;
+    for (int i = 2; i <= n; i++) {
+        curr->next = createNode(i);
+        curr = curr->next;
+    }
+    curr->next = head;   // make it circular
+
+    // Eliminate every k-th person
+    struct Node *prev = curr;   // prev starts at the last node
+    curr = head;
+
+    while (curr->next != curr) {   // more than one person left
+        // Count k-1 steps (curr lands on the k-th person)
+        for (int i = 1; i < k; i++) {
+            prev = curr;
+            curr = curr->next;
+        }
+        // Eliminate curr
+        prev->next = curr->next;
+        printf("Eliminated %d\n", curr->data);
+        struct Node *temp = curr;
+        curr = curr->next;
+        free(temp);
+    }
+
+    int survivor = curr->data;
+    free(curr);
+    return survivor;
+}</code></pre>
+</section>
+
+<!-- Josephus — comparison -->
+<section>
+    <h2>Josephus — Array vs. Linked List</h2>
+
+    <table style="margin-top:0.8em;">
+        <tr><th></th><th>Array</th><th>Circular Linked List</th></tr>
+        <tr><td><strong>Eliminate someone</strong></td><td>Mark as dead, still takes space</td><td>Remove from circle, free memory</td></tr>
+        <tr><td><strong>Count k steps</strong></td><td>Must skip dead slots</td><td>Every step lands on a living person</td></tr>
+        <tr><td><strong>Wrap around</strong></td><td><code>(pos+1) % n</code></td><td>Automatic — it's a circle</td></tr>
+        <tr><td><strong>Detect last person</strong></td><td>Scan array for the one alive</td><td><code>curr->next == curr</code></td></tr>
+    </table>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        This pattern — processes arranged in a circle, each getting a turn — is exactly <strong>round-robin scheduling</strong> in operating systems.
+    </div>
+</section>
+
+<!-- Josephus — time complexity -->
+<section>
+    <h2>Josephus — Time Complexity</h2>
+
+    <p>We eliminate n&minus;1 people. <strong>k</strong> is the counting number — every k-th person is eliminated. How much work does each elimination take?</p>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        <strong>Linked list:</strong> dead nodes are physically removed. Every step lands on a living person.
+        Each elimination costs exactly <strong>k steps</strong>. &nbsp; (n&minus;1) eliminations &times; k steps = <strong>O(n &times; k)</strong>.
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.5em;">
+        <strong>Array:</strong> dead slots stay in the array, just marked. To count k <em>alive</em> people you must skip over dead ones.
+        Near the end — say 2 people left in an array of n — a single elimination might walk past ~n dead slots.
+        Worst case: <strong>O(n&sup2;)</strong>.
+    </div>
+
+    <div class="fragment" style="margin-top:0.7em;">
+        <table style="width:90%;">
+            <tr><th>Elimination #</th><th>Array steps (skipping dead)</th><th>Linked list steps</th></tr>
+            <tr><td>1st &nbsp;(all n alive)</td><td>k</td><td>k</td></tr>
+            <tr><td>Midway &nbsp;(n/2 dead)</td><td>~2k &nbsp;(skip 1 dead per alive)</td><td>k</td></tr>
+            <tr><td>Near end &nbsp;(2 alive)</td><td>up to ~n &nbsp;(walk past n&minus;2 dead)</td><td>k</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Example:</strong> n = 100,000 and k = 2</p>
+        <table style="width:70%;">
+            <tr><th>Solution</th><th>Operations</th></tr>
+            <tr><td>Array (worst case)</td><td>O(n&sup2;) = <strong>10,000,000,000</strong></td></tr>
+            <tr><td>Circular linked list</td><td>O(n &times; k) = <strong>200,000</strong></td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        The linked list isn't just cleaner code — it is <strong>genuinely faster</strong>, because it erases dead work instead of carrying it forward.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:1em;">Recap</h2>
+
+    <div class="fragment" style="text-align:left; max-width:600px; margin:0 auto;">
+        <ul>
+            <li><strong>Struct + pointer</strong> = one self-contained node, dynamically allocated</li>
+            <li><strong>Same operations</strong> as the array version — just different syntax</li>
+            <li><strong>Linked list</strong> = the building block for trees, graphs, hash tables</li>
+        </ul>
+    </div>
+
+    <div class="fragment" style="margin-top:1.5em;">
+        <p class="big-q">Next: Stacks and Queues</p>
+        <p style="color:#7f8c8d;">Restricting how you insert and delete — and why that's powerful.</p>
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>

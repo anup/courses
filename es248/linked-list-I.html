@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linked Lists — Part I</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+
+        /* ── Linked-list array diagrams ── */
+        .ll-table {
+            border-collapse: collapse;
+            margin: 0.5em auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.68em;
+            width: 98%;
+        }
+        .ll-table td {
+            border: 2px solid #bdc3c7;
+            padding: 0.3em 0.35em;
+            text-align: center;
+            min-width: 2.6em;
+        }
+        .ll-table .row-lbl {
+            border: none !important;
+            text-align: right;
+            font-size: 0.92em;
+            color: #7f8c8d;
+            font-weight: 700;
+            padding-right: 0.7em;
+            white-space: nowrap;
+        }
+        .ll-table .idx {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.82em;
+            border-color: #bdc3c7 !important;
+        }
+        .ll-table .main-nd {
+            background: #d5e8d4;
+            color: #27ae60;
+            font-weight: bold;
+            border-color: #82b366 !important;
+        }
+        .ll-table .avail-nd {
+            background: #fff2cc;
+            color: #b7950b;
+            border-color: #d6b656 !important;
+        }
+        .ll-table .empty-nd {
+            background: #f8f9fa;
+            color: #bdc3c7;
+        }
+        .ll-table .hi-nd {
+            background: #dae8fc;
+            color: #2980b9;
+            font-weight: bold;
+            border-color: #6c8ebf !important;
+        }
+
+        .ptr-row {
+            display: flex;
+            justify-content: flex-start;
+            gap: 1.5em;
+            font-family: monospace;
+            font-size: 0.7em;
+            margin: 0.25em 0 0.5em 0;
+            padding-left: 5.5em;
+        }
+        .ptr-lbl {
+            font-weight: bold;
+            padding: 0.15em 0.55em;
+            border-radius: 3px;
+        }
+        .ptr-head  { background: #dae8fc; color: #2980b9; }
+        .ptr-avail { background: #fff2cc; color: #b7950b; }
+
+        /* generic mapping table */
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+
+        .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Linked Lists</h1>
+    <h3 style="color:#7f8c8d;">Part I — Building from First Principles</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 248 · Introduction to DSA in C</p>
+</section>
+
+<!-- The two-array idea -->
+<section>
+    <h2>Two Arrays</h2>
+    <p>Here are two arrays and an integer.</p>
+
+    <table class="ll-table" style="margin-top:0.8em;">
+        <tr>
+            <td class="row-lbl">index</td>
+            <td class="idx">0</td><td class="idx">1</td><td class="idx">2</td>
+            <td class="idx">3</td><td class="idx">4</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">data[]</td>
+            <td>15</td><td>8</td><td>23</td><td>19</td><td>42</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">nxt[]</td>
+            <td>3</td><td>0</td><td>4</td><td>2</td><td class="main-nd">-1</td>
+        </tr>
+    </table>
+    <div class="ptr-row"><span class="ptr-lbl ptr-head">head = 1</span></div>
+
+    <ul class="fragment">
+        <li><code>head</code> — an integer, the starting index</li>
+        <li><code>nxt[i]</code> — the index of whatever comes after slot <code>i</code></li>
+        <li><code>nxt[i] = -1</code> — nothing comes after slot <code>i</code></li>
+    </ul>
+
+    <div class="fragment key-point">
+        <strong>Question:</strong> Starting from <code>head = 1</code>, what is the sequence?
+    </div>
+</section>
+
+<!-- Traversal -->
+<section>
+    <h2>Traversal</h2>
+    <p>Start at <code>head = 1</code>. Follow <code>nxt[]</code> until you reach <code>-1</code>.</p>
+
+    <table class="ll-table" style="margin-top:0.5em;">
+        <tr>
+            <td class="row-lbl">index</td>
+            <td class="idx">0</td><td class="idx">1</td><td class="idx">2</td>
+            <td class="idx">3</td><td class="idx">4</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">data[]</td>
+            <td>15</td><td class="hi-nd">8</td><td>23</td><td>19</td><td>42</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">nxt[]</td>
+            <td>3</td><td>0</td><td>4</td><td>2</td><td>-1</td>
+        </tr>
+    </table>
+    <div class="ptr-row"><span class="ptr-lbl ptr-head">head = 1</span></div>
+
+    <div class="mono fragment" style="margin:0.6em 0 0.4em 0; line-height:1.7;">
+        head=1 &rarr; data[1]=<strong>8</strong>,  nxt[1]=0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0 &rarr; data[0]=<strong>15</strong>, nxt[0]=3<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3 &rarr; data[3]=<strong>19</strong>, nxt[3]=2<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 &rarr; data[2]=<strong>23</strong>, nxt[2]=4<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;4 &rarr; data[4]=<strong>42</strong>, nxt[4]=<strong>-1</strong> &nbsp;<em>stop</em>
+    </div>
+
+    <div class="fragment success-box">Sequence: <strong>8 &rarr; 15 &rarr; 19 &rarr; 23 &rarr; 42</strong> — sorted, but stored in any order.</div>
+
+    <pre class="fragment"><code class="language-c">int curr = head;
+while (curr != -1) {
+    printf("%d ", data[curr]);
+    curr = nxt[curr];
+}</code></pre>
+</section>
+
+<!-- Insert — no shifting -->
+<section>
+    <h2>Insert at the Front — No Shifting</h2>
+    <p>Insert value <code>11</code>. Say slot <code>5</code> is free (we'll solve the "how do we know" part next).</p>
+
+    <div class="two-col" style="margin-top:0.8em;">
+        <div class="card">
+            <h4>Three steps</h4>
+            <ol style="font-size:0.88em;">
+                <li>Store value: &nbsp;<code>data[5] = 11</code></li>
+                <li>Link forward: <code>nxt[5] = head</code></li>
+                <li>Update head: <code>head = 5</code></li>
+            </ol>
+            <p class="small" style="margin-top:0.6em;">Three assignments. No shifting.</p>
+        </div>
+        <div class="card fragment">
+            <h4>State after</h4>
+            <p class="mono">head = 5</p>
+            <p class="mono">nxt[5] = 1 (old head)</p>
+            <p style="margin-top:0.5em;">Sequence: 11 &rarr; 8 &rarr; 15 &rarr; 19 &rarr; 23 &rarr; 42</p>
+        </div>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.8em;">
+        <strong>Unresolved:</strong> How did we know slot 5 was free?
+        We need a way to track which slots are available.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — AVAILABILITY LIST
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The Availability List</p>
+</section>
+
+<!-- Two pointers -->
+<section>
+    <h2>Two Chains in the Same Arrays</h2>
+    <p>The free slots also form a linked list — using the <em>same</em> <code>nxt[]</code> array.</p>
+
+    <div class="two-col" style="margin-top:0.8em;">
+        <div class="card" style="border-top-color:#3498db;">
+            <h4 style="color:#2980b9;">head</h4>
+            <p>Points to the first element of <strong>your data</strong></p>
+            <p class="small">Chain = the sequence you are storing</p>
+        </div>
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4 style="color:#b7950b;">avail</h4>
+            <p>Points to the first <strong>free slot</strong></p>
+            <p class="small">Chain = all slots available for allocation</p>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        Two linked lists live inside the same two arrays simultaneously —
+        one holding your data, one holding the free space.
+    </div>
+</section>
+
+<!-- Initial state -->
+<section>
+    <h2>Initial State — All Slots Free</h2>
+    <p><code>head = -1</code> (main list is empty) &nbsp;·&nbsp; <code>avail = 0</code></p>
+
+    <table class="ll-table" style="margin-top:0.6em;">
+        <tr>
+            <td class="row-lbl">index</td>
+            <td class="idx">0</td><td class="idx">1</td><td class="idx">2</td><td class="idx">3</td>
+            <td class="idx">4</td><td class="idx">5</td><td class="idx">6</td><td class="idx">7</td>
+            <td class="idx">8</td><td class="idx">9</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">data[]</td>
+            <td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td>
+            <td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td>
+            <td class="empty-nd">—</td><td class="empty-nd">—</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">nxt[]</td>
+            <td class="avail-nd">1</td><td class="avail-nd">2</td><td class="avail-nd">3</td><td class="avail-nd">4</td>
+            <td class="avail-nd">5</td><td class="avail-nd">6</td><td class="avail-nd">7</td><td class="avail-nd">8</td>
+            <td class="avail-nd">9</td><td class="avail-nd">-1</td>
+        </tr>
+    </table>
+    <div class="ptr-row">
+        <span class="ptr-lbl ptr-head">head = -1</span>
+        <span class="ptr-lbl ptr-avail">avail = 0</span>
+    </div>
+
+    <p class="fragment mono" style="margin-top:0.5em;">
+        Avail chain: 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; 7 &rarr; 8 &rarr; 9 &rarr; <strong>-1</strong>
+    </p>
+</section>
+
+<!-- After 3 inserts -->
+<section>
+    <h2>After Inserting 15, then 8, then 23</h2>
+    <p>Slots 0, 1, 2 are in the main list. Slots 3–9 remain in the avail chain.</p>
+
+    <table class="ll-table" style="margin-top:0.5em;">
+        <tr>
+            <td class="row-lbl">index</td>
+            <td class="idx">0</td><td class="idx">1</td><td class="idx">2</td><td class="idx">3</td>
+            <td class="idx">4</td><td class="idx">5</td><td class="idx">6</td><td class="idx">7</td>
+            <td class="idx">8</td><td class="idx">9</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">data[]</td>
+            <td class="main-nd">15</td><td class="main-nd">8</td><td class="main-nd">23</td>
+            <td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td>
+            <td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td><td class="empty-nd">—</td>
+        </tr>
+        <tr>
+            <td class="row-lbl">nxt[]</td>
+            <td class="main-nd">-1</td><td class="main-nd">0</td><td class="main-nd">1</td>
+            <td class="avail-nd">4</td><td class="avail-nd">5</td><td class="avail-nd">6</td>
+            <td class="avail-nd">7</td><td class="avail-nd">8</td><td class="avail-nd">9</td><td class="avail-nd">-1</td>
+        </tr>
+    </table>
+    <div class="ptr-row">
+        <span class="ptr-lbl ptr-head">head = 2</span>
+        <span class="ptr-lbl ptr-avail">avail = 3</span>
+    </div>
+
+    <div class="fragment">
+        <p class="mono">Main list &nbsp;(head=2): &nbsp;23 &rarr; 8 &rarr; 15 &rarr; <strong>-1</strong></p>
+        <p class="mono">Avail chain (avail=3): 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; 7 &rarr; 8 &rarr; 9 &rarr; <strong>-1</strong></p>
+    </div>
+</section>
+
+<!-- malloc / free analogy -->
+<section>
+    <h2>Two Operations — You Already Know These</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4 style="color:#27ae60;">fetch_from_avail()</h4>
+            <ol style="font-size:0.85em;">
+                <li>Save <code>slot = avail</code></li>
+                <li>Advance <code>avail = nxt[avail]</code></li>
+                <li>Return <code>slot</code></li>
+            </ol>
+            <p class="small">Called when inserting a new element</p>
+        </div>
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4 style="color:#e67e22;">return_to_avail(idx)</h4>
+            <ol style="font-size:0.85em;">
+                <li><code>nxt[idx] = avail</code></li>
+                <li><code>avail = idx</code></li>
+            </ol>
+            <br>
+            <p class="small">Called when deleting an element</p>
+        </div>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <table>
+            <tr><th>Our function</th><th>What the OS / C library does</th></tr>
+            <tr><td><code>fetch_from_avail()</code></td><td><code>malloc(n)</code></td></tr>
+            <tr><td><code>return_to_avail(idx)</code></td><td><code>free(p)</code></td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.7em;">
+        You are not learning a toy. You are learning how memory allocators work.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — GROUP CODING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Code It Together</p>
+</section>
+
+<!-- Scaffold -->
+<section>
+    <h2>The Scaffold</h2>
+    <pre><code class="language-c">#define MAX 10
+
+int data[MAX];
+int nxt[MAX];    // nxt[i] = index of next node,  -1 = end of chain
+int head  = -1;  // start of the main (data) list
+int avail =  0;  // start of the free (availability) list
+
+// ── to implement ──────────────────────────────────────────────
+void init();                    // build the avail chain 0→1→…→MAX-1→-1
+
+int  fetch_from_avail();        // grab a free slot
+void return_to_avail(int idx);  // return a slot to the free list
+
+void insert(int value);         // prepend value to the head list
+void delete_val(int value);     // find and remove value
+void traverse();                // print all values in order</code></pre>
+</section>
+
+<!-- init -->
+<section>
+    <h2>1 — <code>init()</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Build the avail chain so every free slot knows its successor.<br>
+        What should <code>nxt[i]</code> be for each slot <code>i</code>?
+    </div>
+    <pre class="fragment"><code class="language-c">void init() {
+    for (int i = 0; i < MAX - 1; i++)
+        nxt[i] = i + 1;
+    nxt[MAX - 1] = -1;
+
+    head  = -1;   // main list is empty
+    avail =  0;   // free chain starts at 0
+}</code></pre>
+</section>
+
+<!-- fetch_from_avail -->
+<section>
+    <h2>2 — <code>fetch_from_avail()</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Return the index of the first free slot and advance <code>avail</code>.
+    </div>
+    <p class="fragment">What should happen when <code>avail == -1</code> (no free slots)?</p>
+    <pre class="fragment"><code class="language-c">int fetch_from_avail() {
+    if (avail == -1) {
+        printf("Error: out of space\n");
+        return -1;
+    }
+    int slot = avail;
+    avail = nxt[avail];
+    return slot;
+}</code></pre>
+</section>
+
+<!-- return_to_avail -->
+<section>
+    <h2>3 — <code>return_to_avail(int idx)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Prepend slot <code>idx</code> back onto the avail chain.
+    </div>
+    <pre class="fragment"><code class="language-c">void return_to_avail(int idx) {
+    nxt[idx] = avail;
+    avail    = idx;
+}</code></pre>
+    <div class="fragment">
+        <p><strong>Does it matter whether we prepend or append?</strong></p>
+        <p class="fragment small">No — the order of the avail chain doesn't affect correctness.
+        Prepend is O(1); append would require traversing the whole free list.</p>
+    </div>
+</section>
+
+<!-- insert -->
+<section>
+    <h2>4 — <code>insert(int value)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Get a free slot, store the value, prepend to the head list.
+    </div>
+    <pre class="fragment"><code class="language-c">void insert(int value) {
+    int slot = fetch_from_avail();
+    if (slot == -1) return;   // no space
+
+    data[slot] = value;
+    nxt[slot]  = head;        // new node points to old first node
+    head       = slot;        // new node becomes the first
+}</code></pre>
+</section>
+
+<!-- delete -->
+<section>
+    <h2>5 — <code>delete_val(int value)</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Find the node, bypass it in the chain, return its slot to avail.
+    </div>
+    <p class="fragment">How do you unlink a node that is <em>not</em> at the front? You need its predecessor.</p>
+    <pre class="fragment"><code class="language-c">void delete_val(int value) {
+    int prev = -1, curr = head;
+
+    // Walk until we find the value or reach the end
+    while (curr != -1 && data[curr] != value) {
+        prev = curr;
+        curr = nxt[curr];
+    }
+    if (curr == -1) return;   // not found
+
+    if (prev == -1) head        = nxt[curr];  // removing the head node
+    else            nxt[prev]   = nxt[curr];  // bypass curr
+
+    return_to_avail(curr);    // return slot to free list
+}</code></pre>
+</section>
+
+<!-- traverse -->
+<section>
+    <h2>6 — <code>traverse()</code></h2>
+    <div class="key-point">
+        <strong>Task:</strong> Walk the main list from <code>head</code>, print each value.
+    </div>
+    <pre class="fragment"><code class="language-c">void traverse() {
+    int curr = head;
+    while (curr != -1) {
+        printf("%d ", data[curr]);
+        curr = nxt[curr];
+    }
+    printf("\n");
+}</code></pre>
+    <div class="fragment success-box">
+        <strong>Try it:</strong>&nbsp;
+        <code>insert(5)</code>, <code>insert(3)</code>, <code>insert(8)</code>,
+        <code>traverse()</code>,
+        <code>delete_val(3)</code>,
+        <code>traverse()</code>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — WHY DOES THIS MATTER
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Why Does This Matter?</p>
+</section>
+
+<!-- Problem 1: Fixed capacity -->
+<section>
+    <h2>Problem 1 — Arrays Require Contiguous Memory</h2>
+    <ul>
+        <li class="fragment">Array is full → allocate a <em>larger</em> array → copy everything → free old array</li>
+        <li class="fragment">To allocate, you need a <strong>contiguous block</strong> of memory of the new size</li>
+        <li class="fragment">What if total free memory is plenty, but it is all scattered in small pieces?</li>
+        <li class="fragment">→ Allocation fails. You cannot grow the array.</li>
+    </ul>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        A linked list grows one node at a time — any free slot anywhere will do.
+        No contiguous block needed.
+    </div>
+</section>
+
+<!-- FAT — corrected -->
+<section>
+    <h2>Your USB Drive Is a Linked List</h2>
+
+    <p>USB drives and SD cards use a filesystem called <strong>FAT</strong> (File Allocation Table).</p>
+    <p>Files are stored in fixed-size blocks called <strong>clusters</strong>, scattered across the drive.</p>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>The drive keeps an array — <code>FAT[i]</code> = the cluster that comes after cluster <code>i</code>.</p>
+        <p>Each file's directory entry stores its <strong>first cluster</strong> — the head of the chain.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <table>
+            <tr><th>What we built</th><th>What a USB drive does</th></tr>
+            <tr><td><code>data[i]</code></td><td>Contents of cluster <code>i</code> on disk</td></tr>
+            <tr><td><code>nxt[i]</code></td><td><code>FAT[i]</code> — next cluster number</td></tr>
+            <tr><td><code>head</code></td><td>First cluster, stored in directory entry</td></tr>
+            <tr><td><del><code>avail</code> chain</del></td><td><del>Free list</del> — FAT has none; it scans for zeros</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        FAT is not used for your laptop's main drive (Windows uses NTFS, Linux uses ext4, macOS uses APFS).
+        But it is still the <strong>one format every OS can read</strong> — which is why all USB drives and SD cards use it.
+    </div>
+
+    <p class="fragment small" style="margin-top:0.3em;">
+        <a href="fat.html" target="_blank">Full visual walkthrough &rarr;</a>
+    </p>
+</section>
+
+<!-- Problem 2: When does shifting happen? -->
+<section>
+    <h2>Problem 2 — When Does Shifting Happen?</h2>
+
+    <p>Three common situations force an array to move data around:</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <h4>1. Insert into a sorted array</h4>
+        <p class="mono">Before: [3, 8, 12, 20, 25]</p>
+        <p class="mono">Insert 15 &rarr; shift 20, 25 right &rarr; [3, 8, 12, <strong>15</strong>, 20, 25]</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <h4>2. Delete from the middle</h4>
+        <p class="mono">Delete 12 &rarr; shift 20, 25 left &rarr; [3, 8, 20, 25]</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <h4>3. <code>realloc()</code> may move the entire array</h4>
+        <p>If there isn't room to grow in place, <code>realloc</code> allocates a new block, copies everything, and frees the old one. <strong>Every pointer into the old array is now dangling.</strong></p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.6em;">
+        Any code holding a pointer or index into the array is now broken — silently.
+    </div>
+</section>
+
+<!-- Problem 2: Student database example -->
+<section>
+    <h2>Real Example — Student Database</h2>
+
+    <p>Array of students sorted alphabetically. A separate roll-number index stores pointers.</p>
+
+    <pre><code class="language-c">Student students[5] = { "Aman", "Dev", "Kavya", "Riya", "Zara" };
+
+// Roll-number lookup — stores direct pointers into students[]
+Student *roll_idx[MAX_ROLL];
+roll_idx[25110154] = &amp;students[3];  // Riya is at index 3</code></pre>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>New student "Neha" enrolls.</strong> Insert alphabetically between Kavya and Riya:</p>
+        <p class="mono">Before: [Aman, Dev, Kavya, <span style="color:#e74c3c;">Riya</span>, Zara]</p>
+        <p class="mono">After: &nbsp;[Aman, Dev, Kavya, <strong>Neha</strong>, <span style="color:#e74c3c;">Riya</span>, Zara]</p>
+        <p><code>roll_idx[25110154]</code> still points to index 3 — but that's <strong>Neha</strong> now, not Riya.</p>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        <strong>In a linked list:</strong> nodes never move in memory. <code>roll_idx</code> keeps pointing to the same node forever. Secondary indexes stay valid.
+    </div>
+</section>
+
+<!-- Problem 2: formal statement -->
+<section>
+    <h2>Problem 2 — Shifting Invalidates References</h2>
+
+    <p>Suppose some part of your program holds a pointer to an element:</p>
+    <pre><code class="language-c">int *ref = &amp;arr[5];   // points to the element currently at index 5</code></pre>
+
+    <div class="fragment">
+        <p>You insert a new element at index 3. Everything from index 3 onward shifts right.</p>
+        <p><code>ref</code> still points to index 5 — but that is now the <em>wrong element</em>.</p>
+        <div class="warning-box">
+            Shifting physically moves data in memory. All external pointers into the array break silently.
+            The compiler will not warn you.
+        </div>
+    </div>
+
+    <div class="fragment success-box">
+        In a linked list, every node stays exactly where it was allocated.
+        Any pointer to a node remains valid forever (until you explicitly delete the node).
+    </div>
+</section>
+
+<!-- Problem 3: OS Run Queue walkthrough -->
+<section>
+    <h2>Problem 3 — O(1) Insert / Delete With a Pointer</h2>
+
+    <p>In an array: even if you know exactly where to delete, you still shift O(n) elements.</p>
+
+    <h4 class="fragment" style="margin-top:0.8em;">OS Run Queue — Visual Walkthrough</h4>
+
+    <div class="fragment">
+        <p class="mono" style="font-size:0.82em; line-height:1.8;">
+            Run queue: &nbsp;A &rarr; B &rarr; C &rarr; D &rarr; NULL
+        </p>
+        <p>Process B calls <code>read()</code> — blocks waiting for disk I/O.</p>
+        <p>OS has a <strong>direct pointer</strong> to B's node. Remove B in O(1): relink A &rarr; C.</p>
+        <p class="mono" style="font-size:0.82em; line-height:1.8;">
+            Run queue: &nbsp;A &rarr; C &rarr; D &rarr; NULL &nbsp; &nbsp; (B saved aside)
+        </p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.4em;">
+        <p>I/O completes &rarr; re-insert B in O(1). Just relink pointers.</p>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.5em;">
+        With an array: removing B shifts C and D. Every pointer to C or D — held by other kernel subsystems — breaks.
+    </div>
+</section>
+
+<!-- Problem 3: Browser tabs -->
+<section>
+    <h2>Browser Tabs Are a Linked List</h2>
+
+    <p>Each tab is a node in a <strong>doubly linked list</strong>:</p>
+    <p class="mono" style="font-size:0.85em; margin:0.5em 0;">
+        Tab1 &harr; Tab2 &harr; Tab3 &harr; Tab4
+    </p>
+
+    <ul>
+        <li class="fragment"><strong>Close Tab2:</strong> relink Tab1 &harr; Tab3 — O(1), no shifting</li>
+        <li class="fragment"><strong>Ctrl+Shift+T (reopen):</strong> re-insert the saved node — O(1)</li>
+        <li class="fragment"><strong>Drag to reorder:</strong> unlink and re-insert — just pointer changes</li>
+    </ul>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        This is why closing a tab is instant, but scrolling a huge spreadsheet (array of cells) is slow.
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        Whenever you need fast insert/delete at arbitrary positions with stable references — linked list.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BRIDGE TO LECTURE 2
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:1em;">Coming Up — Lecture 2</h2>
+
+    <div class="fragment">
+        <p>Right now: <code>data[]</code> and <code>nxt[]</code> are separate arrays.</p>
+        <p>Every node is split across two memory locations.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:1em;">
+        <p class="big-q">What if we bundled a node's data<br>and its "next" into a single object?</p>
+    </div>
+
+    <div class="fragment" style="margin-top:1em;">
+        <p>That's what a <strong>struct</strong> does.</p>
+        <p>And an integer index becomes a <strong>pointer</strong> to that struct.</p>
+        <p class="small" style="margin-top:1.5em;">Same logic. Cleaner form. Real memory.</p>
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>

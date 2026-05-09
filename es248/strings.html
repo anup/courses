@@ -1,0 +1,1066 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strings in C - Characters, Arrays, and Memory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --danger-color: #e74c3c;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        /* SCROLL FIX — from arrays_complete_presentation.html */
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.1em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.8em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 450px;
+            overflow: auto;
+        }
+
+        .reveal .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5em;
+            margin: 1em 0;
+        }
+
+        .reveal .comparison-item {
+            background: var(--light-bg);
+            padding: 1em;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--danger-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal .danger    { color: var(--danger-color);  font-weight: 600; }
+
+        .reveal ul  { margin: 0.8em 0; }
+        .reveal li  { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol  { margin: 0.8em 0; }
+        .reveal p   { margin: 0.5em 0; }
+
+        .reveal table {
+            margin: 1em auto;
+            border-collapse: collapse;
+            font-size: 0.7em;
+            width: 100%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.6em;
+            border: none;
+        }
+        .reveal table td {
+            padding: 0.5em 0.6em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .reveal .small-text { font-size: 0.8em; color: #6c757d; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.8em 1.2em;
+            margin: 1em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        /* Memory diagram cells */
+        .reveal .mem-row {
+            display: flex;
+            align-items: stretch;
+            margin: 0.8em 0;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+            font-size: 0.65em;
+            flex-wrap: wrap;
+        }
+        .reveal .mem-cell {
+            border: 2px solid #bdc3c7;
+            padding: 0.5em 0.8em;
+            text-align: center;
+            min-width: 55px;
+            background: var(--light-bg);
+        }
+        .reveal .mem-cell.hi {
+            border-color: var(--accent-color);
+            background: #ebf5fb;
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        .reveal .mem-cell.null {
+            border-color: var(--success-color);
+            background: #d4edda;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        .reveal .mem-cell.ovf {
+            border-color: var(--danger-color);
+            background: #fdecea;
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+        .reveal .mem-addr {
+            color: #95a5a6;
+            font-size: 0.75em;
+            padding: 0.2em 0.8em;
+            min-width: 55px;
+            text-align: center;
+            font-family: 'Monaco', 'Menlo', 'Consolas', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- TITLE -->
+            <section class="center-content">
+                <h1>Strings in C</h1>
+                <h3 style="color: #7f8c8d;">Characters, Arrays, and the Null Terminator</h3>
+                <p style="margin-top: 2em; font-size: 0.8em; color: #95a5a6;">Introduction to DSA (C Programming)</p>
+            </section>
+
+            <!-- HOOK -->
+            <section>
+                <h2>Strings in Python — Easy</h2>
+                <pre><code class="language-python">name = "Alice"
+print(name)            # Alice
+print(len(name))       # 5
+print(name[0])         # A
+print(name + "!")      # Alice!
+print(name == "Alice") # True</code></pre>
+                <div class="key-point">
+                    Python's <code>str</code> is a full-featured built-in type.
+                    C has <span class="highlight">no string type at all.</span>
+                </div>
+            </section>
+
+            <!-- ==================== -->
+            <!-- PART 1: char type    -->
+            <!-- ==================== -->
+
+            <section class="center-content">
+                <h1>Part 1: The <code>char</code> Type</h1>
+                <p style="color: #7f8c8d;">A character is just a number</p>
+            </section>
+
+            <section>
+                <h2>The <code>char</code> Type</h2>
+                <p>C has a type for a <strong>single character</strong> — 1 byte:</p>
+                <pre><code class="language-c">char c = 'A';       // single quotes for a single character
+printf("%c\n", c);  // A   ← print as character
+printf("%d\n", c);  // 65  ← print as integer</code></pre>
+                <div class="key-point">
+                    A <code>char</code> is just a <span class="highlight">small integer</span>.
+                    <code>'A'</code> is simply the number <code>65</code>.
+                    The single quotes tell the compiler to look up the ASCII value.
+                </div>
+            </section>
+
+            <section>
+                <h2><code>char</code> is an Integer — Arithmetic Works</h2>
+                <pre><code class="language-c">char c = 'A';
+
+printf("%c\n", c + 1);   // B  (65+1 = 66 = 'B')
+printf("%c\n", c + 2);   // C
+
+// Range checks using char comparison
+if (c >= 'A' && c <= 'Z') {
+    printf("uppercase\n");
+}
+
+// Convert uppercase to lowercase
+char lower = c + 32;     // 'A'(65) + 32 = 'a'(97)
+printf("%c\n", lower);   // a</code></pre>
+                <p class="small-text">This works because characters are just numbers. ASCII defines the mapping.</p>
+            </section>
+
+            <section>
+                <h2>ASCII: The Mapping</h2>
+                <table>
+                    <tr>
+                        <th>Char</th><th>Value</th>
+                        <th>Char</th><th>Value</th>
+                        <th>Char</th><th>Value</th>
+                    </tr>
+                    <tr>
+                        <td><code>'A'</code></td><td>65</td>
+                        <td><code>'a'</code></td><td>97</td>
+                        <td><code>'0'</code></td><td>48</td>
+                    </tr>
+                    <tr>
+                        <td><code>'B'</code></td><td>66</td>
+                        <td><code>'b'</code></td><td>98</td>
+                        <td><code>'9'</code></td><td>57</td>
+                    </tr>
+                    <tr>
+                        <td><code>'Z'</code></td><td>90</td>
+                        <td><code>'z'</code></td><td>122</td>
+                        <td><code>' '</code></td><td>32</td>
+                    </tr>
+                    <tr>
+                        <td><code>'\n'</code></td><td>10</td>
+                        <td><code>'\0'</code></td><td>0</td>
+                        <td><code>'\t'</code></td><td>9</td>
+                    </tr>
+                </table>
+                <div class="key-point">
+                    <code>'a' - 'A' = 32</code> always.
+                    Uppercase → lowercase: <code>c + 32</code>.
+                    Lowercase → uppercase: <code>c - 32</code>.
+                </div>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 2: String = array   -->
+            <!-- ======================== -->
+
+            <section class="center-content">
+                <h1>Part 2: Strings are Arrays</h1>
+                <p style="color: #7f8c8d;">There is no string type in C</p>
+            </section>
+
+            <section>
+                <h2>A String is a <code>char</code> Array</h2>
+                <p>There is <span class="danger">no string type</span> in C. A string is an array of <code>char</code>:</p>
+                <pre><code class="language-c">char name[6] = {'A', 'l', 'i', 'c', 'e', '\0'};</code></pre>
+                <div class="mem-row">
+                    <div class="mem-cell hi">'A'</div>
+                    <div class="mem-cell hi">'l'</div>
+                    <div class="mem-cell hi">'i'</div>
+                    <div class="mem-cell hi">'c'</div>
+                    <div class="mem-cell hi">'e'</div>
+                    <div class="mem-cell null">'\0'</div>
+                </div>
+                <div class="mem-row">
+                    <div class="mem-addr">[0]</div>
+                    <div class="mem-addr">[1]</div>
+                    <div class="mem-addr">[2]</div>
+                    <div class="mem-addr">[3]</div>
+                    <div class="mem-addr">[4]</div>
+                    <div class="mem-addr">[5]</div>
+                </div>
+                <p class="small-text" style="margin-top: 0.5em;">
+                    "Alice" has 5 characters but needs <strong>6 bytes</strong> —
+                    the last one is always <code>'\0'</code>
+                </p>
+            </section>
+
+            <section>
+                <h2>The Null Terminator <code>'\0'</code></h2>
+                <div class="key-point">
+                    <code>'\0'</code> is the number <strong>0</strong>.
+                    It signals "this is where the string ends."
+                    Without it, C has no way to know where to stop.
+                </div>
+                <pre><code class="language-c">// Without '\0' — printf doesn't know where to stop
+char broken[5] = {'A', 'l', 'i', 'c', 'e'};  // no '\0'!
+printf("%s\n", broken);  // "Alice" then garbage bytes ⚠️
+
+// With '\0' — printf stops correctly
+char name[6] = {'A', 'l', 'i', 'c', 'e', '\0'};
+printf("%s\n", name);    // Alice ✓</code></pre>
+                <p>This is also why every string function loops until it hits <code>'\0'</code>.</p>
+            </section>
+
+            <section>
+                <h2>The Easier Way to Initialize</h2>
+                <p>String literals add <code>'\0'</code> automatically:</p>
+                <pre><code class="language-c">// All three are identical:
+char name[6] = {'A', 'l', 'i', 'c', 'e', '\0'};
+char name[6] = "Alice";   // compiler adds '\0'
+char name[]  = "Alice";   // compiler counts size too → 6</code></pre>
+                <div class="key-point">
+                    Double quotes <code>"..."</code> are for strings.
+                    Single quotes <code>'...'</code> are for a single character.
+                    They are <span class="highlight">not interchangeable</span>.
+                </div>
+                <pre><code class="language-c">char c  = 'A';   // ✓ one char, value 65
+char c  = "A";   // ✗ type mismatch — "A" is a char array!</code></pre>
+            </section>
+
+            <section>
+                <h2>⚠️ String Literals are Read-Only</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>char array — modifiable ✓</h4>
+                        <pre><code class="language-c">char name[] = "Alice";
+name[0] = 'B'; // ✓ OK
+// name is now "Blice"</code></pre>
+                        <p class="small-text">Array lives on the stack — you own it.</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>char pointer — read-only ✗</h4>
+                        <pre><code class="language-c">char *name = "Alice";
+name[0] = 'B'; // ✗ CRASH
+// literal is in protected
+// read-only memory</code></pre>
+                        <p class="small-text">Pointer into the program's read-only data segment.</p>
+                    </div>
+                </div>
+                <div class="warning-box">
+                    <strong>Rule:</strong> If you need to modify a string,
+                    always declare it as <code>char name[]</code>, not <code>char *name</code>.
+                </div>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 3: Input / Output   -->
+            <!-- ======================== -->
+
+            <section class="center-content">
+                <h1>Part 3: Reading and Printing</h1>
+                <p style="color: #7f8c8d;"><code>printf</code> and <code>scanf</code></p>
+            </section>
+
+            <section>
+                <h2>Printing Strings: <code>%s</code></h2>
+                <pre><code class="language-c">char name[] = "Alice";
+
+printf("%s\n", name);          // Alice
+printf("Hello, %s!\n", name);  // Hello, Alice!
+
+// Under the hood — printf walks until '\0':
+for (int i = 0; name[i] != '\0'; i++) {
+    printf("%c", name[i]);
+}
+printf("\n");</code></pre>
+                <p class="small-text">
+                    The loop condition <code>name[i] != '\0'</code> is the
+                    fundamental pattern for all string operations in C.
+                </p>
+            </section>
+
+            <section>
+                <h2>Reading a Single Word: <code>scanf("%s")</code></h2>
+                <pre><code class="language-c">char name[50];
+printf("Enter your name: ");
+scanf("%s", name);   // no & needed — array name is already a pointer
+printf("Hello, %s\n", name);</code></pre>
+                <div class="warning-box">
+                    <strong>Problem:</strong> <code>scanf("%s")</code> stops at any whitespace.
+                    Type "Alice Smith" — you only get "Alice".
+                    "Smith" is left sitting in the input buffer.
+                </div>
+                <pre><code class="language-c">// Input typed: Alice Smith
+scanf("%s", name);
+printf("%s\n", name); // Alice  ← "Smith" is still in the buffer!</code></pre>
+            </section>
+
+            <section>
+                <h2>The Leftover <code>'\n'</code> Problem</h2>
+                <p>After <code>scanf("%d")</code>, the Enter key (<code>'\n'</code>) stays in the input buffer.</p>
+                <p>This causes a problem with <code>%c</code> and <code>%[^\n]</code> — but NOT with <code>%s</code>:</p>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>This works fine ✓</h4>
+                        <pre><code class="language-c">scanf("%d", &age);
+scanf("%s", name);
+// %s skips whitespace
+// automatically</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>These have problems ✗</h4>
+                        <pre><code class="language-c">scanf("%d", &age);
+scanf("%c", &initial);
+// reads '\n' instead!
+
+scanf("%d", &age);
+scanf("%[^\n]", name);
+// reads empty string!</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <strong>Why?</strong> <code>%s</code> and numeric formats (<code>%d</code>, <code>%f</code>) skip leading whitespace automatically.
+                    But <code>%c</code> and <code>%[^\n]</code> do NOT skip — they read immediately.
+                </div>
+            </section>
+
+            <section>
+                <h2>The Fix: Add a Space</h2>
+                <p>A space before the format specifier tells <code>scanf</code> to skip whitespace first:</p>
+                <pre><code class="language-c">int age;
+char initial;
+
+scanf("%d", &age);
+scanf(" %c", &initial);   // ✓ space skips the '\n'</code></pre>
+                <pre><code class="language-c">int age;
+char name[50];
+
+scanf("%d", &age);
+scanf(" %[^\n]", name);   // ✓ space skips the '\n'</code></pre>
+                <div class="key-point">
+                    The space in the format string means: <span class="highlight">"skip all whitespace (spaces, tabs, newlines) before reading"</span>.
+                    Always use <code>" %c"</code> and <code>" %[^\n]"</code> after reading numbers.
+                </div>
+            </section>
+
+            <section>
+                <h2>A New Tool: the Scanset <code>%[...]</code></h2>
+                <p>So far we know <code>%d</code>, <code>%f</code>, <code>%c</code>, <code>%s</code> — each reads a specific type.</p>
+                <p><code>%[...]</code> is different: you give <code>scanf</code> a <strong>set of characters to match</strong>.</p>
+                <pre><code class="language-c">scanf("%[aeiou]", s);   // reads only vowels, stops at anything else
+scanf("%[0-9]",   s);   // reads only digits, stops at anything else
+scanf("%[^\n]",   s);   // reads everything EXCEPT newline</code></pre>
+                <p>Let's break down <code>%[^\n]</code> symbol by symbol:</p>
+                <table>
+                    <tr><th>Symbol</th><th>Meaning</th></tr>
+                    <tr><td><code>%</code></td><td>Start of a format specifier — same as in <code>%d</code>, <code>%s</code></td></tr>
+                    <tr><td><code>[</code></td><td>Open a character set — "match characters from this set"</td></tr>
+                    <tr><td><code>^</code></td><td>Negate the set — "match anything <strong>not</strong> in this set"</td></tr>
+                    <tr><td><code>\n</code></td><td>Newline — the one character we want to exclude</td></tr>
+                    <tr><td><code>]</code></td><td>Close the character set</td></tr>
+                </table>
+                <div class="key-point">
+                    <code>%[^\n]</code> = <span class="highlight">"keep reading any character that is not a newline"</span>.
+                    It stops the moment the user presses Enter.
+                </div>
+            </section>
+
+            <section>
+                <h2>Reading a Full Line: the Scanset <code>%[^\n]</code></h2>
+                <p>To read a full line including spaces, use a <strong>scanset</strong>:</p>
+                <pre><code class="language-c">char name[50];
+scanf(" %49[^\n]", name);</code></pre>
+                <div class="key-point">
+                    <strong>How to read <code>%[^\n]</code>:</strong><br>
+                    <code>%[...]</code> — match a set of characters<br>
+                    <code>^</code> — "not" (invert the set)<br>
+                    <code>\n</code> — newline<br>
+                    Result: <span class="highlight">"match any character that is not a newline"</span>
+                </div>
+                <pre><code class="language-c">// Input: Alice Smith
+scanf(" %49[^\n]", name);
+printf("%s\n", name);  // Alice Smith ✓</code></pre>
+                <p class="small-text">
+                    The <code>49</code> is a <strong>width limit</strong> — reads at most 49 characters,
+                    leaving 1 byte for <code>'\0'</code> in a 50-char array.
+                    Always set this — without it the scanset has no size limit.
+                </p>
+            </section>
+
+            <section>
+                <h2>All Three <code>scanf</code> String Options</h2>
+                <table>
+                    <tr>
+                        <th>Format</th>
+                        <th>Reads spaces?</th>
+                        <th>Stops at</th>
+                        <th>Size limit?</th>
+                    </tr>
+                    <tr>
+                        <td><code>scanf("%s", s)</code></td>
+                        <td>No</td>
+                        <td>any whitespace</td>
+                        <td>⚠️ none — dangerous</td>
+                    </tr>
+                    <tr>
+                        <td><code>scanf("%49s", s)</code></td>
+                        <td>No</td>
+                        <td>any whitespace</td>
+                        <td>✓ 49 chars</td>
+                    </tr>
+                    <tr>
+                        <td><code>scanf(" %49[^\n]", s)</code></td>
+                        <td>Yes</td>
+                        <td><code>'\n'</code> only</td>
+                        <td>✓ 49 chars</td>
+                    </tr>
+                </table>
+                <div class="key-point">
+                    Always set a width limit equal to <code>array_size - 1</code>.
+                    The <code>-1</code> leaves room for <code>'\0'</code>.
+                </div>
+                <blockquote>
+                    For a single word: <code>scanf("%49s", s)</code><br>
+                    For a full line: <code>scanf(" %49[^\n]", s)</code>
+                </blockquote>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 4: gets()           -->
+            <!-- ======================== -->
+
+            <section class="center-content">
+                <h1>Part 4: <code>gets()</code></h1>
+                <p style="color: #7f8c8d;">A simpler way to read strings</p>
+            </section>
+
+            <section>
+                <h2>scanf for Full Lines is Complicated</h2>
+                <p>Look at what we need just to read a full line:</p>
+                <pre><code class="language-c">scanf(" %49[^\n]", name);</code></pre>
+                <p>That's a lot to remember just to read a name. There is a simpler function.</p>
+                <blockquote>
+                    What if there was a function that just read a full line —
+                    no format strings, no width, just pass it the array?
+                </blockquote>
+            </section>
+
+            <section>
+                <h2>Meet <code>gets()</code></h2>
+                <p>One argument. No format string. Reads the whole line including spaces.</p>
+                <pre><code class="language-c">char name[50];
+gets(name);
+
+// Input: Alice Smith
+// name now contains: "Alice Smith\0"
+printf("%s\n", name);  // Alice Smith</code></pre>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>scanf</h4>
+                        <pre><code class="language-c">scanf(" %49[^\n]", name);
+// remember the space
+// remember the 49
+// remember [^\n]</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>gets</h4>
+                        <pre><code class="language-c">gets(name);
+// reads spaces too
+// stops at Enter
+// adds '\0' for you</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    <code>gets()</code> reads a full line into the array and adds <code>'\0'</code> at the end.
+                    Clean, simple, readable.
+                </div>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 5: Buffer overflow  -->
+            <!-- ======================== -->
+
+            <section class="center-content">
+                <h1>Part 5: Buffer Overflow</h1>
+                <p style="color: #7f8c8d;">What happens when input is longer than the array</p>
+            </section>
+
+            <section>
+                <h2>What if the Input is Too Long?</h2>
+                <p>This question applies to <strong>both</strong> <code>scanf</code> and <code>gets()</code>.</p>
+                <pre><code class="language-c">char name[5];
+
+scanf("%s", name);  // user types "Alexander" → overflow!
+gets(name);         // user types "Alexander" → overflow!</code></pre>
+                <div class="mem-row">
+                    <div class="mem-cell hi">'A'</div>
+                    <div class="mem-cell hi">'l'</div>
+                    <div class="mem-cell hi">'e'</div>
+                    <div class="mem-cell hi">'x'</div>
+                    <div class="mem-cell hi">'a'</div>
+                    <div class="mem-cell ovf">'n'</div>
+                    <div class="mem-cell ovf">'d'</div>
+                    <div class="mem-cell ovf">'e'</div>
+                    <div class="mem-cell ovf">'r'</div>
+                    <div class="mem-cell ovf">'\0'</div>
+                </div>
+                <div class="mem-row">
+                    <div class="mem-addr">[0]</div>
+                    <div class="mem-addr">[1]</div>
+                    <div class="mem-addr">[2]</div>
+                    <div class="mem-addr">[3]</div>
+                    <div class="mem-addr">[4]</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                </div>
+                <div class="warning-box" style="margin-top: 0.5em;">
+                    Both keep writing past the end of the array into
+                    <strong>memory that belongs to something else</strong> —
+                    other variables, the return address, the OS.
+                    This is a <strong>buffer overflow</strong>.
+                </div>
+            </section>
+
+            <section>
+                <h2><code>scanf</code> Can Be Fixed. <code>gets()</code> Cannot.</h2>
+                <p><code>scanf</code> lets you add a width limit to prevent overflow:</p>
+                <pre><code class="language-c">scanf("%4s", name);         // reads at most 4 chars ✓
+scanf(" %4[^\n]", name);    // reads at most 4 chars with spaces ✓</code></pre>
+                <p><code>gets()</code> has no such option:</p>
+                <pre><code class="language-c">gets(name);    // no way to tell it how big name is — ever</code></pre>
+                <div class="warning-box">
+                    There is <strong>no way to make <code>gets()</code> safe</strong>.
+                    This is why it was removed from the C11 standard entirely.
+                    It still compiles on most systems but produces a warning.
+                    Always use <code>scanf</code> with a width limit instead.
+                </div>
+            </section>
+
+            <section>
+                <h2>What a Buffer Overflow Actually Destroys</h2>
+                <p>Your function's stack frame — the memory block that holds its local variables — looks like this:</p>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>Normal execution</h4>
+                        <pre><code>Stack memory:
+┌──────────────────┐ ← high address
+│  return address  │  where to go after main()
+│  other variables │
+│  name[4]  'a'    │ ← your array ends here
+│  name[3]  'x'    │
+│  name[2]  'e'    │
+│  name[1]  'l'    │
+│  name[0]  'A'    │
+└──────────────────┘ ← low address</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>After <code>gets()</code> overflow</h4>
+                        <pre><code>Stack memory:
+┌──────────────────┐
+│  return address  │ ← 💥 OVERWRITTEN
+│  other variables │ ← 💥 OVERWRITTEN
+│  name[4]  'a'    │
+│  name[3]  'x'    │
+│  name[2]  'e'    │
+│  name[1]  'l'    │
+│  name[0]  'A'    │
+└──────────────────┘</code></pre>
+                    </div>
+                </div>
+                <div class="key-point">
+                    When the function returns, it jumps to the <strong>overwritten return address</strong>
+                    — which now points to garbage, or in a real attack, to malicious code
+                    injected by the user. This is how buffer overflow exploits work.
+                    <code>gets()</code> was removed from the C11 standard entirely.
+                </div>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 6: string.h         -->
+            <!-- ======================== -->
+
+            <section class="center-content">
+                <h1>Part 6: String Functions</h1>
+                <p style="color: #7f8c8d;"><code>#include &lt;string.h&gt;</code></p>
+            </section>
+
+            <section>
+                <h2>Standard String Functions</h2>
+                <table>
+                    <tr>
+                        <th>Function</th>
+                        <th>What it does</th>
+                        <th>Python equivalent</th>
+                    </tr>
+                    <tr>
+                        <td><code>strlen(s)</code></td>
+                        <td>Length (not counting <code>'\0'</code>)</td>
+                        <td><code>len(s)</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strcpy(dst, src)</code></td>
+                        <td>Copy src into dst</td>
+                        <td><code>dst = src</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strcat(dst, src)</code></td>
+                        <td>Append src onto end of dst</td>
+                        <td><code>dst += src</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strcmp(s1, s2)</code></td>
+                        <td>Compare two strings</td>
+                        <td><code>s1 == s2</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strchr(s, c)</code></td>
+                        <td>Find first occurrence of char</td>
+                        <td><code>c in s</code></td>
+                    </tr>
+                    <tr>
+                        <td><code>strstr(s, sub)</code></td>
+                        <td>Find substring</td>
+                        <td><code>sub in s</code></td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2><code>strlen()</code> — and writing our own</h2>
+                <pre><code class="language-c">char name[] = "Alice";
+printf("%zu\n", strlen(name));  // 5  (not 6 — doesn't count '\0')</code></pre>
+                <p>Let's write it ourselves:</p>
+                <pre><code class="language-c">int my_strlen(char s[]) {
+    int count = 0;
+    while (s[count] != '\0') {
+        count++;
+    }
+    return count;
+}
+// "Alice" → walks [0][1][2][3][4], hits '\0' at [5] → returns 5</code></pre>
+                <div class="key-point">
+                    <strong>Key insight:</strong> Every string function works by walking
+                    the array until it hits <code>'\0'</code>.
+                    Master this pattern and the rest follows.
+                </div>
+            </section>
+
+            <section>
+                <h2><code>strcmp()</code> — The Python Gotcha</h2>
+                <div class="warning-box">
+                    You <strong>cannot</strong> compare strings with <code>==</code> in C.
+                    It compares <em>addresses</em>, not contents.
+                </div>
+                <pre><code class="language-c">char s1[] = "hello";
+char s2[] = "hello";
+
+if (s1 == s2)            { }  // ✗ WRONG — same address? (no!)
+if (strcmp(s1, s2) == 0) { }  // ✓ CORRECT — same contents?</code></pre>
+                <p><code>strcmp()</code> returns:</p>
+                <ul>
+                    <li><code>0</code> — strings are equal</li>
+                    <li><code>&lt; 0</code> — s1 comes before s2 alphabetically</li>
+                    <li><code>&gt; 0</code> — s1 comes after s2 alphabetically</li>
+                </ul>
+                <pre><code class="language-c">strcmp("apple", "apple")  →  0
+strcmp("apple", "mango")  →  negative  ('a' < 'm')
+strcmp("mango", "apple")  →  positive</code></pre>
+            </section>
+
+            <section>
+                <h2>Writing our own <code>strcmp()</code></h2>
+                <pre><code class="language-c">int my_strcmp(char s1[], char s2[]) {
+    int i = 0;
+    while (s1[i] != '\0' && s2[i] != '\0') {
+        if (s1[i] != s2[i]) {
+            return s1[i] - s2[i];  // difference in ASCII values
+        }
+        i++;
+    }
+    return s1[i] - s2[i];  // handles different lengths
+}
+// "abc" vs "abd": walks until [2], returns 'c'-'d' = -1</code></pre>
+                <p class="small-text">
+                    Comparison is purely by ASCII value — which is why
+                    <code>'A'</code>(65) sorts before <code>'a'</code>(97),
+                    and <code>"Zoo"</code> sorts before <code>"ant"</code>.
+                </p>
+            </section>
+
+            <section>
+                <h2><code>strcpy()</code> — How Buffer Overflow Happens</h2>
+                <pre><code class="language-c">char dst[5];
+strcpy(dst, "Hello");  // "Hello\0" needs 6 bytes — dst only has 5!</code></pre>
+                <p><code>strcpy</code> just loops and copies — no questions asked:</p>
+                <pre><code class="language-c">// What strcpy does internally:
+int i = 0;
+while (src[i] != '\0') {
+    dst[i] = src[i];   // keeps writing even past end of dst!
+    i++;
+}
+dst[i] = '\0';</code></pre>
+                <div class="mem-row">
+                    <div class="mem-cell hi">'H'</div>
+                    <div class="mem-cell hi">'e'</div>
+                    <div class="mem-cell hi">'l'</div>
+                    <div class="mem-cell hi">'l'</div>
+                    <div class="mem-cell hi">'o'</div>
+                    <div class="mem-cell ovf">'\0'</div>
+                </div>
+                <div class="mem-row">
+                    <div class="mem-addr">dst[0]</div>
+                    <div class="mem-addr">dst[1]</div>
+                    <div class="mem-addr">dst[2]</div>
+                    <div class="mem-addr">dst[3]</div>
+                    <div class="mem-addr">dst[4]</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                </div>
+                <div class="warning-box" style="margin-top: 0.5em;">
+                    The <code>'\0'</code> lands one byte past the end of <code>dst</code>.
+                    That byte belongs to another variable.
+                    You've silently corrupted it — no error, no warning.
+                </div>
+            </section>
+
+            <section>
+                <h2><code>strcpy()</code> — The Safe Version</h2>
+                <pre><code class="language-c">char dst[5];
+
+// Dangerous:
+strcpy(dst, "Hello");                       // ⚠️ overflow
+
+// Safe: strncpy limits how many chars are written
+strncpy(dst, "Hello", sizeof(dst) - 1);    // copies at most 4 chars
+dst[sizeof(dst) - 1] = '\0';               // MUST add '\0' yourself!
+// dst is now "Hell\0" — truncated, but safe</code></pre>
+                <div class="key-point">
+                    <strong>Why add <code>'\0'</code> yourself?</strong>
+                    If source is longer than <code>n</code>, <code>strncpy</code> fills
+                    the buffer but <span class="highlight">does not null-terminate</span>.
+                    You must always do it manually.
+                </div>
+                <p>Writing our own safe copy:</p>
+                <pre><code class="language-c">void my_strcpy(char dst[], char src[]) {
+    int i = 0;
+    while (src[i] != '\0') {
+        dst[i] = src[i];
+        i++;
+    }
+    dst[i] = '\0';   // don't forget!
+}</code></pre>
+            </section>
+
+            <section>
+                <h2><code>strcat()</code> — Buffer Overflow in Detail</h2>
+                <p><code>strcat</code> walks to the end of <code>dst</code>, then copies <code>src</code> — no size check.</p>
+                <pre><code class="language-c">char greeting[10] = "Hi, ";     // 4 chars used, 6 bytes free
+char name[]       = "Alexander"; // 9 chars → total needed: 14 → OVERFLOW</code></pre>
+                <div class="mem-row">
+                    <div class="mem-cell hi">'H'</div><div class="mem-cell hi">'i'</div>
+                    <div class="mem-cell hi">','</div><div class="mem-cell hi">' '</div>
+                    <div class="mem-cell hi">'A'</div><div class="mem-cell hi">'l'</div>
+                    <div class="mem-cell hi">'e'</div><div class="mem-cell hi">'x'</div>
+                    <div class="mem-cell hi">'a'</div><div class="mem-cell ovf">'n'</div>
+                    <div class="mem-cell ovf">'d'</div><div class="mem-cell ovf">...</div>
+                </div>
+                <div class="mem-row">
+                    <div class="mem-addr">[0]</div><div class="mem-addr">[1]</div>
+                    <div class="mem-addr">[2]</div><div class="mem-addr">[3]</div>
+                    <div class="mem-addr">[4]</div><div class="mem-addr">[5]</div>
+                    <div class="mem-addr">[6]</div><div class="mem-addr">[7]</div>
+                    <div class="mem-addr">[8]</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">OVF</div>
+                    <div class="mem-addr" style="color:#e74c3c;">...</div>
+                </div>
+                <div class="warning-box" style="margin-top: 0.5em;">
+                    <strong>Safety rule before calling strcat:</strong>
+                    <code>strlen(dst) + strlen(src) + 1 ≤ sizeof(dst)</code><br>
+                    If that condition isn't met, you will overflow.
+                    Use <code>strncat(dst, src, n)</code> to limit how many characters are appended.
+                </div>
+            </section>
+
+            <section>
+                <h2>Writing our own <code>strcat()</code></h2>
+                <pre><code class="language-c">void my_strcat(char dst[], char src[]) {
+    int i = 0, j = 0;
+
+    // Step 1: walk to the end of dst
+    while (dst[i] != '\0') i++;
+
+    // Step 2: copy src starting from there
+    while (src[j] != '\0') {
+        dst[i] = src[j];
+        i++; j++;
+    }
+
+    // Step 3: null-terminate
+    dst[i] = '\0';
+}
+
+char greeting[20] = "Hello, ";
+my_strcat(greeting, "Alice");
+printf("%s\n", greeting);  // Hello, Alice</code></pre>
+                <div class="key-point">
+                    Step 1 is why <code>strcat</code> gets slower the longer <code>dst</code> is —
+                    it always walks the whole string from the beginning to find the end.
+                </div>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 6: Gotchas          -->
+            <!-- ======================== -->
+
+            <section>
+                <h2>All the C String Gotchas</h2>
+                <table>
+                    <tr>
+                        <th>Gotcha</th>
+                        <th>Wrong ✗</th>
+                        <th>Right ✓</th>
+                    </tr>
+                    <tr>
+                        <td>Comparing strings</td>
+                        <td><code>s1 == s2</code></td>
+                        <td><code>strcmp(s1, s2) == 0</code></td>
+                    </tr>
+                    <tr>
+                        <td>Reading with spaces</td>
+                        <td><code>scanf("%s", s)</code></td>
+                        <td><code>scanf(" %49[^\n]", s)</code></td>
+                    </tr>
+                    <tr>
+                        <td>Modifiable string</td>
+                        <td><code>char *s = "hi"</code></td>
+                        <td><code>char s[] = "hi"</code></td>
+                    </tr>
+                    <tr>
+                        <td>After <code>scanf("%d")</code></td>
+                        <td>next read gets <code>'\n'</code></td>
+                        <td>add a space: <code>" %s"</code> or <code>" %[^\n]"</code></td>
+                    </tr>
+                    <tr>
+                        <td>Reading a line</td>
+                        <td><code>gets(s)</code> — banned!</td>
+                        <td><code>scanf(" %49[^\n]", s)</code></td>
+                    </tr>
+                    <tr>
+                        <td>Copying safely</td>
+                        <td><code>strcpy(dst, src)</code></td>
+                        <td><code>strncpy</code> + manual <code>'\0'</code></td>
+                    </tr>
+                    <tr>
+                        <td>Forgetting <code>'\0'</code></td>
+                        <td>garbage output / overflow</td>
+                        <td>always null-terminate!</td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- ======================== -->
+            <!-- PART 7: Practice        -->
+            <!-- ======================== -->
+
+            <section>
+                <h2>Practice: Reverse a String</h2>
+                <div class="key-point">
+                    <strong>Challenge:</strong> Write a function that reverses a string in-place.<br>
+                    <code>"Alice"</code> → <code>"ecilA"</code>
+                </div>
+                <p class="fragment" style="margin-top: 1.5em;">Think it through:</p>
+                <ul class="fragment">
+                    <li>Find the length first with <code>strlen</code></li>
+                    <li>Two indices — one at start, one at end</li>
+                    <li>Swap characters, move both inward</li>
+                    <li>Stop when they meet in the middle</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>More Practice Problems</h2>
+                <ol style="line-height: 2.2;">
+                    <li>Count vowels in a string</li>
+                    <li>Convert a string to uppercase using only ASCII arithmetic</li>
+                    <li>Check if a string is a palindrome</li>
+                    <li>Count words in a string (hint: count spaces + 1)</li>
+                    <li>Write your own <code>strlen</code>, <code>strcpy</code>, <code>strcmp</code>, <code>strcat</code></li>
+                </ol>
+            </section>
+
+            <!-- TAKEAWAYS -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="line-height: 2;">
+                    <li class="fragment"><code>char</code> is just a <span class="highlight">small integer</span> — ASCII is the mapping</li>
+                    <li class="fragment">Strings are <span class="highlight">char arrays</span> — there is no string type in C</li>
+                    <li class="fragment">Every string ends with <span class="highlight"><code>'\0'</code></span> — forget it and things break</li>
+                    <li class="fragment">Use <code>scanf(" %49[^\n]", s)</code> to read full lines safely via <code>scanf</code></li>
+                    <li class="fragment">Use <span class="highlight"><code>strcmp()</code></span>, never <code>==</code>, to compare strings</li>
+                    <li class="fragment"><code>strcpy</code> and <code>strcat</code> can overflow — always check sizes first</li>
+                    <li class="fragment"><code>gets()</code> is banned — it has no size limit at all</li>
+                </ol>
+            </section>
+
+            <section class="center-content">
+                <h1>Questions?</h1>
+                <p style="margin-top: 2em; color: #7f8c8d;">Let's write some string functions!</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: false,
+            slideNumber: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>

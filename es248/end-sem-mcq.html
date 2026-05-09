@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>ES 248 — End-Semester MCQs</title>
+<style>
+  @page { size: A4; margin: 18mm 18mm 18mm 18mm; }
+  * { box-sizing: border-box; }
+  html, body {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #1a1a1a;
+    line-height: 1.5;
+    font-size: 11pt;
+  }
+  body { margin: 0; padding: 0; }
+  h1 {
+    font-size: 18pt;
+    margin: 0 0 4px 0;
+    color: #2c3e50;
+  }
+  .subtitle {
+    color: #6c757d;
+    font-size: 10pt;
+    margin-bottom: 18px;
+  }
+  h2 {
+    font-size: 13pt;
+    color: #2c3e50;
+    margin: 22px 0 10px 0;
+    padding-bottom: 4px;
+    border-bottom: 1.5px solid #2c3e50;
+  }
+  .q {
+    margin: 14px 0 14px 0;
+    page-break-inside: avoid;
+  }
+  .q-num {
+    font-weight: 700;
+    color: #2c3e50;
+  }
+  .stem {
+    margin: 0 0 8px 0;
+  }
+  pre {
+    background: #f5f5f5;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-family: "Menlo", "Monaco", "Courier New", monospace;
+    font-size: 9.5pt;
+    line-height: 1.45;
+    margin: 8px 0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  code {
+    font-family: "Menlo", "Monaco", "Courier New", monospace;
+    font-size: 0.95em;
+    background: #f5f5f5;
+    padding: 1px 4px;
+    border-radius: 3px;
+  }
+  ol.choices {
+    list-style: none;
+    padding: 0;
+    margin: 6px 0 0 0;
+  }
+  ol.choices li {
+    padding: 3px 0 3px 28px;
+    position: relative;
+  }
+  ol.choices li::before {
+    content: attr(data-letter) ")";
+    position: absolute;
+    left: 8px;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  .choices pre {
+    margin: 4px 0 4px 0;
+    padding: 8px 10px;
+  }
+  .sub-q {
+    margin: 8px 0 4px 0;
+    font-style: italic;
+    color: #555;
+  }
+  .answer-key {
+    page-break-before: always;
+  }
+  .answer-key h2 { margin-top: 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 10pt;
+    margin-top: 8px;
+  }
+  th, td {
+    border: 1px solid #ccc;
+    padding: 6px 8px;
+    vertical-align: top;
+    text-align: left;
+  }
+  th {
+    background: #f0f0f0;
+    font-weight: 600;
+  }
+  td.qnum, td.ans { text-align: center; white-space: nowrap; }
+  td.ans { font-weight: 700; color: #2c3e50; }
+  hr {
+    border: none;
+    border-top: 1px solid #e0e0e0;
+    margin: 18px 0;
+  }
+  .meta {
+    font-size: 9.5pt;
+    color: #6c757d;
+    margin-bottom: 14px;
+  }
+</style>
+</head>
+<body>
+
+<h1>ES 248 — End-Semester MCQs</h1>
+<p class="subtitle">Introduction to DSA in C Programming &middot; 15 questions for review</p>
+
+<p class="meta">
+  Each question is a single-answer MCQ unless otherwise noted (Q2 has two parts: time and space complexity).
+  Answer key is on the last page.
+</p>
+
+<h2>Instructions</h2>
+<ul style="margin: 0 0 18px 22px; padding: 0; font-size: 10.5pt; line-height: 1.6;">
+  <li>All code is in <strong>C</strong>. Assume standard C semantics unless a question specifies otherwise (particular <code>sizeof</code> values, endianness, alignment, etc.).</li>
+  <li>Choose <strong>one</strong> option per question. <strong>Q2</strong> has two sub-parts (time and space complexity) — answer each separately.</li>
+  <li>No negative marking.</li>
+</ul>
+
+<h2>Time Complexity</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q1.</span> What is the time complexity of the following code in terms of <code>n</code>?</p>
+<pre>for (int i = 1; i &lt;= n; i = i * 2)
+    for (int j = 0; j &lt; n; j++)
+        printf("*");</pre>
+  <ol class="choices">
+    <li data-letter="A">O(n)</li>
+    <li data-letter="B">O(n log n)</li>
+    <li data-letter="C">O(n²)</li>
+    <li data-letter="D">O(log n)</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q2.</span> Consider the following recursive function:</p>
+<pre>void recursion(int N) {
+    if (N == 0) return;
+    printf("%d\n", N);
+    recursion(N - 1);
+}</pre>
+  <p class="sub-q">Time complexity:</p>
+  <ol class="choices">
+    <li data-letter="A">O(1)</li>
+    <li data-letter="B">O(2<sup>N</sup>)</li>
+    <li data-letter="C">O(N)</li>
+    <li data-letter="D">O(log N)</li>
+  </ol>
+  <p class="sub-q">Space complexity:</p>
+  <ol class="choices">
+    <li data-letter="A">O(1)</li>
+    <li data-letter="B">O(log N)</li>
+    <li data-letter="C">O(2<sup>N</sup>)</li>
+    <li data-letter="D">O(N)</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q3.</span> What is the time complexity of the following code?</p>
+<pre>void calc(int arr[], int N) {
+    int j = 0;
+    for (int i = 0; i &lt; N; i++) {
+        while (j &lt; N &amp;&amp; arr[i] &lt; arr[j]) {
+            j++;
+        }
+    }
+}</pre>
+  <ol class="choices">
+    <li data-letter="A">O(log N)</li>
+    <li data-letter="B">O(N)</li>
+    <li data-letter="C">O(N · log N)</li>
+    <li data-letter="D">O(N²)</li>
+  </ol>
+</div>
+
+<h2>Linked Lists</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q4.</span> A singly linked list contains the nodes <code>A &rarr; B &rarr; C &rarr; D &rarr; NULL</code>, and <code>head</code> is a pointer to node A. After executing <code>head-&gt;next = head-&gt;next-&gt;next;</code>, which statement is correct?</p>
+  <ol class="choices">
+    <li data-letter="A">The list becomes <code>A &rarr; C &rarr; D &rarr; NULL</code>; node B is leaked</li>
+    <li data-letter="B">The list becomes <code>A &rarr; C &rarr; D &rarr; NULL</code>; no memory leak</li>
+    <li data-letter="C">The list becomes <code>B &rarr; C &rarr; D &rarr; NULL</code>; node A is leaked</li>
+    <li data-letter="D">The program crashes with a segmentation fault</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q5.</span> A singly linked list maintains both <code>head</code> and <code>tail</code> pointers. Which of the following operations is <strong>NOT</strong> O(1)?</p>
+  <ol class="choices">
+    <li data-letter="A">Insert at head</li>
+    <li data-letter="B">Insert at tail</li>
+    <li data-letter="C">Delete from head</li>
+    <li data-letter="D">Delete from tail</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q6.</span> Consider the following function intended to free every node of a singly linked list:</p>
+<pre>void destroyList(struct Node *head) {
+    while (head != NULL) {
+        free(head);
+        head = head-&gt;next;
+    }
+}</pre>
+  <p class="stem">What is wrong with this code?</p>
+  <ol class="choices">
+    <li data-letter="A">The base case is incorrect; should be <code>head == NULL</code></li>
+    <li data-letter="B">After <code>free(head)</code>, accessing <code>head-&gt;next</code> reads freed memory — undefined behavior</li>
+    <li data-letter="C">The function will crash with a segmentation fault if <code>head</code> is <code>NULL</code> when called</li>
+    <li data-letter="D">The function correctly frees all nodes</li>
+  </ol>
+</div>
+
+<h2>Queues</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q7.</span> A queue is implemented as a circular array of capacity 8, with fields <code>front</code>, <code>rear</code> (next insertion index), and <code>size</code>. Currently <code>front = 6</code>, <code>rear = 2</code>, <code>size = 4</code>. Which array indices currently hold queue elements?</p>
+  <ol class="choices">
+    <li data-letter="A">2, 3, 4, 5</li>
+    <li data-letter="B">6, 7, 0, 1</li>
+    <li data-letter="C">6, 7, 8, 0</li>
+    <li data-letter="D">0, 1, 6, 7</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q8.</span> Items 1, 2, 3, 4, 5 are pushed onto a stack in that order. They are then popped one at a time and each popped item is immediately enqueued onto a queue. After all five items are transferred, the queue is fully dequeued. In what order are the items dequeued?</p>
+  <ol class="choices">
+    <li data-letter="A">1, 2, 3, 4, 5</li>
+    <li data-letter="B">5, 4, 3, 2, 1</li>
+    <li data-letter="C">1, 3, 5, 4, 2</li>
+    <li data-letter="D">5, 1, 4, 2, 3</li>
+  </ol>
+</div>
+
+<h2>Function Pointers &amp; qsort</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q9.</span> What does the following declaration declare?</p>
+<pre>int (*funcs[10])(int, int);</pre>
+  <ol class="choices">
+    <li data-letter="A">An array of 10 functions, each returning an <code>int</code> and taking two <code>int</code> parameters</li>
+    <li data-letter="B">An array of 10 pointers to functions, each taking two <code>int</code>s and returning an <code>int</code></li>
+    <li data-letter="C">A pointer to an array of 10 functions</li>
+    <li data-letter="D">A function returning an array of 10 <code>int</code>s</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q10.</span> Which <code>qsort</code> comparator sorts an array of <code>struct Student</code> by <code>score</code> in <strong>descending</strong> order, with ties broken alphabetically by <code>name</code>?</p>
+<pre>struct Student { char name[100]; int score; };</pre>
+  <ol class="choices">
+    <li data-letter="A"><pre>int cmp(const void *a, const void *b) {
+    return ((struct Student*)b)-&gt;score - ((struct Student*)a)-&gt;score;
+}</pre></li>
+    <li data-letter="B"><pre>int cmp(const void *a, const void *b) {
+    struct Student *sa = (struct Student*)a;
+    struct Student *sb = (struct Student*)b;
+    if (sa-&gt;score != sb-&gt;score)
+        return sb-&gt;score - sa-&gt;score;
+    return strcmp(sa-&gt;name, sb-&gt;name);
+}</pre></li>
+    <li data-letter="C"><pre>int cmp(const void *a, const void *b) {
+    struct Student *sa = (struct Student*)a;
+    struct Student *sb = (struct Student*)b;
+    if (sa-&gt;score != sb-&gt;score)
+        return sa-&gt;score - sb-&gt;score;
+    return strcmp(sa-&gt;name, sb-&gt;name);
+}</pre></li>
+    <li data-letter="D"><pre>int cmp(const void *a, const void *b) {
+    return ((struct Student*)b)-&gt;score - ((struct Student*)a)-&gt;score
+         + strcmp(((struct Student*)a)-&gt;name, ((struct Student*)b)-&gt;name);
+}</pre></li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q11.</span> You want to sort the following array of strings alphabetically:</p>
+<pre>char *names[] = {"banana", "apple", "cherry"};
+qsort(names, 3, sizeof(char *), cmp);</pre>
+  <p class="stem">Which definition of <code>cmp</code> works correctly?</p>
+  <ol class="choices">
+    <li data-letter="A">Pass <code>strcmp</code> directly as <code>cmp</code></li>
+    <li data-letter="B"><pre>int cmp(const void *a, const void *b) {
+    return strcmp((char *)a, (char *)b);
+}</pre></li>
+    <li data-letter="C"><pre>int cmp(const void *a, const void *b) {
+    return strcmp(*(char **)a, *(char **)b);
+}</pre></li>
+    <li data-letter="D"><pre>int cmp(const void *a, const void *b) {
+    return *(char *)a - *(char *)b;
+}</pre></li>
+  </ol>
+</div>
+
+<h2>Structures &amp; Unions</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q12.</span> Assume a hypothetical system where <code>sizeof(char) = 1</code>, <code>sizeof(int) = 4</code>, alignment is 4 bytes (every member starts at a 4-byte boundary, struct size rounded up to a multiple of 4).</p>
+<pre>struct S {
+    char a;
+    int  b;
+    char c;
+};</pre>
+  <p class="stem">What is <code>sizeof(struct S)</code>?</p>
+  <ol class="choices">
+    <li data-letter="A">6</li>
+    <li data-letter="B">9</li>
+    <li data-letter="C">12</li>
+    <li data-letter="D">16</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q13.</span> On a <strong>big-endian</strong> system (the most-significant byte is stored at the lowest memory address). Assume <code>sizeof(int) = 4</code> and <code>sizeof(char) = 1</code>.</p>
+<pre>union U {
+    int  i;
+    char c[4];
+};
+union U u;
+u.i = 0x12345678;</pre>
+  <p class="stem">What is the value of <code>u.c[0]</code>?</p>
+  <ol class="choices">
+    <li data-letter="A">0x12</li>
+    <li data-letter="B">0x78</li>
+    <li data-letter="C">0x34</li>
+    <li data-letter="D">0x56</li>
+  </ol>
+</div>
+
+<h2>2D Arrays &amp; Pointers</h2>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q14.</span> Given <code>int arr[3][4];</code> and <code>sizeof(int) = 2</code>, what is <em>address of</em> <code>arr[2][2]</code> &minus; <em>address of</em> <code>arr[1][2]</code> (in bytes)?</p>
+  <ol class="choices">
+    <li data-letter="A">4</li>
+    <li data-letter="B">8</li>
+    <li data-letter="C">12</li>
+    <li data-letter="D">16</li>
+  </ol>
+</div>
+
+<div class="q">
+  <p class="stem"><span class="q-num">Q15.</span> Consider:</p>
+<pre>int a[3][4];
+int *q       = a[0];
+int (*p)[4]  = a;</pre>
+  <p class="stem">Initially <code>q</code> and <code>p</code> hold the same address — the address of <code>a[0][0]</code>. After executing <code>q++</code> and <code>p++</code> (assume <code>sizeof(int) = 2</code>), by how many bytes have <code>q</code> and <code>p</code> moved, respectively?</p>
+  <ol class="choices">
+    <li data-letter="A">2 bytes, 8 bytes</li>
+    <li data-letter="B">4 bytes, 16 bytes</li>
+    <li data-letter="C">8 bytes, 8 bytes</li>
+    <li data-letter="D">2 bytes, 2 bytes</li>
+  </ol>
+</div>
+
+<div class="answer-key">
+  <h2>Answer Key &amp; Rationale</h2>
+  <table>
+    <tr>
+      <th style="width:6%">#</th>
+      <th style="width:14%">Topic</th>
+      <th style="width:8%">Answer</th>
+      <th>Rationale / Trick</th>
+    </tr>
+    <tr>
+      <td class="qnum">1</td><td>Time</td><td class="ans">B</td>
+      <td>Outer loop runs log<sub>2</sub>n times; inner runs n times → O(n log n).</td>
+    </tr>
+    <tr>
+      <td class="qnum">2</td><td>Time</td><td class="ans">C, D</td>
+      <td>N recursive calls (time O(N)); N stack frames (space O(N)). <em>Trick:</em> students often answer O(1) for space because no array is allocated.</td>
+    </tr>
+    <tr>
+      <td class="qnum">3</td><td>Time</td><td class="ans">B</td>
+      <td><code>j</code> is initialized outside the outer loop and never reset. It advances at most N times across the entire run → O(N). <em>Trick:</em> nested loop shape suggests O(N²).</td>
+    </tr>
+    <tr>
+      <td class="qnum">4</td><td>Linked Lists</td><td class="ans">A</td>
+      <td>The pointer to node B is overwritten without freeing B → memory leak. List structure is correct, but B is unreachable.</td>
+    </tr>
+    <tr>
+      <td class="qnum">5</td><td>Linked Lists</td><td class="ans">D</td>
+      <td>Even with a tail pointer, deleting the tail node in a <em>singly</em> linked list requires traversing from head to find the new tail → O(n).</td>
+    </tr>
+    <tr>
+      <td class="qnum">6</td><td>Linked Lists</td><td class="ans">B</td>
+      <td>After <code>free(head)</code>, the memory is gone — reading <code>head-&gt;next</code> is use-after-free (undefined behavior). Fix: save <code>next</code> before freeing. <em>Trick:</em> C is plainly false (the <code>while (head != NULL)</code> condition handles the empty-list case on the very first line); rules itself out on careful reading.</td>
+    </tr>
+    <tr>
+      <td class="qnum">7</td><td>Queues</td><td class="ans">B</td>
+      <td>Elements occupy <code>front, front+1, ..., front+size-1</code> mod 8 = 6, 7, 0, 1.</td>
+    </tr>
+    <tr>
+      <td class="qnum">8</td><td>Queues</td><td class="ans">B</td>
+      <td>Stack reverses order (pop yields 5,4,3,2,1). Queue preserves order (FIFO). Final dequeue order = enqueue order = 5,4,3,2,1.</td>
+    </tr>
+    <tr>
+      <td class="qnum">9</td><td>Function Pointers</td><td class="ans">B</td>
+      <td>Right-left walk: <code>funcs</code> → <code>[10]</code> (array of 10) → <code>*</code> (of pointers) → exit parens → <code>(int, int)</code> (to functions taking two ints) → <code>int</code> (returning int). <em>Trick:</em> A misses that C cannot have arrays of functions, only of pointers to functions.</td>
+    </tr>
+    <tr>
+      <td class="qnum">10</td><td>Function Pointers</td><td class="ans">B</td>
+      <td>Primary key <code>score</code> descending (<code>sb-&gt;score - sa-&gt;score</code>); on tie, secondary key <code>name</code> ascending via <code>strcmp</code>. <em>Trick:</em> C reverses the score direction; D combines criteria nonsensically.</td>
+    </tr>
+    <tr>
+      <td class="qnum">11</td><td>Function Pointers</td><td class="ans">C</td>
+      <td><code>qsort</code> passes pointers to <strong>elements</strong>; the elements are <code>char *</code>, so <code>qsort</code> passes <code>char **</code>. The comparator must dereference once before <code>strcmp</code>. <em>Trick:</em> A is a type mismatch with the qsort signature; B casts <code>char **</code> to <code>char *</code> → garbage; D compares only the first byte.</td>
+    </tr>
+    <tr>
+      <td class="qnum">12</td><td>Structures</td><td class="ans">C</td>
+      <td>a (1 byte) + 3 bytes <strong>internal padding</strong> + b (4 bytes) + c (1 byte) + 3 bytes <strong>trailing padding</strong> = 12 bytes. <em>Trick:</em> forgetting trailing padding gives 9.</td>
+    </tr>
+    <tr>
+      <td class="qnum">13</td><td>Unions</td><td class="ans">A</td>
+      <td>Big-endian places the most-significant byte at the lowest address → <code>c[0] = 0x12</code>. <em>Compile-and-check trap:</em> a student who runs this on x86 or ARM (both little-endian) gets <code>0x78</code> and picks B.</td>
+    </tr>
+    <tr>
+      <td class="qnum">14</td><td>2D Arrays</td><td class="ans">B</td>
+      <td>One row apart = 4 ints × 2 bytes/int = 8 bytes. <em>Compile-and-check trap:</em> on a real machine <code>sizeof(int) = 4</code>, so a student who runs <code>(char*)&amp;arr[2][2] - (char*)&amp;arr[1][2]</code> gets 16 and picks D.</td>
+    </tr>
+    <tr>
+      <td class="qnum">15</td><td>2D Arrays</td><td class="ans">A</td>
+      <td><code>q</code> is <code>int *</code> → <code>q++</code> advances by <code>1 × sizeof(int) = 2</code> bytes. <code>p</code> is <code>int (*)[4]</code> → <code>p++</code> advances by <code>1 × sizeof(int[4]) = 8</code> bytes. Same starting address; type determines the step. <em>Compile-and-check trap:</em> on a real machine <code>sizeof(int) = 4</code>, so the student gets 4 and 16 and picks B.</td>
+    </tr>
+  </table>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointers III — Precedence, Memory, Function Pointers</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/zenburn.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+        }
+
+        .hljs { background: #3f3f3f !important; }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 24px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            text-transform: none;
+        }
+
+        pre code { border-radius: 8px; padding: 24px 30px !important; }
+        pre { margin: 16px 0 !important; }
+        .subtle-note { font-style: italic; color: #7f8c8d; font-size: 0.85em; margin-top: 10px; }
+
+        .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+        .warning-box {
+            background: #ffe6e6;
+            border-left: 4px solid var(--error-color);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+        .insight-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        .comparison-box {
+            border: 2px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .comparison-box pre { margin: 8px 0 0 !important; }
+        .comparison-box pre code {
+            padding: 10px 14px !important;
+            font-size: 0.78em !important;
+            line-height: 1.5 !important;
+        }
+
+        /* ── Precedence table ── */
+        .prec-table {
+            font-size: 0.65em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .prec-table th {
+            padding: 6px 10px;
+            text-align: left;
+            background: #2c3e50;
+            color: white;
+        }
+        .prec-table td {
+            padding: 4px 10px;
+            vertical-align: middle;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+        .prec-table tr:nth-child(even) { background: #f8f9fa; }
+        .prec-table .high { background: #d5f5e3 !important; }
+        .prec-table .low  { background: #fdebd0 !important; }
+
+        /* ── Right-left rule annotation ── */
+        .rl-container {
+            font-family: monospace;
+            font-size: 0.95em;
+            margin: 16px 0;
+            line-height: 1.8;
+        }
+        .rl-decl {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: var(--main-color);
+            margin-bottom: 6px;
+        }
+        .rl-step {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            font-size: 0.85em;
+            margin: 3px 0;
+        }
+        .rl-num {
+            background: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8em;
+            flex-shrink: 0;
+        }
+        .rl-code { color: var(--error-color); font-weight: bold; min-width: 120px; }
+        .rl-meaning { color: #555; }
+        .rl-result {
+            margin-top: 8px;
+            padding: 8px 14px;
+            background: #f0f8ff;
+            border-left: 3px solid var(--accent-color);
+            font-size: 0.85em;
+            color: var(--main-color);
+        }
+
+        /* ── Memory layout diagram ── */
+        .mem-map {
+            display: flex;
+            flex-direction: column;
+            width: 260px;
+            margin: 0 auto;
+            font-size: 0.78em;
+            font-family: monospace;
+        }
+        .mem-seg {
+            border: 2px solid #bbb;
+            padding: 10px 14px;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+        .mem-seg .seg-label { font-size: 1em; }
+        .mem-seg .seg-note {
+            font-size: 0.75em;
+            font-weight: normal;
+            color: #666;
+            margin-top: 3px;
+        }
+        .mem-seg.stack-seg  { background: #d6eaf8; border-color: #3498db; }
+        .mem-seg.heap-seg   { background: #d5f5e3; border-color: #27ae60; }
+        .mem-seg.bss-seg    { background: #fef9e7; border-color: #f1c40f; }
+        .mem-seg.data-seg   { background: #fdebd0; border-color: #e67e22; }
+        .mem-seg.text-seg   { background: #f5eef8; border-color: #8e44ad; }
+        .mem-gap {
+            text-align: center;
+            padding: 6px;
+            font-size: 0.75em;
+            color: #aaa;
+            font-family: sans-serif;
+        }
+        .mem-addr {
+            font-size: 0.7em;
+            color: #aaa;
+            text-align: right;
+            padding: 1px 4px;
+            font-family: monospace;
+        }
+        .mem-arrow {
+            text-align: center;
+            font-size: 1.2em;
+            line-height: 1;
+            color: #888;
+        }
+
+        /* ── Summary table ── */
+        .summary-table {
+            font-size: 0.72em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .summary-table th { padding: 10px 16px; text-align: left; }
+        .summary-table td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+        .summary-table td:first-child { white-space: nowrap; }
+
+        /* ── resource links ── */
+        .resource-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #ddd;
+        }
+        .resource-section h4 { font-size: 0.85em; color: #7f8c8d; margin-bottom: 8px; }
+        .resource-links { display: flex; flex-wrap: wrap; gap: 8px; }
+        .resource-links a {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8em;
+        }
+        .resource-links a:hover { background: var(--accent-color); color: white; }
+
+        /* ── Mistake cards ── */
+        .mistake-card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .mistake-header {
+            background: #2c3e50;
+            color: white;
+            padding: 8px 14px;
+            font-size: 0.8em;
+            font-weight: 600;
+        }
+        .mistake-rule {
+            background: #fff3cd;
+            border-top: 1px solid #ffc107;
+            padding: 7px 12px;
+            font-size: 0.78em;
+            color: #6d4c00;
+        }
+        .mistake-card pre { margin: 0 !important; flex: 1; }
+        .mistake-card pre code {
+            border-radius: 0 !important;
+            padding: 12px 14px !important;
+            font-size: 0.75em !important;
+            line-height: 1.6 !important;
+        }
+
+        /* ── Declaration cards (right-left rule) ── */
+        .decl-card {
+            border: 1px solid #c8d6e5;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .decl-header {
+            background: #2c3e50;
+            color: #7ec8e3;
+            padding: 9px 14px;
+            font-family: monospace;
+            font-size: 0.95em;
+            font-weight: bold;
+        }
+        .decl-body {
+            padding: 8px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex: 1;
+        }
+        .decl-body .rl-step { font-size: 0.78em; margin: 0; }
+        .decl-body .rl-num  { width: 16px; height: 16px; font-size: 0.7em; }
+        .decl-body .rl-code { min-width: 80px; }
+        .decl-result {
+            background: #e8f5e9;
+            border-top: 1px solid #a5d6a7;
+            padding: 7px 14px;
+            font-size: 0.75em;
+            font-style: italic;
+            color: #2e7d32;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title -->
+            <section style="text-align:center;">
+                <h1>Pointers &amp; Memory</h1>
+                <h2 style="color:#7f8c8d; font-weight:400;">Part III</h2>
+                <h3 style="color:#7f8c8d; margin-top:0.4em;">
+                    Precedence &nbsp;&middot;&nbsp; Memory Layout &nbsp;&middot;&nbsp; Function Pointers
+                </h3>
+                <p class="subtle-note">Continuing from Pointers — Part II</p>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: Operator Precedence
+                 ════════════════════════════════ -->
+
+            <!-- Slide: The familiar case -->
+            <section>
+                <h2>Operator Precedence — You Already Know This</h2>
+                <p>Some operators bind tighter than others. You learned this in school:</p>
+
+                <pre><code class="language-c">2 + 3 * 4      // = 14, not 20  (* binds tighter than +)
+(2 + 3) * 4    // = 20          (parentheses override everything)</code></pre>
+
+                <p style="margin-top:16px;">C has the same idea — every operator has a <strong>precedence level</strong>. When two operators compete for the same operand, the higher-precedence one wins.</p>
+
+                <div class="key-point">
+                    Parentheses always win. They are the highest-precedence construct in C — they let you override any default binding order.
+                </div>
+            </section>
+
+            <!-- Slide: Precedence table -->
+            <section>
+                <h2>C Operator Precedence — The Practical Table</h2>
+                <table class="prec-table" style="margin-top:10px;">
+                    <tr><th>Operators</th><th>Category</th><th>Associativity</th></tr>
+                    <tr class="high">
+                        <td><code>()  []  .  ->  ++  --</code> <em>(postfix)</em></td>
+                        <td>Subscript, member access, postfix inc/dec</td>
+                        <td>Left → Right</td>
+                    </tr>
+                    <tr>
+                        <td><code>!  ~  ++  --  *  &amp;  -</code> <em>(prefix)</em></td>
+                        <td>Unary, prefix inc/dec, dereference, address-of</td>
+                        <td>Right → Left</td>
+                    </tr>
+                    <tr><td><code>*  /  %</code></td><td>Multiplicative</td><td>Left → Right</td></tr>
+                    <tr><td><code>+  -</code></td><td>Additive</td><td>Left → Right</td></tr>
+                    <tr><td><code>&lt;&lt;  &gt;&gt;</code></td><td>Bitwise shift</td><td>Left → Right</td></tr>
+                    <tr><td><code>&lt;  &lt;=  &gt;  &gt;=</code></td><td>Relational</td><td>Left → Right</td></tr>
+                    <tr><td><code>==  !=</code></td><td>Equality</td><td>Left → Right</td></tr>
+                    <tr><td><code>&amp;</code></td><td>Bitwise AND</td><td>Left → Right</td></tr>
+                    <tr><td><code>^</code></td><td>Bitwise XOR</td><td>Left → Right</td></tr>
+                    <tr><td><code>|</code></td><td>Bitwise OR</td><td>Left → Right</td></tr>
+                    <tr><td><code>&amp;&amp;</code></td><td>Logical AND</td><td>Left → Right</td></tr>
+                    <tr><td><code>||</code></td><td>Logical OR</td><td>Left → Right</td></tr>
+                    <tr class="low"><td><code>=  +=  -=  *=  /=  ...</code></td><td>Assignment</td><td>Right → Left</td></tr>
+                </table>
+            </section>
+
+            <!-- Slide: Common mistakes -->
+            <section>
+                <h2>Precedence Mistakes That Bite Everyone</h2>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; margin-top:16px;">
+
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;">Bitwise vs equality</h4>
+                        <pre><code class="language-c">if (x & 3 == 0)
+// → x & (3==0) → x&0
+// always false!
+
+if ((x & 3) == 0) // ✓</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;"><code>==</code> binds tighter than <code>&amp;</code></p>
+                    </div>
+
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;"><code>&amp;&amp;</code> beats <code>||</code></h4>
+                        <pre><code class="language-c">a==1 || a==2 && b==3
+// C reads:
+// a==1 || (a==2 && b==3)
+
+// always be explicit</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;"><code>&amp;&amp;</code> binds tighter than <code>||</code></p>
+                    </div>
+
+                    <div class="comparison-box">
+                        <h4 style="margin-bottom:4px;"><code>*p++</code> vs <code>(*p)++</code></h4>
+                        <pre><code class="language-c">*p++    // *(p++)
+        // ptr advances
+
+(*p)++  // ptr stays
+        // value increments</code></pre>
+                        <p class="subtle-note" style="margin-top:6px;">postfix <code>++</code> beats unary <code>*</code></p>
+                    </div>
+
+                </div>
+
+                <div class="key-point" style="margin-top:14px;">
+                    When in doubt, add parentheses. They cost nothing and make intent clear.
+                </div>
+            </section>
+
+            <!-- Slide: Associativity -->
+            <section>
+                <h2>Associativity — When Precedence Is Equal</h2>
+                <p>When two operators have the <em>same</em> precedence, associativity decides which groups first.</p>
+
+                <div class="split-container">
+                    <div class="comparison-box">
+                        <h4>Left → Right (most operators)</h4>
+                        <pre><code class="language-c">a - b - c
+// = (a - b) - c
+
+10 - 3 - 2
+// = (10 - 3) - 2 = 5
+// NOT 10 - (3 - 2) = 9</code></pre>
+                    </div>
+                    <div class="comparison-box">
+                        <h4>Right → Left (assignment)</h4>
+                        <pre><code class="language-c">a = b = 5
+// = a = (b = 5)
+// b gets 5, then a gets 5
+
+int x, y, z;
+x = y = z = 0; // all set to 0</code></pre>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    Unary operators also associate right-to-left: <code>**p</code> reads as <code>*(*p)</code> — dereference from the outside in.
+                </div>
+            </section>
+
+            <!-- Slide: Bridge to declarations -->
+            <section>
+                <h2>Why Are We Looking at Precedence?</h2>
+                <p>In Pointers II, when working with 2D arrays, you hit this pair of declarations:</p>
+
+                <div class="split-container" style="margin-top:12px;">
+                    <div class="comparison-box" style="border-color:var(--error-color);">
+                        <h4><code>int *p[4]</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;">array of 4 pointers — <code>[]</code> won</p>
+                    </div>
+                    <div class="comparison-box" style="border-color:var(--success-color);">
+                        <h4><code>int (*p)[4]</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;">pointer to an array of 4 — <code>*</code> won (forced by parens)</p>
+                    </div>
+                </div>
+
+                <p style="margin-top:14px;">Moving the <code>*</code> inside parentheses completely changes the meaning. Why? Because <strong>the same precedence table governs declarations</strong>, not just expressions.</p>
+
+                <div class="key-point" style="margin-top:12px;">
+                    In <code>int *p[4]</code>, the compiler sees <code>[]</code> and <code>*</code> competing for <code>p</code>. Since <code>[]</code> ranks higher, it wins. Adding <code>(*p)</code> forces <code>*</code> to bind first — same as parentheses overriding precedence in arithmetic.<br><br>
+                    There is no special rule for pointer declarations. It is the same one rule, applied everywhere.
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: Right-Left Rule
+                 ════════════════════════════════ -->
+
+            <!-- Slide: The rule stated -->
+            <section>
+                <h2>The Right-Left Rule</h2>
+                <p>Not a new rule — a <strong>reading procedure</strong> for applying the same precedence table to declarations mechanically. For simple cases you can apply the table directly; for complex nested ones you need a systematic walk.</p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-top:14px; align-items:start;">
+                    <ol style="margin:0; padding-left:1.4em; line-height:1.95;">
+                        <li>Find the <strong>name</strong></li>
+                        <li>Look <strong>right</strong> — read <code>[]</code> or <code>()</code> if present</li>
+                        <li>Look <strong>left</strong> — read <code>*</code> if present</li>
+                        <li>Hit <code>)</code>? Jump to its <code>(</code>, repeat from inside</li>
+                        <li>Stop at the <strong>base type</strong></li>
+                    </ol>
+                    <div class="key-point" style="margin:0;">
+                        <strong>The one question at every step:</strong><br>
+                        "What binds to the name first — array <code>[]</code>, function <code>()</code>, or pointer <code>*</code>?"<br><br>
+                        No parens → <code>[]</code> / <code>()</code> win.<br>
+                        Parens around <code>*name</code> → <code>*</code> wins.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Four cases -->
+            <section>
+                <h2>Right-Left Rule — Four Cases</h2>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:16px;">
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to int"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p[4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[4]</span><span class="rl-meaning">right wins: <strong>array of 4</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is an array of 4 pointers to int"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*p)[4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[4]</span><span class="rl-meaning">right: <strong>array of 4</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to an array of 4 ints"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;**p</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>a pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to a pointer to int"</div>
+                    </div>
+
+                </div>
+            </section>
+
+            <!-- Slide: Rule scales to 3D -->
+            <section>
+                <h2>The Rule Scales — 3D Arrays</h2>
+                <p>The same procedure works for any level of complexity:</p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;*p[3][4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: <strong>3×4 array of</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>pointers to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a 3×4 array of pointers to int"</div>
+                    </div>
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*p)[3][4]</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*p)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">[3][4]</span><span class="rl-meaning">right: <strong>3×4 array of</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"p is a pointer to a 3×4 array of ints"</div>
+                    </div>
+
+                </div>
+
+                <div class="insight-box" style="margin-top:14px;">
+                    One rule. Any declaration. The only question is: did you put parentheses around <code>*name</code>?
+                </div>
+            </section>
+
+            <!-- Slide: cdecl -->
+            <section>
+                <h2>cdecl — Let the Computer Explain It</h2>
+                <p>There is a tool that translates C declarations to plain English (and back).</p>
+
+                <div class="split-container">
+                    <div>
+                        <h4>Website</h4>
+                        <p style="font-size:0.85em;"><a href="https://cdecl.org" target="_blank" style="color:var(--accent-color);">cdecl.org</a></p>
+                        <p style="font-size:0.85em;">Type any declaration → get English.</p>
+                        <pre><code class="language-bash">declare p as pointer to array 4 of int
+→ int (*p)[4]</code></pre>
+                        <p style="font-size:0.85em;">Works in reverse too — describe in English, get C declaration.</p>
+                    </div>
+                    <div>
+                        <h4>Command line (Ubuntu)</h4>
+                        <pre><code class="language-bash">sudo apt install cdecl
+
+$ cdecl
+cdecl> explain int (*p)[4]
+declare p as pointer to
+    array 4 of int
+
+cdecl> explain int *p[4]
+declare p as array 4 of
+    pointer to int</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    Use this whenever you encounter a declaration you cannot read. Over time you will not need it — but it is always there.
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: Memory Layout
+                 ════════════════════════════════ -->
+
+            <!-- Slide: Memory layout diagram -->
+            <section>
+                <h2>A Program in Memory — The Full Picture</h2>
+                <p>You have seen stack and heap. A running program actually has four distinct regions:</p>
+
+                <div style="display:flex; gap:40px; align-items:flex-start; margin-top:16px;">
+                    <div>
+                        <div class="mem-addr">high addresses</div>
+                        <div class="mem-map">
+                            <div class="mem-seg stack-seg">
+                                <div class="seg-label">Stack</div>
+                                <div class="seg-note">local variables, function frames</div>
+                            </div>
+                            <div class="mem-arrow">↓ grows down</div>
+                            <div class="mem-gap">— free space —</div>
+                            <div class="mem-arrow">↑ grows up</div>
+                            <div class="mem-seg heap-seg">
+                                <div class="seg-label">Heap</div>
+                                <div class="seg-note">malloc memory</div>
+                            </div>
+                            <div class="mem-seg bss-seg">
+                                <div class="seg-label">BSS</div>
+                                <div class="seg-note">uninitialised globals &amp; statics</div>
+                            </div>
+                            <div class="mem-seg data-seg">
+                                <div class="seg-label">Data</div>
+                                <div class="seg-note">initialised globals &amp; statics</div>
+                            </div>
+                            <div class="mem-seg text-seg">
+                                <div class="seg-label">Text (Code)</div>
+                                <div class="seg-note">compiled functions — read only</div>
+                            </div>
+                        </div>
+                        <div class="mem-addr" style="text-align:left;">low addresses</div>
+                    </div>
+
+                    <div style="flex:1; font-size:0.82em;">
+                        <p><strong style="color:#8e44ad;">Text</strong> — your compiled code. Fixed size. Read-only. Set at compile time.</p>
+                        <p style="margin-top:10px;"><strong style="color:#e67e22;">Data</strong> — global and static variables you gave an initial value.</p>
+                        <p style="margin-top:10px;"><strong style="color:#c7a800;">BSS</strong> — global and static variables with no initial value. The OS zeroes this region at startup — it takes no space in the binary file.</p>
+                        <p style="margin-top:10px;"><strong style="color:#27ae60;">Heap</strong> — you already know this.</p>
+                        <p style="margin-top:10px;"><strong style="color:#3498db;">Stack</strong> — you already know this.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: What lives where -->
+            <section>
+                <h2>What Lives Where?</h2>
+                <pre><code class="language-c">int g = 5;          // Data   — initialised global
+int h;              // BSS    — uninitialised global (zero at start)
+static int s = 3;   // Data   — initialised static
+
+void foo() {
+    int x = 10;     // Stack  — local variable
+    static int c;   // BSS    — static local (persists across calls)
+
+    int *p = malloc(sizeof(int));
+    //  p itself    → Stack  (the pointer variable)
+    //  *p          → Heap   (the memory p points to)
+}</code></pre>
+
+                <div class="key-point">
+                    <strong>BSS explained:</strong> BSS stands for <em>Block Started by Symbol</em> — a name from 1950s assembly. The key insight: the OS zero-fills it at load time, so zeros are never stored in the binary. A program with a large uninitialised array has a small executable file.
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: Functions in Memory
+                 ════════════════════════════════ -->
+
+            <section>
+                <h2>Functions Live in Memory Too</h2>
+                <p>Variables have addresses. So do functions — their compiled instructions sit in the <strong>text segment</strong> at a fixed address.</p>
+
+                <pre><code class="language-c">int add(int a, int b) { return a + b; }
+int mul(int a, int b) { return a * b; }
+
+printf("%p\n", (void*)add);   // 0x1040 — address of add's machine code
+printf("%p\n", (void*)mul);   // 0x1080 — different address</code></pre>
+
+                <div class="split-container" style="margin-top:14px;">
+                    <div class="comparison-box">
+                        <h4><code>add</code> &nbsp;(no parentheses)</h4>
+                        <p style="font-size:0.88em; margin-top:8px;">The address of the function's code — does <strong>not</strong> call it. Same as writing an array name without <code>[i]</code>: you get the pointer, not the data.</p>
+                    </div>
+                    <div class="comparison-box">
+                        <h4><code>add(3, 4)</code></h4>
+                        <p style="font-size:0.88em; margin-top:8px;"><code>()</code> triggers the <strong>call</strong> — CPU jumps to that address and executes. Same as <code>arr[i]</code> actually accessing an element.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: Function Pointers
+                 ════════════════════════════════ -->
+
+            <!-- Slide: Declaration — right-left rule revisited -->
+            <section>
+                <h2>Function Pointer — Declaration</h2>
+                <p>Apply the right-left rule. <code>()</code> on the right now means <em>function call</em> instead of array subscript.</p>
+
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px;">
+
+                    <div class="decl-card">
+                        <div class="decl-header">int &nbsp;(*fp)(int, int)</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(*fp)</span><span class="rl-meaning">parens force: <strong>pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">(int,int)</span><span class="rl-meaning">right: <strong>function taking (int,int)</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>returning int</strong></span></div>
+                        </div>
+                        <div class="decl-result">"fp is a pointer to a function taking (int,int) returning int"</div>
+                    </div>
+
+                    <div class="decl-card" style="border-color:#e74c3c;">
+                        <div class="decl-header" style="color:#e87070;">int &nbsp;*fp(int, int)</div>
+                        <div class="decl-body">
+                            <div class="rl-step"><span class="rl-num">1</span><span class="rl-code">(int,int)</span><span class="rl-meaning">right wins: <strong>function taking (int,int)</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">2</span><span class="rl-code">*</span><span class="rl-meaning">left: <strong>returning a pointer to</strong></span></div>
+                            <div class="rl-step"><span class="rl-num">3</span><span class="rl-code">int</span><span class="rl-meaning"><strong>int</strong></span></div>
+                        </div>
+                        <div class="decl-result" style="background:#ffe6e6; border-color:#e74c3c; color:#c0392b;">"fp is a function returning a pointer to int" — very different!</div>
+                    </div>
+
+                </div>
+
+                <div class="warning-box" style="margin-top:14px;">
+                    Without <code>(*fp)</code>, the <code>(int,int)</code> on the right wins — you get a function <em>returning</em> a pointer, not a pointer <em>to</em> a function.
+                </div>
+            </section>
+
+            <!-- Slide: Assign and call -->
+            <section>
+                <h2>Assigning and Calling</h2>
+                <pre><code class="language-c">int add(int a, int b) { return a + b; }
+int mul(int a, int b) { return a * b; }
+
+// Declare a function pointer
+int (*fp)(int, int);
+
+// Assign — function name (without ()) is its address
+fp = add;
+
+// Two equivalent ways to call
+fp(3, 4);     // 7  — clean, modern style
+(*fp)(3, 4);  // 7  — explicit dereference, same result
+
+// Swap at runtime
+fp = mul;
+fp(3, 4);     // 12</code></pre>
+
+                <div class="split-container" style="margin-top:12px;">
+                    <div class="insight-box" style="margin:0;">
+                        <code>fp = add</code> and <code>fp = &amp;add</code> are both valid — a function name decays to its address automatically (like array decay), so <code>&amp;</code> is optional, not wrong.
+                    </div>
+                    <div class="insight-box" style="margin:0;">
+                        <code>fp(3,4)</code> and <code>(*fp)(3,4)</code> are identical. The compiler handles both. Prefer <code>fp(3,4)</code> — it reads like a normal call.
+                    </div>
+                </div>
+            </section>
+
+            <!-- Slide: Callbacks -->
+            <section>
+                <h2>Callbacks — Passing Behaviour as an Argument</h2>
+                <p>A function pointer can be passed to another function, letting the callee "call back" into your code.</p>
+
+                <pre><code class="language-c">// Apply any integer transformation to every element
+void apply(int *arr, int n, int (*transform)(int)) {
+    for (int i = 0; i &lt; n; i++) {
+        arr[i] = transform(arr[i]);
+    }
+}
+
+int double_it(int x) { return x * 2; }
+int square(int x)    { return x * x; }
+
+int main() {
+    int a[] = {1, 2, 3, 4, 5};
+
+    apply(a, 5, double_it);  // {2, 4, 6, 8, 10}
+    apply(a, 5, square);     // {4, 16, 36, 64, 100}
+}</code></pre>
+
+                <div class="key-point">
+                    <code>apply</code> does not know what <code>transform</code> does. You decide at the call site. Same function, completely different behaviour — this is the callback pattern.
+                </div>
+            </section>
+
+            <!-- ════════════════════════════════
+                 SECTION: qsort and bsearch
+                 ════════════════════════════════ -->
+
+            <!-- Slide: qsort signature -->
+            <section>
+                <h2>qsort — Sorting Without Knowing Your Data</h2>
+                <p>The C standard library has a general-purpose sort built on this exact pattern:</p>
+
+                <pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+void qsort(
+    void   *base,                            // pointer to the array
+    size_t  nmemb,                           // number of elements
+    size_t  size,                            // size of each element
+    int   (*compar)(const void*, const void*) // your comparator
+);</code></pre>
+
+                <p style="margin-top:14px;"><strong>void* </strong>— a pointer with no type. qsort does not know if you are sorting ints, structs, or strings. You tell it two things:</p>
+                <ul style="margin-top:8px; font-size:0.9em;">
+                    <li>How big each element is (<code>size</code>)</li>
+                    <li>How to compare two elements (the function pointer)</li>
+                </ul>
+
+                <div class="key-point">
+                    The comparator must return: negative if a &lt; b, zero if equal, positive if a &gt; b.
+                </div>
+            </section>
+
+            <!-- Slide: qsort examples -->
+            <section>
+                <h2>qsort — Three Comparators, Same Sort</h2>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+int cmp_asc(const void *a, const void *b) {
+    return (*(int*)a - *(int*)b);
+}
+int cmp_desc(const void *a, const void *b) {
+    return (*(int*)b - *(int*)a);
+}
+int cmp_str(const void *a, const void *b) {
+    return strcmp(*(char**)a, *(char**)b);
+}
+
+int main() {
+    int nums[] = {5, 2, 8, 1, 9};
+
+    qsort(nums, 5, sizeof(int), cmp_asc);
+    // → {1, 2, 5, 8, 9}
+
+    qsort(nums, 5, sizeof(int), cmp_desc);
+    // → {9, 8, 5, 2, 1}
+
+    char *words[] = {"banana", "apple", "cherry"};
+    qsort(words, 3, sizeof(char*), cmp_str);
+    // → {"apple", "banana", "cherry"}
+}</code></pre>
+            </section>
+
+            <!-- Slide: bsearch -->
+            <section>
+                <h2>bsearch — Binary Search, Same Pattern</h2>
+                <pre><code class="language-c">void *bsearch(
+    const void *key,                          // what to search for
+    const void *base,                         // the sorted array
+    size_t      nmemb,                        // number of elements
+    size_t      size,                         // size of each element
+    int        (*compar)(const void*, const void*)
+);</code></pre>
+
+                <p style="margin-top:12px;">Returns a pointer to the matching element, or <strong>NULL</strong> if not found. Array must be sorted first.</p>
+
+                <pre><code class="language-c">int nums[] = {1, 2, 5, 8, 9};  // must be sorted!
+int key = 5;
+
+int *result = bsearch(&amp;key, nums, 5, sizeof(int), cmp_asc);
+
+if (result != NULL)
+    printf("Found: %d\n", *result);  // Found: 5
+else
+    printf("Not found\n");</code></pre>
+
+                <div class="insight-box">
+                    qsort and bsearch use the same comparator — sort first with qsort, then search with bsearch, passing the identical comparison function to both.
+                </div>
+            </section>
+
+            <!-- Slide: What this really means -->
+            <section>
+                <h2>What This Pattern Really Is</h2>
+                <p>qsort does not know your data type. You hand it behaviour at runtime via a function pointer.</p>
+
+                <table class="summary-table">
+                    <tr style="background:#2c3e50; color:white;">
+                        <th>Without function pointers</th>
+                        <th>With function pointers</th>
+                    </tr>
+                    <tr>
+                        <td>Write a separate sort for ints, another for strings, another for structs...</td>
+                        <td>One sort. Behaviour supplied by the caller.</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td>Changing sort order = rewrite the sort</td>
+                        <td>Changing sort order = swap the comparator</td>
+                    </tr>
+                    <tr>
+                        <td>Code duplicated everywhere</td>
+                        <td>Logic separated from data</td>
+                    </tr>
+                </table>
+
+                <div class="key-point" style="margin-top:16px;">
+                    This separation of <em>algorithm</em> from <em>comparison policy</em> is called the <strong>Strategy Pattern</strong> in software design. You will see it everywhere — in every language, in every large codebase.
+                </div>
+
+                <div class="resource-section">
+                    <h4>mycodeschool references</h4>
+                    <div class="resource-links">
+                        <a href="https://www.youtube.com/watch?v=ynYtgGUNelE" target="_blank">Function Pointers in C / C++</a>
+                        <a href="https://www.youtube.com/watch?v=sxTFSDAZM8s" target="_blank">Function pointers and callbacks</a>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quiz placeholder -->
+            <section style="text-align:center;">
+                <h2>Quiz</h2>
+                <p class="subtle-note" style="font-size:1em; margin-top:2em;">— coming up —</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: true,
+            plugins: [ RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

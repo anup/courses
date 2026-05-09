@@ -1,0 +1,837 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queues</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Queues</h1>
+    <h3 style="color:#7f8c8d;">FIFO — First In, First Out</h3>
+    <p style="color:#7f8c8d; font-size:1.2em; margin-top:1em;">ES 248 — Data Structures</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     THE PHYSICAL ANALOGY
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>A Queue at a Ticket Counter</h2>
+
+    <p>People line up. The first person in line is the first one served.</p>
+
+    <div class="fragment" style="margin-top:0.8em; font-family:monospace; font-size:0.85em; line-height:1.8; text-align:center;">
+        <span style="color:var(--success-color); font-weight:bold;">served &larr;</span>
+        [ A | B | C | D ]
+        <span style="color:var(--accent-color); font-weight:bold;">&larr; new arrivals join here</span>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <ul>
+            <li>New people join at the <strong>back</strong> — that is <code>enqueue</code></li>
+            <li class="fragment">The person at the <strong>front</strong> is served and leaves — that is <code>dequeue</code></li>
+            <li class="fragment">You cannot skip ahead or cut the line</li>
+        </ul>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.7em;">
+        <strong>FIFO — First In, First Out.</strong> The first person to arrive is the first to leave.
+        Compare with a stack (LIFO): the <em>last</em> one in is the first out. A queue is the opposite.
+    </div>
+</section>
+
+<!-- Enqueue and Dequeue -->
+<section>
+    <h2>Enqueue and Dequeue</h2>
+
+    <div class="two-col" style="margin-top:0.5em;">
+        <div>
+            <h4 style="color:var(--success-color);">enqueue — add to back</h4>
+            <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+                <div class="fragment">enqueue(A): &nbsp; [ A ]</div>
+                <div class="fragment">enqueue(B): &nbsp; [ A, B ]</div>
+                <div class="fragment">enqueue(C): &nbsp; [ A, B, C ]</div>
+            </div>
+        </div>
+        <div>
+            <h4 style="color:#e74c3c;">dequeue — remove from front</h4>
+            <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+                <div class="fragment">dequeue() &rarr; A &nbsp; [ B, C ]</div>
+                <div class="fragment">dequeue() &rarr; B &nbsp; [ C ]</div>
+                <div class="fragment">dequeue() &rarr; C &nbsp; [ ] (empty)</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:1em;">
+        Notice the order: we enqueued A, B, C — and dequeued A, B, C. <strong>Same order.</strong>
+        Stack reversed things. Queue preserves order. That is the fundamental difference.
+    </div>
+
+    <div class="fragment" style="margin-top:0.7em;">
+        <p>As with stacks, let's not worry about <em>how</em> enqueue, dequeue, and peek are implemented. Let's solve problems first.</p>
+        <p style="margin-top:0.3em;" class="small"><code>peek</code> = look at the front element without removing it.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     QUEUES EVERYWHERE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Queues Everywhere</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card">
+            <h4>Print Queue</h4>
+            <p>Send 5 documents to a printer. They print in the order you sent them — FIFO.</p>
+        </div>
+        <div class="card">
+            <h4>CPU Scheduling</h4>
+            <p>Multiple processes need the CPU. The OS puts them in a queue — each gets a time slice, then goes to the back. This is <strong>round-robin scheduling</strong>.</p>
+        </div>
+    </div>
+
+    <div class="two-col fragment" style="margin-top:0.5em;">
+        <div class="card">
+            <h4>Message Queues</h4>
+            <p>Web servers receive requests faster than they can process them. Requests wait in a queue — first come, first served.</p>
+        </div>
+        <div class="card">
+            <h4>Breadth-First Search</h4>
+            <p>Exploring a graph level by level — visit all neighbours before going deeper. The queue controls the order.</p>
+        </div>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.7em;">
+        <strong>Pattern:</strong> Whenever things must be processed in the order they arrive — or you need to explore something level by level — you need a queue.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 1 — HOT POTATO (JOSEPHUS WITH A QUEUE)
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Problem 1 — Hot Potato</h2>
+
+    <p>Remember the Josephus problem? N people in a circle, every k-th person is eliminated. We solved it with a circular linked list. Let's solve it with a queue.</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Idea:</strong> The queue <em>is</em> the circle. Dequeue-and-re-enqueue simulates passing.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>N = 6, k = 3:</p>
+        <div style="font-family:monospace; font-size:0.75em; line-height:1.9;">
+            <div>Start: &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;front &rarr; [1, 2, 3, 4, 5, 6] &larr; back</div>
+            <div class="fragment">Pass 1→back: &nbsp;&nbsp;&nbsp;[2, 3, 4, 5, 6, 1]</div>
+            <div class="fragment">Pass 2→back: &nbsp;&nbsp;&nbsp;[3, 4, 5, 6, 1, 2]</div>
+            <div class="fragment">Eliminate 3: &nbsp;&nbsp;&nbsp;&nbsp;[4, 5, 6, 1, 2] &nbsp; &larr; dequeue, don't re-enqueue</div>
+            <div class="fragment">Pass 4→back: &nbsp;&nbsp;&nbsp;[5, 6, 1, 2, 4]</div>
+            <div class="fragment">Pass 5→back: &nbsp;&nbsp;&nbsp;[6, 1, 2, 4, 5]</div>
+            <div class="fragment">Eliminate 6: &nbsp;&nbsp;&nbsp;&nbsp;[1, 2, 4, 5]</div>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.5em;">
+        Dequeue + re-enqueue = "pass the potato." The k-th dequeue = elimination. The queue handles the circular motion automatically.
+    </div>
+</section>
+
+<!-- Hot Potato — code -->
+<section>
+    <h2>Hot Potato — Code</h2>
+
+    <pre><code class="language-c">int hotPotato(int n, int k) {
+    // Load everyone into the queue
+    for (int i = 1; i <= n; i++)
+        enqueue(i);
+
+    while (size() > 1) {
+        // Pass the potato k-1 times
+        for (int i = 0; i < k - 1; i++)
+            enqueue(dequeue());   // move front to back
+
+        // k-th person is eliminated
+        printf("Eliminated %d\n", dequeue());
+    }
+
+    return dequeue();   // the survivor
+}</code></pre>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>Compare with the circular linked list version:</p>
+        <table style="width:80%;">
+            <tr><th></th><th>Circular Linked List</th><th>Queue</th></tr>
+            <tr><td><strong>Time</strong></td><td>O(n &times; k)</td><td>O(n &times; k)</td></tr>
+            <tr><td><strong>Circular motion</strong></td><td>Pointer follows next</td><td>Dequeue + re-enqueue</td></tr>
+            <tr><td><strong>Elimination</strong></td><td>prev→next = curr→next, free</td><td>Just dequeue</td></tr>
+        </table>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        Same time complexity, much simpler code. The queue abstraction handles the circle for us — no pointers, no prev tracking, no free.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 2 — GENERATE BINARY NUMBERS
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Problem 2 — Generate Binary Numbers 1 to N</h2>
+
+    <p>Given n, print all binary representations from 1 to n.</p>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p class="mono">Input: n = 6</p>
+        <p class="mono">Output: 1, 10, 11, 100, 101, 110</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.8em;">
+        <p><strong>Insight:</strong> Every binary number generates the next two by appending "0" and "1".</p>
+        <p style="margin-top:0.3em;">If we process them in FIFO order, they come out in sequence.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em; font-family:monospace; font-size:0.75em; line-height:1.9;">
+        <div>Start: enqueue "1" &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: ["1"]</div>
+        <div class="fragment">Dequeue "1", print. Enqueue "10","11" &nbsp;Queue: ["10", "11"]</div>
+        <div class="fragment">Dequeue "10", print. Enqueue "100","101" Queue: ["11", "100", "101"]</div>
+        <div class="fragment">Dequeue "11", print. Enqueue "110","111" Queue: ["100", "101", "110", "111"]</div>
+        <div class="fragment">Dequeue "100", print. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: ["101", "110", "111", ...]</div>
+        <div class="fragment">Dequeue "101", print. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</div>
+        <div class="fragment">Dequeue "110", print. &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Done — 6 numbers printed.</div>
+    </div>
+</section>
+
+<!-- Binary numbers — code -->
+<section>
+    <h2>Binary Numbers — Code</h2>
+
+    <p>We'll use string queues here. The logic is the same — enqueue, dequeue.</p>
+
+    <pre><code class="language-c">void generateBinary(int n) {
+    // Queue of strings
+    char queue[100][32];   // up to 100 entries, each up to 32 chars
+    int front = 0, back = 0;
+
+    // Seed with "1"
+    strcpy(queue[back++], "1");
+
+    for (int i = 0; i < n; i++) {
+        // Dequeue
+        char *curr = queue[front++];
+        printf("%s\n", curr);
+
+        // Enqueue curr+"0" and curr+"1"
+        sprintf(queue[back++], "%s0", curr);
+        sprintf(queue[back++], "%s1", curr);
+    }
+}</code></pre>
+
+    <div class="fragment success-box" style="margin-top:0.6em;">
+        O(n) — each number is enqueued and dequeued exactly once. No division, no modulo, no base conversion. The queue generates them in order because FIFO preserves the natural sequence.
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        <strong>Why does this work?</strong> Each binary number is the parent of two children (append 0, append 1). Processing parents before children — level by level — is exactly what FIFO gives you. This is BFS on a binary tree, even though we never built one.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM 3 — BFS ON A MAZE
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Problem 3 — BFS on a Maze</h2>
+
+    <p>Same 5&times;5 maze from the stacks lecture. Same goal: find a path from (0,0) to (4,4).</p>
+
+    <pre style="font-size:0.5em;"><code class="language-c">int maze[5][5] = {
+    {0, 0, 1, 0, 0},
+    {1, 0, 1, 0, 1},
+    {0, 0, 0, 0, 0},
+    {0, 1, 1, 1, 0},
+    {0, 0, 0, 0, 0}
+};</code></pre>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>DFS (stack):</strong> Go as deep as possible down one path. Backtrack when stuck. Finds <em>a</em> path — not necessarily the shortest.</p>
+        <p class="fragment"><strong>BFS (queue):</strong> Explore all cells at distance 1, then distance 2, then distance 3... Finds the <strong>shortest path</strong>.</p>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.6em;">
+        Same algorithm, same grid, same code structure. The only difference: replace <code>push</code>/<code>pop</code> with <code>enqueue</code>/<code>dequeue</code>. The data structure changes the traversal order entirely.
+    </div>
+</section>
+
+<!-- BFS maze — walkthrough -->
+<section>
+    <h2>BFS Maze — How It Explores</h2>
+
+    <pre style="font-size:0.48em; margin-bottom:0.5em;"><code class="nohighlight">    0   1   2   3   4
+  ┌───┬───┬───┬───┬───┐
+0 │ S │ . │ █ │   │   │    S = start, G = goal, █ = wall
+  ├───┼───┼───┼───┼───┤
+1 │ █ │ . │ █ │   │ █ │    BFS explores layer by layer:
+  ├───┼───┼───┼───┼───┤      Layer 0: (0,0)
+2 │ . │ . │ . │ . │   │      Layer 1: (0,1)
+  ├───┼───┼───┼───┼───┤      Layer 2: (1,1), (2,0)  ← neighbors of layer 1 + 0
+3 │   │ █ │ █ │ █ │   │      Layer 3: (2,1)
+  ├───┼───┼───┼───┼───┤      Layer 4: (2,2), (3,0)
+4 │   │   │   │   │ G │      ...and so on
+  └───┴───┴───┴───┴───┘</code></pre>
+
+    <div class="fragment" style="font-family:monospace; font-size:0.7em; line-height:1.8;">
+        <div>Enqueue (0,0) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(0,0)]</div>
+        <div class="fragment">Dequeue (0,0), enqueue (0,1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(0,1)]</div>
+        <div class="fragment">Dequeue (0,1), enqueue (1,1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(1,1)]</div>
+        <div class="fragment">Dequeue (1,1), enqueue (2,1) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Queue: [(2,1)]</div>
+        <div class="fragment">Dequeue (2,1), enqueue (2,0),(2,2) Queue: [(2,0),(2,2)]</div>
+        <div class="fragment">... continues layer by layer until (4,4) is dequeued.</div>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        BFS guarantees the <strong>shortest path</strong> because it visits all cells at distance d before any cell at distance d+1.
+    </div>
+</section>
+
+<!-- BFS maze — code -->
+<section>
+    <h2>BFS Maze — Code</h2>
+
+    <pre><code class="language-c">int dx[] = {0, 0, 1, -1};   // right, left, down, up
+int dy[] = {1, -1, 0, 0};
+
+int bfsMaze(int maze[5][5]) {
+    int visited[5][5] = {0};
+
+    enqueue(0 * 5 + 0);       // encode (row, col) as row*5 + col
+    visited[0][0] = 1;
+
+    while (!isEmpty()) {
+        int pos = dequeue();
+        int r = pos / 5, c = pos % 5;
+
+        if (r == 4 && c == 4) return 1;   // reached goal!
+
+        for (int d = 0; d < 4; d++) {
+            int nr = r + dx[d], nc = c + dy[d];
+            if (nr >= 0 && nr < 5 && nc >= 0 && nc < 5
+                && maze[nr][nc] == 0 && !visited[nr][nc]) {
+                visited[nr][nc] = 1;
+                enqueue(nr * 5 + nc);
+            }
+        }
+    }
+    return 0;   // queue empty, no path
+}</code></pre>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        Compare this with the DFS code from stacks — the structure is <strong>identical</strong>. Only <code>push</code>/<code>pop</code> became <code>enqueue</code>/<code>dequeue</code>.
+        The data structure decides: depth-first or breadth-first.
+    </div>
+</section>
+
+<!-- DFS vs BFS side by side -->
+<section>
+    <h2>Stack vs. Queue — DFS vs. BFS</h2>
+
+    <div class="two-col" style="margin-top:0.6em;">
+        <div class="card" style="border-top-color:#e67e22;">
+            <h4 style="color:#e67e22;">DFS (Stack)</h4>
+            <p>Goes <strong>deep</strong> first. Explores one path all the way before backtracking.</p>
+            <p style="margin-top:0.4em;">Finds <em>a</em> path — not necessarily shortest.</p>
+            <p style="margin-top:0.4em;" class="small">Like exploring a maze by always taking the first turn you see, going until you hit a dead end, then backing up.</p>
+        </div>
+        <div class="card" style="border-top-color:#27ae60;">
+            <h4 style="color:#27ae60;">BFS (Queue)</h4>
+            <p>Goes <strong>wide</strong> first. Explores all neighbours before going deeper.</p>
+            <p style="margin-top:0.4em;">Finds the <strong>shortest path</strong>.</p>
+            <p style="margin-top:0.4em;" class="small">Like a wave spreading outward from the start — it reaches the closest cells first.</p>
+        </div>
+    </div>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        <strong>Same algorithm. Same code. Different data structure. Completely different behaviour.</strong><br>
+        This is the power of abstraction — swap the container, change the result.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     TRANSITION — NOW LET'S BUILD IT
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:0.8em;">Three Problems, Same Two Operations</h2>
+
+    <div style="text-align:left; max-width:640px; margin:0 auto;">
+        <p>We solved all three problems using only <code>enqueue</code> and <code>dequeue</code>.</p>
+        <p class="fragment" style="margin-top:0.5em;">Just like with stacks, we treated the queue as a black box.</p>
+        <p class="fragment" style="margin-top:0.5em;">Now let's build it.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:1.5em;">
+        <p class="big-q">How do we implement enqueue and dequeue?</p>
+        <p style="color:#7f8c8d;">An array — but with a twist.</p>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ARRAY IMPLEMENTATION — THE PROBLEM
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Array Queue — The Naive Approach</h2>
+
+    <p>Use an array with a <code>front</code> and <code>back</code> index.</p>
+
+    <div class="fragment" style="font-family:monospace; font-size:0.78em; line-height:2; margin-top:0.5em;">
+        <div>enqueue(A): [ A, _, _, _, _ ] &nbsp; front=0, back=0</div>
+        <div class="fragment">enqueue(B): [ A, B, _, _, _ ] &nbsp; front=0, back=1</div>
+        <div class="fragment">enqueue(C): [ A, B, C, _, _ ] &nbsp; front=0, back=2</div>
+        <div class="fragment">dequeue→A:  [ _, B, C, _, _ ] &nbsp; front=1, back=2</div>
+        <div class="fragment">dequeue→B:  [ _, _, C, _, _ ] &nbsp; front=2, back=2</div>
+    </div>
+
+    <div class="fragment warning-box" style="margin-top:0.7em;">
+        <strong>Problem:</strong> After many enqueue/dequeue cycles, <code>front</code> and <code>back</code> march to the right. Slots at the beginning are wasted — they were dequeued but never reused. Eventually <code>back</code> hits the end of the array even though most of it is empty.
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>Fix:</strong> Wrap around. When <code>back</code> reaches the end, continue at index 0. This is a <strong>circular array</strong>.</p>
+    </div>
+</section>
+
+<!-- Circular array explanation -->
+<section>
+    <h2>Circular Array — The Idea</h2>
+
+    <p>Treat the array as a circle using modulo: <code>(index + 1) % MAX</code></p>
+
+    <div class="fragment" style="margin-top:0.5em; font-family:monospace; font-size:0.75em; line-height:1.9;">
+        <div>Array: [ _, _, C, D, E ]&nbsp;&nbsp; front=2, back=4, size=3</div>
+        <div class="fragment">enqueue(F): back = (4+1)%5 = 0</div>
+        <div class="fragment">Array: [ F, _, C, D, E ]&nbsp;&nbsp; front=2, back=0, size=4  &larr; wrapped!</div>
+        <div class="fragment">enqueue(G): back = (0+1)%5 = 1</div>
+        <div class="fragment">Array: [ F, G, C, D, E ]&nbsp;&nbsp; front=2, back=1, size=5  (full)</div>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>Reading order (front to back, wrapping): C, D, E, F, G &nbsp;&larr; correct FIFO order!</p>
+    </div>
+
+    <div class="fragment success-box" style="margin-top:0.5em;">
+        No wasted space. The array is fully utilized. The modulo operator makes the array behave like a ring.
+    </div>
+</section>
+
+<!-- Circular array — struct and code -->
+<section>
+    <h2>Circular Array Queue — Code</h2>
+
+    <pre><code class="language-c">#define MAX 100
+
+struct Queue {
+    int data[MAX];
+    int front;
+    int back;
+    int size;      // track count to distinguish full from empty
+};
+
+void init(struct Queue *q) {
+    q->front = 0;
+    q->back = -1;
+    q->size = 0;
+}
+
+int isEmpty(struct Queue *q) { return q->size == 0; }
+int isFull(struct Queue *q)  { return q->size == MAX; }
+
+void enqueue(struct Queue *q, int x) {
+    if (isFull(q)) { printf("Queue full\n"); return; }
+    q->back = (q->back + 1) % MAX;   // wrap around
+    q->data[q->back] = x;
+    q->size++;
+}
+
+int dequeue(struct Queue *q) {
+    if (isEmpty(q)) { printf("Queue empty\n"); return -1; }
+    int val = q->data[q->front];
+    q->front = (q->front + 1) % MAX;  // wrap around
+    q->size--;
+    return val;
+}</code></pre>
+</section>
+
+<!-- Why size? -->
+<section>
+    <h2>Why Track Size?</h2>
+
+    <p>Without <code>size</code>, how do you tell if the queue is <strong>full</strong> or <strong>empty</strong>?</p>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p>In both cases, <code>front</code> and <code>back</code> can end up at the same position:</p>
+        <div class="mono" style="margin:0.5em 0;">
+            <p>Empty: front=0, back=-1 &nbsp;&nbsp;&nbsp; (no elements)</p>
+            <p>Full:  front=0, back=4  &nbsp;&nbsp;&nbsp; (5 elements in a size-5 array)</p>
+        </div>
+        <p class="fragment">After one more enqueue: back wraps to 0 — same as front. Is it full or empty?</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.6em;">
+        <p><strong>Two common solutions:</strong></p>
+        <ul>
+            <li><strong>Track size</strong> (our approach) — a counter goes up on enqueue, down on dequeue. Simple and clear.</li>
+            <li class="fragment"><strong>Waste one slot</strong> — declare the queue full when <code>(back+1) % MAX == front</code>. Capacity is MAX&minus;1. No extra variable, but wastes a slot.</li>
+        </ul>
+    </div>
+
+    <div class="fragment info-box" style="margin-top:0.5em;">
+        Both work. We use <code>size</code> because it's clearer and you get the full capacity.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     LINKED LIST IMPLEMENTATION
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Linked List Queue</h2>
+
+    <p>Just like stacks, if we don't know the max size: use a linked list.</p>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p><strong>Key difference from stacks:</strong> A stack operates at one end (head). A queue operates at <strong>both ends</strong> — dequeue from the front, enqueue at the back.</p>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em;">
+        <p>We need <strong>two pointers</strong>: <code>front</code> and <code>rear</code>.</p>
+        <ul>
+            <li class="fragment"><code>enqueue</code> = insert at rear — O(1) with a rear pointer</li>
+            <li class="fragment"><code>dequeue</code> = remove from front — O(1)</li>
+        </ul>
+    </div>
+
+    <div class="fragment" style="margin-top:0.5em; font-family:monospace; font-size:0.8em;">
+        <p>front → [A] → [B] → [C] → NULL ← rear</p>
+        <p class="fragment">enqueue(D): front → [A] → [B] → [C] → [D] → NULL ← rear</p>
+        <p class="fragment">dequeue→A:  front → [B] → [C] → [D] → NULL ← rear</p>
+    </div>
+</section>
+
+<!-- Linked list queue — code -->
+<section>
+    <h2>Linked List Queue — Code</h2>
+
+    <pre><code class="language-c">struct Node {
+    int data;
+    struct Node *next;
+};
+
+struct Node *front = NULL;
+struct Node *rear  = NULL;
+
+void enqueue(int x) {
+    struct Node *newNode = malloc(sizeof(struct Node));
+    newNode->data = x;
+    newNode->next = NULL;
+
+    if (rear == NULL) {            // queue was empty
+        front = rear = newNode;
+    } else {
+        rear->next = newNode;      // link after current rear
+        rear = newNode;            // new node becomes rear
+    }
+}
+
+int dequeue() {
+    if (front == NULL) { printf("Queue empty\n"); return -1; }
+    int val = front->data;
+    struct Node *temp = front;
+    front = front->next;
+    if (front == NULL) rear = NULL;  // queue is now empty
+    free(temp);
+    return val;
+}</code></pre>
+</section>
+
+<!-- Comparison -->
+<section>
+    <h2>Array vs. Linked List Queue</h2>
+
+    <table style="margin-top:0.8em;">
+        <tr><th></th><th>Circular Array</th><th>Linked List</th></tr>
+        <tr><td><strong>enqueue / dequeue</strong></td><td>O(1)</td><td>O(1)</td></tr>
+        <tr><td><strong>Max size</strong></td><td>Fixed (MAX)</td><td>Limited only by memory</td></tr>
+        <tr><td><strong>Memory</strong></td><td>Pre-allocated, may waste space</td><td>Allocates per node, no waste</td></tr>
+        <tr><td><strong>Overhead per element</strong></td><td>Just the data</td><td>Data + pointer</td></tr>
+        <tr><td><strong>Extra complexity</strong></td><td>Circular indexing (modulo)</td><td>Two pointers (front + rear)</td></tr>
+        <tr><td><strong>Cache performance</strong></td><td>Contiguous — cache friendly</td><td>Scattered — cache unfriendly</td></tr>
+    </table>
+
+    <div class="fragment info-box" style="margin-top:0.8em;">
+        Same rule as stacks: know the max size → array. Don't know → linked list.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     STACK VS QUEUE SUMMARY
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Stacks vs. Queues — The Full Picture</h2>
+
+    <table style="margin-top:0.6em;">
+        <tr><th></th><th>Stack</th><th>Queue</th></tr>
+        <tr><td><strong>Order</strong></td><td>LIFO — Last In, First Out</td><td>FIFO — First In, First Out</td></tr>
+        <tr><td><strong>Operations</strong></td><td>push / pop (one end)</td><td>enqueue / dequeue (two ends)</td></tr>
+        <tr><td><strong>Analogy</strong></td><td>Stack of plates</td><td>Ticket counter line</td></tr>
+        <tr><td><strong>Traversal</strong></td><td>DFS — go deep first</td><td>BFS — go wide first</td></tr>
+        <tr><td><strong>Key use</strong></td><td>Backtracking, undo, matching</td><td>Scheduling, level-order, fairness</td></tr>
+    </table>
+
+    <div class="fragment key-point" style="margin-top:0.8em;">
+        They are the same idea — a restricted container with O(1) insert and O(1) remove. The only difference is <em>which end</em> you remove from. That one difference changes everything.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     HOMEWORK
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Homework — Queue Challenges</h2>
+
+    <ol>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>First Non-Repeating Character in a Stream</strong><br>
+            <span class="small">Characters arrive one at a time. After each character, report the first character that has appeared only once so far.<br>
+            Input stream: <code>a, a, b, c, b, d</code> &rarr; Output at each step: <code>a, -, b, b, c, c</code><br>
+            Hint: queue holds candidates in arrival order. Frequency array tracks counts. Dequeue from front while count &gt; 1.</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Implement a Stack Using Two Queues</strong><br>
+            <span class="small">You have two queues. Make them behave like a stack (push and pop).<br>
+            Hint: one approach makes push O(1) and pop O(n). Another makes push O(n) and pop O(1). Which trade-off is better?</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Reverse a Queue Using a Stack</strong><br>
+            <span class="small">Given a queue, reverse the order of its elements. You may use a stack as auxiliary storage.<br>
+            Hint: dequeue everything into a stack, then pop everything back into the queue.</span>
+        </li>
+        <li class="fragment" style="margin-bottom:0.6em;">
+            <strong>Interleave Two Halves of a Queue</strong><br>
+            <span class="small">Given a queue [1, 2, 3, 4, 5, 6, 7, 8], produce [1, 5, 2, 6, 3, 7, 4, 8].<br>
+            Interleave the first half with the second half. You may use a stack.</span>
+        </li>
+    </ol>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h2 style="margin-bottom:1em;">Recap</h2>
+
+    <div class="fragment" style="text-align:left; max-width:640px; margin:0 auto;">
+        <ul>
+            <li><strong>FIFO</strong> — first in, first out. The opposite of a stack.</li>
+            <li><strong>Hot Potato</strong> — dequeue + re-enqueue simulates a circle</li>
+            <li><strong>Binary numbers</strong> — FIFO generates them in sequence, no base conversion</li>
+            <li><strong>BFS maze</strong> — same code as DFS, swap stack for queue, finds shortest path</li>
+            <li><strong>Circular array</strong> — modulo makes the array wrap around. Track size to distinguish full from empty.</li>
+            <li><strong>Linked list</strong> — two pointers (front + rear). No size limit, same O(1).</li>
+        </ul>
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>

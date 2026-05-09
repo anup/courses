@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointers II — 2D Arrays & Dynamic Memory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/zenburn.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #2b2b2b;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+        }
+
+        .hljs { background: #3f3f3f !important; }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 24px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2 { color: var(--main-color); text-transform: none; }
+        .reveal h3, .reveal h4 { color: var(--main-color); text-transform: none; }
+
+        .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+        .warning-box {
+            background: #ffe6e6;
+            border-left: 4px solid var(--error-color);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+        .insight-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 16px 20px;
+            margin: 16px 0;
+            font-size: 0.9em;
+        }
+
+        pre code { border-radius: 8px; padding: 24px 30px !important; }
+        pre { margin: 16px 0 !important; }
+
+        .subtle-note { font-style: italic; color: #7f8c8d; font-size: 0.85em; margin-top: 10px; }
+
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        .comparison-box {
+            border: 2px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        /* ── 2D array grid visual ── */
+        .grid-2d {
+            display: inline-grid;
+            gap: 3px;
+            margin: 16px auto;
+        }
+        .cell {
+            width: 76px;
+            height: 44px;
+            border: 2px solid #bbb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 0.6em;
+            font-weight: bold;
+            border-radius: 4px;
+            white-space: nowrap;
+        }
+        .cell.row0 { background: #d6eaf8; border-color: #3498db; }
+        .cell.row1 { background: #d5f5e3; border-color: #27ae60; }
+        .cell.row2 { background: #fdebd0; border-color: #e67e22; }
+
+        .flat-memory {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin: 12px 0;
+            align-items: flex-start;
+        }
+        .flat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+        .flat-cell {
+            width: 68px;
+            height: 36px;
+            border: 2px solid #bbb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: monospace;
+            font-size: 0.6em;
+            font-weight: bold;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .flat-addr {
+            font-family: monospace;
+            font-size: 0.52em;
+            color: #888;
+        }
+
+        /* ── heap/stack visual ── */
+        .memory-region {
+            border: 2px solid #bbb;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 0.85em;
+        }
+        .region-title {
+            font-weight: 700;
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+        .heap-block {
+            background: #fdebd0;
+            border: 2px solid #e67e22;
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin: 4px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+        .stack-block {
+            background: #d6eaf8;
+            border: 2px solid #3498db;
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin: 4px 0;
+            font-family: monospace;
+            font-size: 0.85em;
+        }
+        .arrow { color: #e67e22; font-size: 1.2em; margin: 0 4px; }
+
+        /* summary table */
+        .summary-table {
+            font-size: 0.72em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .summary-table th {
+            padding: 10px 16px;
+            text-align: left;
+        }
+        .summary-table td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+        .summary-table td:first-child {
+            white-space: nowrap;
+        }
+
+        /* resource links */
+        .resource-section {
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #ddd;
+        }
+        .resource-section h4 { font-size: 0.85em; color: #7f8c8d; margin-bottom: 8px; }
+        .resource-links { display: flex; flex-wrap: wrap; gap: 8px; }
+        .resource-links a {
+            display: inline-block;
+            padding: 4px 12px;
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 0.8em;
+        }
+        .resource-links a:hover { background: var(--accent-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title -->
+            <section class="center-content" style="text-align:center;">
+                <h1>Pointers &amp; Memory</h1>
+                <h2 style="color:#7f8c8d; font-weight:400;">Part II</h2>
+                <h3 style="color: #7f8c8d; margin-top:0.4em;">2D Arrays &nbsp;&middot;&nbsp; Dynamic Memory &nbsp;&middot;&nbsp; Function Returns</h3>
+                <p class="subtle-note">Continuing from Pointers — Part I</p>
+            </section>
+
+            <!-- ═══════════════════════════════════════
+                 SECTION: 2D Arrays
+                 ═══════════════════════════════════════ -->
+
+            <!-- Slide: What is a 2D array -->
+            <section>
+                <h2>What Is a 2D Array?</h2>
+                <pre><code class="language-c">int a[3][4];   // 3 rows, 4 columns</code></pre>
+
+                <p>Think of it as a table:</p>
+
+                <div style="text-align:center;">
+                    <div class="grid-2d" style="grid-template-columns: repeat(4, 1fr);">
+                        <div class="cell row0">a[0][0]</div><div class="cell row0">a[0][1]</div><div class="cell row0">a[0][2]</div><div class="cell row0">a[0][3]</div>
+                        <div class="cell row1">a[1][0]</div><div class="cell row1">a[1][1]</div><div class="cell row1">a[1][2]</div><div class="cell row1">a[1][3]</div>
+                        <div class="cell row2">a[2][0]</div><div class="cell row2">a[2][1]</div><div class="cell row2">a[2][2]</div><div class="cell row2">a[2][3]</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    A 2D array is just a convenient way to address a flat block of memory. There are no rows or columns in memory — only a sequence of integers.
+                </div>
+            </section>
+
+            <!-- Slide: Row-major memory layout -->
+            <section>
+                <h2>Memory Layout: Row-Major Order</h2>
+                <p><code>int a[3][4]</code> is stored as 12 consecutive integers:</p>
+
+                <div class="flat-memory">
+                    <div class="flat-item"><div class="flat-cell row0">a[0][0]</div><div class="flat-addr">200</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][1]</div><div class="flat-addr">204</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][2]</div><div class="flat-addr">208</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">a[0][3]</div><div class="flat-addr">212</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][0]</div><div class="flat-addr">216</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][1]</div><div class="flat-addr">220</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][2]</div><div class="flat-addr">224</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">a[1][3]</div><div class="flat-addr">228</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][0]</div><div class="flat-addr">232</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][1]</div><div class="flat-addr">236</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][2]</div><div class="flat-addr">240</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">a[2][3]</div><div class="flat-addr">244</div></div>
+                </div>
+
+                <p style="margin-top:12px;">To find <code>a[i][j]</code>, the compiler computes:</p>
+                <div class="key-point">
+                    <strong>address of a[i][j]</strong> = base address + (i × cols + j) × sizeof(int)<br>
+                    <strong>a[1][2]</strong> → 200 + (1×4 + 2)×4 = 200 + 24 = <strong>224</strong> ✓
+                </div>
+            </section>
+
+            <!-- Slide: Indexing via pointers -->
+            <section>
+                <h2>How Indexing Works: Step by Step</h2>
+                <p>Peel apart <code>a[1][2]</code> using what you already know about pointer arithmetic.</p>
+
+                <pre><code class="language-c">int a[3][4];
+
+a          // pointer to row 0           type: int (*)[4]
+a + 1      // pointer to row 1           (moves 16 bytes — skips 4 ints)
+*(a + 1)   // dereference → row 1        type: int *  (points to a[1][0])
+*(a+1) + 2 // move 2 ints forward        points to a[1][2]
+*(*(a+1)+2)// dereference → the value    same as a[1][2]</code></pre>
+
+                <div class="key-point">
+                    <strong>The full equivalence:</strong><br>
+                    <code>a[1][2]</code> &nbsp;≡&nbsp; <code>*(a[1] + 2)</code> &nbsp;≡&nbsp; <code>*(*(a + 1) + 2)</code>
+                </div>
+
+                <div class="insight-box">
+                    <code>a[i]</code> means "dereference the i-th row pointer" — it gives you an <code>int *</code> pointing to the first element of that row. From there, adding j and dereferencing gives the element.
+                </div>
+
+                <div class="key-point">
+                    <strong>Same address, different type:</strong> <code>a</code> and <code>*a</code> (i.e. <code>a[0]</code>) hold the same numerical address — both point to <code>a[0][0]</code>. But their types differ: <code>a</code> is <code>int (*)[4]</code>, so <code>a+1</code> skips <strong>16 bytes</strong>; <code>*a</code> is <code>int *</code>, so <code>(*a)+1</code> skips <strong>4 bytes</strong>. Same value, completely different arithmetic.
+                </div>
+            </section>
+
+            <!-- Slide: a is NOT int** — key nuance -->
+            <section>
+                <h2>Important: <code>a</code> is NOT <code>int **</code></h2>
+                <p>This is the most common confusion with 2D arrays.</p>
+
+                <pre><code class="language-c">int a[3][4];
+
+int **p  = a;   // ✗ TYPE ERROR — won't work correctly
+int (*p)[4] = a; // ✓ CORRECT type for a row pointer</code></pre>
+
+                <div class="split-container" style="margin-top:14px;">
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4><code>int **p</code></h4>
+                        <p>Expects p to point to an <code>int *</code>.<br>
+                        Dereferencing once gives another pointer.<br>
+                        <em>Not what a 2D array has.</em></p>
+                    </div>
+                    <div class="comparison-box" style="border-color: var(--success-color);">
+                        <h4><code>int (*p)[4]</code></h4>
+                        <p>Points to a block of 4 ints.<br>
+                        Dereferencing once gives an <code>int *</code>.<br>
+                        <em>Matches how a 2D array is laid out.</em></p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <code>int **</code> IS correct for a <strong>dynamic</strong> 2D array (where each row is a separately malloc'd <code>int *</code>). But for a stack 2D array like <code>int a[3][4]</code>, the type is <code>int (*)[4]</code>.
+                </div>
+            </section>
+
+            <!-- Slide: Passing 2D arrays to functions -->
+            <section>
+                <h2>Passing 2D Arrays to Functions</h2>
+                <p>The column size is <strong>mandatory</strong>. The compiler needs it to compute row offsets.</p>
+
+                <pre><code class="language-c">// ✗ WRONG — won't compile
+void print(int a[][], int rows, int cols) { ... }
+
+// ✓ CORRECT — column size must be specified
+void print(int a[][4], int rows) {
+    for (int i = 0; i &lt; rows; i++) {
+        for (int j = 0; j &lt; 4; j++) {
+            printf("%d ", a[i][j]);
+        }
+        printf("\n");
+    }
+}
+
+int main() {
+    int a[3][4] = {{1,2,3,4},{5,6,7,8},{9,10,11,12}};
+    print(a, 3);
+}</code></pre>
+
+                <div class="key-point">
+                    Without the column count, the compiler cannot compute <code>a[i][j]</code> — it does not know how many elements to skip to get to row i.
+                </div>
+            </section>
+
+            <!-- Slide: Pointer to a row -->
+            <section>
+                <h2>Pointer to a Row: <code>int (*p)[4]</code></h2>
+                <p>A pointer can point to an entire row, not just a single element.</p>
+
+                <pre><code class="language-c">int a[3][4];
+
+int (*p)[4] = a;   // p points to row 0 (an array of 4 ints)
+
+p++;               // now p points to row 1 (skips 4 ints = 16 bytes)
+
+(*p)[2];           // element at row 1, column 2  ← same as a[1][2]</code></pre>
+
+                <div class="split-container" style="margin-top:16px;">
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4>Watch the parentheses!</h4>
+                        <pre><code class="language-c">int (*p)[4];  // pointer to array of 4 ints
+int *p[4];    // array of 4 int pointers
+              // (totally different!)</code></pre>
+                    </div>
+                    <div class="comparison-box">
+                        <h4>Step size</h4>
+                        <pre><code class="language-c">int *q = a[0]; // q++ moves 4 bytes
+int (*p)[4]=a; // p++ moves 16 bytes</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══════════════════════════════════════
+                 SECTION: Dynamic Memory
+                 ═══════════════════════════════════════ -->
+
+            <!-- Slide: Why dynamic memory -->
+            <section>
+                <h2>Why Do We Need Dynamic Memory?</h2>
+                <div class="split-container">
+                    <div>
+                        <h4 style="color: var(--error-color);">Stack limitations</h4>
+                        <pre><code class="language-c">int n;
+scanf("%d", &amp;n);
+int a[n];       // risky — VLA
+                // may fail for large n
+                // gone when function returns</code></pre>
+                    </div>
+                    <div>
+                        <h4 style="color: var(--success-color);">Heap to the rescue</h4>
+                        <pre><code class="language-c">int n;
+scanf("%d", &amp;n);
+int *a = malloc(n * sizeof(int));
+// works for any n (within RAM)
+// lives until you free it</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    The <strong>heap</strong> is a large pool of memory you can request at runtime. Unlike the stack, it does not disappear when a function returns — you control when it goes away.
+                </div>
+            </section>
+
+            <!-- Slide: malloc -->
+            <section>
+                <h2><code>malloc</code> — Allocate Memory</h2>
+                <pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+int n = 5;
+int *arr = malloc(n * sizeof(int));
+
+if (arr == NULL) {
+    // malloc failed (out of memory)
+    return 1;
+}
+
+arr[0] = 10;   // use it just like a normal array
+arr[1] = 20;
+// ...
+
+free(arr);     // always free when done</code></pre>
+
+                <ul style="margin-top:12px;">
+                    <li><code>malloc(bytes)</code> — asks the OS for a block of bytes</li>
+                    <li>Returns a pointer to the start, or <strong>NULL</strong> if it fails</li>
+                    <li>Contents are <strong>uninitialized</strong> (garbage values)</li>
+                    <li>Every malloc must have exactly one matching <code>free</code></li>
+                </ul>
+            </section>
+
+            <!-- Slide: calloc -->
+            <section>
+                <h2><code>calloc</code> — Allocate and Zero</h2>
+                <pre><code class="language-c">// malloc — uninitialized (garbage)
+int *a = malloc(5 * sizeof(int));
+
+// calloc — zero-initialized
+int *b = calloc(5, sizeof(int));
+// b[0] == 0, b[1] == 0, ... guaranteed</code></pre>
+
+                <div class="split-container" style="margin-top:16px;">
+                    <div class="comparison-box">
+                        <h4>malloc</h4>
+                        <p>Fast. No zeroing. Use when you'll overwrite every element anyway.</p>
+                    </div>
+                    <div class="comparison-box">
+                        <h4>calloc</h4>
+                        <p>Slightly slower. All bytes are zero. Safer default when you need a clean slate.</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <code>calloc(count, size)</code> is exactly <code>malloc(count * size)</code> + zeroing all bytes.
+                </div>
+            </section>
+
+            <!-- Slide: realloc -->
+            <section>
+                <h2><code>realloc</code> — Resize an Allocation</h2>
+                <p>You started with space for 5 ints, but now need 10. Use <code>realloc</code>.</p>
+
+                <pre><code class="language-c">int *arr = malloc(5 * sizeof(int));
+// ... fill arr with data ...
+
+// Need more space — resize to 10
+int *tmp = realloc(arr, 10 * sizeof(int));
+if (tmp == NULL) {
+    // realloc failed — arr is still valid
+    free(arr);
+    return 1;
+}
+arr = tmp;   // now arr points to the bigger block</code></pre>
+
+                <div class="warning-box">
+                    Never write <code>arr = realloc(arr, ...)</code> directly. If realloc fails and returns NULL, you lose your only pointer to the original memory — a memory leak.
+                </div>
+            </section>
+
+            <!-- Slide: free -->
+            <section>
+                <h2><code>free</code> — Two Rules</h2>
+                <div class="split-container">
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4>Rule 1: Never free twice</h4>
+                        <pre><code class="language-c">int *p = malloc(sizeof(int));
+free(p);
+free(p);   // ✗ double-free
+           // undefined behavior</code></pre>
+                    </div>
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4>Rule 2: Never use after free</h4>
+                        <pre><code class="language-c">int *p = malloc(sizeof(int));
+*p = 42;
+free(p);
+printf("%d", *p);  // ✗ use-after-free
+                   // undefined behavior</code></pre>
+                    </div>
+                </div>
+
+                <div class="insight-box" style="margin-top:16px;">
+                    <strong>Good habit:</strong> Set the pointer to NULL right after freeing. Dereferencing NULL crashes visibly — which is better than silent corruption.
+                    <pre><code class="language-c">free(p);
+p = NULL;</code></pre>
+                </div>
+            </section>
+
+            <!-- Slide: Dynamic 1D array example -->
+            <section>
+                <h2>Dynamic Array — Full Example</h2>
+                <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+int main() {
+    int n;
+    printf("How many numbers? ");
+    scanf("%d", &amp;n);
+
+    int *arr = malloc(n * sizeof(int));
+    if (!arr) { return 1; }
+
+    for (int i = 0; i &lt; n; i++) {
+        printf("Enter number %d: ", i + 1);
+        scanf("%d", &amp;arr[i]);
+    }
+
+    int sum = 0;
+    for (int i = 0; i &lt; n; i++) sum += arr[i];
+    printf("Sum = %d\n", sum);
+
+    free(arr);
+    return 0;
+}</code></pre>
+                <div class="insight-box">
+                    The array size is decided at runtime. This is not possible on the stack (portably).
+                </div>
+            </section>
+
+            <!-- Slide: Dynamic 2D array -->
+            <section>
+                <h2>Dynamic 2D Array</h2>
+                <p>Allocate an array of pointers, then allocate each row separately.</p>
+
+                <pre><code class="language-c">int rows = 3, cols = 4;
+
+// Step 1: array of row pointers
+int **a = malloc(rows * sizeof(int *));
+
+// Step 2: allocate each row
+for (int i = 0; i &lt; rows; i++) {
+    a[i] = malloc(cols * sizeof(int));
+}
+
+// Use exactly like a static 2D array
+a[1][2] = 42;
+
+// Free in reverse order
+for (int i = 0; i &lt; rows; i++) {
+    free(a[i]);       // free each row first
+}
+free(a);              // then free the pointer array</code></pre>
+            </section>
+
+            <!-- Slide: Stack 2D vs Dynamic 2D -->
+            <section>
+                <h2>Two Ways — Very Different Memory</h2>
+
+                <div class="split-container">
+                    <div>
+                        <h4>Stack: <code>int a[3][4]</code></h4>
+                        <div class="flat-memory" style="flex-wrap:wrap; width:200px;">
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row0" style="width:40px;">r0c3</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row1" style="width:40px;">r1c3</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c0</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c1</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c2</div></div>
+                            <div class="flat-item"><div class="flat-cell row2" style="width:40px;">r2c3</div></div>
+                        </div>
+                        <p class="subtle-note">12 ints — one contiguous block</p>
+                    </div>
+                    <div>
+                        <h4>Dynamic: <code>int **a</code></h4>
+                        <div style="font-family:monospace; font-size:0.8em; line-height:2;">
+                            <span class="stack-block">a[0]</span> <span class="arrow">→</span> <span class="heap-block">4 ints (row 0)</span><br>
+                            <span class="stack-block">a[1]</span> <span class="arrow">→</span> <span class="heap-block">4 ints (row 1)</span><br>
+                            <span class="stack-block">a[2]</span> <span class="arrow">→</span> <span class="heap-block">4 ints (row 2)</span>
+                        </div>
+                        <p class="subtle-note">Rows may be scattered in heap</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    With <code>int **</code>, each row is a separate <code>malloc</code> — rows are <strong>not contiguous</strong>. <code>a[i][j]</code> syntax works, but the memory is scattered. There is a third approach that gives you dynamic sizing AND contiguous memory.
+                </div>
+            </section>
+
+            <!-- Slide: Flat dynamic array — third approach -->
+            <section>
+                <h2>A Third Way: Flat Dynamic Array</h2>
+                <p>One single <code>malloc</code> for all elements — row-major, just like a stack 2D array.</p>
+
+                <pre><code class="language-c">int rows = 3, cols = 4;
+
+// ONE allocation for everything
+int *flat = malloc(rows * cols * sizeof(int));
+
+// Access: compute the offset manually
+flat[1 * cols + 2] = 42;    // same as a[1][2]
+flat[i * cols + j] = value; // general form
+
+// Free: just one call
+free(flat);</code></pre>
+
+                <div class="flat-memory" style="margin-top:10px;">
+                    <div class="flat-item"><div class="flat-cell row0">r0c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row0">r0c3</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row1">r1c3</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c0</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c1</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c2</div></div>
+                    <div class="flat-item"><div class="flat-cell row2">r2c3</div></div>
+                </div>
+
+                <div class="insight-box">
+                    Fully contiguous — same memory layout as <code>int a[3][4]</code>, but the size is decided at runtime and you manage the lifetime manually.
+                </div>
+            </section>
+
+            <!-- Slide: Three-way comparison -->
+            <section>
+                <h2>Three Approaches — Side by Side</h2>
+                <table class="summary-table">
+                    <tr style="background: #2c3e50; color: white;">
+                        <th></th>
+                        <th><code>int a[3][4]</code></th>
+                        <th><code>int **a</code></th>
+                        <th><code>int *flat</code></th>
+                    </tr>
+                    <tr>
+                        <td>Memory layout</td>
+                        <td>One block, row-major</td>
+                        <td>Scattered rows</td>
+                        <td>One block, row-major</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td>Size at runtime?</td>
+                        <td>No</td>
+                        <td>Yes</td>
+                        <td>Yes</td>
+                    </tr>
+                    <tr>
+                        <td>Access syntax</td>
+                        <td><code>a[i][j]</code></td>
+                        <td><code>a[i][j]</code></td>
+                        <td><code>flat[i*cols+j]</code></td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td>Rows same length?</td>
+                        <td>Yes (fixed)</td>
+                        <td>No — can vary</td>
+                        <td>Yes (fixed)</td>
+                    </tr>
+                    <tr>
+                        <td>Free</td>
+                        <td>Automatic</td>
+                        <td>Loop + <code>free(a)</code></td>
+                        <td>One <code>free</code></td>
+                    </tr>
+                </table>
+
+                <div class="key-point" style="margin-top:14px;">
+                    Use <code>int **</code> when rows can have different lengths (jagged arrays). Use <code>int *flat</code> when you need dynamic sizing with contiguous memory. Use <code>int a[N][M]</code> when the size is fixed at compile time.
+                </div>
+            </section>
+
+            <!-- Slide: Returning a pointer from a function -->
+            <section>
+                <h2>Returning a Pointer from a Function</h2>
+                <div class="split-container">
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4>✗ Classic mistake</h4>
+                        <pre><code class="language-c">int* make_array() {
+    int arr[5] = {1,2,3,4,5};
+    return arr;  // DANGER!
+    // arr lives on the stack
+    // destroyed when function returns
+}</code></pre>
+                        <p style="font-size:0.85em; color: var(--error-color);">The caller gets a dangling pointer.</p>
+                    </div>
+                    <div class="comparison-box" style="border-color: var(--success-color);">
+                        <h4>✓ Correct way</h4>
+                        <pre><code class="language-c">int* make_array(int n) {
+    int *arr = malloc(n * sizeof(int));
+    for (int i = 0; i &lt; n; i++)
+        arr[i] = i + 1;
+    return arr;  // heap — persists!
+}
+
+int *p = make_array(5);
+// use p...
+free(p);  // caller must free</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    If a function creates data that must outlive the function, allocate it with <code>malloc</code>. The caller is then responsible for calling <code>free</code>.
+                </div>
+            </section>
+
+            <!-- Slide: sizeof — proof they are different -->
+            <section>
+                <h2><code>sizeof</code> Proves They Are Different</h2>
+                <p>The clearest way to see the difference between a 2D array and <code>int **</code>:</p>
+
+                <pre><code class="language-c">int a[3][4];        // stack 2D array
+int **p;            // pointer to pointer
+
+sizeof(a)           // 48  ← 3 × 4 × sizeof(int) = full array
+sizeof(p)           // 8   ← just one pointer (on 64-bit system)
+
+sizeof(a[0])        // 16  ← one row = 4 ints
+sizeof(p[0])        // 8   ← one int* pointer</code></pre>
+
+                <div class="warning-box">
+                    <code>sizeof</code> on a true 2D array gives you the full size of all the data. <code>sizeof</code> on a pointer gives you the size of the pointer — not what it points to. This is why functions receiving arrays cannot use <code>sizeof</code> to find the length; the array decays to a pointer when passed.
+                </div>
+
+                <div class="insight-box">
+                    <strong>Bottom line:</strong> <code>int a[3][4]</code> and <code>int **p</code> both support <code>a[i][j]</code> syntax, but they are fundamentally different in memory layout, type, and size.
+                </div>
+            </section>
+
+            <!-- Summary -->
+            <section>
+                <h2>Mental Model Summary</h2>
+                <table class="summary-table">
+                    <tr style="background: #2c3e50; color: white;">
+                        <th>Syntax / Concept</th>
+                        <th>What it means</th>
+                    </tr>
+                    <tr>
+                        <td><code>int a[3][4]</code></td>
+                        <td>12 contiguous ints, addressed as 3 rows × 4 cols</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>a[i][j]</code></td>
+                        <td>Element at row i, col j — offset = i×cols + j</td>
+                    </tr>
+                    <tr>
+                        <td><code>int a[][4]</code> in a function</td>
+                        <td>Column size required so compiler can compute row offsets</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>int (*p)[4]</code></td>
+                        <td>Pointer to a row of 4 ints — p++ skips 16 bytes</td>
+                    </tr>
+                    <tr>
+                        <td><code>malloc(n * sizeof(T))</code></td>
+                        <td>Allocate n items on the heap, uninitialized</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>calloc(n, sizeof(T))</code></td>
+                        <td>Same as malloc but zero-initialized</td>
+                    </tr>
+                    <tr>
+                        <td><code>realloc(p, new_size)</code></td>
+                        <td>Resize a heap allocation — always use a temp pointer</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>free(p); p = NULL;</code></td>
+                        <td>Return heap memory; nullify to prevent accidental reuse</td>
+                    </tr>
+                    <tr>
+                        <td><code>return malloc(...)</code></td>
+                        <td>Safe — heap outlives the function; caller must free</td>
+                    </tr>
+                </table>
+
+                <div class="resource-section">
+                    <h4>mycodeschool references</h4>
+                    <div class="resource-links">
+                        <a href="https://www.youtube.com/watch?v=sHcnvZA2u88" target="_blank">Pointers and 2-D arrays</a>
+                        <a href="https://www.youtube.com/watch?v=_j5lhHWkbnQ" target="_blank">Multidimensional arrays</a>
+                        <a href="https://www.youtube.com/watch?v=xDVC3wKjS64" target="_blank">malloc / calloc / realloc / free</a>
+                        <a href="https://www.youtube.com/watch?v=E8Yh4dw6Diw" target="_blank">Pointers as function returns</a>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: true,
+            plugins: [ RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

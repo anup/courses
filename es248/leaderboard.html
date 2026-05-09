@@ -1,0 +1,690 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ES 248 — Scores & Leaderboard</title>
+    <style>
+      :root {
+        --main-color: #2c3e50;
+        --accent-color: #3498db;
+        --border: #e0e0e0;
+        --muted: #7f8c8d;
+        --section-bg: #f8f9fa;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        background: white;
+        min-height: 100vh;
+        padding: 2em 1em;
+      }
+
+      .container {
+        max-width: 100%;
+        width: 100%;
+        margin: 0 auto;
+        padding: 0 1em;
+      }
+
+      header {
+        max-width: 900px;
+        margin: 0 auto 1.5em;
+      }
+
+      h1 {
+        color: var(--main-color);
+        font-size: 1.7em;
+        font-weight: 700;
+        margin-bottom: 0.25em;
+      }
+
+      .subtitle {
+        color: var(--muted);
+        font-size: 0.95em;
+        margin-bottom: 0.5em;
+      }
+
+      .back-link {
+        display: inline-block;
+        color: var(--accent-color);
+        text-decoration: none;
+        font-size: 0.85em;
+        margin-bottom: 0.5em;
+      }
+      .back-link:hover { text-decoration: underline; }
+
+      .last-updated {
+        color: var(--muted);
+        font-size: 0.8em;
+        margin-bottom: 1.5em;
+      }
+
+      .controls {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      /* Tabs */
+      .tabs {
+        display: flex;
+        gap: 0;
+        margin-bottom: 1.5em;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 0.7em 1.5em;
+        font-size: 0.75em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        cursor: pointer;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        transition: all 0.2s;
+      }
+      .tab:hover { color: var(--main-color); }
+      .tab:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+      }
+      .tab[aria-selected="true"] {
+        color: var(--main-color);
+        border-bottom-color: var(--main-color);
+      }
+
+      /* Search */
+      .search-bar { margin-bottom: 1em; }
+      .search-bar label {
+        display: block;
+        font-size: 0.75em;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.4em;
+      }
+      .search-bar input {
+        width: 100%;
+        max-width: 360px;
+        padding: 0.6em 1em;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        font-size: 0.9em;
+        font-family: inherit;
+        color: var(--main-color);
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .search-bar input:focus { border-color: var(--accent-color); }
+      .search-bar input::placeholder { color: #bbb; }
+
+      /* Scroll wrapper */
+      .scroll-wrap {
+        position: relative;
+      }
+
+      .scroll-arrow {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 2;
+        color: var(--muted);
+        font-size: 1.2em;
+        opacity: 0;
+        transition: opacity 0.2s;
+        pointer-events: none;
+        border: none;
+        background: none;
+      }
+      .scroll-arrow.visible {
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .scroll-arrow:hover { color: var(--main-color); }
+      .scroll-arrow:focus-visible {
+        outline: 2px solid var(--accent-color);
+        opacity: 1;
+        pointer-events: auto;
+      }
+      .scroll-arrow-left {
+        left: 0;
+        background: linear-gradient(to right, white 60%, transparent);
+        padding-right: 8px;
+      }
+      .scroll-arrow-right {
+        right: 0;
+        background: linear-gradient(to left, white 60%, transparent);
+        padding-left: 8px;
+      }
+
+      #lb-scroll-wrap {
+        max-width: 960px;
+        margin: 0 auto;
+      }
+
+      /* Table block */
+      .table-block {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+        scrollbar-color: var(--border) transparent;
+      }
+      .table-block::-webkit-scrollbar { height: 6px; }
+      .table-block::-webkit-scrollbar-track { background: transparent; }
+      .table-block::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.92em;
+      }
+
+      thead th {
+        background: var(--section-bg);
+        color: var(--muted);
+        font-size: 0.75em;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1em 1em;
+        text-align: right;
+        border-bottom: 1px solid var(--border);
+        cursor: pointer;
+        user-select: none;
+        white-space: normal;
+        min-width: 40px;
+        max-width: 120px;
+        line-height: 1.4;
+        vertical-align: bottom;
+        position: sticky;
+        top: 0;
+      }
+      thead th:hover { color: var(--main-color); }
+      thead th:focus-visible {
+        outline: 2px solid var(--accent-color);
+        outline-offset: -2px;
+      }
+      thead th .arrow {
+        font-size: 0.8em;
+        margin-left: 2px;
+        opacity: 0.3;
+      }
+      thead th[aria-sort] .arrow { opacity: 1; color: var(--main-color); }
+
+      /* Tooltip on column headers */
+      thead th .tip {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--main-color);
+        color: white;
+        font-size: 1.5em;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0;
+        padding: 0.4em 0.7em;
+        border-radius: 4px;
+        z-index: 10;
+        margin-top: 4px;
+        pointer-events: none;
+        max-width: 280px;
+        white-space: normal;
+        line-height: 1.4;
+      }
+      thead th { position: relative; }
+      thead th:hover .tip,
+      thead th:focus-visible .tip { display: block; }
+
+      tbody tr { border-bottom: 1px solid #f0f0f0; }
+      tbody tr:nth-child(even) { background: #fafafa; }
+      tbody tr:last-child { border-bottom: none; }
+      tbody tr:hover { background: #f0f4f8; }
+
+      tbody td {
+        padding: 0.75em 1em;
+        white-space: nowrap;
+        color: var(--main-color);
+        font-size: 0.95em;
+        text-align: right;
+      }
+
+      .text-cell {
+        text-align: left;
+      }
+
+      .lang-cell {
+        text-align: left;
+        white-space: normal;
+        max-width: 160px;
+        font-size: 0.82em;
+        line-height: 1.4;
+      }
+
+
+      .rank-1 { color: #c9a227; }
+      .rank-2 { color: #8a9197; }
+      .rank-3 { color: #a0653a; }
+
+      /* Loading */
+      .loading {
+        text-align: center;
+        padding: 4em 1em;
+        color: var(--muted);
+        font-size: 0.95em;
+      }
+      .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid var(--border);
+        border-top-color: var(--muted);
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+        margin-bottom: 10px;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      .error-msg {
+        text-align: center;
+        padding: 3em 1em;
+        color: #c0392b;
+        font-size: 0.9em;
+      }
+
+      .hide { display: none; }
+
+      /* Live region for screen readers */
+      .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+      }
+
+      @media (max-width: 600px) {
+        body { padding: 1em 0.5em; }
+        .container { padding: 0 0.5em; }
+        h1 { font-size: 1.4em; }
+        table { font-size: 0.78em; }
+        thead th, tbody td { padding: 0.5em 0.4em; }
+        .tab { padding: 0.6em 0.8em; font-size: 0.7em; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>ES 248</h1>
+        <p class="subtitle">Introduction to DSA in C Programming</p>
+        <a href="index.html" class="back-link">&larr; Back to course materials</a>
+        <div class="last-updated" id="last-updated" aria-live="polite"></div>
+      </header>
+
+      <div class="controls">
+        <div class="tabs" role="tablist" aria-label="View selection">
+          <button class="tab" role="tab" aria-selected="true" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
+          <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
+        </div>
+
+        <div class="search-bar">
+          <label for="search">Search</label>
+          <input type="text" id="search" placeholder="Search by code..." aria-label="Search by anonymous code">
+        </div>
+      </div>
+
+      <div id="leaderboard-view" role="tabpanel" aria-labelledby="tab-leaderboard">
+        <div class="loading" id="lb-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading leaderboard...
+        </div>
+        <div class="error-msg hide" id="lb-error" role="alert"></div>
+        <div class="scroll-wrap hide" id="lb-scroll-wrap">
+          <button class="scroll-arrow scroll-arrow-left" id="lb-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="lb-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="lb-table" tabindex="0" aria-label="Leaderboard table, scrollable">
+            <table aria-label="Leaderboard"><thead><tr id="lb-head"></tr></thead><tbody id="lb-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div id="grades-view" class="hide" role="tabpanel" aria-labelledby="tab-grades">
+        <div class="loading hide" id="gr-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading grades...
+        </div>
+        <div class="error-msg hide" id="gr-error" role="alert"></div>
+        <div class="scroll-wrap hide" id="gr-scroll-wrap">
+          <button class="scroll-arrow scroll-arrow-left" id="gr-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="gr-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="gr-table" tabindex="0" aria-label="Grades table, scrollable">
+            <table aria-label="Detailed Grades"><thead><tr id="gr-head"></tr></thead><tbody id="gr-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div id="performance-view" class="hide" role="tabpanel" aria-labelledby="tab-performance">
+        <div class="loading hide" id="pf-loading" aria-live="polite">
+          <div class="spinner" aria-hidden="true"></div><br>Loading performance...
+        </div>
+        <div class="error-msg hide" id="pf-error" role="alert"></div>
+        <div class="scroll-wrap hide" id="pf-scroll-wrap">
+          <button class="scroll-arrow scroll-arrow-left" id="pf-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+          <button class="scroll-arrow scroll-arrow-right" id="pf-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+          <div class="table-block" id="pf-table" tabindex="0" aria-label="Performance table, scrollable">
+            <table aria-label="Contest Performance"><thead><tr id="pf-head"></tr></thead><tbody id="pf-body"></tbody></table>
+          </div>
+        </div>
+      </div>
+
+      <div id="status" class="sr-only" aria-live="polite"></div>
+    </div>
+
+    <script src="config.js"></script>
+    <script>
+      var API_BASE = ES248_CONFIG.API_BASE;
+      var cache = {};
+      var currentView = "leaderboard";
+      var sortState = { leaderboard: { col: 0, asc: true }, grades: { col: -1, asc: true }, performance: { col: -1, asc: true } };
+      var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
+
+      // Column descriptions for tooltips (dynamic values filled after API load)
+      var TOOLTIPS = {};
+      var TOOLTIP_PATTERNS = [];
+
+      function initTooltips(cfg) {
+        var bestOf = cfg ? cfg.assignmentBestOf : 2;
+        var maxPer = cfg ? cfg.assignmentMaxPerContest : 10;
+        var mpc = cfg ? cfg.practiceMarksPerContest : 1.4;
+        var maxMarks = cfg ? cfg.practiceMaxMarks : 20;
+        var maxContests = cfg ? cfg.practiceMaxContests : 15;
+        var cReq = cfg ? cfg.cContestsRequired : 10;
+
+        TOOLTIPS = {
+          "rank": "Position based on total score (assignment + practice)",
+          "name": "Student name",
+          "code": "Your private anonymous code (sent via email)",
+          "roll no": "Student roll number",
+          "c contests": "Number of practice contests where C language was used",
+          "non-c contests": "Practice contests without C (includes all LeetCode)",
+          "c req met": "Whether " + cReq + "+ C-language contests requirement is met (Yes/No)",
+          "platform": "Contest platform (LeetCode, CodeChef, AtCoder, Codeforces)",
+          "contest": "Contest identifier/code",
+          "score": "Total score achieved in the contest",
+          "solved": "Number of problems solved",
+          "languages": "Programming languages used in submissions"
+        };
+
+        TOOLTIP_PATTERNS = [
+          { re: /^assignment/,          tip: "Best " + bestOf + " assignment contest scores, " + maxPer + " marks each" },
+          { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " contests in C." },
+          { re: /^total/,               tip: "Assignment + Practice marks" },
+          { re: /assign.*c solved/,     tip: "Problems solved in C in this assignment contest" },
+          { re: /assign.*marks/,        tip: "Marks: 4+ solved=10, 3=9, 2=7, 1=4, 0 participated=2, DNP=0" },
+          { re: /best.*assignment/,     tip: "Sum of top " + bestOf + " assignment scores (max " + (bestOf * maxPer) + ")" },
+          { re: /practice.*mark/,       tip: "Counted contests x " + mpc + ", capped at " + maxMarks },
+          { re: /practice.*counted/,    tip: "Contests counted toward practice. If C req met: all (max " + maxContests + "). If not: only C." }
+        ];
+      }
+
+      // Initialize with defaults (updated after API load)
+      initTooltips(null);
+
+      function getTooltip(header) {
+        var h = header.toLowerCase();
+        if (TOOLTIPS[h]) return TOOLTIPS[h];
+        for (var i = 0; i < TOOLTIP_PATTERNS.length; i++) {
+          if (TOOLTIP_PATTERNS[i].re.test(h)) return TOOLTIP_PATTERNS[i].tip;
+        }
+        return "";
+      }
+
+      function announce(msg) {
+        document.getElementById("status").textContent = msg;
+      }
+
+      // Fetch all data in a single API call
+      fetchAllData();
+
+      // Tab switching
+      document.querySelectorAll(".tab").forEach(function(tab) {
+        tab.addEventListener("click", function() { switchTab(this.dataset.view); });
+        tab.addEventListener("keydown", function(e) {
+          var tabs = Array.from(document.querySelectorAll(".tab"));
+          var idx = tabs.indexOf(this);
+          if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+            e.preventDefault();
+            var next = e.key === "ArrowRight" ? (idx + 1) % tabs.length : (idx - 1 + tabs.length) % tabs.length;
+            tabs[next].focus();
+            switchTab(tabs[next].dataset.view);
+          }
+        });
+      });
+
+      function switchTab(view) {
+        currentView = view;
+        document.querySelectorAll(".tab").forEach(function(t) {
+          var isActive = t.dataset.view === view;
+          t.setAttribute("aria-selected", isActive ? "true" : "false");
+          t.setAttribute("tabindex", isActive ? "0" : "-1");
+        });
+        document.getElementById("leaderboard-view").classList.toggle("hide", view !== "leaderboard");
+        document.getElementById("grades-view").classList.toggle("hide", view !== "grades");
+        document.getElementById("performance-view").classList.toggle("hide", view !== "performance");
+        applySearch();
+        var labels = { leaderboard: "Showing leaderboard", grades: "Showing detailed grades", performance: "Showing contest performance" };
+        announce(labels[view]);
+      }
+
+      document.getElementById("search").addEventListener("input", applySearch);
+
+      function applySearch() {
+        var q = document.getElementById("search").value.toLowerCase();
+        var bodyId = VIEW_PREFIX[currentView] + "-body";
+        var rows = document.getElementById(bodyId).querySelectorAll("tr");
+        var visible = 0;
+        rows.forEach(function(row) {
+          var show = row.textContent.toLowerCase().indexOf(q) !== -1;
+          row.style.display = show ? "" : "none";
+          if (show) visible++;
+        });
+        if (q) announce(visible + " result" + (visible !== 1 ? "s" : "") + " found");
+      }
+
+      // Scroll arrows
+      function setupScrollArrows(prefix) {
+        var tableEl = document.getElementById(prefix + "-table");
+        var leftArrow = document.getElementById(prefix + "-arrow-left");
+        var rightArrow = document.getElementById(prefix + "-arrow-right");
+
+        function updateArrows() {
+          var canLeft = tableEl.scrollLeft > 5;
+          var canRight = tableEl.scrollLeft < (tableEl.scrollWidth - tableEl.clientWidth - 5);
+          leftArrow.classList.toggle("visible", canLeft);
+          rightArrow.classList.toggle("visible", canRight);
+          leftArrow.setAttribute("aria-hidden", !canLeft);
+          rightArrow.setAttribute("aria-hidden", !canRight);
+        }
+
+        tableEl.addEventListener("scroll", updateArrows);
+        window.addEventListener("resize", updateArrows);
+        setTimeout(updateArrows, 100);
+
+        leftArrow.addEventListener("click", function() {
+          tableEl.scrollBy({ left: -200, behavior: "smooth" });
+        });
+        rightArrow.addEventListener("click", function() {
+          tableEl.scrollBy({ left: 200, behavior: "smooth" });
+        });
+      }
+
+      function fetchAllData() {
+        var url = API_BASE;
+
+        // Show loading on active tab
+        document.getElementById(VIEW_PREFIX[currentView] + "-loading").classList.remove("hide");
+
+        fetch(url)
+          .then(function(r) {
+            if (!r.ok) throw new Error("HTTP " + r.status);
+            return r.json();
+          })
+          .then(function(allData) {
+            if (allData.error) throw new Error(allData.message || "Server error");
+            if (allData.config) initTooltips(allData.config);
+
+            ["leaderboard", "grades", "performance"].forEach(function(view) {
+              var data = allData[view];
+              if (!data) return;
+              cache[view] = data;
+
+              var prefix = VIEW_PREFIX[view];
+              renderTable(prefix + "-head", prefix + "-body", data.headers, data.rows, view);
+              document.getElementById(prefix + "-loading").classList.add("hide");
+              document.getElementById(prefix + "-scroll-wrap").classList.remove("hide");
+              setupScrollArrows(prefix);
+            });
+
+            if (allData.leaderboard && allData.leaderboard.lastUpdated) {
+              document.getElementById("last-updated").textContent = "Last updated: " + allData.leaderboard.lastUpdated;
+            }
+            announce("Data loaded");
+          })
+          .catch(function() {
+            ["lb", "gr", "pf"].forEach(function(prefix) {
+              document.getElementById(prefix + "-loading").classList.add("hide");
+              document.getElementById(prefix + "-error").textContent = "Failed to load data. Please try again later.";
+              document.getElementById(prefix + "-error").classList.remove("hide");
+            });
+          });
+      }
+
+      function renderTable(headId, bodyId, headers, rows, view) {
+        var head = document.getElementById(headId);
+        head.innerHTML = "";
+        var TEXT_HEADERS = ["code", "name", "platform", "languages", "c req met", "roll no"];
+        headers.forEach(function(h, i) {
+          var th = document.createElement("th");
+          th.setAttribute("scope", "col");
+          th.setAttribute("tabindex", "0");
+          th.setAttribute("role", "columnheader");
+          if (TEXT_HEADERS.indexOf(h.toLowerCase()) !== -1) {
+            th.style.textAlign = "left";
+          }
+          var tip = getTooltip(h);
+          if (tip) th.setAttribute("title", tip);
+          var tipHtml = tip ? '<span class="tip" role="tooltip">' + esc(tip) + '</span>' : '';
+          th.innerHTML = esc(h) + ' <span class="arrow" aria-hidden="true">&#9650;</span>' + tipHtml;
+          th.addEventListener("click", function() { sortTable(view, i); });
+          th.addEventListener("keydown", function(e) {
+            if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sortTable(view, i); }
+          });
+          head.appendChild(th);
+        });
+        fillBody(bodyId, headers, rows, view);
+      }
+
+      function fillBody(bodyId, headers, rows, view) {
+        var body = document.getElementById(bodyId);
+        body.innerHTML = "";
+
+        // Identify text columns (left-aligned), everything else right-aligned
+        var textCols = {};
+        var langCol = -1;
+        var rankCol = -1;
+        headers.forEach(function(h, i) {
+          var hl = h.toLowerCase();
+          if (hl === "rank") rankCol = i;
+          if (hl === "languages") langCol = i;
+          if (hl === "code" || hl === "name" || hl === "platform" ||
+              hl === "languages" || hl === "c req met" || hl === "roll no") {
+            textCols[i] = true;
+          }
+        });
+
+        rows.forEach(function(row) {
+          var tr = document.createElement("tr");
+          row.forEach(function(cell, i) {
+            var td = document.createElement("td");
+            td.textContent = cell;
+            if (i === langCol) {
+              td.className = "lang-cell";
+            } else if (textCols[i]) {
+              td.className = "text-cell";
+            }
+            if (i === rankCol) {
+              td.style.fontWeight = "700";
+              if (cell === 1) td.classList.add("rank-1");
+              else if (cell === 2) td.classList.add("rank-2");
+              else if (cell === 3) td.classList.add("rank-3");
+            }
+            tr.appendChild(td);
+          });
+          body.appendChild(tr);
+        });
+      }
+
+      function sortTable(view, colIdx) {
+        var state = sortState[view];
+        if (state.col === colIdx) { state.asc = !state.asc; }
+        else { state.col = colIdx; state.asc = true; }
+
+        var data = cache[view];
+        if (!data) return;
+
+        var sorted = data.rows.slice().sort(function(a, b) {
+          var va = a[colIdx], vb = b[colIdx];
+          if (typeof va === "number" && typeof vb === "number")
+            return state.asc ? va - vb : vb - va;
+          va = String(va).toLowerCase();
+          vb = String(vb).toLowerCase();
+          if (va < vb) return state.asc ? -1 : 1;
+          if (va > vb) return state.asc ? 1 : -1;
+          return 0;
+        });
+
+        var prefix = VIEW_PREFIX[view];
+        fillBody(prefix + "-body", data.headers, sorted, view);
+
+        // Update sort indicators
+        var ths = document.getElementById(prefix + "-head").querySelectorAll("th");
+        ths.forEach(function(th, i) {
+          if (i === colIdx) {
+            th.setAttribute("aria-sort", state.asc ? "ascending" : "descending");
+          } else {
+            th.removeAttribute("aria-sort");
+          }
+          var arrow = th.querySelector(".arrow");
+          arrow.innerHTML = (i === colIdx) ? (state.asc ? "&#9650;" : "&#9660;") : "&#9650;";
+        });
+
+        announce("Sorted by " + data.headers[colIdx] + ", " + (state.asc ? "ascending" : "descending"));
+        applySearch();
+      }
+
+      function esc(s) {
+        var d = document.createElement("div");
+        d.textContent = s;
+        return d.innerHTML;
+      }
+    </script>
+  </body>
+</html>

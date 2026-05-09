@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The C For Loop - A While Loop in Disguise</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 32px;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 1em;
+        }
+
+        .reveal h1 {
+            font-size: 2.2em;
+            line-height: 1.2;
+        }
+
+        .reveal h2 {
+            font-size: 1.8em;
+        }
+
+        .reveal h3 {
+            font-size: 1.4em;
+            margin-bottom: 0.5em;
+        }
+
+        .reveal section {
+            text-align: left;
+            height: 100%;
+        }
+
+        .reveal .center-content {
+            text-align: center;
+        }
+
+        .reveal pre {
+            margin: 1em auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+            border-radius: 8px;
+            font-size: 0.65em;
+            line-height: 1.5;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1.5em;
+            border-radius: 8px;
+            max-height: 500px;
+            overflow: auto;
+        }
+
+        .reveal .comparison-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2em;
+            margin: 1.5em 0;
+        }
+
+        .reveal .comparison-item {
+            background: var(--light-bg);
+            padding: 1.5em;
+            border-radius: 8px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 1em 1.5em;
+            margin: 1.5em 0;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .reveal .highlight {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .reveal ul {
+            margin: 1em 0;
+        }
+
+        .reveal li {
+            margin: 0.5em 0;
+            line-height: 1.6;
+        }
+
+        .reveal .fragment.highlight-current-blue {
+            opacity: 1;
+        }
+
+        .reveal .fragment.highlight-current-blue.current-fragment {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .reveal .three-parts {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5em;
+            margin: 2em 0;
+        }
+
+        .reveal .part-box {
+            background: var(--light-bg);
+            padding: 1.5em;
+            border-radius: 8px;
+            text-align: center;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .part-box h4 {
+            margin-bottom: 0.5em;
+            font-size: 1.1em;
+        }
+
+        .reveal .part-box code {
+            display: block;
+            margin-top: 0.5em;
+            background: white;
+            padding: 0.5em;
+            border-radius: 4px;
+        }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 1em 1.5em;
+            margin: 1.5em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .small-text {
+            font-size: 0.8em;
+            color: #6c757d;
+        }
+
+        .reveal table {
+            margin: 1.5em auto;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 1em;
+            border: none;
+        }
+
+        .reveal table td {
+            padding: 0.8em 1em;
+            border: 1px solid #dee2e6;
+        }
+
+        .reveal table tr:nth-child(even) {
+            background: var(--light-bg);
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            
+            <!-- Title Slide -->
+            <section class="center-content">
+                <h1>The C For Loop</h1>
+                <h3 style="color: #7f8c8d;">A While Loop in Disguise</h3>
+                <p style="margin-top: 2em; font-size: 0.8em; color: #95a5a6;">Introduction to DSA (C Programming)</p>
+            </section>
+
+            <!-- Opening Hook -->
+            <section>
+                <h2>Let's Start with Python</h2>
+                <p>What does this do?</p>
+                <pre><code class="language-python">for i in range(5):
+    print(i)</code></pre>
+                <div class="fragment">
+                    <p style="margin-top: 1.5em;">In C (using what you know):</p>
+                    <pre><code class="language-c">int i = 0;
+while (i < 5) {
+    printf("%d\n", i);
+    i++;
+}</code></pre>
+                </div>
+            </section>
+
+            <section>
+                <h2>The Question</h2>
+                <div class="key-point" style="margin-top: 2em; font-size: 1.1em;">
+                    <p>What if I told you C has a <span class="highlight">for loop</span> too, but it's <span class="highlight">completely different</span> from Python's?</p>
+                </div>
+            </section>
+
+            <!-- The Aha Moment -->
+            <section>
+                <h2>The C For Loop</h2>
+                <p>Here's the same code as a for loop:</p>
+                <pre><code class="language-c">for (int i = 0; i < 5; i++) {
+    printf("%d\n", i);
+}</code></pre>
+                <p class="fragment" style="margin-top: 1.5em;">Let's break this down...</p>
+            </section>
+
+            <section>
+                <h2>Side by Side</h2>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4>While Loop</h4>
+                        <pre><code class="language-c">int i = 0;
+
+while (i < 5) {
+    printf("%d\n", i);
+    i++;
+}</code></pre>
+                    </div>
+                    <div class="comparison-item">
+                        <h4>For Loop</h4>
+                        <pre><code class="language-c">for (int i = 0; 
+     i < 5; 
+     i++) {
+    printf("%d\n", i);
+}</code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>The Big Reveal</h2>
+                <div class="key-point">
+                    A for loop takes the <span class="highlight">THREE parts</span> of a while loop and puts them in one line!
+                </div>
+                <div class="three-parts">
+                    <div class="part-box">
+                        <h4>Initialization</h4>
+                        <p class="small-text">Runs once at start</p>
+                        <code>int i = 0</code>
+                    </div>
+                    <div class="part-box">
+                        <h4>Condition</h4>
+                        <p class="small-text">Checked before each iteration</p>
+                        <code>i < 5</code>
+                    </div>
+                    <div class="part-box">
+                        <h4>Update</h4>
+                        <p class="small-text">Runs after each iteration</p>
+                        <code>i++</code>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Python vs C Contrast -->
+            <section>
+                <h2>Python vs C: Different Philosophy</h2>
+                <table>
+                    <tr>
+                        <th></th>
+                        <th>Python's for loop</th>
+                        <th>C's for loop</th>
+                    </tr>
+                    <tr>
+                        <td><strong>Syntax</strong></td>
+                        <td><code>for item in collection</code></td>
+                        <td><code>for (start; check; update)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>What it does</strong></td>
+                        <td>"Give me each item"</td>
+                        <td>"Repeat with control"</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Control</strong></td>
+                        <td>Iterates <em>over</em> things</td>
+                        <td>You control everything</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Flexibility</strong></td>
+                        <td>Limited (forward only)</td>
+                        <td>Total (any direction, any step)</td>
+                    </tr>
+                </table>
+            </section>
+
+            <section>
+                <h2>The Key Insight</h2>
+                <blockquote>
+                    <p style="font-size: 1.1em;"><strong>Python's for loop asks:</strong> "What items?"</p>
+                    <p style="font-size: 1.1em; margin-top: 0.5em;"><strong>C's for loop asks:</strong> "How many times and how?"</p>
+                </blockquote>
+            </section>
+
+            <!-- Practice Examples -->
+            <section>
+                <h2>Example 1: Count Backwards</h2>
+                <pre><code class="language-c">for (int i = 10; i >= 0; i--) {
+    printf("%d\n", i);
+}</code></pre>
+                <p class="fragment" style="margin-top: 1em;">Try this with a while loop — see how messy it gets?</p>
+            </section>
+
+            <section>
+                <h2>Example 2: Skip by 2s</h2>
+                <p>Print even numbers from 0 to 20:</p>
+                <pre><code class="language-c">for (int i = 0; i <= 20; i += 2) {
+    printf("%d ", i);
+}</code></pre>
+                <p class="fragment" style="margin-top: 1em;">Output: <code>0 2 4 6 8 10 12 14 16 18 20</code></p>
+            </section>
+
+            <section>
+                <h2>Example 3: Nested Loops</h2>
+                <p>Print all coordinate pairs:</p>
+                <pre><code class="language-c">for (int i = 1; i <= 3; i++) {
+    for (int j = 1; j <= 3; j++) {
+        printf("(%d,%d) ", i, j);
+    }
+    printf("\n");
+}</code></pre>
+                <p class="fragment" style="margin-top: 1em;">Output:</p>
+                <pre class="fragment"><code>(1,1) (1,2) (1,3) 
+(2,1) (2,2) (2,3) 
+(3,1) (3,2) (3,3)</code></pre>
+                <p class="fragment small-text">Imagine doing this with while loops!</p>
+            </section>
+
+            <!-- The Challenge -->
+            <section>
+                <h2>⚠️ The Challenge</h2>
+                <p>What's wrong with this code?</p>
+                <pre><code class="language-c">for (int i = 0; i < 10; i--) {
+    printf("%d ", i);
+}</code></pre>
+                <div class="fragment" style="margin-top: 1.5em;">
+                    <p><strong>Questions:</strong></p>
+                    <ul>
+                        <li>What happens when you run this?</li>
+                        <li>Why does it behave that way?</li>
+                        <li>How would you fix it to count down?</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>Your Turn</h2>
+                <div class="key-point">
+                    <p><strong>Challenge:</strong> Write a for loop that prints only multiples of 3 from 3 to 30</p>
+                </div>
+                <p class="fragment" style="margin-top: 2em;">Hint: Think about the three parts...</p>
+                <ul class="fragment">
+                    <li class="fragment highlight-current-blue">Where do you start?</li>
+                    <li class="fragment highlight-current-blue">How do you know when to stop?</li>
+                    <li class="fragment highlight-current-blue">How do you move forward?</li>
+                </ul>
+            </section>
+
+            <!-- Bridge to Arrays -->
+            <section>
+                <h2>Coming Up Next: Arrays</h2>
+                <blockquote>
+                    <p>Right now we're counting: 0, 1, 2, 3...</p>
+                    <p style="margin-top: 0.8em;">But what if we had <span class="highlight">100 numbers</span> we wanted to process?</p>
+                    <p style="margin-top: 0.8em;">Do we need 100 variables? <strong>No!</strong></p>
+                    <p style="margin-top: 0.8em;">That's where <span class="highlight">arrays</span> come in.</p>
+                </blockquote>
+                <p class="fragment" style="margin-top: 1.5em; text-align: center; font-size: 1.1em;">And guess what — for loops and arrays are <span class="highlight">best friends</span>. 🤝</p>
+            </section>
+
+            <!-- Key Takeaways -->
+            <section>
+                <h2>Key Takeaways</h2>
+                <ol style="line-height: 2;">
+                    <li class="fragment">C's for loop = while loop with <span class="highlight">better packaging</span></li>
+                    <li class="fragment">It's about <span class="highlight">control</span> (start, stop, step), not about collections</li>
+                    <li class="fragment">Three parts: <code>init; condition; update</code></li>
+                    <li class="fragment">Perfect for when you know <span class="highlight">"how many times"</span> to repeat</li>
+                </ol>
+            </section>
+
+            <section class="center-content">
+                <h1>Questions?</h1>
+                <p style="margin-top: 2em; color: #7f8c8d;">Let's practice writing some for loops!</p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            center: false,
+            slideNumber: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>

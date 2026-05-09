@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structures and Unions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/zenburn.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #2b2b2b;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+        }
+
+        .hljs {
+            background: #3f3f3f !important;
+            color: #f8f8f2 !important;
+        }
+
+        pre code {
+            color: #f8f8f2 !important;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 24px;
+        }
+
+        .reveal h1, .reveal h2 {
+            color: var(--main-color);
+            text-transform: none;
+        }
+
+        .reveal h1 {
+            font-size: 2.2em;
+            margin-bottom: 0.3em;
+        }
+
+        .reveal h2 {
+            font-size: 1.6em;
+            margin-bottom: 0.5em;
+        }
+
+        /* All info boxes - consistent styling */
+        .key-point,
+        .warning-box,
+        .insight-box,
+        .problem-box,
+        .solution-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .key-point {
+            background: #fff3cd;
+            border-color: #ffc107;
+        }
+
+        .warning-box {
+            background: #ffe6e6;
+            border-color: var(--error-color);
+        }
+
+        .insight-box {
+            background: #e8f5e9;
+            border-color: var(--success-color);
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-color: var(--error-color);
+        }
+
+        .solution-box {
+            background: #e3f2fd;
+            border-color: var(--accent-color);
+        }
+
+        .key-point strong,
+        .warning-box strong,
+        .insight-box strong,
+        .problem-box strong,
+        .solution-box strong {
+            display: block;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .key-point ul,
+        .warning-box ul,
+        .insight-box ul,
+        .problem-box ul,
+        .solution-box ul {
+            margin: 0;
+        }
+
+        pre code {
+            border-radius: 8px;
+            padding: 30px 35px !important;
+        }
+
+        pre {
+            margin: 25px 0 !important;
+        }
+
+        .subtle-note {
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .comparison-box {
+            border: 2px solid var(--accent-color);
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .memory-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 10px 0;
+        }
+
+        .memory-block {
+            border: 2px solid var(--main-color);
+            width: 100px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            font-weight: bold;
+            font-size: 0.8em;
+            padding: 5px;
+        }
+
+        .memory-label {
+            font-family: monospace;
+            font-weight: bold;
+            color: var(--accent-color);
+            width: 120px;
+        }
+
+        .padding-block {
+            background: #ffe0b2 !important;
+            border-color: var(--warning-color) !important;
+        }
+
+        table {
+            font-size: 0.8em;
+            margin: 20px auto;
+        }
+
+        table th {
+            background: var(--light-bg);
+            padding: 12px 20px;
+        }
+
+        table td {
+            padding: 10px 20px;
+        }
+
+        ul, ol {
+            margin-left: 1em;
+        }
+
+        li {
+            margin: 0.5em 0;
+        }
+
+        .reveal code {
+            color: var(--accent-color);
+            font-weight: 600;
+        }
+
+        .reveal pre code {
+            color: inherit;
+        }
+
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+
+        .leaderboard-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .player-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border: 2px solid var(--accent-color);
+            border-radius: 5px;
+            background: white;
+        }
+
+        .rank-badge {
+            width: 40px;
+            height: 40px;
+            background: var(--accent-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+
+        .player-info {
+            flex: 1;
+            text-align: left;
+            font-size: 0.9em;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-family: monospace;
+        }
+
+        .player-stats {
+            color: #666;
+            font-size: 0.85em;
+        }
+
+        .section-divider {
+            background: var(--accent-color);
+            color: white;
+            padding: 40px;
+        }
+
+        .section-divider h2 {
+            color: white;
+            font-size: 2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+<!-- ========== TITLE ========== -->
+<section>
+    <h1>Structures and Unions</h1>
+    <p style="color: #7f8c8d; font-size: 0.9em;">Organizing Data in C</p>
+    <p style="color: #7f8c8d; font-size: 0.75em; margin-top: 2em;">ES 248 — Data Structures and Algorithms</p>
+</section>
+
+<!-- ========== PART 1: STRUCTURES ========== -->
+
+<!-- INTRO & PROBLEM -->
+<section>
+    <h2>A Real Problem</h2>
+    <p>You're building a leaderboard for a programming contest.</p>
+    <div class="leaderboard-visual" style="font-size: 0.75em;">
+        <div class="player-row">
+            <div class="rank-badge">1</div>
+            <div class="player-info">
+                <div class="player-name">aryanc403</div>
+                <div class="player-stats">Rating: 2847 • Problems: 3456 • Country: IN</div>
+            </div>
+        </div>
+        <div class="player-row">
+            <div class="rank-badge">2</div>
+            <div class="player-info">
+                <div class="player-name">rahul_codes</div>
+                <div class="player-stats">Rating: 2654 • Problems: 2987 • Country: IN</div>
+            </div>
+        </div>
+        <div class="player-row">
+            <div class="rank-badge">3</div>
+            <div class="player-info">
+                <div class="player-name">priya_iitd</div>
+                <div class="player-stats">Rating: 2543 • Problems: 2456 • Country: IN</div>
+            </div>
+        </div>
+    </div>
+    <p class="fragment" style="margin-top: 20px;">Each player has: <strong>username, rating, problems solved, contests, country, rank</strong></p>
+</section>
+
+<section>
+    <h2>Bad Approach: Separate Arrays</h2>
+    <pre><code class="language-c">char usernames[100000][50];
+int ratings[100000];
+int problems_solved[100000];
+int contests[100000];
+char countries[100000][3];
+int ranks[100000];</code></pre>
+    <div class="problem-box fragment">
+        <strong>Problems</strong>
+        <ul style="margin: 0;">
+            <li>Easy to make mistakes (index mismatches)</li>
+            <li>Hard to keep arrays synchronized</li>
+            <li>Want to sort by rating? Must keep 6 arrays in sync!</li>
+            <li>No logical grouping</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>Sorting? Nightmare!</h2>
+    <p>How do you sort players by rating?</p>
+    <pre class="fragment"><code class="language-c">// Bubble sort — need to swap in ALL 6 arrays!
+for (int i = 0; i < n-1; i++) {
+    for (int j = 0; j < n-i-1; j++) {
+        if (ratings[j] < ratings[j+1]) {
+            // Swap ratings
+            int temp_rating = ratings[j];
+            ratings[j] = ratings[j+1];
+            ratings[j+1] = temp_rating;
+
+            // Swap usernames
+            char temp_name[50];
+            strcpy(temp_name, usernames[j]);
+            strcpy(usernames[j], usernames[j+1]);
+            strcpy(usernames[j+1], temp_name);
+
+            // Swap problems_solved
+            int temp_prob = problems_solved[j];
+            problems_solved[j] = problems_solved[j+1];
+            problems_solved[j+1] = temp_prob;
+
+            // ... 3 more arrays! (contests, countries, ranks)
+        }
+    }
+}</code></pre>
+    <p class="warning-box fragment">Forgot to swap one array? Data is now corrupt!</p>
+</section>
+
+<section>
+    <h2>Passing Player Data?</h2>
+    <pre><code class="language-c">void printPlayer(char username[], int rating,
+                 int problems, int contests,
+                 char country[], int rank) {
+    printf("%s: Rating %d\n", username, rating);
+}</code></pre>
+    <p class="warning-box fragment">6 parameters! Gets worse as you add fields (last active, max streak, tier...)</p>
+</section>
+
+<section>
+    <h2>Enter: Structures</h2>
+    <pre><code class="language-c">struct Player {
+    char username[50];
+    int rating;
+    int problems_solved;
+    int contests;
+    char country[3];
+    int rank;
+};</code></pre>
+    <div class="solution-box fragment">
+        <strong>Benefits</strong>
+        <ul style="margin: 0;">
+            <li>All related data in <strong>one logical unit</strong></li>
+            <li>Clean, organized, scalable</li>
+            <li>Easier to pass around</li>
+        </ul>
+    </div>
+</section>
+
+<!-- STRUCTURES BASICS -->
+<section>
+    <h2>Creating a Player</h2>
+    <pre><code class="language-c">struct Player p1;
+
+strcpy(p1.username, "tourist");
+p1.rating = 3952;
+p1.problems_solved = 5234;
+p1.contests = 187;
+strcpy(p1.country, "BY");
+p1.rank = 1;
+
+printf("%s has rating %d\n", p1.username, p1.rating);</code></pre>
+    <p class="key-point">Use the <code>.</code> operator to access members</p>
+</section>
+
+<section>
+    <h2>Array of Players — The Leaderboard!</h2>
+    <pre><code class="language-c">struct Player leaderboard[100000];
+
+// Rank 1
+strcpy(leaderboard[0].username, "tourist");
+leaderboard[0].rating = 3952;
+leaderboard[0].problems_solved = 5234;
+
+// Rank 2
+strcpy(leaderboard[1].username, "Benq");
+leaderboard[1].rating = 3801;
+leaderboard[1].problems_solved = 3456;
+
+// ... 99,998 more players</code></pre>
+</section>
+
+<section>
+    <h2>Passing to Functions</h2>
+    <pre><code class="language-c">void printPlayer(struct Player p) {
+    printf("%s (Rating: %d) - %d problems\n",
+           p.username, p.rating, p.problems_solved);
+}
+
+void printTopCountry(struct Player p) {
+    printf("Top %s player: %s\n",
+           p.country, p.username);
+}
+
+printPlayer(leaderboard[0]);
+printTopCountry(leaderboard[0]);</code></pre>
+    <p class="insight-box fragment">Clean interface, single parameter instead of 6!</p>
+</section>
+
+<section>
+    <h2>Pointers to Structures</h2>
+    <pre><code class="language-c">struct Player *ptr = &leaderboard[0];
+
+// Two ways to access members:
+printf("%d\n", (*ptr).rating);   // Dereference, then access
+printf("%d\n", ptr->rating);     // Arrow operator (preferred)
+
+ptr->rating = 4000;  // Update rating</code></pre>
+    <p class="key-point"><code>-></code> is syntactic sugar for <code>(*ptr).</code></p>
+</section>
+
+<!-- ANOTHER EXAMPLE: CRICKET -->
+<section>
+    <h2>Another Example: Cricket Scorecard</h2>
+    <pre><code class="language-c">struct Batsman {
+    char name[50];
+    int runs;
+    int balls;
+    int fours;
+    int sixes;
+    float strike_rate;
+};
+
+struct Batsman rohit = {
+    "Rohit Sharma", 85, 62, 8, 3, 137.1
+};
+struct Batsman virat = {
+    "Virat Kohli", 112, 98, 11, 2, 114.3
+};</code></pre>
+    <p class="fragment" style="margin-top: 15px;">Structures work for <strong>any</strong> real-world entity with multiple attributes!</p>
+</section>
+
+<section>
+    <h2>Calculate Strike Rate</h2>
+    <pre><code class="language-c">float calculateStrikeRate(struct Batsman b) {
+    if (b.balls == 0) return 0.0;
+    return (b.runs * 100.0) / b.balls;
+}
+
+void printScorecard(struct Batsman b) {
+    printf("%-20s %3d (%3d) [%dX4, %dX6] SR: %.1f\n",
+           b.name, b.runs, b.balls,
+           b.fours, b.sixes, b.strike_rate);
+}
+
+// Output: Rohit Sharma        85 ( 62) [8X4, 3X6] SR: 137.1
+//         Virat Kohli        112 ( 98) [11X4, 2X6] SR: 114.3</code></pre>
+</section>
+
+<!-- MEMORY LAYOUT -->
+<section>
+    <h2>How are Structures Stored?</h2>
+    <pre><code class="language-c">struct Player {
+    char username[50];  // 50 bytes
+    int rating;         // 4 bytes
+    int problems;       // 4 bytes
+    int contests;       // 4 bytes
+    char country[3];    // 3 bytes
+    int rank;           // 4 bytes
+};</code></pre>
+    <div class="fragment">
+        <p>Expected size: 50 + 4 + 4 + 4 + 3 + 4 = <strong>69 bytes</strong></p>
+        <pre><code class="language-c">printf("%lu\n", sizeof(struct Player));</code></pre>
+        <p class="big-number fragment">72 bytes</p>
+        <p class="fragment">Why? <strong>Padding</strong></p>
+    </div>
+</section>
+
+<section>
+    <h2>Structure Padding</h2>
+    <div class="memory-row" style="font-size: 0.7em; flex-direction: column; align-items: start;">
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">username[50]:</span>
+            <div class="memory-block" style="width: 250px;">[50 bytes]</div>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">rating:</span>
+            <div class="memory-block" style="width: 80px;">[4 bytes]</div>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">problems:</span>
+            <div class="memory-block" style="width: 80px;">[4 bytes]</div>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">contests:</span>
+            <div class="memory-block" style="width: 80px;">[4 bytes]</div>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">country[3]:</span>
+            <div class="memory-block" style="width: 60px;">[3 bytes]</div>
+            <div class="memory-block padding-block" style="width: 20px;">[1]</div>
+            <span style="color: var(--warning-color); font-weight: bold;">← padding</span>
+        </div>
+        <div style="display: flex; gap: 5px; align-items: center;">
+            <span class="memory-label">rank:</span>
+            <div class="memory-block" style="width: 80px;">[4 bytes]</div>
+        </div>
+    </div>
+    <p class="key-point" style="margin-top: 30px;">CPU prefers accessing data at aligned addresses (4-byte boundaries for <code>int</code>)</p>
+</section>
+
+<section>
+    <h2>Always Use sizeof()</h2>
+    <pre><code class="language-c">// Check actual size
+printf("Size: %lu bytes\n", sizeof(struct Player));
+
+// When allocating memory
+struct Player *players = malloc(n * sizeof(struct Player));
+
+// When using qsort/bsearch
+qsort(players, n, sizeof(struct Player), compare);</code></pre>
+    <p class="warning-box">Never assume structure size — padding varies by compiler and architecture!</p>
+</section>
+
+<!-- MORE ON PADDING -->
+<section>
+    <h2>Padding: Order Matters!</h2>
+    <div style="display: flex; gap: 40px; justify-content: center; font-size: 0.8em;">
+        <div>
+            <p><strong>Bad ordering:</strong></p>
+            <pre><code class="language-c">struct Bad {
+    char a;    // 1 byte
+    int b;     // 4 bytes
+    char c;    // 1 byte
+    int d;     // 4 bytes
+};</code></pre>
+            <p class="fragment" style="color: var(--error-color);">Size: 16 bytes<br>(6 bytes padding!)</p>
+        </div>
+        <div class="fragment">
+            <p><strong>Good ordering:</strong></p>
+            <pre><code class="language-c">struct Good {
+    int b;     // 4 bytes
+    int d;     // 4 bytes
+    char a;    // 1 byte
+    char c;    // 1 byte
+};</code></pre>
+            <p class="fragment" style="color: var(--success-color);">Size: 12 bytes<br>(2 bytes padding)</p>
+        </div>
+    </div>
+    <p class="key-point fragment" style="margin-top: 30px;">Tip: Group members by size (largest first) to minimize padding</p>
+</section>
+
+<section>
+    <h2>Visualizing Bad vs Good</h2>
+    <div style="font-size: 0.75em;">
+        <p><strong>Bad:</strong> char, int, char, int</p>
+        <div style="display: flex; gap: 2px; margin: 10px 0;">
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">a</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">c</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+        </div>
+        <p class="fragment" style="margin-top: 30px;"><strong>Good:</strong> int, int, char, char</p>
+        <div class="fragment" style="display: flex; gap: 2px; margin: 10px 0;">
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">b</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">d</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">a</div>
+            <div style="border: 2px solid var(--accent-color); padding: 8px; background: #e3f2fd;">c</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+            <div style="border: 2px solid var(--warning-color); padding: 8px; background: #fff3e0;">pad</div>
+        </div>
+    </div>
+</section>
+
+<!-- PADDING RULES -->
+<section>
+    <h2>The Rules of Padding</h2>
+    <div style="text-align: left; max-width: 90%; margin: 0 auto;">
+        <div class="key-point" style="margin: 20px 0;">
+            <strong>Rule 1: Alignment Requirement</strong>
+            <p style="margin: 10px 0 0 0;">Each type must be stored at a memory address divisible by its size:</p>
+            <ul style="margin: 10px 0 0 20px; font-size: 0.9em;">
+                <li><code>char</code> (1 byte) → any address</li>
+                <li><code>short</code> (2 bytes) → address divisible by 2</li>
+                <li><code>int</code> (4 bytes) → address divisible by 4</li>
+                <li><code>double</code> (8 bytes) → address divisible by 8</li>
+            </ul>
+        </div>
+        <div class="key-point fragment" style="margin: 20px 0;">
+            <strong>Rule 2: Struct Start Address</strong>
+            <p style="margin: 10px 0 0 0;">The struct itself starts at an address aligned to its largest member.</p>
+            <p style="margin: 5px 0 0 0; font-size: 0.85em;">If largest member is <code>double</code> (8 bytes), struct starts at 0, 8, 16, 24, 32...</p>
+        </div>
+        <div class="key-point fragment" style="margin: 20px 0;">
+            <strong>Rule 3: Padding at the End</strong>
+            <p style="margin: 10px 0 0 0;">Total size must be a multiple of the largest alignment requirement.</p>
+            <p style="margin: 5px 0 0 0; font-size: 0.85em;">This ensures arrays work correctly (each element starts at valid address).</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why Alignment?</h2>
+    <p>CPUs read memory in fixed-size chunks (typically 4 or 8 bytes at a time).</p>
+    <div class="fragment" style="margin-top: 30px;">
+        <p><strong>Aligned int at address 4:</strong></p>
+        <div style="font-family: monospace; font-size: 0.8em; margin: 10px 0;">
+            <p>Memory: [ _ _ _ _ | <span style="color: var(--success-color); font-weight: bold;">int int int int</span> | _ _ _ _ ]</p>
+            <p style="color: var(--success-color);">✓ Read in 1 operation</p>
+        </div>
+    </div>
+    <div class="fragment" style="margin-top: 20px;">
+        <p><strong>Misaligned int at address 3:</strong></p>
+        <div style="font-family: monospace; font-size: 0.8em; margin: 10px 0;">
+            <p>Memory: [ _ _ _ <span style="color: var(--error-color); font-weight: bold;">i</span> | <span style="color: var(--error-color); font-weight: bold;">nt in t</span> | <span style="color: var(--error-color); font-weight: bold;">i</span> _ _ _ ]</p>
+            <p style="color: var(--error-color);">✗ Requires 2 reads + bit shifting (slow or crashes!)</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why Padding at the End?</h2>
+    <p>Consider an array:</p>
+    <pre class="fragment"><code class="language-c">struct Student arr[3];</code></pre>
+    <div class="fragment" style="margin-top: 30px;">
+        <p>Without end padding (hypothetical size = 26 bytes):</p>
+        <div style="font-family: monospace; font-size: 0.85em; text-align: left; max-width: 80%; margin: 15px auto;">
+            <p>arr[0]: offset 0  (cgpa at 16 ✓ aligned)</p>
+            <p style="color: var(--error-color);">arr[1]: offset 26 (cgpa at 42 ✗ not divisible by 8)</p>
+            <p style="color: var(--error-color);">arr[2]: offset 52 (cgpa at 68 ✗ not divisible by 8)</p>
+        </div>
+    </div>
+    <div class="fragment" style="margin-top: 30px;">
+        <p>With end padding (actual size = 32 bytes):</p>
+        <div style="font-family: monospace; font-size: 0.85em; text-align: left; max-width: 80%; margin: 15px auto;">
+            <p>arr[0]: offset 0  (cgpa at 16 ✓)</p>
+            <p style="color: var(--success-color);">arr[1]: offset 32 (cgpa at 48 ✓ divisible by 8)</p>
+            <p style="color: var(--success-color);">arr[2]: offset 64 (cgpa at 80 ✓ divisible by 8)</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Student Struct: Detailed Breakdown</h2>
+    <pre><code class="language-c">struct Student {
+    char initial;     // 1
+    int roll_no;      // 4
+    char grade;       // 1
+    double cgpa;      // 8
+    short semester;   // 2
+};</code></pre>
+    <div style="font-family: monospace; font-size: 0.75em; text-align: left; max-width: 85%; margin: 20px auto;">
+        <p><strong>Offset | Field      | Size | Padding After</strong></p>
+        <p>0      | initial    | 1    | +3 (to align int to 4)</p>
+        <p>4      | roll_no    | 4    | 0</p>
+        <p>8      | grade      | 1    | +7 (to align double to 8)</p>
+        <p>16     | cgpa       | 8    | 0</p>
+        <p>24     | semester   | 2    | +6 (struct size → 32, multiple of 8)</p>
+        <p style="margin-top: 15px; color: var(--error-color); font-weight: bold;">Total: 32 bytes (16 data + 16 padding!)</p>
+    </div>
+</section>
+
+<section>
+    <h2>Another Example: Mixed Types</h2>
+    <div style="display: flex; gap: 40px; justify-content: center; font-size: 0.75em;">
+        <div>
+            <p><strong>Version 1:</strong></p>
+            <pre><code class="language-c">struct V1 {
+    char a;      // 1
+    short b;     // 2
+    char c;      // 1
+    int d;       // 4
+};</code></pre>
+            <p class="fragment" style="color: var(--error-color);">Size: 12 bytes</p>
+        </div>
+        <div class="fragment">
+            <p><strong>Version 2:</strong></p>
+            <pre><code class="language-c">struct V2 {
+    char a;      // 1
+    char c;      // 1
+    short b;     // 2
+    int d;       // 4
+};</code></pre>
+            <p class="fragment" style="color: var(--success-color);">Size: 8 bytes</p>
+        </div>
+        <div class="fragment">
+            <p><strong>Version 3:</strong></p>
+            <pre><code class="language-c">struct V3 {
+    int d;       // 4
+    short b;     // 2
+    char a;      // 1
+    char c;      // 1
+};</code></pre>
+            <p class="fragment" style="color: var(--success-color);">Size: 8 bytes</p>
+        </div>
+    </div>
+    <p class="key-point fragment" style="margin-top: 30px;">Same data, different ordering → 50% size difference! (12 vs 8 bytes)</p>
+</section>
+
+<section>
+    <h2>Real Example: Student Record</h2>
+    <div style="display: flex; gap: 40px; justify-content: center; font-size: 0.75em;">
+        <div>
+            <p><strong>❌ Poor ordering:</strong></p>
+            <pre><code class="language-c">struct Student {
+    char initial;     // 1
+    int roll_no;      // 4
+    char grade;       // 1
+    double cgpa;      // 8
+    short semester;   // 2
+};</code></pre>
+            <p class="fragment" style="color: var(--error-color);">Size: 32 bytes<br>(16 bytes wasted!)</p>
+        </div>
+        <div class="fragment">
+            <p><strong>✓ Better ordering:</strong></p>
+            <pre><code class="language-c">struct Student {
+    double cgpa;      // 8
+    int roll_no;      // 4
+    short semester;   // 2
+    char initial;     // 1
+    char grade;       // 1
+};</code></pre>
+            <p class="fragment" style="color: var(--success-color);">Size: 16 bytes<br>(0 bytes wasted!)</p>
+        </div>
+    </div>
+    <p class="insight-box fragment" style="margin-top: 30px;">Rule: Largest types first (double → int → short → char)</p>
+</section>
+
+<section>
+    <h2>Practice: What's the Size?</h2>
+    <pre><code class="language-c">struct Mystery {
+    char x;      // 1 byte
+    double y;    // 8 bytes
+    char z;      // 1 byte
+};</code></pre>
+    <p class="fragment" style="margin-top: 30px;">Expected: 1 + 8 + 1 = <strong>10 bytes</strong></p>
+    <p class="fragment big-number" style="font-size: 2em; margin-top: 20px;">Actual: 24 bytes</p>
+    <p class="fragment" style="margin-top: 20px;"><code>double</code> needs 8-byte alignment → 7 bytes padding after <code>x</code>, 7 bytes padding after <code>z</code></p>
+</section>
+
+<!-- NESTED STRUCTURES -->
+<section>
+    <h2>Structures within Structures</h2>
+    <p>What if we want to track when a player was last active?</p>
+    <pre class="fragment"><code class="language-c">struct Date {
+    int day;
+    int month;
+    int year;
+};
+
+struct Player {
+    char username[50];
+    int rating;
+    int problems_solved;
+    struct Date last_active;  // Nested structure!
+};</code></pre>
+</section>
+
+<section>
+    <h2>Using Nested Structures</h2>
+    <pre><code class="language-c">struct Player p1;
+strcpy(p1.username, "tourist");
+p1.rating = 3952;
+
+// Access nested members
+p1.last_active.day = 17;
+p1.last_active.month = 3;
+p1.last_active.year = 2026;
+
+printf("%s was last active on %d/%d/%d\n",
+       p1.username,
+       p1.last_active.day,
+       p1.last_active.month,
+       p1.last_active.year);</code></pre>
+    <p class="key-point">Use multiple <code>.</code> operators to access nested members</p>
+</section>
+
+<!-- SORTING ARRAYS OF STRUCTURES -->
+<section class="section-divider">
+    <h2>Sorting Arrays of Structures</h2>
+    <p style="color: white; opacity: 0.9;">Using qsort()</p>
+</section>
+
+<section>
+    <h2>Real Leaderboard Operations</h2>
+    <ul>
+        <li>Sort by rating (highest first) → Rank 1, 2, 3...</li>
+        <li>Sort by problems solved</li>
+        <li>Sort by country, then by rating within country</li>
+        <li>Find a player by username</li>
+    </ul>
+    <p class="solution-box fragment" style="margin-top: 30px;">C gives us tools: <code>qsort()</code> and <code>bsearch()</code></p>
+</section>
+
+<section>
+    <h2>qsort() — The Swiss Army Knife</h2>
+    <pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+void qsort(void *base, size_t nmemb, size_t size,
+           int (*compar)(const void *, const void *));</code></pre>
+    <ul style="margin-top: 20px;">
+        <li><code>base</code>: pointer to array</li>
+        <li><code>nmemb</code>: number of elements</li>
+        <li><code>size</code>: size of each element</li>
+        <li><code>compar</code>: comparison function (you provide this)</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Comparison Function</h2>
+    <p>Sort by rating (descending — highest first):</p>
+    <pre><code class="language-c">int compareByRating(const void *a, const void *b) {
+    struct Player *p1 = (struct Player *)a;
+    struct Player *p2 = (struct Player *)b;
+
+    // Descending: higher rating comes first
+    return p2->rating - p1->rating;
+}</code></pre>
+    <div class="key-point fragment">
+        <strong>Return value</strong>
+        <ul style="margin: 0;">
+            <li>Negative if a &lt; b</li>
+            <li>0 if a == b</li>
+            <li>Positive if a &gt; b</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>Sorting the Leaderboard</h2>
+    <pre><code class="language-c">struct Player leaderboard[100000];
+// ... fill with data ...
+
+qsort(leaderboard, 100000, sizeof(struct Player),
+      compareByRating);
+
+// Now leaderboard[0] is highest rated
+printf("Rank 1: %s (Rating: %d)\n",
+       leaderboard[0].username,
+       leaderboard[0].rating);</code></pre>
+</section>
+
+<section>
+    <h2>Multiple Sorting Criteria</h2>
+    <pre><code class="language-c">// Sort by problems solved
+int compareByProblems(const void *a, const void *b) {
+    struct Player *p1 = (struct Player *)a;
+    struct Player *p2 = (struct Player *)b;
+    return p2->problems_solved - p1->problems_solved;
+}
+
+qsort(leaderboard, 100000, sizeof(struct Player),
+      compareByProblems);</code></pre>
+    <p class="insight-box fragment">Different comparison functions → different sort orders!</p>
+</section>
+
+<section>
+    <h2>Multi-Level Sorting</h2>
+    <p>Sort by country, then by rating within each country:</p>
+    <pre><code class="language-c">int compareByCountryThenRating(const void *a, const void *b) {
+    struct Player *p1 = (struct Player *)a;
+    struct Player *p2 = (struct Player *)b;
+
+    // First compare countries
+    int cmp = strcmp(p1->country, p2->country);
+    if (cmp != 0) return cmp;
+
+    // Same country? Compare by rating (descending)
+    return p2->rating - p1->rating;
+}</code></pre>
+    <p class="fragment" style="margin-top: 15px;">Useful for "Top player per country" views</p>
+</section>
+
+<!-- SEARCHING ARRAYS OF STRUCTURES -->
+<section class="section-divider">
+    <h2>Searching Arrays of Structures</h2>
+    <p style="color: white; opacity: 0.9;">Using bsearch()</p>
+</section>
+
+<section>
+    <h2>bsearch() — Binary Search</h2>
+    <pre><code class="language-c">#include &lt;stdlib.h&gt;
+
+void *bsearch(const void *key, const void *base,
+              size_t nmemb, size_t size,
+              int (*compar)(const void *, const void *));</code></pre>
+    <div class="warning-box fragment">
+        <strong>Precondition</strong> Array must be sorted (same order as comparison function)
+    </div>
+    <p class="fragment" style="margin-top: 15px;">Returns: pointer to found element, or <code>NULL</code></p>
+</section>
+
+<section>
+    <h2>Finding a Player by Username</h2>
+    <pre><code class="language-c">// Comparison function for usernames
+int compareByUsername(const void *a, const void *b) {
+    struct Player *p1 = (struct Player *)a;
+    struct Player *p2 = (struct Player *)b;
+    return strcmp(p1->username, p2->username);
+}
+
+// Sort by username first!
+qsort(leaderboard, 100000, sizeof(struct Player),
+      compareByUsername);</code></pre>
+</section>
+
+<section>
+    <h2>Binary Search</h2>
+    <pre><code class="language-c">// Create a key to search for
+struct Player key;
+strcpy(key.username, "tourist");
+
+struct Player *found = bsearch(&key, leaderboard, 100000,
+                               sizeof(struct Player),
+                               compareByUsername);
+
+if (found != NULL) {
+    printf("Found! Rating: %d\n", found->rating);
+} else {
+    printf("Player not found\n");
+}</code></pre>
+</section>
+
+<!-- SELF-REFERENTIAL STRUCTURES -->
+<section>
+    <h2>Self-Referential Structures</h2>
+    <p>Real problem: <strong>Browser history</strong></p>
+    <ul>
+        <li>Visit irctc.co.in (book train ticket)</li>
+        <li>Click link → visit paytm.com (pay)</li>
+        <li>Click link → visit flipkart.com (shop)</li>
+        <li class="fragment">How many pages will you visit? <strong>We don't know in advance!</strong></li>
+    </ul>
+</section>
+
+<section>
+    <h2>Structure Pointing to Itself</h2>
+    <pre><code class="language-c">struct PageNode {
+    char url[200];
+    char title[100];
+    struct PageNode *prev;     // Back button
+    struct PageNode *next;     // Forward button
+};</code></pre>
+    <p class="insight-box fragment">A structure can contain a <strong>pointer to its own type</strong></p>
+</section>
+
+<section>
+    <h2>Creating a History Chain</h2>
+    <pre><code class="language-c">struct PageNode page1, page2, page3;
+
+// Page 1
+strcpy(page1.url, "irctc.co.in");
+strcpy(page1.title, "IRCTC");
+page1.prev = NULL;
+page1.next = &page2;
+
+// Page 2
+strcpy(page2.url, "paytm.com");
+strcpy(page2.title, "Paytm");
+page2.prev = &page1;
+page2.next = &page3;
+
+// Page 3 (current)
+strcpy(page3.url, "flipkart.com");
+strcpy(page3.title, "Flipkart");
+page3.prev = &page2;
+page3.next = NULL;</code></pre>
+</section>
+
+<section>
+    <h2>Visualizing Browser History</h2>
+    <div style="display: flex; gap: 20px; justify-content: center; align-items: center; margin: 30px 0; font-size: 0.85em;">
+        <div style="border: 3px solid var(--accent-color); padding: 15px; border-radius: 8px; text-align: center; min-width: 140px;">
+            <div style="font-family: monospace; font-weight: bold; color: var(--accent-color);">page1</div>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">irctc.co.in</div>
+        </div>
+        <div style="font-size: 1.5em; color: var(--success-color);">⇄</div>
+        <div style="border: 3px solid var(--accent-color); padding: 15px; border-radius: 8px; text-align: center; min-width: 140px;">
+            <div style="font-family: monospace; font-weight: bold; color: var(--accent-color);">page2</div>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">paytm.com</div>
+        </div>
+        <div style="font-size: 1.5em; color: var(--success-color);">⇄</div>
+        <div style="border: 3px solid var(--success-color); padding: 15px; border-radius: 8px; text-align: center; min-width: 140px; background: #e8f5e9;">
+            <div style="font-family: monospace; font-weight: bold; color: var(--success-color);">page3</div>
+            <div style="font-size: 0.9em; color: #666; margin-top: 5px;">flipkart.com</div>
+            <div style="font-size: 0.75em; color: var(--success-color); margin-top: 3px;">← current</div>
+        </div>
+    </div>
+    <p class="fragment" style="margin-top: 20px;">Click back button? Go to <code>page3.prev</code></p>
+    <p class="fragment">Click forward button? Go to <code>page2.next</code></p>
+</section>
+
+<!-- ========== PART 2: UNIONS ========== -->
+
+<section class="section-divider">
+    <h2>Unions</h2>
+    <p style="color: white; opacity: 0.9;">Shared Memory for Different Types</p>
+</section>
+
+<section>
+    <h2>A Real Problem: IP Addresses</h2>
+    <p>IPv4 address: <strong>192.168.1.1</strong></p>
+    <ul>
+        <li class="fragment">Sometimes need it as <strong>4 separate bytes</strong> (for printing)</li>
+        <li class="fragment">Sometimes need it as <strong>one 32-bit number</strong> (for comparison, system calls)</li>
+        <li class="fragment">Same data, different views!</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Union Definition</h2>
+    <pre><code class="language-c">#include &lt;stdint.h&gt;
+
+union IPv4Address {
+    uint32_t addr;              // Whole address (4 bytes)
+    struct {
+        uint8_t a, b, c, d;     // Individual octets (4 bytes)
+    } octets;
+};</code></pre>
+    <p class="insight-box fragment">Like a structure, but all members <strong>share the same memory</strong></p>
+</section>
+
+<section>
+    <h2>Union Memory Layout</h2>
+    <pre><code class="language-c">union IPv4Address ip;
+
+printf("%lu\n", sizeof(ip));  // 4 bytes</code></pre>
+    <div class="key-point fragment">
+        <strong>Key difference from structures</strong>
+        <ul style="margin: 0;">
+            <li>All members <strong>share the same memory location</strong></li>
+            <li>Size = size of <strong>largest member</strong> (both are 4 bytes here)</li>
+            <li>Writing to one member affects the other!</li>
+        </ul>
+    </div>
+</section>
+
+<section>
+    <h2>Using Unions: Different Views</h2>
+    <pre><code class="language-c">union IPv4Address ip;
+
+// Store as 32-bit number (192.168.1.1 in hex)
+ip.addr = 0xC0A80101;
+
+// Read as individual octets
+printf("%d.%d.%d.%d\n",
+       ip.octets.a,    // 192
+       ip.octets.b,    // 168
+       ip.octets.c,    // 1
+       ip.octets.d);   // 1</code></pre>
+    <p class="insight-box fragment">Writing to <code>addr</code> automatically sets the <code>octets</code> — they share memory!</p>
+</section>
+
+<section>
+    <h2>Practical Use: Address Comparison</h2>
+    <pre><code class="language-c">union IPv4Address ip1, ip2;
+
+// Parse "192.168.1.100"
+ip1.octets.a = 192;
+ip1.octets.b = 168;
+ip1.octets.c = 1;
+ip1.octets.d = 100;
+
+// Parse "192.168.1.200"
+ip2.octets.a = 192;
+ip2.octets.b = 168;
+ip2.octets.c = 1;
+ip2.octets.d = 200;
+
+// Compare as single number (fast!)
+if (ip1.addr == ip2.addr) {
+    printf("Same network\n");
+}</code></pre>
+</section>
+
+<section>
+    <h2>Real Use Cases for Unions</h2>
+    <ul>
+        <li><strong>Network programming:</strong> IP addresses, protocol headers</li>
+        <li><strong>Hardware access:</strong> Read/write registers as bytes or words</li>
+        <li><strong>Graphics:</strong> Color as RGBA bytes or single 32-bit value</li>
+        <li><strong>Variant types:</strong> Store one of several types (with a tag)</li>
+    </ul>
+</section>
+
+<!-- QUIZ -->
+<section class="section-divider">
+    <h2>Quick Quiz!</h2>
+    <p style="color: white; opacity: 0.9;">Test Your Understanding</p>
+</section>
+
+<section>
+    <h2>Question 1: Memory Size</h2>
+    <pre><code class="language-c">struct A {
+    int x;      // 4 bytes
+    char y;     // 1 byte
+    int z;      // 4 bytes
+};
+
+union B {
+    int x;      // 4 bytes
+    char y;     // 1 byte
+    int z;      // 4 bytes
+};</code></pre>
+    <p>What are <code>sizeof(struct A)</code> and <code>sizeof(union B)</code>?</p>
+    <div class="fragment" style="margin-top: 20px;">
+        <p class="key-point"><strong>Answer:</strong> struct A = 12 bytes (with padding), union B = 4 bytes</p>
+        <p style="font-size: 0.85em;">Structures store all members sequentially. Unions share memory — size = largest member.</p>
+    </div>
+</section>
+
+<section>
+    <h2>Question 2: Union Behavior</h2>
+    <pre><code class="language-c">union IPv4Address ip;
+ip.addr = 0xC0A80101;  // 192.168.1.1
+
+printf("%d\n", ip.octets.a);</code></pre>
+    <p>What will be printed?</p>
+    <div class="fragment" style="margin-top: 20px;">
+        <p class="key-point"><strong>Answer:</strong> 192 (or 1, depending on endianness)</p>
+        <p style="font-size: 0.85em;">Union members share memory. Writing <code>addr</code> affects <code>octets</code>!</p>
+        <p style="font-size: 0.85em;">On little-endian systems (most modern CPUs): octets.a = 1, octets.d = 192</p>
+    </div>
+</section>
+
+<section>
+    <h2>Question 3: Self-Referential Structures</h2>
+    <p>Which of these is <strong>VALID</strong>?</p>
+    <pre><code class="language-c">// Option A
+struct Node {
+    int data;
+    struct Node next;  // Node inside Node?
+};
+
+// Option B
+struct Node {
+    int data;
+    struct Node *next;  // Pointer to Node
+};</code></pre>
+    <div class="fragment" style="margin-top: 20px;">
+        <p class="key-point"><strong>Answer:</strong> Option B only!</p>
+        <p style="font-size: 0.85em;">Can't store entire structure inside itself (infinite size!). But a <strong>pointer</strong> is always fixed size (8 bytes on 64-bit systems).</p>
+    </div>
+</section>
+
+<section>
+    <h2>Question 4: Structure Access</h2>
+    <pre><code class="language-c">struct Batsman rohit = {"Rohit Sharma", 85, 62, 8, 3, 137.1};
+struct Batsman *ptr = &rohit;
+
+// Which are CORRECT ways to access runs?
+printf("%d\n", rohit.runs);        // A
+printf("%d\n", ptr.runs);          // B
+printf("%d\n", (*ptr).runs);       // C
+printf("%d\n", ptr->runs);         // D</code></pre>
+    <div class="fragment" style="margin-top: 20px;">
+        <p class="key-point"><strong>Answer:</strong> A, C, and D are correct!</p>
+        <p style="font-size: 0.85em;">B is wrong: <code>ptr.runs</code> tries to access member of pointer (not valid).</p>
+        <p style="font-size: 0.85em;">Use <code>.</code> for structures, <code>-></code> for pointers to structures.</p>
+    </div>
+</section>
+
+<section>
+    <h2>Question 5: Cricket Scenario</h2>
+    <p>You have an array of 50 cricketers. You want to find the batsman with the highest strike rate. Which approach is best?</p>
+    <div class="fragment" style="margin-top: 20px;">
+        <p><strong>A.</strong> Sort using <code>qsort()</code> with strike rate comparison, then take first element</p>
+        <p><strong>B.</strong> Use <code>bsearch()</code> to find maximum strike rate</p>
+        <p><strong>C.</strong> Loop through once, track maximum</p>
+    </div>
+    <div class="fragment" style="margin-top: 20px;">
+        <p class="key-point"><strong>Answer:</strong> C is best!</p>
+        <p style="font-size: 0.85em;">Finding max: O(n) loop is simpler and faster than O(n log n) sort.</p>
+        <p style="font-size: 0.85em;"><code>bsearch()</code> only works on <strong>sorted</strong> arrays and finds a specific value, not maximum.</p>
+    </div>
+</section>
+
+<!-- SUMMARY -->
+<section>
+    <h2>Summary</h2>
+    <ul>
+        <li><strong>Structures:</strong> Group related data (players, problems, etc.)</li>
+        <li><strong>Memory:</strong> Sequential layout, padding for alignment</li>
+        <li><strong>Nested structures:</strong> Structures within structures</li>
+        <li><strong>qsort/bsearch:</strong> Built-in tools for sorting and searching</li>
+        <li><strong>Self-referential:</strong> Foundation for linked lists</li>
+        <li><strong>Unions:</strong> Shared memory for variant types</li>
+    </ul>
+</section>
+
+<section>
+    <h1>Questions?</h1>
+</section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

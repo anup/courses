@@ -1,0 +1,1098 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Complexity</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --error-color: #e74c3c;
+        }
+
+        .reveal {
+            font-size: 32px;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--main-color);
+            text-transform: none;
+        }
+
+        .reveal h1 { font-size: 2.5em; }
+        .reveal h2 { font-size: 1.8em; margin-bottom: 30px; }
+        .reveal h3 { font-size: 1.3em; }
+
+        .reveal code {
+            background: #f4f4f4;
+            padding: 2px 8px;
+            border-radius: 3px;
+            color: #c7254e;
+        }
+
+        .reveal pre {
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+
+        .reveal pre code {
+            padding: 20px;
+            max-height: 500px;
+        }
+
+        .hljs {
+            background: #3f3f3f !important;
+            color: #f8f8f2 !important;
+        }
+
+        pre code {
+            color: #f8f8f2 !important;
+        }
+
+        .key-point, .warning-box, .insight-box, .problem-box, .solution-box {
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid;
+            border-radius: 4px;
+            font-size: 0.9em;
+            text-align: left;
+        }
+
+        .key-point {
+            background: #e8f5e9;
+            border-color: var(--success-color);
+        }
+
+        .warning-box {
+            background: #fff3e0;
+            border-color: var(--warning-color);
+        }
+
+        .insight-box {
+            background: #e3f2fd;
+            border-color: var(--accent-color);
+        }
+
+        .problem-box {
+            background: #ffebee;
+            border-color: var(--error-color);
+        }
+
+        .solution-box {
+            background: #e8f5e9;
+            border-color: var(--success-color);
+        }
+
+        .big-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 20px 0;
+        }
+
+        .section-divider {
+            background: var(--accent-color);
+            color: white;
+            padding: 40px;
+        }
+
+        .section-divider h2 {
+            color: white;
+            font-size: 2em;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 20px 0;
+        }
+
+        table th {
+            background: var(--accent-color);
+            color: white;
+            padding: 12px;
+        }
+
+        table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+        }
+
+        table tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin: 30px 0;
+        }
+
+        .comparison-box {
+            border: 2px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+        }
+
+        .highlight-red { color: var(--error-color); font-weight: bold; }
+        .highlight-green { color: var(--success-color); font-weight: bold; }
+        .highlight-blue { color: var(--accent-color); font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+<!-- TITLE -->
+<section>
+    <h1>Time Complexity</h1>
+    <p style="color: #7f8c8d; font-size: 0.9em;">Understanding Algorithm Scalability</p>
+    <p style="color: #7f8c8d; font-size: 0.75em; margin-top: 2em;">ES 248 — Data Structures and Algorithms</p>
+</section>
+
+<!-- PART 1: THE WOW FACTOR -->
+
+<section>
+    <h2>A Familiar Frustration</h2>
+    <p>You're solving <strong>AtCoder ABC449 - Problem C</strong></p>
+    <p style="font-size: 0.85em; color: #7f8c8d;">Time Limit: 2 seconds</p>
+    <div class="fragment" style="margin-top: 40px; font-size: 0.95em;">
+        <p>✓ Test Cases 1-5: <span class="highlight-green">Accepted</span></p>
+        <p>✓ Test Cases 6-10: <span class="highlight-green">Accepted</span></p>
+        <p>✓ Test Cases 11-13: <span class="highlight-green">Accepted</span></p>
+    </div>
+    <div class="fragment" style="margin-top: 30px; font-size: 0.95em;">
+        <p>✗ Test Cases 14-21: <span class="highlight-red">Time Limit Exceeded (TLE)</span></p>
+    </div>
+    <p class="fragment warning-box" style="margin-top: 40px;"><strong>Result: 13/21 test cases passed</strong><br>Your code is correct, but too slow for large inputs!</p>
+</section>
+
+<section>
+    <h2>What is TLE?</h2>
+    <p><strong>Time Limit Exceeded</strong> = Your code ran for more than the allowed time</p>
+    <div class="fragment" style="margin-top: 40px;">
+        <p>Typical competitive programming limits:</p>
+        <ul style="font-size: 0.9em; margin-left: 40px;">
+            <li>1 second for most problems</li>
+            <li>2 seconds for harder problems</li>
+            <li>Sometimes 5-10 seconds for very large inputs</li>
+        </ul>
+    </div>
+    <p class="fragment insight-box" style="margin-top: 40px;">But why do small test cases pass while large ones fail?</p>
+</section>
+
+<section>
+    <h2>The Pattern</h2>
+    <table style="font-size: 0.85em;">
+        <thead>
+            <tr>
+                <th>Test Case</th>
+                <th>Input Size (n)</th>
+                <th>Result</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>100</td>
+                <td class="highlight-green">✓ Pass</td>
+                <td>0.01s</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>1,000</td>
+                <td class="highlight-green">✓ Pass</td>
+                <td>0.08s</td>
+            </tr>
+            <tr class="fragment">
+                <td>3</td>
+                <td>10,000</td>
+                <td class="highlight-red">✗ TLE</td>
+                <td>>1s</td>
+            </tr>
+            <tr class="fragment">
+                <td>4-10</td>
+                <td>100,000+</td>
+                <td class="highlight-red">✗ TLE</td>
+                <td>>1s</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment key-point" style="margin-top: 30px;">Small inputs work. Large inputs timeout. <strong>Your algorithm doesn't scale.</strong></p>
+</section>
+
+<section>
+    <h2>Beyond Competitive Programming</h2>
+    <p>TLE in contests = 1 second limit</p>
+    <p class="fragment" style="margin-top: 30px;">But what about <strong>real-world problems</strong>?</p>
+    <p class="fragment" style="margin-top: 40px; font-size: 1.2em; color: var(--accent-color);">Let's see an extreme example...</p>
+</section>
+
+<section>
+    <h2>The Aadhaar Problem</h2>
+    <p>India has <strong>1 billion</strong> (10<sup>9</sup>) Aadhaar numbers</p>
+    <p class="fragment">Task: Verify SIM card applicants against this database</p>
+    <div class="fragment problem-box" style="margin-top: 30px;">
+        <strong>Naive Approach: Check every applicant against every Aadhaar number</strong>
+        <p style="margin: 10px 0 0 0;">1 billion applicants × 1 billion database entries</p>
+        <p class="big-number" style="font-size: 2em; margin: 15px 0;">10<sup>18</sup> comparisons</p>
+    </div>
+</section>
+
+<section>
+    <h2>How Long Would That Take?</h2>
+    <p>Modern CPU: ~10<sup>9</sup> operations/second</p>
+    <div class="fragment" style="margin-top: 30px;">
+        <p>10<sup>18</sup> comparisons ÷ 10<sup>9</sup> ops/sec</p>
+        <p class="big-number">10<sup>9</sup> seconds</p>
+        <p class="fragment" style="font-size: 1.5em; color: var(--error-color); margin-top: 20px;">≈ 31 years</p>
+    </div>
+    <p class="fragment warning-box" style="margin-top: 30px;">By the time it finishes, the data would be obsolete!</p>
+</section>
+
+<section>
+    <h2>The Solution: Binary Search</h2>
+    <p>First, <strong>sort</strong> the Aadhaar database</p>
+    <p class="fragment">Then search by repeatedly halving the space:</p>
+    <div class="fragment" style="margin-top: 30px;">
+        <p>10<sup>9</sup> entries → 500M → 250M → 125M → ...</p>
+        <p class="fragment">How many steps to reach 1?</p>
+        <p class="fragment big-number" style="font-size: 2em;">~30 steps</p>
+        <p class="fragment" style="margin-top: 20px;">log<sub>2</sub>(10<sup>9</sup>) ≈ 30</p>
+    </div>
+</section>
+
+<section>
+    <h2>The Shocking Difference</h2>
+    <table style="font-size: 0.85em;">
+        <thead>
+            <tr>
+                <th>Approach</th>
+                <th>Comparisons</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Naive (unsorted)</td>
+                <td>10<sup>18</sup></td>
+                <td class="highlight-red">31 years</td>
+            </tr>
+            <tr class="fragment">
+                <td>Binary Search (sorted)</td>
+                <td>10<sup>9</sup> × 30</td>
+                <td class="highlight-green">30 seconds</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment key-point" style="margin-top: 30px;">Same data. Different algorithm. <strong>31 years vs 30 seconds.</strong></p>
+</section>
+
+<!-- PART 2: DEFINING TIME COMPLEXITY -->
+
+<section class="section-divider">
+    <h2>What is Time Complexity?</h2>
+    <p style="color: white; opacity: 0.9;">The Science of Scalability</p>
+</section>
+
+<section>
+    <h2>Not About Seconds</h2>
+    <div class="warning-box">
+        <strong>Wrong Question:</strong> "How long does my program take?"
+    </div>
+    <div class="fragment key-point" style="margin-top: 30px;">
+        <strong>Right Question:</strong> "How does runtime grow as input size increases?"
+    </div>
+    <p class="fragment" style="margin-top: 40px;">We care about <strong>scaling behavior</strong>, not absolute time.</p>
+</section>
+
+<section>
+    <h2>Why Not Use Seconds?</h2>
+    <ul>
+        <li class="fragment">Different machines run at different speeds</li>
+        <li class="fragment">Same machine varies (CPU load, temperature, cache)</li>
+        <li class="fragment">Compiler optimizations differ</li>
+        <li class="fragment">Programming language matters</li>
+    </ul>
+    <p class="fragment key-point" style="margin-top: 40px;">Time complexity is <strong>hardware-independent</strong></p>
+</section>
+
+<section>
+    <h2>Primitive Operations</h2>
+    <p>To analyze code, we count basic operations:</p>
+    <ul style="font-size: 0.9em; margin-top: 20px;">
+        <li class="fragment">Assign a value: <code>x = 5;</code></li>
+        <li class="fragment">Arithmetic: <code>a + b</code>, <code>x * y</code></li>
+        <li class="fragment">Compare: <code>if (a < b)</code></li>
+        <li class="fragment">Array access: <code>arr[i]</code></li>
+        <li class="fragment">Function call/return</li>
+    </ul>
+    <p class="fragment insight-box" style="margin-top: 30px;">Each operation ≈ "1 unit of work"</p>
+</section>
+
+<section>
+    <h2>Example: Linear Search</h2>
+    <pre><code class="language-c">int linearSearch(int arr[], int n, int target) {
+    for (int i = 0; i < n; i++) {      // n iterations
+        if (arr[i] == target) {         // 2 ops (access + compare)
+            return i;                    // 1 op
+        }
+    }
+    return -1;                          // 1 op
+}</code></pre>
+    <div class="fragment" style="margin-top: 20px;">
+        <p><strong>Worst case:</strong> Target not found, check all n elements</p>
+        <p style="margin-top: 10px;">T(n) = setup + loop iterations × operations per iteration</p>
+        <p style="margin-top: 10px;">T(n) ≈ 2 + n × 3 = <strong>3n + 2</strong></p>
+    </div>
+</section>
+
+<!-- BIG O NOTATION -->
+
+<section class="section-divider">
+    <h2>Big O Notation</h2>
+    <p style="color: white; opacity: 0.9;">The Language of Scalability</p>
+</section>
+
+<section>
+    <h2>The "Munching" Rules</h2>
+    <p>Big O ignores constants and lower-order terms</p>
+    <div style="margin-top: 40px;">
+        <p class="fragment"><strong>Example 1:</strong> T(n) = 3n + 2</p>
+        <p class="fragment">Drop constant (2): 3n</p>
+        <p class="fragment">Drop coefficient (3): n</p>
+        <p class="fragment highlight-green" style="font-size: 1.3em;">Result: O(n)</p>
+    </div>
+</section>
+
+<section>
+    <h2>More Examples</h2>
+    <div style="font-size: 0.85em;">
+        <p class="fragment">T(n) = 5n<sup>2</sup> + 100n + 50</p>
+        <p class="fragment">→ Drop constants and lower terms</p>
+        <p class="fragment highlight-green">→ O(n<sup>2</sup>)</p>
+        <div class="fragment" style="margin-top: 40px;">
+            <p>T(n) = 20n<sup>3</sup> + 10n log n + 5</p>
+            <p>→ Highest order term: n<sup>3</sup></p>
+            <p class="highlight-green">→ O(n<sup>3</sup>)</p>
+        </div>
+    </div>
+    <p class="fragment key-point" style="margin-top: 40px;">For large n, only the highest-order term matters!</p>
+</section>
+
+<section>
+    <h2>Why Drop Constants?</h2>
+    <div style="font-size: 0.85em;">
+        <p>Compare: 5n vs 100n</p>
+        <div class="fragment" style="margin-top: 20px;">
+            <p>n = 10: 50 vs 1000 (20× difference)</p>
+            <p>n = 1000: 5000 vs 100,000 (20× difference)</p>
+            <p>n = 1,000,000: 5M vs 100M (20× difference)</p>
+        </div>
+        <p class="fragment" style="margin-top: 30px;">Now compare: n vs n<sup>2</sup></p>
+        <div class="fragment" style="margin-top: 20px;">
+            <p>n = 10: 10 vs 100 (10× difference)</p>
+            <p>n = 1000: 1000 vs 1,000,000 (1000× difference)</p>
+            <p class="highlight-red">n = 1,000,000: 1M vs 1,000,000,000,000 (million× difference!)</p>
+        </div>
+    </div>
+    <p class="fragment key-point" style="margin-top: 30px;">Growth rate dominates constant factors</p>
+</section>
+
+<!-- HIERARCHY -->
+
+<section class="section-divider">
+    <h2>The Hierarchy</h2>
+    <p style="color: white; opacity: 0.9;">Common Complexity Classes</p>
+</section>
+
+<section>
+    <h2>From Best to Worst</h2>
+    <table style="font-size: 0.75em;">
+        <thead>
+            <tr>
+                <th>Notation</th>
+                <th>Name</th>
+                <th>Example</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td>O(1)</td>
+                <td>Constant</td>
+                <td>Array access: arr[5]</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(log n)</td>
+                <td>Logarithmic</td>
+                <td>Binary search</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n)</td>
+                <td>Linear</td>
+                <td>Linear search, single loop</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n log n)</td>
+                <td>Linearithmic</td>
+                <td>Efficient sorting (Merge Sort)</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n<sup>2</sup>)</td>
+                <td>Quadratic</td>
+                <td>Nested loops, Bubble Sort</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(2<sup>n</sup>)</td>
+                <td>Exponential</td>
+                <td>Brute-force password cracking</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Visualizing Growth</h2>
+    <p style="font-size: 0.8em;">For n = 1,000,000:</p>
+    <table style="font-size: 0.7em;">
+        <thead>
+            <tr>
+                <th>Complexity</th>
+                <th>Operations</th>
+                <th>Time @ 10<sup>9</sup> ops/sec</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td>O(1)</td>
+                <td>1</td>
+                <td class="highlight-green">0.000000001 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(log n)</td>
+                <td>~20</td>
+                <td class="highlight-green">0.00000002 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n)</td>
+                <td>1,000,000</td>
+                <td class="highlight-green">0.001 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n log n)</td>
+                <td>~20,000,000</td>
+                <td class="highlight-green">0.02 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n<sup>2</sup>)</td>
+                <td>1,000,000,000,000</td>
+                <td class="highlight-red">16.7 minutes</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(2<sup>n</sup>)</td>
+                <td>unimaginable</td>
+                <td class="highlight-red">heat death of universe</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Growth Rate Comparison</h2>
+    <p style="font-size: 0.8em; margin-bottom: 20px;">How different complexities scale with input size</p>
+    <div style="display: flex; gap: 20px; align-items: flex-start; justify-content: center;">
+        <canvas id="complexityChart" width="1400" height="900" style="width: 700px; height: 450px; background: white; border-radius: 8px;"></canvas>
+        <div id="chartLegend" style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px;"></div>
+    </div>
+    <p style="font-size: 0.7em; margin-top: 15px; color: #7f8c8d;">Y-axis focused on smaller values to show differences between efficient algorithms</p>
+</section>
+
+<!-- REAL-WORLD EXAMPLES -->
+
+<section class="section-divider">
+    <h2>Real-World Examples</h2>
+    <p style="color: white; opacity: 0.9;">Seeing Complexity in Action</p>
+</section>
+
+<section>
+    <h2>The Phone Book Problem</h2>
+    <p>Finding "Rajesh Kumar" in a phone book with 1 million entries</p>
+    <div class="comparison-grid fragment" style="font-size: 0.8em;">
+        <div class="comparison-box">
+            <h3 style="color: var(--error-color);">Unsorted / Reverse Lookup</h3>
+            <p><strong>Linear Search: O(n)</strong></p>
+            <p>Check every entry</p>
+            <p>Average: 500,000 checks</p>
+            <p>Worst: 1,000,000 checks</p>
+        </div>
+        <div class="comparison-box">
+            <h3 style="color: var(--success-color);">Sorted by Name</h3>
+            <p><strong>Binary Search: O(log n)</strong></p>
+            <p>Open to middle, halve space</p>
+            <p>Average: ~20 checks</p>
+            <p>Worst: ~20 checks</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Binary Search: How It Works</h2>
+    <pre><code class="language-c">int binarySearch(int arr[], int n, int target) {
+    int left = 0, right = n - 1;
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[mid] < target)
+            left = mid + 1;      // Search right half
+        else
+            right = mid - 1;     // Search left half
+    }
+    return -1;  // Not found
+}</code></pre>
+    <p class="fragment insight-box" style="margin-top: 20px;">Each iteration halves the search space → O(log n)</p>
+</section>
+
+<section>
+    <h2>O(1): Constant Time</h2>
+    <pre><code class="language-c">// Array access
+int value = arr[100];
+
+// Hash table lookup (average case)
+int price = hashTable.get("apple");
+
+// Math operations
+int sum = a + b;
+int max = (x > y) ? x : y;</code></pre>
+    <p class="fragment key-point" style="margin-top: 20px;">Runtime doesn't depend on input size</p>
+</section>
+
+<!-- O(1) DRAMATIC EXAMPLE: PIGEONS -->
+
+<section>
+    <h2>O(1) vs O(n): A Dramatic Example</h2>
+    <p><strong>Question:</strong> What's the fastest way to transfer 3 TB of data?</p>
+    <div class="comparison-grid fragment" style="font-size: 0.85em;">
+        <div class="comparison-box">
+            <h3 style="color: var(--accent-color);">Internet</h3>
+            <p>Gigabit fiber connection</p>
+            <p>Upload: limited by ISP</p>
+            <p>Average: 75 MB/sec</p>
+        </div>
+        <div class="comparison-box">
+            <h3 style="color: var(--warning-color);">Homing Pigeon</h3>
+            <p>Attach 3× 1TB flash drives</p>
+            <p>Fly from St. Louis to Nova Scotia</p>
+            <p>Speed: ~90 MPH</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>The Results (Jeff Geerling, 2023)</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Method</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Internet (75 MB/sec)</td>
+                <td class="highlight-red">10 hours 54 minutes</td>
+            </tr>
+            <tr class="fragment">
+                <td>Jet-assisted pigeon</td>
+                <td class="highlight-green">6 hours 53 minutes</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment insight-box" style="margin-top: 30px;">The pigeon won by <strong>4 hours!</strong></p>
+</section>
+
+<section>
+    <h2>Why Did the Pigeon Win?</h2>
+    <div style="margin-top: 40px;">
+        <div class="fragment">
+            <p><strong>Internet = O(n):</strong> Time proportional to data size</p>
+            <ul style="font-size: 0.85em; margin-left: 40px;">
+                <li>3 TB takes 11 hours</li>
+                <li>6 TB would take 22 hours</li>
+                <li>12 TB would take 44 hours</li>
+            </ul>
+        </div>
+        <div class="fragment" style="margin-top: 30px;">
+            <p><strong>Pigeon = O(1):</strong> Time is constant (up to capacity)</p>
+            <ul style="font-size: 0.85em; margin-left: 40px;">
+                <li>3 TB takes ~7 hours</li>
+                <li>6 TB takes ~7 hours</li>
+                <li>38 TB (max capacity) still takes ~7 hours!</li>
+            </ul>
+        </div>
+    </div>
+    <p class="fragment key-point" style="margin-top: 30px;">Constant time can beat linear time at large scale!</p>
+</section>
+
+<section>
+    <h2>Racing Pigeons: The Numbers</h2>
+    <ul>
+        <li class="fragment">Can carry <strong>75 grams</strong></li>
+        <li class="fragment">MicroSD card: 0.5g, 256GB</li>
+        <li class="fragment">Capacity: <strong>150 cards = 38.4 TB</strong></li>
+        <li class="fragment">Speed: 92.5 MPH sustained</li>
+    </ul>
+    <p class="fragment insight-box" style="margin-top: 30px;">
+        <strong>Crossover point:</strong> ~16 GB<br>
+        Below 16GB → Internet wins<br>
+        Above 16GB → Pigeons competitive (up to ~500 miles)
+    </p>
+</section>
+
+<section>
+    <h2>The Key Insight</h2>
+    <p class="key-point" style="font-size: 1.1em;">
+        O(1) doesn't mean "fast" — it means <strong>scalable</strong>.
+    </p>
+    <p class="fragment" style="margin-top: 30px;">The pigeon is "slow" (90 MPH vs speed of light),</p>
+    <p class="fragment">but its runtime doesn't grow with data size!</p>
+    <p class="fragment insight-box" style="margin-top: 40px;">
+        This is the essence of time complexity:<br>
+        <strong>How does runtime scale as input grows?</strong>
+    </p>
+</section>
+
+<section>
+    <h2>O(n): Linear Time</h2>
+    <pre><code class="language-c">// Finding maximum in array
+int findMax(int arr[], int n) {
+    int max = arr[0];
+    for (int i = 1; i < n; i++) {
+        if (arr[i] > max) max = arr[i];
+    }
+    return max;
+}
+
+// Printing all elements
+for (int i = 0; i < n; i++) {
+    printf("%d ", arr[i]);
+}</code></pre>
+    <p class="fragment insight-box" style="margin-top: 20px;">One pass through data → O(n)</p>
+</section>
+
+<section>
+    <h2>O(n<sup>2</sup>): Quadratic Time</h2>
+    <pre><code class="language-c">// Bubble Sort
+for (int i = 0; i < n-1; i++) {
+    for (int j = 0; j < n-i-1; j++) {
+        if (arr[j] > arr[j+1]) {
+            swap(&arr[j], &arr[j+1]);
+        }
+    }
+}
+
+// Checking for duplicates (naive)
+for (int i = 0; i < n; i++) {
+    for (int j = i+1; j < n; j++) {
+        if (arr[i] == arr[j]) return true;
+    }
+}</code></pre>
+    <p class="fragment warning-box" style="margin-top: 20px;">Nested loop → O(n<sup>2</sup>)</p>
+</section>
+
+<!-- MATH TRICKS -->
+
+<section class="section-divider">
+    <h2>Analysis Techniques</h2>
+    <p style="color: white; opacity: 0.9;">Mathematical Tools</p>
+</section>
+
+<section>
+    <h2>Summation: 1 + 2 + 3 + ... + n</h2>
+    <p>This pattern appears in many algorithms:</p>
+    <pre class="fragment"><code class="language-c">// Selection Sort inner loop
+for (int i = 0; i < n; i++) {
+    for (int j = i+1; j < n; j++) {  // n-1, n-2, ..., 1 iterations
+        // ...
+    }
+}</code></pre>
+    <div class="fragment" style="margin-top: 20px;">
+        <p>Total iterations: (n-1) + (n-2) + ... + 1</p>
+        <p class="fragment" style="margin-top: 15px;">Formula: 1 + 2 + ... + n = <strong>n(n+1)/2</strong></p>
+        <p class="fragment">= n<sup>2</sup>/2 + n/2</p>
+        <p class="fragment highlight-green" style="font-size: 1.3em;">→ O(n<sup>2</sup>)</p>
+    </div>
+</section>
+
+<section>
+    <h2>Nested Loops</h2>
+    <p><strong>Rule:</strong> Multiply the complexities</p>
+    <pre class="fragment"><code class="language-c">// Outer loop: O(n)
+for (int i = 0; i < n; i++) {
+    // Inner loop: O(n)
+    for (int j = 0; j < n; j++) {
+        printf("%d,%d ", i, j);
+    }
+}</code></pre>
+    <p class="fragment" style="margin-top: 20px;">Total: O(n) × O(n) = <strong>O(n<sup>2</sup>)</strong></p>
+</section>
+
+<section>
+    <h2>Divide and Conquer</h2>
+    <p>If problem size is cut in half each step → O(log n)</p>
+    <div class="fragment" style="margin-top: 30px; font-size: 0.85em;">
+        <p>n = 1,000,000,000 (1 billion)</p>
+        <p class="fragment">→ 500,000,000</p>
+        <p class="fragment">→ 250,000,000</p>
+        <p class="fragment">→ 125,000,000</p>
+        <p class="fragment">→ ...</p>
+        <p class="fragment">→ 1</p>
+        <p class="fragment highlight-green" style="margin-top: 15px;">Steps: log<sub>2</sub>(10<sup>9</sup>) ≈ <strong>30</strong></p>
+    </div>
+</section>
+
+<section>
+    <h2>Why log n is Amazing</h2>
+    <table style="font-size: 0.75em;">
+        <thead>
+            <tr>
+                <th>n</th>
+                <th>log<sub>2</sub> n</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td>1,000</td>
+                <td>~10</td>
+            </tr>
+            <tr class="fragment">
+                <td>1,000,000</td>
+                <td>~20</td>
+            </tr>
+            <tr class="fragment">
+                <td>1,000,000,000</td>
+                <td>~30</td>
+            </tr>
+            <tr class="fragment">
+                <td>1,000,000,000,000</td>
+                <td>~40</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment key-point" style="margin-top: 30px;">Logarithmic growth is incredibly slow!</p>
+</section>
+
+<!-- WHY IT MATTERS -->
+
+<section class="section-divider">
+    <h2>Why It Matters</h2>
+    <p style="color: white; opacity: 0.9;">The Real-World Impact</p>
+</section>
+
+<section>
+    <h2>Small Input: Doesn't Matter Much</h2>
+    <p>n = 100:</p>
+    <table style="font-size: 0.8em;">
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Operations</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>O(n)</td>
+                <td>100</td>
+            </tr>
+            <tr>
+                <td>O(n<sup>2</sup>)</td>
+                <td>10,000</td>
+            </tr>
+            <tr>
+                <td>O(n<sup>3</sup>)</td>
+                <td>1,000,000</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment" style="margin-top: 20px;">All finish in milliseconds on modern hardware</p>
+</section>
+
+<section>
+    <h2>Large Input: Catastrophic Difference</h2>
+    <p>n = 10,000:</p>
+    <table style="font-size: 0.75em;">
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Operations</th>
+                <th>Time @ 10<sup>9</sup> ops/sec</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td>O(n)</td>
+                <td>10,000</td>
+                <td class="highlight-green">0.00001 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n log n)</td>
+                <td>~133,000</td>
+                <td class="highlight-green">0.000133 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n<sup>2</sup>)</td>
+                <td>100,000,000</td>
+                <td class="highlight-red">0.1 sec</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(n<sup>3</sup>)</td>
+                <td>1,000,000,000,000</td>
+                <td class="highlight-red">16 minutes</td>
+            </tr>
+            <tr class="fragment">
+                <td>O(2<sup>n</sup>)</td>
+                <td>impossibly large</td>
+                <td class="highlight-red">never finishes</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<section>
+    <h2>Real Companies, Real Impact</h2>
+    <ul style="font-size: 0.85em;">
+        <li class="fragment"><strong>Google:</strong> Processes billions of searches daily
+            <br>→ O(n<sup>2</sup>) algorithm would be unusable</li>
+        <li class="fragment"><strong>Facebook:</strong> 3 billion users
+            <br>→ Friend suggestions must be O(n log n) or better</li>
+        <li class="fragment"><strong>Netflix:</strong> Recommending from millions of titles
+            <br>→ Must respond in <1 second</li>
+        <li class="fragment"><strong>Stock Exchanges:</strong> Microsecond-level trading
+            <br>→ Even O(n log n) can be too slow</li>
+    </ul>
+    <p class="fragment key-point" style="margin-top: 30px;">Algorithm choice determines what's possible at scale</p>
+</section>
+
+<section>
+    <h2>The Sorting Benchmark</h2>
+    <p>Sorting is so common that it defines the "efficiency baseline"</p>
+    <table style="font-size: 0.75em; margin-top: 30px;">
+        <thead>
+            <tr>
+                <th>Algorithm</th>
+                <th>Complexity</th>
+                <th>Verdict</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr class="fragment">
+                <td>Bubble Sort, Selection Sort</td>
+                <td>O(n<sup>2</sup>)</td>
+                <td class="highlight-red">Poor</td>
+            </tr>
+            <tr class="fragment">
+                <td>Merge Sort, Quick Sort, Heap Sort</td>
+                <td>O(n log n)</td>
+                <td class="highlight-green">Efficient</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment insight-box" style="margin-top: 30px;"><strong>O(n log n)</strong> is considered the "gold standard" for comparison-based sorting</p>
+</section>
+
+<!-- SUMMARY -->
+
+<section>
+    <h2>Key Takeaways</h2>
+    <ul style="font-size: 0.85em;">
+        <li class="fragment">Time complexity measures <strong>scalability</strong>, not seconds</li>
+        <li class="fragment">Big O notation ignores constants and lower-order terms</li>
+        <li class="fragment">Growth rate dominates for large inputs</li>
+        <li class="fragment">O(1) < O(log n) < O(n) < O(n log n) < O(n<sup>2</sup>) < O(2<sup>n</sup>)</li>
+        <li class="fragment">Binary search (O(log n)) beats linear search (O(n))</li>
+        <li class="fragment">Efficient sorting (O(n log n)) beats naive sorting (O(n<sup>2</sup>))</li>
+        <li class="fragment">Algorithm choice can mean 31 years vs 30 seconds!</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Questions?</h2>
+    <p style="margin-top: 2em; color: #7f8c8d;">Next: Analyzing specific data structures</p>
+</section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/highlight/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/plugin/math/math.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            plugins: [ RevealHighlight, RevealMath.KaTeX ],
+            slideNumber: true,
+            transition: 'slide'
+        });
+
+        // Draw complexity growth chart
+        function drawComplexityChart() {
+            const canvas = document.getElementById('complexityChart');
+            const legendDiv = document.getElementById('chartLegend');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const padding = 120;
+            const graphWidth = width - 2 * padding;
+            const graphHeight = height - 2 * padding;
+
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+
+            // Define complexity functions
+            const maxN = 100;
+            const functions = [
+                { name: 'O(1)', color: '#27ae60', fn: (n) => 1 },
+                { name: 'O(log n)', color: '#16a085', fn: (n) => Math.log2(n) },
+                { name: 'O(n)', color: '#2980b9', fn: (n) => n },
+                { name: 'O(n log n)', color: '#8e44ad', fn: (n) => n * Math.log2(n) },
+                { name: 'O(n²)', color: '#d35400', fn: (n) => n * n },
+                { name: 'O(2ⁿ)', color: '#c0392b', fn: (n) => Math.pow(2, n) }
+            ];
+
+            // Cap max value to focus on smaller values - show differences between efficient algorithms
+            const maxValue = 300;  // Fixed scale to emphasize O(1), O(log n), O(n), O(n log n)
+
+            // Draw axes
+            ctx.strokeStyle = '#34495e';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, height - padding);
+            ctx.lineTo(width - padding, height - padding);
+            ctx.stroke();
+
+            // Draw axis labels
+            ctx.fillStyle = '#34495e';
+            ctx.font = 'bold 24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('n (input size)', width / 2, height - 30);
+            ctx.save();
+            ctx.translate(30, height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('Operations', 0, 0);
+            ctx.restore();
+
+            // Draw grid lines
+            ctx.strokeStyle = '#ecf0f1';
+            ctx.lineWidth = 2;
+            for (let i = 1; i <= 5; i++) {
+                const y = padding + (graphHeight * i / 5);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+
+            // Draw x-axis ticks
+            ctx.fillStyle = '#7f8c8d';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            for (let i = 0; i <= 5; i++) {
+                const x = padding + (graphWidth * i / 5);
+                const nValue = Math.floor(maxN * i / 5);
+                ctx.fillText(nValue.toString(), x, height - padding + 35);
+            }
+
+            // Draw y-axis ticks
+            ctx.textAlign = 'right';
+            for (let i = 0; i <= 5; i++) {
+                const y = height - padding - (graphHeight * i / 5);
+                const value = Math.floor(maxValue * i / 5);
+                ctx.fillText(value.toString(), padding - 15, y + 8);
+            }
+
+            // Helper function to convert n and value to canvas coordinates
+            function toCanvasCoords(n, value) {
+                const x = padding + (n / maxN) * graphWidth;
+                const clampedValue = Math.min(value, maxValue);
+                const y = height - padding - (clampedValue / maxValue) * graphHeight;
+                return { x, y };
+            }
+
+            // Draw each function
+            for (let i = 0; i < functions.length; i++) {
+                const func = functions[i];
+                ctx.strokeStyle = func.color;
+                ctx.lineWidth = 5;
+
+                if (func.name === 'O(2ⁿ)') {
+                    ctx.setLineDash([10, 8]);
+                } else {
+                    ctx.setLineDash([]);
+                }
+
+                ctx.beginPath();
+
+                let firstPoint = true;
+                for (let n = 1; n <= maxN; n++) {
+                    const value = func.fn(n);
+                    const coords = toCanvasCoords(n, value);
+
+                    if (firstPoint) {
+                        ctx.moveTo(coords.x, coords.y);
+                        firstPoint = false;
+                    } else {
+                        ctx.lineTo(coords.x, coords.y);
+                    }
+                }
+                ctx.stroke();
+            }
+
+            ctx.setLineDash([]);
+
+            // Create legend outside the graph
+            if (legendDiv) {
+                legendDiv.innerHTML = '';
+                functions.forEach(func => {
+                    const item = document.createElement('div');
+                    item.style.cssText = 'display: flex; align-items: center; gap: 10px;';
+
+                    const colorBox = document.createElement('div');
+                    colorBox.style.cssText = `width: 30px; height: 18px; background: ${func.color}; border-radius: 3px;`;
+
+                    const label = document.createElement('span');
+                    label.style.cssText = 'font-size: 16px; font-weight: 600; color: #34495e;';
+                    label.textContent = func.name;
+
+                    item.appendChild(colorBox);
+                    item.appendChild(label);
+                    legendDiv.appendChild(item);
+                });
+            }
+        }
+
+        // Draw chart when slide is shown
+        Reveal.on('slidechanged', event => {
+            if (event.currentSlide.querySelector('#complexityChart')) {
+                setTimeout(drawComplexityChart, 100);
+            }
+        });
+
+        // Draw on ready
+        Reveal.on('ready', () => {
+            if (Reveal.getCurrentSlide().querySelector('#complexityChart')) {
+                setTimeout(drawComplexityChart, 100);
+            }
+        });
+    </script>
+</body>
+</html>

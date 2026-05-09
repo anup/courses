@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pointers & Memory</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/zenburn.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #2b2b2b;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+        }
+        
+        /* Softer code background */
+        .hljs {
+            background: #3f3f3f !important;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 24px;
+        }
+
+        .reveal h1, .reveal h2 { color: var(--main-color); text-transform: none; }
+        
+        .memory-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .memory-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .var-name {
+            font-family: monospace;
+            font-weight: bold;
+            color: #e74c3c;
+            width: 80px;
+            text-align: right;
+        }
+
+        .memory-block {
+            border: 2px solid var(--main-color);
+            width: 120px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+            position: relative;
+            font-weight: bold;
+            font-size: 0.9em;
+            padding: 10px;
+        }
+
+        .address-label {
+            font-family: monospace;
+            font-size: 0.7em;
+            color: var(--accent-color);
+            margin-left: 10px;
+        }
+
+        .pointer-arrow {
+            font-size: 1.5em;
+            color: var(--success-color);
+            font-weight: bold;
+        }
+
+        .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        .warning-box {
+            background: #ffe6e6;
+            border-left: 4px solid var(--error-color);
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        .insight-box {
+            background: #e8f5e9;
+            border-left: 4px solid var(--success-color);
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 0.9em;
+        }
+
+        pre code { 
+            border-radius: 8px; 
+            padding: 30px 35px !important;
+        }
+        
+        pre {
+            margin: 25px 0 !important;
+        }        
+        .subtle-note { font-style: italic; color: #7f8c8d; font-size: 0.85em; margin-top: 10px; }
+
+        .summary-table {
+            font-size: 0.75em;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .summary-table th {
+            padding: 10px 16px;
+            text-align: left;
+        }
+        .summary-table td {
+            padding: 9px 16px;
+            vertical-align: middle;
+            line-height: 1.4;
+        }
+        .summary-table td:first-child {
+            white-space: nowrap;
+        }
+        
+        .split-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .comparison-box {
+            border: 2px solid var(--accent-color);
+            padding: 25px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title Slide -->
+            <section class="center-content">
+                <h1>Pointers & Memory</h1>
+                <h3 style="color: #7f8c8d;">Where Your Computer's Trust Issues Begin</h3>
+                <p class="subtle-note">Understanding memory through addresses</p>
+            </section>
+
+            <!-- Slide 1: Memory Basics -->
+            <section>
+                <h2>Memory: The Fundamentals</h2>
+                <p>Think of RAM as a giant apartment building. Each apartment has:</p>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="var-name">a</div>
+                        <div class="memory-block">10</div>
+                        <div class="address-label">Address: 204</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">b</div>
+                        <div class="memory-block">25</div>
+                        <div class="address-label">Address: 208</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    Every variable has three things: a <strong>Name</strong> (the label), a <strong>Value</strong> (what's stored), and an <strong>Address</strong> (where it lives in memory).
+                </div>
+            </section>
+
+            <!-- Slide 2: What is a Pointer -->
+            <section>
+                <h2>What is a Pointer?</h2>
+                <p>A pointer is a variable that stores an <strong>address</strong> as its value.</p>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="var-name">a</div>
+                        <div class="memory-block">10</div>
+                        <div class="address-label">Addr: 204</div>
+                    </div>
+                    <div class="pointer-arrow">↑ p points here</div>
+                    <div class="memory-row">
+                        <div class="var-name">p</div>
+                        <div class="memory-block" style="border-color: var(--success-color);">204</div>
+                        <div class="address-label">Addr: 300</div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    Instead of storing data directly, <code>p</code> stores the <em>location</em> of data.
+                </div>
+            </section>
+
+            <!-- Slide 3: The Dual Role of * -->
+            <section>
+                <h2>The Dual Role of <code>*</code></h2>
+                <p>This confuses everyone at first: <code>*</code> does TWO different things!</p>
+                
+                <div class="split-container">
+                    <div class="comparison-box" style="border-color: var(--warning-color);">
+                        <h4>Role 1: Declaration</h4>
+                        <pre><code class="language-c">int *p;</code></pre>
+                        <p>Here, <code>*</code> means: <br>"<strong>p is a pointer</strong> (it will store addresses)"</p>
+                    </div>
+                    
+                    <div class="comparison-box" style="border-color: var(--success-color);">
+                        <h4>Role 2: Dereferencing</h4>
+                        <pre><code class="language-c">*p = 50;</code></pre>
+                        <p>Here, <code>*</code> means: <br>"<strong>Go to the address</strong> stored in p"</p>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    Same symbol, completely different meanings depending on context. In declarations it's part of the type. In expressions it's an operator.
+                </div>
+            </section>
+
+            <!-- Slide 4: The Two Pointer Operations -->
+            <section>
+                <h2>The Two Fundamental Operations</h2>
+                <div class="split-container">
+                    <div class="comparison-box">
+                        <h3 style="color: var(--accent-color);">Getting an Address</h3>
+                        <pre><code class="language-c">int a = 10;
+int *p = &a;</code></pre>
+                        <p><code>&</code> means "Give me the address of..."</p>
+                    </div>
+                    
+                    <div class="comparison-box">
+                        <h3 style="color: var(--success-color);">Going to an Address</h3>
+                        <pre><code class="language-c">printf("%d", *p);
+*p = 50;</code></pre>
+                        <p><code>*</code> means "Go to this address and access what's there"</p>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <code>&</code> and <code>*</code> are inverse operations. One gets you TO an address, the other gets you FROM an address.
+                </div>
+            </section>
+
+            <!-- Slide 5: Dereferencing in Detail -->
+            <section>
+                <h2>Dereferencing: Following the Address</h2>
+                <p>When you dereference, you're saying "Go to this address and let me work with what's there"</p>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="var-name">a</div>
+                        <div class="memory-block">10</div>
+                        <div class="address-label">204</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">p</div>
+                        <div class="memory-block" style="border-color: var(--success-color);">204</div>
+                        <div class="address-label">300</div>
+                    </div>
+                </div>
+
+                <pre><code class="language-c">printf("%d", *p);  // Reads: go to 204, get value → 10
+*p = 50;           // Writes: go to 204, change value to 50
+// Now a is 50!</code></pre>
+
+                <div class="insight-box">
+                    <code>*p</code> acts like an alias for <code>a</code>. Anything you do to <code>*p</code> happens to <code>a</code>.
+                </div>
+            </section>
+
+            <!-- Slide 6: All Addresses Are Just Numbers -->
+            <section>
+                <h2>All Addresses Are Just Numbers</h2>
+                <p>So why do we need different pointer types?</p>
+                
+                <pre><code class="language-c">int *p1;      // Pointer to int
+char *p2;     // Pointer to char
+float *p3;    // Pointer to float</code></pre>
+
+                <p>If every address is just a number (like 204, 300), why distinguish between <code>int*</code> and <code>char*</code>?</p>
+
+                <div class="insight-box">
+                    The pointer itself is just a number, but the <strong>type tells the compiler what's AT that address</strong> and how to interpret it.
+                </div>
+            </section>
+
+            <!-- Slide 9: Types Matter -->
+            <section>
+                <h2>Why Pointer Types Matter</h2>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="memory-block" style="width: 150px;">Value starts here</div>
+                        <div class="address-label">200</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <p><strong>Two critical reasons:</strong></p>
+                    <ol>
+                        <li><strong>Decoding:</strong> How many bytes to read?
+                            <ul>
+                                <li><code>int*</code> reads 4 bytes</li>
+                                <li><code>char*</code> reads 1 byte</li>
+                                <li><code>double*</code> reads 8 bytes</li>
+                            </ul>
+                        </li>
+                        <li><strong>Arithmetic:</strong> How far is the "next" item?</li>
+                    </ol>
+                </div>
+            </section>
+
+            <!-- Slide 8: Concrete Typecasting Example -->
+            <section>
+                <h2>Seeing Type Differences in Action</h2>
+                <p>Let's prove that pointer types affect how data is read:</p>
+                
+                <pre><code class="language-c">int a = 1025;
+int *p = &a;
+printf("Address = %d, value = %d\n", p, *p);
+// Output: Address = 5373032, value = 1025
+
+char *p0 = (char*)p;  // Same address, different type!
+printf("Address = %d, value = %d\n", p0, *p0);
+// Output: Address = 5373032, value = 1</code></pre>
+
+                <div class="warning-box">
+                    <strong>Same address, different values!</strong> Why?
+                    <ul>
+                        <li><code>int *p</code> reads 4 bytes → sees 1025</li>
+                        <li><code>char *p0</code> reads only 1 byte → sees 1 (first byte of 1025)</li>
+                    </ul>
+                </div>
+                
+                <p class="subtle-note">This is why you can't just cast pointers carelessly - the type determines interpretation!</p>
+            </section>
+
+            <!-- Slide 9: Pointer Arithmetic Intro -->
+            <section>
+                <h2>Pointers Can Do Math?</h2>
+                <p>Since pointers are numbers, we can add and subtract from them.</p>
+                
+                <pre><code class="language-c">int *p = &a;
+p = p + 1;    // Move to the "next" int
+p = p - 1;    // Move back
+p++;          // Also valid!</code></pre>
+
+                <div class="key-point">
+                    But what does "next" mean? Does <code>p + 1</code> mean address + 1 byte?
+                </div>
+            </section>
+
+            <!-- Slide 10: How Pointer Arithmetic Actually Works -->
+            <section>
+                <h2>The Truth About Pointer Arithmetic</h2>
+                <p><code>p + 1</code> does NOT mean <code>address + 1</code>. <br>It means <code>address + sizeof(type)</code></p>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="memory-block">First int</div>
+                        <div class="address-label">200 (p)</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="memory-block">Second int</div>
+                        <div class="address-label">204 (p + 1)</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="memory-block">Third int</div>
+                        <div class="address-label">208 (p + 2)</div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    If <code>p</code> is an <code>int*</code>, then <code>p + 1</code> jumps 4 bytes (one int).<br>
+                    If <code>p</code> is a <code>char*</code>, then <code>p + 1</code> jumps 1 byte (one char).
+                </div>
+
+                <p class="subtle-note">This is why pointer types matter for navigation!</p>
+            </section>
+
+            <!-- Slide 11: Arrays and Pointers -->
+            <section>
+                <h2>Arrays and Pointers: What You've Seen</h2>
+                <p>In LeetCode and function signatures, you've seen this:</p>
+                
+                <pre><code class="language-c">void function(int arr[]) { ... }
+// is actually treated as:
+void function(int *arr) { ... }</code></pre>
+
+                <div class="insight-box">
+                    Arrays decay to pointers when passed to functions. Let's understand why this works and what's really happening in memory.
+                </div>
+            </section>
+
+            <!-- Slide 12: How Arrays Are Stored -->
+            <section>
+                <h2>Arrays in Memory</h2>
+                <p>Arrays are stored as contiguous blocks - one element right after another, no gaps.</p>
+                
+                <pre><code class="language-c">int A[5] = {10, 20, 30, 40, 50};</code></pre>
+
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div style="text-align:center">
+                            <div class="memory-block">10</div>
+                            <div class="address-label">400</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div class="memory-block">20</div>
+                            <div class="address-label">404</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div class="memory-block">30</div>
+                            <div class="address-label">408</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div class="memory-block">40</div>
+                            <div class="address-label">412</div>
+                        </div>
+                        <div style="text-align:center">
+                            <div class="memory-block">50</div>
+                            <div class="address-label">416</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    The array name <code>A</code> holds the address of the first element (400). To access any element, we start from 400 and jump forward.
+                </div>
+            </section>
+
+            <!-- Slide 13: Array Indexing is Just Pointer Arithmetic -->
+            <section>
+                <h2>Why A[i] Works</h2>
+                <p>Array indexing is just pointer arithmetic in disguise:</p>
+                
+                <div class="split-container">
+                    <div>
+                        <h4 style="color: var(--warning-color);">What You Write</h4>
+                        <pre><code class="language-c">A[0]
+A[1]
+A[2]</code></pre>
+                    </div>
+                    
+                    <div>
+                        <h4 style="color: var(--success-color);">What Really Happens</h4>
+                        <pre><code class="language-c">*(A + 0)
+*(A + 1)
+*(A + 2)</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <code>A[i]</code> is just syntactic sugar for <code>*(A + i)</code>
+                    <br><br>
+                    Start at A, jump i positions forward, then dereference to get the value!
+                </div>
+            </section>
+
+            <!-- Slide 14: Testing Your Understanding -->
+            <section>
+                <h2>Let's Test This</h2>
+                <p>If <code>A[i] = *(A + i)</code>, then these should be equivalent:</p>
+                
+                <pre><code class="language-c">int A[5] = {10, 20, 30, 40, 50};
+
+printf("%d", A[2]);      // Prints 30
+printf("%d", *(A + 2));  // Also prints 30!
+
+// Mind-bending bonus:
+printf("%d", 2[A]);      // Also prints 30!!
+// Because 2[A] becomes *(2 + A), which is *(A + 2)</code></pre>
+
+                <p class="subtle-note">Don't ever write <code>2[A]</code> in real code, but it shows that indexing is just addition + dereferencing.</p>
+            </section>
+
+            <!-- Slide 15: Pointer to Pointer -->
+            <section>
+                <h2>Pointers to Pointers</h2>
+                <p>A pointer is a variable. Variables have addresses. So we can point to a pointer!</p>
+                
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="var-name">x</div>
+                        <div class="memory-block">5</div>
+                        <div class="address-label">100</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">p</div>
+                        <div class="memory-block">100</div>
+                        <div class="address-label">200</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">q</div>
+                        <div class="memory-block">200</div>
+                        <div class="address-label">300</div>
+                    </div>
+                </div>
+
+                <pre><code class="language-c">int x = 5;
+int *p = &x;    // p points to x
+int **q = &p;   // q points to p (which points to x)</code></pre>
+            </section>
+
+            <!-- Slide 16: Dereferencing Double Pointers -->
+            <section>
+                <h2>Working with Double Pointers</h2>
+                <p>Each <code>*</code> follows one level of indirection:</p>
+                
+                <pre><code class="language-c">int x = 5;
+int *p = &x;
+int **q = &p;
+
+printf("%d", x);    // 5 (direct access)
+printf("%d", *p);   // 5 (one dereference)
+printf("%d", **q);  // 5 (two dereferences: *q gives p, then *p gives x)
+
+**q = 10;  // Changes x to 10!</code></pre>
+
+                <div class="insight-box">
+                    <code>**q</code> means: "Go to address in q (which is 200), then go to address at 200 (which is 100), then access value at 100"
+                </div>
+            </section>
+
+            <!-- Slide 17: Common Mistakes -->
+            <section>
+                <h2>How Things Go Wrong</h2>
+                <ul style="font-size: 0.9em;">
+                    <li><strong>Uninitialized Pointers (Wild Pointers)</strong>
+                        <pre><code class="language-c">int *p;  // p contains garbage address
+*p = 5;  // Writing to random memory! 💥</code></pre>
+                    </li>
+                    <li><strong>Dangling Pointers</strong>
+                        <pre><code class="language-c">int *p = malloc(sizeof(int));
+free(p);
+*p = 5;  // p still has address, but memory is freed! 💥</code></pre>
+                    </li>
+                    <li><strong>Memory Leaks</strong>
+                        <pre><code class="language-c">int *p = malloc(sizeof(int));
+p = NULL;  // Lost the address! Memory is leaked 💧</code></pre>
+                    </li>
+                </ul>
+            </section>
+
+            <!-- Slide 18: Segmentation Fault -->
+            <section>
+                <h2>The Dreaded Segmentation Fault</h2>
+                <p>What happens when you try to access memory you don't own:</p>
+                
+                <pre><code class="language-c">int *p = NULL;
+*p = 5;  // Trying to write to address 0 → Segfault!</code></pre>
+
+                <div class="warning-box">
+                    The operating system protects memory regions. If you try to access memory you shouldn't (NULL, freed memory, out of bounds), it kills your program.
+                    <br><br>
+                    This is a <strong>feature</strong>, not a bug - it prevents your program from corrupting other programs' data.
+                </div>
+            </section>
+
+            <!-- Slide 19: Best Practices -->
+            <section>
+                <h2>Staying Safe</h2>
+                <ol>
+                    <li><strong>Always initialize pointers</strong>
+                        <pre><code class="language-c">int *p = NULL;  // Safe default</code></pre>
+                    </li>
+                    <li><strong>Check before dereferencing</strong>
+                        <pre><code class="language-c">if (p != NULL) {
+    *p = 5;
+}</code></pre>
+                    </li>
+                    <li><strong>Don't forget to free</strong>
+                        <pre><code class="language-c">int *p = malloc(sizeof(int));
+// ... use p ...
+free(p);
+p = NULL;  // Good practice: nullify after freeing</code></pre>
+                    </li>
+                </ol>
+            </section>
+
+            <!-- Summary -->
+            <section>
+                <h2>The Mental Model Summary</h2>
+                <table class="summary-table">
+                    <tr style="background: #2c3e50; color: white;">
+                        <th>Syntax</th>
+                        <th>Mental Model</th>
+                    </tr>
+                    <tr>
+                        <td><code>&amp;a</code></td>
+                        <td>"Where does a live?"</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>*p</code></td>
+                        <td>"Go to the address in p"</td>
+                    </tr>
+                    <tr>
+                        <td><code>p + 1</code></td>
+                        <td>"Next item of the same type"</td>
+                    </tr>
+                    <tr style="background:#f8f9fa;">
+                        <td><code>A[i]</code></td>
+                        <td>"Start at A, jump i items, dereference"</td>
+                    </tr>
+                    <tr>
+                        <td><code>**q</code></td>
+                        <td>"Follow two addresses"</td>
+                    </tr>
+                </table>
+
+                <div class="key-point" style="margin-top: 30px;">
+                    Pointers are just addresses. Everything else follows from understanding what it means to "go to an address" and "get the address of something".
+                </div>
+            </section>
+
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({ 
+            hash: true, 
+            center: true,
+            plugins: [ RevealHighlight ]
+        });
+    </script>
+</body>
+</html>

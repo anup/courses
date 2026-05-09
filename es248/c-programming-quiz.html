@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ES 248 — C Programming Quiz</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <script>
+    MathJax = {
+      tex: { inlineMath: [['$','$']], processEscapes: true },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] },
+      startup: { typeset: false }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" async></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #eef2f7;
+      color: #1a202c;
+      min-height: 100vh;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 2.5rem 1rem 4rem;
+    }
+
+    #app { width: 100%; max-width: 780px; }
+
+    /* ── Header ── */
+    .q-header {
+      background: linear-gradient(135deg, #1a365d 0%, #2a69ac 100%);
+      color: white;
+      padding: 1.25rem 2rem;
+      border-radius: 16px 16px 0 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .q-title { font-size: 1rem; font-weight: 700; letter-spacing: .01em; }
+    .q-count { font-size: 0.85rem; opacity: .8; }
+
+    /* ── Progress ── */
+    .progress-track { height: 5px; background: #1a365d; }
+    .progress-fill  { height: 100%; background: #48bb78; transition: width .45s ease; }
+
+    /* ── Card ── */
+    .q-card {
+      background: #fff;
+      border-radius: 0 0 16px 16px;
+      padding: 2rem 2.25rem;
+      box-shadow: 0 6px 28px rgba(0,0,0,.09);
+    }
+
+    /* ── Intro ── */
+    .intro { text-align: center; padding: 2rem 0 1rem; }
+    .intro-emoji { font-size: 3rem; margin-bottom: .75rem; }
+    .intro h1 { font-size: 1.65rem; font-weight: 700; margin-bottom: .4rem; }
+    .intro p  { color: #4a5568; line-height: 1.65; max-width: 500px; margin: 0 auto .9rem; }
+    .intro-meta { color: #2b6cb0; font-weight: 600; font-size: .9rem; margin-bottom: 1.5rem; }
+
+    .chips { display: flex; flex-wrap: wrap; gap: .45rem; justify-content: center; margin: 1rem 0 1.6rem; }
+    .chip {
+      background: #ebf8ff; color: #2b6cb0;
+      padding: .25rem .75rem; border-radius: 20px;
+      font-size: .75rem; font-weight: 500;
+    }
+
+    .btn {
+      border: none; cursor: pointer; font-family: inherit; font-weight: 600;
+      border-radius: 9px; transition: background .18s, transform .1s;
+    }
+    .btn:active { transform: scale(.97); }
+    .btn-primary { background: #2b6cb0; color: #fff; padding: .75rem 2.25rem; font-size: 1rem; }
+    .btn-primary:hover { background: #2c5282; }
+    .btn-sm { background: #2b6cb0; color: #fff; padding: .6rem 1.6rem; font-size: .9rem; }
+    .btn-sm:hover { background: #2c5282; }
+    .btn-outline { background: #fff; color: #2b6cb0; border: 1.5px solid #bee3f8; padding: .6rem 1.6rem; font-size: .9rem; }
+    .btn-outline:hover { background: #ebf8ff; }
+
+    /* ── Question ── */
+    .question-text {
+      font-size: 1.05rem; font-weight: 500; line-height: 1.75;
+      margin-bottom: 1.5rem; color: #1a202c;
+    }
+
+    /* ── Options ── */
+    .options { display: flex; flex-direction: column; gap: .7rem; }
+
+    .option {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .85rem 1rem; border: 2px solid #e2e8f0;
+      border-radius: 11px; cursor: pointer;
+      transition: border-color .18s, background .18s;
+      background: #fafafa;
+    }
+    .option:hover:not(.locked) { border-color: #4299e1; background: #ebf8ff; }
+    .option.locked { cursor: default; }
+
+    .opt-letter {
+      font-weight: 700; font-size: .8rem; color: #4a5568;
+      background: #edf2f7; border-radius: 50%;
+      width: 28px; height: 28px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 2px; transition: background .18s, color .18s;
+    }
+
+    .option-body { flex: 1; }
+    .opt-text { font-size: .93rem; line-height: 1.65; }
+
+    .option.correct              { border-color: #48bb78; background: #f0fff4; }
+    .option.correct .opt-letter  { background: #48bb78; color: #fff; }
+    .option.wrong                { border-color: #fc8181; background: #fff5f5; }
+    .option.wrong .opt-letter    { background: #fc8181; color: #fff; }
+
+    .rationale {
+      margin-top: .6rem; padding: .65rem .9rem;
+      background: #f7fafc; border-left: 3px solid #cbd5e0;
+      border-radius: 0 6px 6px 0;
+      font-size: .84rem; line-height: 1.6; color: #4a5568;
+    }
+    .option.correct .rationale { border-left-color: #48bb78; background: #f0fff4; }
+    .option.wrong   .rationale { border-left-color: #fc8181; background: #fff5f5; }
+
+    /* ── Hint ── */
+    .hint-row { margin-top: 1.2rem; }
+    .hint-toggle {
+      display: inline-flex; align-items: center; gap: .35rem;
+      background: none; border: 1.5px solid #fbd38d; color: #975a16;
+      padding: .35rem .9rem; border-radius: 20px; font-size: .82rem;
+      cursor: pointer; font-family: inherit; font-weight: 500;
+      transition: background .15s;
+    }
+    .hint-toggle:hover { background: #fffbeb; }
+    .hint-box {
+      margin-top: .55rem; padding: .7rem 1rem;
+      background: #fffbeb; border: 1px solid #fbd38d;
+      border-radius: 9px; font-size: .86rem; color: #744210;
+      line-height: 1.6; display: none;
+    }
+    .hint-box.show { display: block; }
+
+    /* ── Nav ── */
+    .nav-row { margin-top: 1.6rem; display: flex; justify-content: flex-end; gap: .75rem; }
+    .btn-next { display: none; }
+    .btn-next.show { display: inline-block; }
+
+    /* ── Score ── */
+    .score-screen { text-align: center; padding: 2.5rem 0 1.5rem; }
+    .score-ring {
+      width: 130px; height: 130px; border-radius: 50%;
+      background: linear-gradient(135deg, #1a365d, #2a69ac);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem; color: white;
+    }
+    .score-num   { font-size: 2.75rem; font-weight: 700; line-height: 1; }
+    .score-denom { font-size: .72rem; opacity: .75; }
+    .score-grade { font-size: 1.5rem; font-weight: 700; margin-bottom: .35rem; }
+    .score-sub   { color: #718096; margin-bottom: 1.75rem; font-size: .95rem; }
+
+    .dot-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; margin-bottom: 1.75rem; }
+    .dot {
+      width: 22px; height: 22px; border-radius: 50%;
+      font-size: .6rem; font-weight: 700; color: #fff;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .dot.ok  { background: #48bb78; }
+    .dot.bad { background: #fc8181; }
+
+    .score-btns { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+
+    /* ── Code ── */
+    code {
+      font-family: 'JetBrains Mono', monospace;
+      background: #edf2f7; color: #c05621;
+      padding: .15em .4em; border-radius: 4px; font-size: .87em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade { animation: fadeUp .22s ease; }
+
+    @media (max-width: 600px) {
+      body { padding: 0 0 3rem; }
+      .q-header { border-radius: 0; }
+      .q-card   { border-radius: 0; padding: 1.25rem 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="app"></div>
+
+<script type="application/json" id="qdata">
+{
+  "quiz": [
+    {
+      "question": "Consider a little-endian machine where a $2$-byte integer is stored at memory location $0x8000$. If the value stored is $0xABCD$, what value is retrieved by reading a single byte from address $0x8001$?",
+      "answerOptions": [
+        { "text": "$0xAB$", "isCorrect": true,  "rationale": "In little-endian systems, the most significant byte is stored at the higher memory address, while the least significant byte is at the lower address." },
+        { "text": "$0xCD$", "isCorrect": false, "rationale": "This value would be found at the lower address, $0x8000$, as it is the least significant byte." },
+        { "text": "$0xBC$", "isCorrect": false, "rationale": "This represents a middle slice of the word that does not align with byte boundaries for a $2$-byte integer." },
+        { "text": "$0xAD$", "isCorrect": false, "rationale": "This value combines bits from different byte positions incorrectly." }
+      ],
+      "hint": "Recall which end of the numerical value is stored at the higher address in the Intel-style convention."
+    },
+    {
+      "question": "When using `setjmp` and `longjmp` to handle non-local jumps, why is it critical to declare local variables in the calling function as `volatile` if they are modified after the `setjmp` call?",
+      "answerOptions": [
+        { "text": "To prevent the compiler from optimizing the variable into a register that might be restored to an old value.", "isCorrect": true,  "rationale": "The `volatile` qualifier ensures the variable's value is always fetched from memory rather than relying on register values that `longjmp` might revert." },
+        { "text": "To ensure the variable is allocated on the heap rather than the stack.",                                     "isCorrect": false, "rationale": "The `volatile` keyword affects optimization and access patterns, not the segment where the variable is stored." },
+        { "text": "Because `longjmp` only supports jumping between functions that share `volatile` state.",                    "isCorrect": false, "rationale": "The jump mechanism is independent of the `volatile` qualifier; the qualifier is for data integrity of local variables." },
+        { "text": "To allow the variable to be accessed by multiple threads simultaneously.",                                 "isCorrect": false, "rationale": "While `volatile` is used in some concurrency contexts, its primary purpose here is to protect local variables from being rolled back by register restoration." }
+      ],
+      "hint": "Consider how compilers use CPU registers to speed up access to local variables."
+    },
+    {
+      "question": "Given the declaration `int a[3][4];`, which of the following expressions is equivalent to the address of the element `a[1][2]`?",
+      "answerOptions": [
+        { "text": "`*(a + 1) + 2`",   "isCorrect": true,  "rationale": "The expression `a + 1` points to the second row (an array of $4$ ints), dereferencing it results in a pointer to the first element of that row, and adding $2$ offsets it to the third element." },
+        { "text": "`*(*(a + 1) + 2)`", "isCorrect": false, "rationale": "This expression evaluates to the actual value stored at `a[1][2]`, not its memory address." },
+        { "text": "`a + 1 + 2`",       "isCorrect": false, "rationale": "This would treat the $2D$ array as a $1D$ array of rows, resulting in the address of the start of the fourth row." },
+        { "text": "`*(a + 1 + 2)`",    "isCorrect": false, "rationale": "This evaluates to the address of the first element of the fourth row, `a[3][0]`." }
+      ],
+      "hint": "Think about the multi-step process of decaying a $2D$ array name into a pointer to its sub-arrays."
+    },
+    {
+      "question": "A C program contains the statement `ptr = (struct node *)0;`. If a programmer then evaluates `(int)&(ptr->member)`, what is the likely result of this operation?",
+      "answerOptions": [
+        { "text": "The byte offset of `member` from the beginning of `struct node`.", "isCorrect": true,  "rationale": "By casting zero to a struct pointer, any address-of operation on its members calculates the displacement from the zero-base, effectively yielding the offset." },
+        { "text": "A segmentation fault or runtime crash.",                             "isCorrect": false, "rationale": "The address-of operator `&` coupled with member access `->` is evaluated for its address, so the null pointer is not actually dereferenced at runtime." },
+        { "text": "The value stored in the variable `member`.",                         "isCorrect": false, "rationale": "The use of the address-of operator `&` explicitly requests the location, not the contents of the memory." },
+        { "text": "The size of the structure `struct node`.",                           "isCorrect": false, "rationale": "The size is determined by the `sizeof` operator; the address-of a specific member only identifies that member's relative position." }
+      ],
+      "hint": "Focus on the fact that the address of a member relative to a base address of zero is being requested."
+    },
+    {
+      "question": "What is the primary difference in memory allocation between a `static` local variable and an `automatic` (standard) local variable?",
+      "answerOptions": [
+        { "text": "Static variables reside in the data segment, while automatic variables reside on the stack.",      "isCorrect": true,  "rationale": "Static variables have a lifetime spanning the entire program execution and are stored in a fixed data area, whereas automatic variables are created and destroyed within function call frames on the stack." },
+        { "text": "Static variables are stored on the heap, while automatic variables are stored in registers.",      "isCorrect": false, "rationale": "The heap is for dynamic allocation via `malloc`, and registers are a temporary storage class, not the primary location for local variables." },
+        { "text": "Static variables can only be integers, whereas automatic variables can be any type.",              "isCorrect": false, "rationale": "Both storage classes can accommodate any valid C data type." },
+        { "text": "Static variables are deallocated when the function returns, while automatic variables persist.",  "isCorrect": false, "rationale": "This is the opposite of the actual behavior; static variables persist, while automatic variables are deallocated." }
+      ],
+      "hint": "Think about which variable needs to remember its value between different calls to the same function."
+    },
+    {
+      "question": "In the context of the `sizeof` operator, if `int a[10]` is passed as an argument to a function `void func(int arr[])`, what will `sizeof(arr)` evaluate to inside that function (assuming a $16$-bit pointer)?",
+      "answerOptions": [
+        { "text": "$2$ bytes",                          "isCorrect": true,  "rationale": "When an array is passed to a function, it decays into a pointer to its first element; therefore, `sizeof` returns the size of the pointer, not the original array." },
+        { "text": "$20$ bytes",                         "isCorrect": false, "rationale": "This would be the size of the original array of $10$ integers in the calling scope, assuming $2$-byte integers." },
+        { "text": "$10$ bytes",                         "isCorrect": false, "rationale": "This value represents the number of elements, but `sizeof` measures the memory footprint in bytes." },
+        { "text": "It will cause a compilation error.", "isCorrect": false, "rationale": "Applying `sizeof` to a parameter is perfectly legal, though it may not yield the result a novice programmer expects." }
+      ],
+      "hint": "Reflect on how arrays decay when they cross function boundaries."
+    },
+    {
+      "question": "If two pointers `p1` and `p2` both point to elements within the same array, what does the expression `p2 - p1` represent?",
+      "answerOptions": [
+        { "text": "The number of array elements between the two pointers.",        "isCorrect": true,  "rationale": "Pointer subtraction is scaled by the size of the underlying type, returning the distance in terms of objects, not raw bytes." },
+        { "text": "The absolute difference in memory addresses in bytes.",         "isCorrect": false, "rationale": "C scales pointer arithmetic results by the size of the type the pointers refer to." },
+        { "text": "This operation is undefined and prohibited by the C standard.", "isCorrect": false, "rationale": "Subtraction is explicitly allowed between two pointers of the same type that point to the same array or one past the end." },
+        { "text": "The sum of the values stored at the two addresses.",            "isCorrect": false, "rationale": "Pointer subtraction calculates a distance between locations, not a mathematical operation on the data stored at those locations." }
+      ],
+      "hint": "Consider how the compiler knows the size of the things the pointers are looking at."
+    },
+    {
+      "question": "Which memory segment is typically used to store uninitialized global and static variables?",
+      "answerOptions": [
+        { "text": "BSS (Block Started by Symbol)", "isCorrect": true,  "rationale": "The BSS segment contains variables that are initialized to zero by default before program execution starts." },
+        { "text": "Stack",                         "isCorrect": false, "rationale": "The stack is dedicated to automatic local variables and function call management." },
+        { "text": "Heap",                          "isCorrect": false, "rationale": "The heap is used for dynamic memory allocated during runtime using functions like `malloc`." },
+        { "text": "Text Segment",                  "isCorrect": false, "rationale": "The text segment stores the executable instructions and is typically read-only." }
+      ],
+      "hint": "This segment is often zeroed out by the runtime system before `main` is called."
+    },
+    {
+      "question": "Consider the following code snippet: `int x = 5; int y = 10; int z = (x++, y++);`. What is the final value of `z`?",
+      "answerOptions": [
+        { "text": "$10$", "isCorrect": true,  "rationale": "The comma operator evaluates its operands from left to right and returns the value of the rightmost operand." },
+        { "text": "$5$",  "isCorrect": false, "rationale": "This would be the value if the left operand were returned, but the comma operator prioritizes the final expression." },
+        { "text": "$11$", "isCorrect": false, "rationale": "While `y` is incremented, the post-increment operator returns the value before the increase for the assignment to `z`." },
+        { "text": "$6$",  "isCorrect": false, "rationale": "This is the value of `x` after the increment, which is discarded by the comma operator." }
+      ],
+      "hint": "Recall the evaluation order and return rules of the comma operator."
+    },
+    {
+      "question": "In C, what is the significance of an 'incomplete type' such as `struct abc;` without a definition body?",
+      "answerOptions": [
+        { "text": "It allows the declaration of pointers to the structure before its members are defined.", "isCorrect": true,  "rationale": "Pointers have a fixed size regardless of the structure's content, allowing them to be declared even when the full layout is unknown." },
+        { "text": "It prevents any variables of that structure type from ever being created.",               "isCorrect": false, "rationale": "Variables can be created once the definition is completed later in the code." },
+        { "text": "It is a syntax error to declare a structure tag without immediately providing the body.", "isCorrect": false, "rationale": "Forward declarations are a standard feature used to handle self-referential structures or opaque pointers." },
+        { "text": "It indicates that the structure is stored in the read-only text segment.",               "isCorrect": false, "rationale": "The storage segment is determined by the variable's declaration, not the completeness of its type definition." }
+      ],
+      "hint": "Think about how we manage linked list nodes that need to point to their own type."
+    },
+    {
+      "question": "When using `va_arg(ap, type)`, why is it necessary to provide the explicit `type` as the second argument?",
+      "answerOptions": [
+        { "text": "Because the macro needs to know how many bytes to advance the internal pointer to reach the next argument.", "isCorrect": true,  "rationale": "The variable argument list does not store type metadata, so the programmer must specify the type to ensure the pointer increments by the correct size." },
+        { "text": "To verify that the passed argument matches the expected type at runtime.",                                    "isCorrect": false, "rationale": "C does not perform runtime type checking on variable arguments; providing the wrong type leads to undefined behavior." },
+        { "text": "Because the C compiler automatically converts all variable arguments to that type.",                         "isCorrect": false, "rationale": "C performs default argument promotions (e.g., `char` to `int`), but does not convert to the specific type requested in `va_arg`." },
+        { "text": "To allow the function to return a value of that specific type.",                                             "isCorrect": false, "rationale": "The `va_arg` macro is used for retrieving input parameters, not for managing the function's return value." }
+      ],
+      "hint": "Consider how the system moves through a block of memory containing items of different sizes."
+    },
+    {
+      "question": "What happens if a programmer attempts to apply the increment operator to an array name, such as `arr++`?",
+      "answerOptions": [
+        { "text": "It results in a compile-time error because the array name is a constant rvalue.", "isCorrect": true,  "rationale": "The name of an array acts as a pointer constant to the first element; it is not a modifiable lvalue." },
+        { "text": "It correctly moves the base address of the array to the next element.",           "isCorrect": false, "rationale": "Array names cannot be reassigned or modified like standard pointers." },
+        { "text": "It increments every single value stored within the array.",                      "isCorrect": false, "rationale": "The increment operator only applies to a single variable, not to an entire collection of data." },
+        { "text": "It is only allowed if the array was declared with the `register` keyword.",       "isCorrect": false, "rationale": "The `register` keyword cannot be applied to arrays, and it would not change the constant nature of the array name." }
+      ],
+      "hint": "Distinguish between a pointer variable and an array identifier."
+    },
+    {
+      "question": "Consider a union containing a $2$-byte `int` and an array of two $1$-byte `char`s. If the array is initialized as `ch[0] = 0x01` and `ch[1] = 0x02`, what is the value of the `int` on a big-endian machine?",
+      "answerOptions": [
+        { "text": "$0x0102$", "isCorrect": true,  "rationale": "In big-endian, the first byte in memory is the most significant, so `ch[0]` (at the lower address) becomes the high byte of the integer." },
+        { "text": "$0x0201$", "isCorrect": false, "rationale": "This would be the result on a little-endian machine, where the first byte in memory is the least significant." },
+        { "text": "$0x03$",   "isCorrect": false, "rationale": "This value would imply the bytes were added together, whereas a union overlaps them in memory." },
+        { "text": "$0x0001$", "isCorrect": false, "rationale": "This would imply only one of the bytes was used for the integer value." }
+      ],
+      "hint": "Think about whether the first byte in memory corresponds to the high or low part of a multi-byte number."
+    },
+    {
+      "question": "Which of the following describes the behavior of `strtok(\"a:b:c\", \":\")` on its first call versus subsequent calls?",
+      "answerOptions": [
+        { "text": "The first call requires the string to parse, while subsequent calls use `NULL` to continue from the last position.", "isCorrect": true,  "rationale": "The `strtok` function maintains internal static state that remembers the location of the last token found when `NULL` is passed." },
+        { "text": "Every call must provide the full string to ensure thread safety.",                                                 "isCorrect": false, "rationale": "`strtok` is not thread-safe because it uses an internal static pointer to track its progress." },
+        { "text": "Subsequent calls must provide the delimiter in reverse order.",                                                   "isCorrect": false, "rationale": "The delimiter string can be changed between calls, but there is no requirement for reversal." },
+        { "text": "The first call returns the total number of tokens, while subsequent calls return the tokens themselves.",         "isCorrect": false, "rationale": "`strtok` returns a pointer to the first found token on the very first call." }
+      ],
+      "hint": "Recall how `strtok` manages to remember where it left off."
+    },
+    {
+      "question": "What is the result of the `sizeof` operator when applied to a string literal like `sizeof(\"ABC\")`?",
+      "answerOptions": [
+        { "text": "$4$",                                                                            "isCorrect": true,  "rationale": "String literals include a hidden null terminator at the end, which the `sizeof` operator counts, giving 3 + 1 = 4." },
+        { "text": "$3$",                                                                            "isCorrect": false, "rationale": "This is the result of `strlen()`, which counts characters but excludes the null terminator." },
+        { "text": "The size of a character pointer ($2$ or $4$ bytes depending on architecture).", "isCorrect": false, "rationale": "Inside the `sizeof` context, a literal is treated as an array of characters, not a pointer." },
+        { "text": "It varies depending on whether the string is stored in the data or text segment.", "isCorrect": false, "rationale": "The size of a data type or literal is constant regardless of its storage segment." }
+      ],
+      "hint": "Remember the unseen character that C appends to the end of every string."
+    },
+    {
+      "question": "If a function is declared as `float f()`, what type of value does it actually return to its caller in many older C compilers due to default promotions?",
+      "answerOptions": [
+        { "text": "`double`",      "isCorrect": true,  "rationale": "Historically, in K&R C and some early ANSI implementations, `float` return values were automatically promoted to `double`." },
+        { "text": "`int`",         "isCorrect": false, "rationale": "Functions default to `int` if no return type is specified, but an explicit `float` declaration keeps it floating-point." },
+        { "text": "`long double`", "isCorrect": false, "rationale": "Promotion generally moves to the next standard size (`double`), not the maximum possible precision." },
+        { "text": "`void`",        "isCorrect": false, "rationale": "`void` indicates no value is returned, which contradicts the explicit `float` declaration." }
+      ],
+      "hint": "Look for a broader floating-point type that often encompasses the narrower one during function calls."
+    },
+    {
+      "question": "Consider the code `int a = 3, b = 5; a ^= b; b ^= a; a ^= b;`. What are the final values of `a` and `b`?",
+      "answerOptions": [
+        { "text": "a = $5$, b = $3$", "isCorrect": true,  "rationale": "Three consecutive XOR operations between two variables swap their values without requiring a temporary third variable." },
+        { "text": "a = $3$, b = $5$", "isCorrect": false, "rationale": "This would mean no change occurred, but XOR bit manipulation effectively moves bits between the two locations." },
+        { "text": "a = $0$, b = $0$", "isCorrect": false, "rationale": "XORing a value with itself results in $0$, but the sequence here ensures the values are preserved and swapped." },
+        { "text": "a = $8$, b = $8$", "isCorrect": false, "rationale": "This result might occur with addition, but XOR logic is fundamentally different." }
+      ],
+      "hint": "Identify this classic bitwise trick for exchanging data."
+    },
+    {
+      "question": "What is the output of the following logic: `int i = 0; if (i++ && ++i) { } printf(\"%d\", i);`?",
+      "answerOptions": [
+        { "text": "$1$",                                              "isCorrect": true,  "rationale": "Because of short-circuit evaluation, if the first operand of `&&` is false ($0$), the second operand is never evaluated." },
+        { "text": "$2$",                                              "isCorrect": false, "rationale": "This would happen if both increments were executed, but logical AND stops early if the left side is false." },
+        { "text": "$0$",                                              "isCorrect": false, "rationale": "The variable `i` is incremented once in the first part of the condition before the short-circuit kicks in." },
+        { "text": "A compilation error due to undefined side effects.", "isCorrect": false, "rationale": "The logical `&&` operator provides a sequence point, making the increments well-defined." }
+      ],
+      "hint": "Consider short-circuit behavior when the first part of a condition is zero."
+    },
+    {
+      "question": "Why is it dangerous to return the address of a local automatic variable from a function?",
+      "answerOptions": [
+        { "text": "Because the memory for that variable is reclaimed when the function returns, leading to a dangling pointer.", "isCorrect": true,  "rationale": "Automatic variables exist only for the duration of the stack frame; once the frame is popped, accessing that memory is undefined behavior." },
+        { "text": "Because local variables are stored in read-only memory.",                                                    "isCorrect": false, "rationale": "Local variables are stored on the stack and are fully modifiable." },
+        { "text": "Because the pointer will automatically be set to `NULL` by the compiler.",                                  "isCorrect": false, "rationale": "Compilers allow this (though they may warn) and return the literal address, even though it is no longer valid." },
+        { "text": "Because the returned address will conflict with the `main` function's stack.",                              "isCorrect": false, "rationale": "The problem is that the specific memory block is no longer reserved for that data, not a conflict with `main`." }
+      ],
+      "hint": "Think about what happens to the stack frame once a function finishes its job."
+    },
+    {
+      "question": "In the declaration `int (*ptr)[5];`, what is the nature of `ptr`?",
+      "answerOptions": [
+        { "text": "A pointer to an array of $5$ integers.",         "isCorrect": true,  "rationale": "The parentheses force the pointer to bind to the array as a whole, rather than creating an array of pointers." },
+        { "text": "An array of $5$ pointers to integers.",          "isCorrect": false, "rationale": "This would be `int *ptr[5];` where the subscript operator has higher precedence than the indirection operator." },
+        { "text": "A pointer to a pointer to a $5$-element integer.", "isCorrect": false, "rationale": "This would be `int **ptr`; here we have a single pointer to a fixed-size array." },
+        { "text": "A function returning a pointer to $5$ integers.", "isCorrect": false, "rationale": "Function declarations would require another set of parentheses for parameters." }
+      ],
+      "hint": "Focus on how the parentheses affect the binding of the star symbol."
+    },
+    {
+      "question": "What is the output of `printf(\"%d\", sizeof(char));` on a standard C system?",
+      "answerOptions": [
+        { "text": "$1$",                                                                "isCorrect": true,  "rationale": "By definition in the C standard, the size of a `char` is exactly $1$ byte." },
+        { "text": "$2$",                                                                "isCorrect": false, "rationale": "This might be the size of an `int` or `short` on some machines, but `char` is always $1$." },
+        { "text": "$4$",                                                                "isCorrect": false, "rationale": "This is typically the size of a `long` or `float`, but not a `char`." },
+        { "text": "It depends on whether the system is little-endian or big-endian.", "isCorrect": false, "rationale": "Endianness affects byte ordering in multi-byte types, but the size of a single byte (`char`) is always $1$." }
+      ],
+      "hint": "C defines the basic unit of memory as the size of this specific type."
+    },
+    {
+      "question": "Given `struct { int a; char b; } s;`, why might `sizeof(s)` be $4$ bytes instead of $3$ bytes (assuming a $2$-byte `int`)?",
+      "answerOptions": [
+        { "text": "The compiler adds padding bytes to ensure the structure is properly aligned in memory.", "isCorrect": true,  "rationale": "Processors access memory more efficiently when data is aligned to word boundaries, so compilers insert gap bytes." },
+        { "text": "Because `char` types are always promoted to $2$ bytes inside structures.",               "isCorrect": false, "rationale": "Individual `char` fields remain $1$ byte, but the overall structure size is rounded up for alignment." },
+        { "text": "The structure includes a hidden pointer to its own type definition.",                   "isCorrect": false, "rationale": "C structures are plain old data and do not contain metadata or hidden pointers." },
+        { "text": "The `sizeof` operator always returns a power of $2$.",                                  "isCorrect": false, "rationale": "Structures can have any size; a struct with $5$ `char`s has size $5$ (plus any padding)." }
+      ],
+      "hint": "Think about why a processor might prefer to start data on an even address."
+    },
+    {
+      "question": "In the format string of `printf`, what does the `%n` specifier do?",
+      "answerOptions": [
+        { "text": "It writes the number of characters printed so far into the integer pointed to by the corresponding argument.", "isCorrect": true,  "rationale": "Unlike other specifiers that output data, `%n` lets the program track the length of output generated at that point." },
+        { "text": "It moves the cursor to a new line, similar to `\\n`.",                                                         "isCorrect": false, "rationale": "The newline character is a control character; `%n` is a format specifier used for data assignment." },
+        { "text": "It formats a number in scientific notation.",                                                                  "isCorrect": false, "rationale": "Scientific notation is handled by the `%e` or `%g` specifiers." },
+        { "text": "It suppresses the output of the next variable in the list.",                                                   "isCorrect": false, "rationale": "Output suppression is a feature of `scanf` (using `*`), not of `printf`'s `%n`." }
+      ],
+      "hint": "This specifier is unique because it saves a value rather than displaying one."
+    },
+    {
+      "question": "What is the effect of the `#pragma` directive in C code?",
+      "answerOptions": [
+        { "text": "It provides implementation-specific instructions to the compiler.",      "isCorrect": true,  "rationale": "Pragmas allow developers to access special compiler features (like disabling warnings or controlling alignment) that are not part of the standard C language." },
+        { "text": "It is a mandatory header that must appear at the top of every C file.", "isCorrect": false, "rationale": "Pragmas are optional and used for platform-specific optimizations or configurations." },
+        { "text": "It defines a macro that can be used for conditional compilation.",      "isCorrect": false, "rationale": "This is the function of the `#define` and `#ifdef` directives." },
+        { "text": "It includes an external library file in the current project.",          "isCorrect": false, "rationale": "External files are included using the `#include` directive." }
+      ],
+      "hint": "Think of this as a special request to the specific compiler you are using."
+    },
+    {
+      "question": "If a variable is declared as `unsigned short x = 65535;`, what will be the value of `x + 1` (assuming a $16$-bit `short`)?",
+      "answerOptions": [
+        { "text": "$0$",                                   "isCorrect": true,  "rationale": "Unsigned integers follow modular arithmetic; adding $1$ to the maximum value ($2^{16}-1$) wraps around to zero." },
+        { "text": "$-1$",                                  "isCorrect": false, "rationale": "Negative values do not exist in the unsigned domain." },
+        { "text": "$65536$",                               "isCorrect": false, "rationale": "This value exceeds the storage capacity of a $16$-bit variable." },
+        { "text": "It will cause an immediate system crash.", "isCorrect": false, "rationale": "Unsigned overflow is well-defined in C as a wrap-around; only signed overflow is undefined behavior." }
+      ],
+      "hint": "Consider the behavior of a fixed-width counter that reaches its absolute limit."
+    },
+    {
+      "question": "What is stored in the `argv[0]` element of the command-line argument array?",
+      "answerOptions": [
+        { "text": "The name of the program being executed.",                  "isCorrect": true,  "rationale": "By convention, the first string in the `argv` array is the path or command used to invoke the binary." },
+        { "text": "The first user-provided argument after the program name.", "isCorrect": false, "rationale": "This would be stored at `argv[1]`." },
+        { "text": "The total count of arguments passed to the program.",      "isCorrect": false, "rationale": "The count is stored in the `argc` integer parameter, not in the `argv` array." },
+        { "text": "A null pointer to indicate the start of the list.",        "isCorrect": false, "rationale": "A null pointer is used at the end of `argv` (`argv[argc]`) to signal termination of the list." }
+      ],
+      "hint": "Think about what a program needs to know about itself when it starts."
+    }
+  ],
+  "topics": ["Pointer Arithmetic","Memory Organization","Endianness","Type Qualifiers","2D Arrays","Structure Padding","Variable Args","setjmp / longjmp","Evaluation Order","sizeof","Union Layout","Bitwise Tricks","Unsigned Overflow"]
+}
+</script>
+
+<script>
+const RAW    = JSON.parse(document.getElementById('qdata').textContent);
+const QUIZ   = RAW.quiz;
+const TOPICS = RAW.topics;
+const ALPHA  = ['A','B','C','D'];
+
+const S = { screen:'intro', idx:0, score:0, results:[], answered:false, selected:null };
+
+function fmt(t) {
+  return t.replace(/`([^`]+)`/g, '<code>$1</code>');
+}
+
+function typeset() {
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('app')]).catch(console.error);
+  }
+}
+
+function render() {
+  const app = document.getElementById('app');
+  if      (S.screen === 'intro') app.innerHTML = buildIntro();
+  else if (S.screen === 'quiz')  app.innerHTML = buildQuiz();
+  else                           app.innerHTML = buildScore();
+  typeset();
+}
+
+function buildIntro() {
+  const chips = TOPICS.map(t => `<span class="chip">${t}</span>`).join('');
+  return `
+    <div class="q-header">
+      <span class="q-title">ES 248 — C Programming</span>
+      <span class="q-count">${QUIZ.length} Questions</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:0"></div></div>
+    <div class="q-card">
+      <div class="intro fade">
+        <div class="intro-emoji">🧠</div>
+        <h1>C Programming Quiz</h1>
+        <p>Test your understanding of pointers, memory layout, arrays, strings, and core C concepts.</p>
+        <div class="chips">${chips}</div>
+        <div class="intro-meta">${QUIZ.length} questions &nbsp;·&nbsp; Multiple choice &nbsp;·&nbsp; Instant feedback</div>
+        <button class="btn btn-primary" onclick="startQuiz()">Start Quiz →</button>
+      </div>
+    </div>`;
+}
+
+function buildQuiz() {
+  const q   = QUIZ[S.idx];
+  const pct = (S.idx / QUIZ.length * 100).toFixed(1);
+
+  const opts = q.answerOptions.map((o, i) => {
+    let cls = 'option';
+    let rat = '';
+    if (S.answered) {
+      cls += ' locked';
+      if (o.isCorrect)           { cls += ' correct'; rat = `<div class="rationale">${fmt(o.rationale)}</div>`; }
+      else if (i === S.selected) { cls += ' wrong';   rat = `<div class="rationale">${fmt(o.rationale)}</div>`; }
+    }
+    const ev = S.answered ? '' : `onclick="pick(${i})"`;
+    return `
+      <div class="${cls}" ${ev}>
+        <div class="opt-letter">${ALPHA[i]}</div>
+        <div class="option-body">
+          <div class="opt-text">${fmt(o.text)}</div>
+          ${rat}
+        </div>
+      </div>`;
+  }).join('');
+
+  const isLast = S.idx === QUIZ.length - 1;
+  return `
+    <div class="q-header">
+      <span class="q-title">ES 248 — C Programming</span>
+      <span class="q-count">Q ${S.idx + 1} / ${QUIZ.length}</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:${pct}%"></div></div>
+    <div class="q-card">
+      <div class="fade">
+        <div class="question-text">${fmt(q.question)}</div>
+        <div class="options">${opts}</div>
+        <div class="hint-row">
+          <button class="hint-toggle" id="htog" onclick="toggleHint()">💡 Show hint</button>
+          <div class="hint-box" id="hbox">${fmt(q.hint)}</div>
+        </div>
+        <div class="nav-row">
+          <button class="btn btn-sm btn-next ${S.answered ? 'show' : ''}" onclick="next()">
+            ${isLast ? 'See Results →' : 'Next →'}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function buildScore() {
+  const pct = Math.round(S.score / QUIZ.length * 100);
+  let grade, gc;
+  if      (pct >= 85) { grade = '🎉 Excellent!';     gc = '#276749'; }
+  else if (pct >= 65) { grade = '👍 Good job!';       gc = '#2b6cb0'; }
+  else                { grade = '📚 Keep practising!'; gc = '#c05621'; }
+
+  const dots = S.results.map((ok, i) =>
+    `<div class="dot ${ok?'ok':'bad'}" title="Q${i+1}: ${ok?'correct':'wrong'}">${i+1}</div>`
+  ).join('');
+
+  return `
+    <div class="q-header">
+      <span class="q-title">ES 248 — C Programming</span>
+      <span class="q-count">Results</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+    <div class="q-card">
+      <div class="score-screen fade">
+        <div class="score-ring">
+          <div class="score-num">${S.score}</div>
+          <div class="score-denom">out of ${QUIZ.length}</div>
+        </div>
+        <div class="score-grade" style="color:${gc}">${grade}</div>
+        <div class="score-sub">You scored ${pct}% &nbsp;(${S.score} / ${QUIZ.length} correct)</div>
+        <div class="dot-row">${dots}</div>
+        <div class="score-btns">
+          <button class="btn btn-sm btn-outline" onclick="goIntro()">← Home</button>
+          <button class="btn btn-sm btn-primary" onclick="startQuiz()">Retake Quiz</button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function startQuiz() {
+  Object.assign(S, { screen:'quiz', idx:0, score:0, results:[], answered:false, selected:null });
+  render();
+}
+
+function goIntro() { S.screen = 'intro'; render(); }
+
+function pick(i) {
+  if (S.answered) return;
+  S.answered = true;
+  S.selected = i;
+  const ok = QUIZ[S.idx].answerOptions[i].isCorrect;
+  if (ok) S.score++;
+  S.results.push(ok);
+  render();
+}
+
+function next() {
+  if (!S.answered) return;
+  S.idx++;
+  if (S.idx >= QUIZ.length) S.screen = 'score';
+  S.answered = false;
+  S.selected = null;
+  render();
+}
+
+function toggleHint() {
+  const box = document.getElementById('hbox');
+  const btn = document.getElementById('htog');
+  if (!box || !btn) return;
+  const show = box.classList.toggle('show');
+  btn.textContent = show ? '💡 Hide hint' : '💡 Show hint';
+}
+
+render();
+</script>
+</body>
+</html>
