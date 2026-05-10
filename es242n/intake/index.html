@@ -12,14 +12,14 @@
     <div class="theme-row" aria-label="Theme">
       <div class="theme-switch">
         <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
-        <button class="theme-choice" type="button" data-theme-choice="light">Dark</button>
+        <button class="theme-choice" type="button" data-theme-choice="dark">Dark</button>
       </div>
     </div>
     <div class="topline">
       <a class="brand" href="../">ES242(N)</a>
       <nav class="nav" aria-label="Course navigation">
         <a href="../../">All Courses</a>
-        <a href="../">Course Home</a>
+        <a href="../" aria-current="page">Course Home</a>
       </nav>
     </div>
     <section class="hero">
@@ -45,7 +45,7 @@
         });
       }
       var stored = localStorage.getItem(key);
-      apply(stored === "light" ? "light" : "grid");
+      apply(stored === "dark" || stored === "light" ? "dark" : "grid");
       buttons.forEach(function (button) {
         button.addEventListener("click", function () {
           localStorage.setItem(key, button.dataset.themeChoice);

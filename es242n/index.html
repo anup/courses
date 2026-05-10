@@ -11,7 +11,7 @@
     <div class="theme-row" aria-label="Theme">
       <div class="theme-switch">
         <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
-        <button class="theme-choice" type="button" data-theme-choice="light">Dark</button>
+        <button class="theme-choice" type="button" data-theme-choice="dark">Dark</button>
       </div>
     </div>
     <div class="topline">
@@ -19,7 +19,7 @@
       <nav class="nav" aria-label="Course navigation">
         <a href="../">All Courses</a>
         <a href="../es248/">ES248</a>
-        <a href="./">ES242(N)</a>
+        <a href="./" aria-current="page">ES242(N)</a>
       </nav>
     </div>
     <section class="hero">
@@ -33,7 +33,6 @@
         <span>Course logistics, intake, handle collection, assessment discussion, and Ubuntu installation.</span>
       </a>
     </section>
-    <div class="terminal">status: ES242(N) tracker automation shell is being prepared</div>
   </main>
   <script>
     (function () {
@@ -46,7 +45,7 @@
         });
       }
       var stored = localStorage.getItem(key);
-      apply(stored === "light" ? "light" : "grid");
+      apply(stored === "dark" || stored === "light" ? "dark" : "grid");
       buttons.forEach(function (button) {
         button.addEventListener("click", function () {
           localStorage.setItem(key, button.dataset.themeChoice);
