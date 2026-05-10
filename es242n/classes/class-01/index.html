@@ -5,31 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ES242(N) Class 1</title>
   <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    document.documentElement.dataset.theme =
+      localStorage.getItem("iitgn-course-theme") === "dark" ||
+      localStorage.getItem("iitgn-course-theme") === "light" ? "dark" : "grid";
+  </script>
 </head>
 <body>
   <main class="shell">
-    <div class="theme-row" aria-label="Theme">
-      <div class="theme-switch">
-        <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
-        <button class="theme-choice" type="button" data-theme-choice="dark">Dark</button>
-      </div>
-    </div>
     <div class="topline">
       <a class="brand" href="../../">ES242(N)</a>
       <nav class="nav" aria-label="Class navigation">
         <a href="../../../">All Courses</a>
-        <a href="../../" aria-current="page">Course Home</a>
-        <a href="../../intake/">Student Intake</a>
-        <a href="../../handles/">Handles</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Class 1</a>
       </nav>
     </div>
-
     <section class="hero">
       <p class="eyebrow">class 01</p>
       <h1>Introduction and Ubuntu Installation</h1>
       <p class="lead">First meeting checklist: course logistics, assessment model, student setup, and the tools we will use through the summer.</p>
     </section>
-
     <section class="grid" aria-label="Student links">
       <a class="tile" href="../../intake/">
         <strong>Student Intake Form</strong>
@@ -110,25 +106,6 @@
       </ul>
     </section>
   </main>
-  <script>
-    (function () {
-      var key = "iitgn-course-theme";
-      var buttons = document.querySelectorAll("[data-theme-choice]");
-      function apply(theme) {
-        document.body.dataset.theme = theme;
-        buttons.forEach(function (button) {
-          button.setAttribute("aria-pressed", button.dataset.themeChoice === theme ? "true" : "false");
-        });
-      }
-      var stored = localStorage.getItem(key);
-      apply(stored === "dark" || stored === "light" ? "dark" : "grid");
-      buttons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          localStorage.setItem(key, button.dataset.themeChoice);
-          apply(button.dataset.themeChoice);
-        });
-      });
-    }());
-  </script>
+  <script src="../../../assets/course-theme.js"></script>
 </body>
 </html>
