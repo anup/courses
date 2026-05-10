@@ -8,6 +8,12 @@
 </head>
 <body>
   <main class="shell">
+    <div class="theme-row" aria-label="Theme">
+      <div class="theme-switch">
+        <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
+        <button class="theme-choice" type="button" data-theme-choice="light">Light</button>
+      </div>
+    </div>
     <div class="topline">
       <a class="brand" href="../../">ES242(N)</a>
       <nav class="nav" aria-label="Class navigation">
@@ -16,12 +22,6 @@
         <a href="../../intake/">Student Intake</a>
         <a href="../../handles/">Handles</a>
       </nav>
-    </div>
-    <div class="theme-row" aria-label="Theme">
-      <div class="theme-switch">
-        <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
-        <button class="theme-choice" type="button" data-theme-choice="light">Light</button>
-      </div>
     </div>
 
     <section class="hero">
@@ -120,7 +120,8 @@
           button.setAttribute("aria-pressed", button.dataset.themeChoice === theme ? "true" : "false");
         });
       }
-      apply(localStorage.getItem(key) || "grid");
+      var stored = localStorage.getItem(key);
+      apply(stored === "light" ? "light" : "grid");
       buttons.forEach(function (button) {
         button.addEventListener("click", function () {
           localStorage.setItem(key, button.dataset.themeChoice);
