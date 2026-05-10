@@ -14,7 +14,7 @@
         <a href="../">All Courses</a>
         <a href="../es248/">ES248</a>
         <a href="./">ES242(N)</a>
-        <button class="theme-toggle" type="button" data-theme-toggle>Classic</button>
+        <button class="theme-toggle" type="button" data-theme-toggle>Dark</button>
       </nav>
     </div>
     <section class="hero">
@@ -44,12 +44,12 @@
       var button = document.querySelector("[data-theme-toggle]");
       function apply(theme) {
         document.body.dataset.theme = theme;
-        if (button) button.textContent = theme === "classic" ? "Grid" : "Classic";
+        if (button) button.textContent = theme === "dark" ? "Light" : "Dark";
       }
       apply(localStorage.getItem(key) || "grid");
       if (button) {
         button.addEventListener("click", function () {
-          var next = document.body.dataset.theme === "classic" ? "grid" : "classic";
+          var next = document.body.dataset.theme === "dark" ? "grid" : "dark";
           localStorage.setItem(key, next);
           apply(next);
         });
