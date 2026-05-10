@@ -6,9 +6,9 @@
   <title>ES242(N)</title>
   <link rel="stylesheet" href="../assets/course-theme.css">
   <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
     document.documentElement.dataset.theme =
-      localStorage.getItem("iitgn-course-theme") === "dark" ||
-      localStorage.getItem("iitgn-course-theme") === "light" ? "dark" : "grid";
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
   </script>
 </head>
 <body>

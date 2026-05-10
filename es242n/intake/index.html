@@ -7,9 +7,9 @@
   <link rel="canonical" href="https://script.google.com/macros/s/AKfycbzBn8ALTBBtUoFHQ2xI11A2S6JDsxAstIjQsNJTHQUO0nyuGQzh6MkfcwPocxtzMkbDDg/exec">
   <link rel="stylesheet" href="../../assets/course-theme.css">
   <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
     document.documentElement.dataset.theme =
-      localStorage.getItem("iitgn-course-theme") === "dark" ||
-      localStorage.getItem("iitgn-course-theme") === "light" ? "dark" : "grid";
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
   </script>
 </head>
 <body>
