@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Class 1</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+</head>
+<body>
+  <main class="shell">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Class navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="../../intake/">Student Intake</a>
+        <a href="../../handles/">Handles</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>Classic</button>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">class 01</p>
+      <h1>Introduction and Ubuntu Installation</h1>
+      <p class="lead">First meeting checklist: course logistics, assessment model, student setup, and the tools we will use through the summer.</p>
+    </section>
+
+    <section class="grid" aria-label="Student links">
+      <a class="tile" href="../../intake/">
+        <strong>Student Intake Form</strong>
+        <span>Stream, SRIP status, summer course load, C/C++ familiarity, and timing constraints.</span>
+      </a>
+      <a class="tile" href="../../handles/">
+        <strong>Handle Collection</strong>
+        <span>LeetCode, CodeChef, AtCoder, and Codeforces usernames.</span>
+      </a>
+    </section>
+
+    <section class="agenda" aria-label="Class agenda">
+      <article class="agenda-item">
+        <div class="marker">01</div>
+        <div>
+          <h2>Welcome and course context</h2>
+          <p>What this summer offering is, how the class will run, and what students should expect from the pace.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">02</div>
+        <div>
+          <h2>Collect student logistics</h2>
+          <p>Fill the intake form: stream, SRIP status, other summer course load, timing constraints, and C/C++ background.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">03</div>
+        <div>
+          <h2>Finalize communication and registration flow</h2>
+          <p>Google Chat group, Google Classroom decision, registration expectations, and where official updates will live.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">04</div>
+        <div>
+          <h2>Confirm course timings</h2>
+          <p>Use student constraints to settle lecture/lab rhythm and clarify how conflicts will be handled.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">05</div>
+        <div>
+          <h2>Assessment model</h2>
+          <p>Discuss formative assessment, grading policy, contest/practice expectations, and how progress will be tracked.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">06</div>
+        <div>
+          <h2>Collect platform handles</h2>
+          <p>Students submit validated competitive-programming usernames through the handle collection page.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">07</div>
+        <div>
+          <h2>Ubuntu installation</h2>
+          <p>Prepare bootable USBs, install Ubuntu 24.04 LTS where needed, and identify students who need alternate lab-machine support.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Student-facing course URL</h2>
+      <p class="lead">Use this page as the starting point for course links, forms, class material, and tools.</p>
+      <div class="terminal">https://anup.github.io/courses/es242n/</div>
+    </section>
+
+    <section class="slide-band">
+      <h2>Before leaving class</h2>
+      <ul class="compact-list">
+        <li>Every student has filled the intake form.</li>
+        <li>Every student has submitted or attempted platform handles.</li>
+        <li>Communication channel is finalized.</li>
+        <li>Course timing constraints are collected.</li>
+        <li>Ubuntu installation status is known for each student.</li>
+      </ul>
+    </section>
+  </main>
+  <script>
+    (function () {
+      var key = "iitgn-course-theme";
+      var button = document.querySelector("[data-theme-toggle]");
+      function apply(theme) {
+        document.body.dataset.theme = theme;
+        if (button) button.textContent = theme === "classic" ? "Grid" : "Classic";
+      }
+      apply(localStorage.getItem(key) || "grid");
+      if (button) {
+        button.addEventListener("click", function () {
+          var next = document.body.dataset.theme === "classic" ? "grid" : "classic";
+          localStorage.setItem(key, next);
+          apply(next);
+        });
+      }
+    }());
+  </script>
+</body>
+</html>

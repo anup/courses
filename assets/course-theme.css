@@ -12,6 +12,18 @@
   --shadow: 0 1px 2px rgba(23, 32, 38, 0.08);
 }
 
+body[data-theme="classic"] {
+  --bg: #f6f7f9;
+  --panel: #ffffff;
+  --ink: #18212f;
+  --muted: #5d6b7c;
+  --line: #d9e1ea;
+  --line-strong: #aebbc9;
+  --accent: #1d5fd0;
+  --accent-ink: #174ea6;
+  --code-bg: #e8eef6;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -25,6 +37,11 @@ body {
     var(--bg);
   background-size: 24px 24px;
   color: var(--ink);
+}
+
+body[data-theme="classic"] {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  background: var(--bg);
 }
 
 a {
@@ -65,6 +82,22 @@ a {
 }
 
 .nav a:hover {
+  color: var(--accent-ink);
+}
+
+.theme-toggle {
+  min-height: 30px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+}
+
+.theme-toggle:hover {
+  border-color: var(--line-strong);
   color: var(--accent-ink);
 }
 
@@ -143,6 +176,60 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.agenda {
+  display: grid;
+  gap: 12px;
+  margin-top: 28px;
+}
+
+.agenda-item {
+  display: grid;
+  grid-template-columns: 78px minmax(0, 1fr);
+  gap: 14px;
+  padding: 14px 0;
+  border-top: 1px solid var(--line);
+}
+
+.agenda-item time,
+.agenda-item .marker {
+  color: var(--accent-ink);
+  font-weight: 700;
+}
+
+.agenda-item h2 {
+  margin: 0 0 6px;
+  font-size: 1.05rem;
+  line-height: 1.25;
+}
+
+.agenda-item p {
+  margin: 0;
+  color: var(--muted);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.45;
+}
+
+.slide-band {
+  margin-top: 34px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.slide-band h2 {
+  margin: 0 0 10px;
+  font-size: 1.1rem;
+}
+
+.compact-list {
+  margin: 0;
+  padding-left: 20px;
+  color: var(--muted);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.55;
+}
+
 @media (max-width: 560px) {
   .shell {
     padding-top: 28px;
@@ -153,5 +240,9 @@ h1 {
     flex-direction: column;
     margin-bottom: 36px;
   }
-}
 
+  .agenda-item {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+}

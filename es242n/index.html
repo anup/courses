@@ -14,6 +14,7 @@
         <a href="../">All Courses</a>
         <a href="../es248/">ES248</a>
         <a href="./">ES242(N)</a>
+        <button class="theme-toggle" type="button" data-theme-toggle>Classic</button>
       </nav>
     </div>
     <section class="hero">
@@ -26,8 +27,34 @@
         <strong>Fill Usernames / Handles</strong>
         <span>Validate and submit LeetCode, CodeChef, AtCoder, and Codeforces handles.</span>
       </a>
+      <a class="tile" href="intake/">
+        <strong>Student Intake</strong>
+        <span>Share stream, summer commitments, setup status, and timing constraints.</span>
+      </a>
+      <a class="tile" href="classes/class-01/">
+        <strong>Class 1: Introduction + Ubuntu</strong>
+        <span>Agenda for the first meeting and installation discussion.</span>
+      </a>
     </section>
     <div class="terminal">status: ES242(N) tracker automation shell is being prepared</div>
   </main>
+  <script>
+    (function () {
+      var key = "iitgn-course-theme";
+      var button = document.querySelector("[data-theme-toggle]");
+      function apply(theme) {
+        document.body.dataset.theme = theme;
+        if (button) button.textContent = theme === "classic" ? "Grid" : "Classic";
+      }
+      apply(localStorage.getItem(key) || "grid");
+      if (button) {
+        button.addEventListener("click", function () {
+          var next = document.body.dataset.theme === "classic" ? "grid" : "classic";
+          localStorage.setItem(key, next);
+          apply(next);
+        });
+      }
+    }());
+  </script>
 </body>
 </html>
