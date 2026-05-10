@@ -15,8 +15,13 @@
         <a href="../../">Course Home</a>
         <a href="../../intake/">Student Intake</a>
         <a href="../../handles/">Handles</a>
-        <button class="theme-toggle" type="button" data-theme-toggle>Dark</button>
       </nav>
+    </div>
+    <div class="theme-row" aria-label="Theme">
+      <div class="theme-switch">
+        <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
+        <button class="theme-choice" type="button" data-theme-choice="light">Light</button>
+      </div>
     </div>
 
     <section class="hero">
@@ -108,19 +113,20 @@
   <script>
     (function () {
       var key = "iitgn-course-theme";
-      var button = document.querySelector("[data-theme-toggle]");
+      var buttons = document.querySelectorAll("[data-theme-choice]");
       function apply(theme) {
         document.body.dataset.theme = theme;
-        if (button) button.textContent = theme === "dark" ? "Light" : "Dark";
-      }
-      apply(localStorage.getItem(key) || "grid");
-      if (button) {
-        button.addEventListener("click", function () {
-          var next = document.body.dataset.theme === "dark" ? "grid" : "dark";
-          localStorage.setItem(key, next);
-          apply(next);
+        buttons.forEach(function (button) {
+          button.setAttribute("aria-pressed", button.dataset.themeChoice === theme ? "true" : "false");
         });
       }
+      apply(localStorage.getItem(key) || "grid");
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          localStorage.setItem(key, button.dataset.themeChoice);
+          apply(button.dataset.themeChoice);
+        });
+      });
     }());
   </script>
 </body>
