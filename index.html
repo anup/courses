@@ -8,6 +8,12 @@
 </head>
 <body>
   <main class="shell">
+    <div class="theme-row" aria-label="Theme">
+      <div class="theme-switch">
+        <button class="theme-choice" type="button" data-theme-choice="grid">Grid</button>
+        <button class="theme-choice" type="button" data-theme-choice="dark">Dark</button>
+      </div>
+    </div>
     <div class="topline">
       <a class="brand" href="./">IITGN Courses</a>
       <nav class="nav" aria-label="Courses">
@@ -31,5 +37,25 @@
       </a>
     </section>
   </main>
+  <script>
+    (function () {
+      var key = "iitgn-course-theme";
+      var buttons = document.querySelectorAll("[data-theme-choice]");
+      function apply(theme) {
+        document.body.dataset.theme = theme;
+        buttons.forEach(function (button) {
+          button.setAttribute("aria-pressed", button.dataset.themeChoice === theme ? "true" : "false");
+        });
+      }
+      var stored = localStorage.getItem(key);
+      apply(stored === "dark" || stored === "light" ? "dark" : "grid");
+      buttons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          localStorage.setItem(key, button.dataset.themeChoice);
+          apply(button.dataset.themeChoice);
+        });
+      });
+    }());
+  </script>
 </body>
 </html>
