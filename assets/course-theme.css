@@ -162,6 +162,10 @@ h1 {
   margin-top: 28px;
 }
 
+.grid.stack {
+  grid-template-columns: 1fr;
+}
+
 .tile {
   display: block;
   min-height: 112px;
