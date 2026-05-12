@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Course Plan</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <div class="topline">
+      <a class="brand" href="../">ES242(N)</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">All Courses</a>
+        <a href="../">Course Home</a>
+        <a href="./" aria-current="page">Course Plan</a>
+        <a href="../grading-policy/">Grading</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">course information</p>
+      <h1>Course Plan</h1>
+      <p class="lead">Course setup, student workflow, and links to the formal course-plan and grading-policy documents.</p>
+    </section>
+    <section class="grid" aria-label="Course information">
+      <a class="tile" href="../course-plan.pdf">
+        <strong>Download Course Plan</strong>
+        <span>Original course-plan PDF.</span>
+      </a>
+      <a class="tile" href="../grading-policy/">
+        <strong>Grading Policy</strong>
+        <span>Assessment split, contest scoring, regular practice, diagnostic test, and attendance bonus.</span>
+      </a>
+    </section>
+
+    <section class="agenda" aria-label="Course workflow">
+      <article class="agenda-item">
+        <div class="marker">01</div>
+        <div>
+          <h2>Course setup</h2>
+          <p>Students fill the intake form, submit platform handles, join the communication channel, and confirm Ubuntu setup.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">02</div>
+        <div>
+          <h2>Practice and contests</h2>
+          <p>Practice is tracked through CodeChef, Codeforces, LeetCode, and AtCoder handles collected for this course.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">03</div>
+        <div>
+          <h2>Assessment tracking</h2>
+          <p>The tracker combines exams, assignment contests, regular practice, diagnostic participation, and attendance bonus.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="../../assets/course-theme.js"></script>
+</body>
+</html>
