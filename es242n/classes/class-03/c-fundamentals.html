@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ES242(N) — Class 1: C Fundamentals</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+  <style>
+    :root {
+      --main-color: #2c3e50;
+      --accent-color: #3498db;
+      --warn-color: #e67e22;
+      --error-color: #e74c3c;
+      --ok-color: #27ae60;
+      --muted-color: #7f8c8d;
+      --light-bg: #f8f9fa;
+      --code-bg: #282c34;
+    }
+    .reveal {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 30px;
+    }
+    .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+      color: var(--main-color);
+      font-weight: 600;
+      letter-spacing: 0;
+    }
+    .reveal h1 { font-size: 2.0em; }
+    .reveal h2 { font-size: 1.5em; margin-bottom: 0.6em; }
+    .reveal h3 { font-size: 1.1em; color: var(--muted-color); }
+    .reveal pre {
+      box-shadow: none;
+      font-size: 0.65em;
+      line-height: 1.3;
+      width: 90%;
+      margin: 0.6em auto;
+    }
+    .reveal pre code {
+      max-height: 480px;
+      padding: 18px 22px;
+      border-radius: 6px;
+    }
+    .reveal code {
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      background: #f0f0f0;
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: var(--main-color);
+    }
+    .reveal pre code { background: var(--code-bg); color: #e8e8e8; }
+    .reveal .compare {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 1em;
+    }
+    .reveal .compare > div { text-align: left; }
+    .reveal .compare h4 {
+      margin: 0 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid var(--accent-color);
+      color: var(--accent-color);
+    }
+    .reveal table { font-size: 0.7em; margin: 0.6em auto; }
+    .reveal table th {
+      background: var(--main-color);
+      color: white;
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    .reveal table td { padding: 6px 12px; border-bottom: 1px solid #e0e0e0; }
+    .reveal table code { background: transparent; padding: 0; font-size: 0.95em; }
+    .reveal .callout {
+      background: #fff3cd;
+      border-left: 5px solid var(--warn-color);
+      padding: 12px 18px;
+      margin: 1em 0;
+      text-align: left;
+      font-size: 0.85em;
+      border-radius: 4px;
+    }
+    .reveal .callout-good { background: #d4edda; border-left-color: var(--ok-color); }
+    .reveal .callout-bad { background: #f8d7da; border-left-color: var(--error-color); }
+    .reveal .muted { color: var(--muted-color); }
+    .reveal .small { font-size: 0.7em; }
+    .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+    .reveal ul, .reveal ol { display: block; margin: 0.5em 0 0.5em 1.2em; }
+    .reveal li { margin: 0.3em 0; font-size: 0.85em; }
+    .reveal .three-box {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 16px;
+      margin-top: 1.4em;
+    }
+    .reveal .three-box > div {
+      border: 2px solid var(--accent-color);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--light-bg);
+    }
+    .reveal .three-box h4 {
+      margin: 0 0 6px;
+      color: var(--accent-color);
+      font-size: 0.95em;
+    }
+    .reveal .three-box code { font-size: 0.85em; }
+    .reveal .three-box .small { color: var(--muted-color); font-size: 0.78em; margin-bottom: 6px; }
+    .reveal blockquote {
+      border-left: 5px solid var(--accent-color);
+      padding: 10px 18px;
+      background: var(--light-bg);
+      font-size: 0.85em;
+      text-align: left;
+    }
+    .reveal section.center { text-align: center; }
+  </style>
+</head>
+<body>
+  <div class="reveal">
+    <div class="slides">
+
+      <!-- 1. Title -->
+      <section class="center">
+        <h1>C Fundamentals</h1>
+        <h3 style="margin-top: 1em;">ES242(N) — Class 1, Morning</h3>
+        <p class="muted small" style="margin-top: 2em;">
+          Compile a C program. Read input. Write loops. Solve three problems.
+        </p>
+      </section>
+
+      <!-- 2. Why C — the short answer -->
+      <section>
+        <h2>Why C?</h2>
+        <p style="font-size: 1.4em; margin: 1em 0;">
+          The <span class="highlight">Senate</span>, in its infinite wisdom,
+          has decreed that ES242(N) shall be taught in C.
+        </p>
+        <p class="muted">I just deliver the syllabus.</p>
+        <p class="small muted" style="margin-top: 1.5em;">
+          So really, we don't have a choice.
+          <span class="fragment"> &nbsp;&nbsp; …but there are still good reasons to learn C, even in 2026 — and even Claude, who wrote these slides, agrees.</span>
+        </p>
+      </section>
+
+      <!-- 3. Why C — the real reasons -->
+      <section>
+        <h2>The Fast Python <em>is</em> C</h2>
+        <ul style="font-size: 0.9em;">
+          <li><code>import numpy</code> &nbsp;→&nbsp; C under the hood</li>
+          <li><code>import pandas</code> &nbsp;→&nbsp; C</li>
+          <li><code>import torch</code> &nbsp;→&nbsp; C and C++ (and CUDA C for the GPU bits)</li>
+          <li>The Linux kernel running your Ubuntu — C.</li>
+          <li>The macOS kernel — C.</li>
+          <li>V8, the JavaScript engine in your browser — C++.</li>
+        </ul>
+        <p class="muted small" style="margin-top: 1.2em;">
+          You may have never written C, but it has been running under everything you've used.
+        </p>
+      </section>
+
+      <!-- 4. Why C — for THIS course -->
+      <section>
+        <h2>For <em>this</em> course specifically</h2>
+        <p style="text-align: left; font-size: 0.95em;">
+          This is a course on <strong>data structures and algorithms</strong>.
+        </p>
+        <p style="text-align: left; font-size: 0.95em; margin-top: 0.8em;">
+          Data structures are <span class="highlight">representations of data in memory</span>.
+          Algorithms are how we operate on those representations.
+        </p>
+        <p style="text-align: left; font-size: 0.95em; margin-top: 0.8em;">
+          Python <em>hides</em> the representation. C <em>exposes</em> it. That's the whole reason this course uses C.
+        </p>
+        <div class="callout callout-good" style="margin-top: 1em;">
+          You're not here to master C. You're here to use C as the <em>lens</em> through which DSA becomes visible. If you want to master C, read K&amp;R over the summer.
+        </div>
+      </section>
+
+      <!-- 5. C vs Python — side by side -->
+      <section>
+        <h2>C vs Python — at a glance</h2>
+        <div class="compare" style="font-size: 0.85em;">
+          <div>
+            <h4>Python</h4>
+            <pre><code class="language-python">x = 5
+print(x)
+
+n = int(input())
+
+a = [1, 2, 3]
+
+7 / 2   # 3.5</code></pre>
+          </div>
+          <div>
+            <h4>C</h4>
+            <pre><code class="language-c">int x = 5;
+printf("%d\n", x);
+
+int n; scanf("%d", &amp;n);
+
+int a[3] = {1, 2, 3};
+
+7 / 2   /* 3 */</code></pre>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top: 0.8em;">
+          Five differences in one slide. Everything else this term builds on this.
+        </p>
+      </section>
+
+      <!-- 6. Compiler vs Interpreter -->
+      <section>
+        <h2>Compiler vs Interpreter</h2>
+        <div class="compare" style="font-size: 0.8em;">
+          <div>
+            <h4>Python — interpreted</h4>
+            <p class="small">Source code is read line by line, every time you run.</p>
+            <pre><code class="language-text">file.py  →  python file.py
+            (reads + runs)</code></pre>
+            <p class="small muted">No separate "build" step.</p>
+          </div>
+          <div>
+            <h4>C — compiled</h4>
+            <p class="small">Source code becomes a binary <em>once</em>. You run the binary.</p>
+            <pre><code class="language-text">file.c   →  gcc file.c
+            (produces "a.out")
+
+./a.out
+            (run as many times as you want)</code></pre>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top: 0.6em;">
+          Compile catches errors before you run. The cost is an extra step. The benefit is speed.
+        </p>
+      </section>
+
+      <!-- 7. First C Program -->
+      <section>
+        <h2>Your first C program</h2>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int main(void) {
+    printf("Hello, ES242N!\n");
+    return 0;
+}</code></pre>
+        <ul style="font-size: 0.75em;">
+          <li><code>#include &lt;stdio.h&gt;</code> — brings in <code>printf</code>, <code>scanf</code>.</li>
+          <li><code>int main(void)</code> — every C program starts here.</li>
+          <li><code>printf(...)</code> — prints. <code>\n</code> is a newline (not automatic in C).</li>
+          <li><code>return 0;</code> — tells the OS the program ended successfully.</li>
+        </ul>
+      </section>
+
+      <!-- 8. Compile and run -->
+      <section>
+        <h2>Compile. Run.</h2>
+        <pre><code class="language-bash">$ gcc hello.c
+$ ./a.out
+Hello, ES242N!</code></pre>
+        <div class="callout">
+          <strong>Two steps:</strong> <code>gcc</code> compiles your source <code>.c</code> into an executable called <code>a.out</code>. Then you run the executable. Edit source → recompile → re-run. You'll do this 1000 times this term.
+        </div>
+      </section>
+
+      <!-- 9. printf format specifiers -->
+      <section>
+        <h2>printf — format specifiers</h2>
+        <p class="small muted">Python: <code>print(x)</code> figures it out. C: you tell <code>printf</code> the type.</p>
+        <table>
+          <tr><th>Specifier</th><th>For type</th><th>Example</th></tr>
+          <tr><td><code>%d</code></td><td><code>int</code></td><td><code>printf("%d\n", 42);</code></td></tr>
+          <tr><td><code>%ld</code></td><td><code>long</code></td><td><code>printf("%ld\n", n);</code></td></tr>
+          <tr><td><code>%f</code></td><td><code>float</code>, <code>double</code></td><td><code>printf("%.2f\n", 3.14);</code></td></tr>
+          <tr><td><code>%c</code></td><td><code>char</code></td><td><code>printf("%c\n", 'A');</code></td></tr>
+          <tr><td><code>%s</code></td><td>string</td><td><code>printf("%s\n", "hi");</code></td></tr>
+        </table>
+        <p class="small muted">Wrong specifier → wrong output. <code>printf("%d\n", 3.14)</code> prints garbage.</p>
+      </section>
+
+      <!-- 10. scanf -->
+      <section>
+        <h2>scanf — reading input</h2>
+        <pre><code class="language-c">int n;
+scanf("%d", &amp;n);
+
+double price;
+scanf("%lf", &amp;price);</code></pre>
+        <div class="callout">
+          The <code>&amp;</code> means <em>"the address of"</em>. <code>scanf</code> needs to <strong>write into</strong> your variable, so you give it <strong>where the variable lives</strong>. We'll explain <code>&amp;</code> properly when we do pointers.
+        </div>
+        <p class="small">For <code>double</code> input, use <code>%lf</code> (not <code>%f</code>). Input and output specifiers don't always match.</p>
+      </section>
+
+      <!-- 11. Data Types — the table -->
+      <section>
+        <h2>Data types and their sizes</h2>
+        <p class="small muted">On Linux x86_64 (lab machines):</p>
+        <table style="font-size: 0.62em;">
+          <tr><th>Type</th><th>Size</th><th>Signed range</th><th>Unsigned range</th></tr>
+          <tr><td><code>char</code></td><td>1 byte</td><td>−128 to 127</td><td>0 to 255</td></tr>
+          <tr><td><code>short</code></td><td>2 bytes</td><td>−32,768 to 32,767</td><td>0 to 65,535</td></tr>
+          <tr><td><code>int</code></td><td>4 bytes</td><td>~ ±2.1 × 10⁹</td><td>0 to ~4.2 × 10⁹</td></tr>
+          <tr><td><code>long</code></td><td>8 bytes</td><td>~ ±9.2 × 10¹⁸</td><td>0 to ~1.8 × 10¹⁹</td></tr>
+          <tr><td><code>long long</code></td><td>8 bytes</td><td>same as long</td><td>same</td></tr>
+          <tr><td><code>float</code></td><td>4 bytes</td><td colspan="2">~6 decimal digits precision</td></tr>
+          <tr><td><code>double</code></td><td>8 bytes</td><td colspan="2">~15 decimal digits precision</td></tr>
+        </table>
+        <p class="small muted">Use <code>sizeof(int)</code> to check at runtime. Sizes are typical but not guaranteed across platforms.</p>
+      </section>
+
+      <!-- 12. Why this matters -->
+      <section>
+        <h2>Why this matters</h2>
+        <div class="compare">
+          <div>
+            <h4>Python</h4>
+            <pre><code class="language-python">n = 10**100
+print(n)
+# works fine</code></pre>
+            <p class="small muted">Integers grow as big as you want.</p>
+          </div>
+          <div>
+            <h4>C</h4>
+            <pre><code class="language-c">int n = 10000000000;
+/* compile warning
+   or silent overflow */</code></pre>
+            <p class="small muted">Fixed size. Going past it = undefined behavior.</p>
+          </div>
+        </div>
+        <div class="callout callout-bad" style="margin-top: 0.6em;">
+          <code>INT_MAX + 1</code> on most CPUs wraps to <code>INT_MIN</code>. Your "billion plus billion" becomes negative. One of the top bugs in new C code.
+        </div>
+      </section>
+
+      <!-- 13. Reading constraints -->
+      <section>
+        <h2>Reading constraints with type sizes in mind</h2>
+        <pre style="font-size: 0.55em;"><code class="language-text">ALTERNATING-PARITY:  −10⁹ ≤ a[i] ≤ 10⁹
+  → fits in int  (int max ≈ 2.1 × 10⁹).  Use int.
+
+If a problem said:    −10¹² ≤ a[i] ≤ 10¹²
+  → doesn't fit in int.  Use long long.</code></pre>
+        <div class="callout">
+          <strong>The accumulator trap:</strong> even if each value fits in <code>int</code>, the <em>sum</em> might not. N = 200,000 values each up to 10⁹ → sum can reach 2 × 10¹⁴ → needs <code>long long</code>.
+        </div>
+        <p class="small muted">
+          Skill of the term: read constraints, pick the right type. Every problem.
+        </p>
+      </section>
+
+      <!-- 14. Bitwise operators (tease) -->
+      <section>
+        <h2>Bitwise operators</h2>
+        <p class="small muted">Each <code>int</code> is 32 bits. You can manipulate them.</p>
+        <table style="font-size: 0.7em;">
+          <tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
+          <tr><td><code>&amp;</code></td><td>bitwise AND</td><td><code>5 &amp; 3</code> = 1</td></tr>
+          <tr><td><code>|</code></td><td>bitwise OR</td><td><code>5 | 3</code> = 7</td></tr>
+          <tr><td><code>^</code></td><td>bitwise XOR</td><td><code>5 ^ 3</code> = 6</td></tr>
+          <tr><td><code>~</code></td><td>bitwise NOT</td><td><code>~5</code> = −6</td></tr>
+          <tr><td><code>&lt;&lt;</code></td><td>left shift (× 2ⁿ)</td><td><code>1 &lt;&lt; 3</code> = 8</td></tr>
+          <tr><td><code>&gt;&gt;</code></td><td>right shift (÷ 2ⁿ)</td><td><code>8 &gt;&gt; 2</code> = 2</td></tr>
+        </table>
+        <p class="small muted" style="margin-top: 0.6em;">
+          We'll come back when we solve <em>UNIQUE-ELEMENT</em>. XOR has a beautiful trick. For now: know they exist.
+        </p>
+      </section>
+
+      <!-- 15. For loop -->
+      <section>
+        <h2>The C for-loop has three parts</h2>
+        <pre style="font-size: 0.75em;"><code class="language-c">for (int i = 0; i &lt; n; i++) {
+    printf("%d\n", i);
+}</code></pre>
+        <div class="three-box">
+          <div>
+            <h4>Initialization</h4>
+            <p class="small">Runs once at start</p>
+            <code>int i = 0</code>
+          </div>
+          <div>
+            <h4>Condition</h4>
+            <p class="small">Checked before each iteration</p>
+            <code>i &lt; n</code>
+          </div>
+          <div>
+            <h4>Update</h4>
+            <p class="small">Runs after each iteration</p>
+            <code>i++</code>
+          </div>
+        </div>
+        <p class="small muted" style="margin-top: 0.8em;">
+          Python's <code>for x in collection</code> doesn't exist in C. C's <code>for</code> is closer to Python's <code>while</code> — you manage the loop state explicitly.
+        </p>
+      </section>
+
+      <!-- 16. While loop -->
+      <section>
+        <h2>C also has <code>while</code> — exactly like Python's</h2>
+        <pre><code class="language-c">int n = 12345;
+while (n &gt; 0) {
+    printf("%d\n", n % 10);
+    n = n / 10;
+}</code></pre>
+        <div class="callout">
+          <strong>Use <code>for</code></strong> when you know how many times to loop (compact: init + condition + update on one line). <br>
+          <strong>Use <code>while</code></strong> when the stopping condition depends on the data (e.g. "until <code>n</code> reaches zero").
+        </div>
+      </section>
+
+      <!-- 17. Conditionals -->
+      <section>
+        <h2>Conditionals</h2>
+        <pre style="font-size: 0.78em;"><code class="language-c">if (x % 2 == 0) {
+    printf("EVEN\n");
+} else if (x &gt; 0) {
+    printf("ODD POSITIVE\n");
+} else {
+    printf("ODD NEGATIVE OR ZERO\n");
+}</code></pre>
+        <table style="font-size: 0.72em;">
+          <tr><th>Compare</th><th>Logical</th><th>Assignment</th></tr>
+          <tr><td><code>==</code> equals</td><td><code>&amp;&amp;</code> AND</td><td><code>=</code> assign</td></tr>
+          <tr><td><code>!=</code> not equal</td><td><code>||</code> OR</td><td></td></tr>
+          <tr><td><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code></td><td><code>!</code> NOT</td><td></td></tr>
+        </table>
+      </section>
+
+      <!-- 18. Integer division gotcha -->
+      <section>
+        <h2>The integer-division gotcha</h2>
+        <div class="compare">
+          <div>
+            <h4>Python 3</h4>
+            <pre><code class="language-python">7 / 2     # 3.5
+7 // 2    # 3</code></pre>
+          </div>
+          <div>
+            <h4>C</h4>
+            <pre><code class="language-c">7 / 2     /* 3   */
+7.0 / 2   /* 3.5 */</code></pre>
+          </div>
+        </div>
+        <div class="callout callout-bad">
+          In C, <code>/</code> between two <code>int</code>s is <strong>integer division</strong>. The fractional part is discarded. To get a real result, at least one operand must be <code>float</code> or <code>double</code>.
+        </div>
+        <p class="small muted">Want a fractional result? Make at least one operand a <code>double</code>: <code>7 / 2.0</code> gives <code>3.5</code>.</p>
+      </section>
+
+      <!-- 19. Common bugs -->
+      <section>
+        <h2>Common bugs in your first 10 C programs</h2>
+        <ul style="font-size: 0.78em; line-height: 1.5;">
+          <li><code>scanf("%d", x)</code> — forgot the <code>&amp;</code>. Compiles, crashes at runtime.</li>
+          <li><code>if (x = 5)</code> — assignment, not comparison. Always true. Should be <code>==</code>.</li>
+          <li><code>for (i = 0; i &lt;= n; i++)</code> — off-by-one. Goes one past the end.</li>
+          <li><code>for (i = 0; i &lt; n; i++);</code> — semicolon ends the loop early.</li>
+          <li><code>printf("%d", 3.14)</code> — wrong specifier. Output is garbage.</li>
+          <li>Missing <code>\n</code> in <code>printf</code> — output runs together.</li>
+          <li>Forgot to <code>#include &lt;stdio.h&gt;</code> — implicit-declaration warning.</li>
+        </ul>
+        <p class="small muted" style="margin-top: 0.6em;">
+          Use <code>gcc -Wall</code>. It catches half of these before you run.
+        </p>
+      </section>
+
+      <!-- 20. Practice problems -->
+      <section>
+        <h2>Hands-on — three problems</h2>
+        <p class="small muted">
+          Solve in order. Same machinery — <code>while</code>, <code>%10</code>, <code>/10</code> — applied at increasing depth.
+        </p>
+        <table style="font-size: 0.7em;">
+          <tr><th>#</th><th>Problem</th><th>Where</th></tr>
+          <tr>
+            <td>1</td>
+            <td><strong>Sum of Digits</strong> — read N, print the sum of its decimal digits.</td>
+            <td><a href="https://www.codechef.com/problems/FLOW006">CodeChef FLOW006</a></td>
+          </tr>
+          <tr>
+            <td>2</td>
+            <td><strong>Reverse the Number</strong> — read N, print N with digits reversed.</td>
+            <td><a href="https://www.codechef.com/problems/FLOW007">CodeChef FLOW007</a></td>
+          </tr>
+          <tr>
+            <td>3</td>
+            <td><strong>Palindrome Number</strong> — given N, return <code>true</code> if N reads the same forwards and backwards.</td>
+            <td><a href="https://leetcode.com/problems/palindrome-number/">LeetCode 9</a></td>
+          </tr>
+        </table>
+        <div class="callout" style="margin-top: 0.6em;">
+          We'll regroup at the end of the class. Finished all three? Try <a href="https://leetcode.com/problems/subtract-the-product-and-sum-of-digits-of-an-integer/">LeetCode 1281</a> for the stretch.
+        </div>
+      </section>
+
+      <!-- 21. Wrap + homework -->
+      <section>
+        <h2>Homework + this afternoon</h2>
+        <p style="text-align: left;"><strong>Homework before next class:</strong></p>
+        <ul style="font-size: 0.85em;">
+          <li><strong>ALTERNATING-PARITY</strong> — the diagnostic problem from Wednesday. You now have <code>while</code>, <code>%</code>, and state-tracking. <em>No array required</em> — solve it as a streaming problem.</li>
+        </ul>
+        <p style="text-align: left; margin-top: 1.2em;"><strong>Next class:</strong></p>
+        <ul style="font-size: 0.85em;">
+          <li>Arrays. How they sit in memory. Why C makes you declare a size.</li>
+          <li>The connection between an array and a pointer.</li>
+          <li>Lab: array problems anchored on the diagnostic Section C material.</li>
+        </ul>
+      </section>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+  <script>
+    Reveal.initialize({
+      hash: true,
+      slideNumber: 'c/t',
+      transition: 'fade',
+      plugins: [ RevealHighlight ]
+    });
+  </script>
+</body>
+</html>
