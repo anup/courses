@@ -279,6 +279,95 @@ int *p = &a;</code></pre>
                 </div>
             </section>
 
+            <!-- Why Pointers? Call by Value vs. Call by Reference (1/3) -->
+            <section>
+                <h2>Why Do We Even Need Pointers?</h2>
+                <p>Try writing a function that swaps two integers.</p>
+
+                <div class="split-container">
+                    <div class="comparison-box" style="border-color: var(--error-color);">
+                        <h4>The function</h4>
+<pre><code class="language-c">void swap(int x, int y) {
+    int t = x;
+    x = y;
+    y = t;
+}</code></pre>
+                    </div>
+                    <div class="comparison-box">
+                        <h4>The caller</h4>
+<pre><code class="language-c">int a = 3, b = 7;
+swap(a, b);
+printf("%d %d\n", a, b);
+// prints: 3 7  (unchanged!)</code></pre>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    The function looks right. But after it runs, <code>a</code> and <code>b</code> are unchanged. Why?
+                </div>
+            </section>
+
+            <!-- Why Pointers? Call by Value vs. Call by Reference (2/3) -->
+            <section>
+                <h2>C Passes Arguments by Value</h2>
+                <p>When you call <code>swap(a, b)</code>, the function gets <strong>copies</strong> of <code>a</code> and <code>b</code>. The caller's variables and the function's parameters live at <em>different</em> addresses.</p>
+
+                <div class="memory-container">
+                    <div class="memory-row">
+                        <div class="var-name">a</div>
+                        <div class="memory-block">3</div>
+                        <div class="address-label">Addr: 204</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">b</div>
+                        <div class="memory-block">7</div>
+                        <div class="address-label">Addr: 208</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">x</div>
+                        <div class="memory-block" style="border-color: var(--warning-color);">3</div>
+                        <div class="address-label">Addr: 612 (copy of a)</div>
+                    </div>
+                    <div class="memory-row">
+                        <div class="var-name">y</div>
+                        <div class="memory-block" style="border-color: var(--warning-color);">7</div>
+                        <div class="address-label">Addr: 616 (copy of b)</div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    Swapping <code>x</code> and <code>y</code> only rearranges the copies. The originals at addresses 204 and 208 are untouched.
+                </div>
+            </section>
+
+            <!-- Why Pointers? Call by Value vs. Call by Reference (3/3) -->
+            <section>
+                <h2>The Fix: Pass the Address</h2>
+                <p>If we send the function the <em>addresses</em> of <code>a</code> and <code>b</code>, it can reach back and modify the originals. This is how C emulates pass-by-reference.</p>
+
+                <div class="split-container">
+                    <div class="comparison-box" style="border-color: var(--success-color);">
+                        <h4>The function</h4>
+<pre><code class="language-c">void swap(int *x, int *y) {
+    int t = *x;
+    *x = *y;
+    *y = t;
+}</code></pre>
+                    </div>
+                    <div class="comparison-box">
+                        <h4>The caller</h4>
+<pre><code class="language-c">int a = 3, b = 7;
+swap(&a, &b);
+printf("%d %d\n", a, b);
+// prints: 7 3  ✓</code></pre>
+                    </div>
+                </div>
+
+                <div class="key-point">
+                    <code>*x</code> inside the function is an alias for the caller's <code>a</code>. Writing to <code>*x</code> writes to <code>a</code>. This is the <strong>real reason</strong> pointers exist — they let a function reach beyond its own stack frame.
+                </div>
+            </section>
+
             <!-- Slide 6: All Addresses Are Just Numbers -->
             <section>
                 <h2>All Addresses Are Just Numbers</h2>
