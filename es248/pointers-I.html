@@ -279,7 +279,7 @@ int *p = &a;</code></pre>
                 </div>
             </section>
 
-            <!-- Why Pointers? Call by Value vs. Call by Reference (1/3) -->
+            <!-- Why Pointers? Motivation via swap (1/3) -->
             <section>
                 <h2>Why Do We Even Need Pointers?</h2>
                 <p>Try writing a function that swaps two integers.</p>
@@ -307,9 +307,9 @@ printf("%d %d\n", a, b);
                 </div>
             </section>
 
-            <!-- Why Pointers? Call by Value vs. Call by Reference (2/3) -->
+            <!-- Why Pointers? C is call-by-value (2/3) -->
             <section>
-                <h2>C Passes Arguments by Value</h2>
+                <h2>C Is Always Call-by-Value</h2>
                 <p>When you call <code>swap(a, b)</code>, the function gets <strong>copies</strong> of <code>a</code> and <code>b</code>. The caller's variables and the function's parameters live at <em>different</em> addresses.</p>
 
                 <div class="memory-container">
@@ -340,10 +340,10 @@ printf("%d %d\n", a, b);
                 </div>
             </section>
 
-            <!-- Why Pointers? Call by Value vs. Call by Reference (3/3) -->
+            <!-- Why Pointers? Emulating reference semantics (3/3) -->
             <section>
                 <h2>The Fix: Pass the Address</h2>
-                <p>If we send the function the <em>addresses</em> of <code>a</code> and <code>b</code>, it can reach back and modify the originals. This is how C emulates pass-by-reference.</p>
+                <p>Send the function the <em>addresses</em> of <code>a</code> and <code>b</code>. It still gets copies (the pointers themselves are copied) &mdash; but the copies point to the same memory, so dereferencing reaches the originals.</p>
 
                 <div class="split-container">
                     <div class="comparison-box" style="border-color: var(--success-color);">
@@ -363,8 +363,12 @@ printf("%d %d\n", a, b);
                     </div>
                 </div>
 
+                <div class="warning-box">
+                    <strong>C has no call-by-reference.</strong> Languages like C++, Java (for objects), and Python pass references for you; in C you do it by hand: pass an address and dereference. The pointer is still passed by value &mdash; it just happens to point at someone else's memory.
+                </div>
+
                 <div class="key-point">
-                    <code>*x</code> inside the function is an alias for the caller's <code>a</code>. Writing to <code>*x</code> writes to <code>a</code>. This is the <strong>real reason</strong> pointers exist — they let a function reach beyond its own stack frame.
+                    This is the <strong>real reason</strong> pointers exist &mdash; they let a function reach beyond its own stack frame and modify the caller's data.
                 </div>
             </section>
 
