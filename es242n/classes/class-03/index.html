@@ -25,84 +25,108 @@
     <section class="hero">
       <p class="eyebrow">class 03</p>
       <h1>15 May 2026: C Fundamentals and Arrays</h1>
-      <p class="lead">Goal for the session: use C syntax, loops, and arrays to retry the diagnostic coding problems from the reopened contests.</p>
+      <p class="lead">In this class we moved from basic C syntax to arrays, and used the diagnostic problems as practice material.</p>
     </section>
 
-    <section class="agenda" aria-label="Class agenda">
+    <section class="agenda" aria-label="Class summary">
       <article class="agenda-item">
         <div class="marker">01</div>
         <div>
-          <h2>C fundamentals</h2>
-          <p>Compilation model, variables, input/output with <code>scanf</code> and <code>printf</code>, arithmetic operators, conditionals, and loops.</p>
+          <h2>C basics</h2>
+          <p>We discussed how to compile and run a C program, read input, print output, use variables, and write simple <code>if</code>, <code>while</code>, and <code>for</code> logic.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">02</div>
         <div>
-          <h2>First hands-on checkpoint</h2>
-          <p>Compile a C program, read input, print output, and solve a small loop-based problem before moving into arrays.</p>
+          <h2>Arrays</h2>
+          <p>We introduced array declaration, indexing, loops over arrays, and how array values are stored in memory.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">03</div>
         <div>
-          <h2>Arrays</h2>
-          <p>Declaration, indexing, iteration, array size, counting, and simple scans over one-dimensional arrays.</p>
+          <h2>Diagnostic practice</h2>
+          <p>We used the reopened diagnostic contests for practice. Many students worked on NAME-CLEAN; if you did not finish it in class, continue from there.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">04</div>
         <div>
-          <h2>Lab</h2>
-          <p>Work on the reopened diagnostic coding contests. Start with UNIQUE-ELEMENT, then move to ARRAY-OPERATIONS. SADDLE-POINT, NAME-CLEAN, and ALTERNATING-PARITY are stretch problems.</p>
+          <h2>Next practice</h2>
+          <p>After NAME-CLEAN, try ARRAY-OPERATIONS and UNIQUE-ELEMENT. If those are comfortable, try SADDLE-POINT and ALTERNATING-PARITY.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Class Links</h2>
+      <ul class="compact-list">
+        <li><a href="c-fundamentals.html">C fundamentals slides</a></li>
+        <li><a href="../../../es248/arrays_complete_presentation.html">Arrays and memory slides</a></li>
+        <li><a href="https://judge.csbasics.in/">judge.csbasics.in</a>: reopened diagnostic coding contests</li>
+        <li><a href="../diagnostic-test/">Diagnostic test page</a>: platform links and instructions</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Continue These Problems</h2>
+      <ul class="compact-list">
+        <li>NAME-CLEAN: continue this first if you did not finish it in class.</li>
+        <li>ARRAY-OPERATIONS and UNIQUE-ELEMENT: good next problems for arrays and loops.</li>
+        <li>SADDLE-POINT and ALTERNATING-PARITY: try these after the first three feel comfortable.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>LeetCode Array Practice</h2>
+      <p class="lead">These are array problems selected from the larger LeetCode list. Try them in this order. For each problem, first write the idea in plain English, then write the C solution.</p>
+    </section>
+
+    <section class="agenda" aria-label="LeetCode practice list">
+      <article class="agenda-item">
+        <div class="marker">01</div>
+        <div>
+          <h2><a href="https://leetcode.com/problems/find-greatest-common-divisor-of-array/">LeetCode 1979: Find Greatest Common Divisor of Array</a></h2>
+          <p>Practice looping over an array and keeping one answer as you scan. Useful if you are still getting comfortable with arrays and helper functions.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">02</div>
+        <div>
+          <h2><a href="https://leetcode.com/problems/max-consecutive-ones/">LeetCode 485: Max Consecutive Ones</a></h2>
+          <p>Practice a counter that resets when the pattern breaks. This is the same kind of thinking needed for many simple scan problems.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">03</div>
+        <div>
+          <h2><a href="https://leetcode.com/problems/move-zeroes/">LeetCode 283: Move Zeroes</a></h2>
+          <p>Practice modifying an array in-place. This is harder than just computing an answer, so trace your code on paper before submitting.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">04</div>
+        <div>
+          <h2><a href="https://leetcode.com/problems/missing-number/">LeetCode 268: Missing Number</a></h2>
+          <p>Practice using array values to reason about what is missing. You can solve this in more than one way; start with the approach that is clearest to you.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">05</div>
         <div>
-          <h2>Wrap</h2>
-          <p>Review common mistakes, discuss one stronger solution on the projector, and set the weekend LeetCode practice.</p>
+          <h2><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">LeetCode 121: Best Time to Buy and Sell Stock</a></h2>
+          <p>Practice keeping the best answer seen so far while scanning from left to right. This is an important pattern for later array problems.</p>
         </div>
       </article>
     </section>
 
     <section class="slide-band">
-      <h2>Lab Links</h2>
+      <h2>More Practice</h2>
+      <p>If the first five are comfortable, try these next:</p>
       <ul class="compact-list">
-        <li><a href="c-fundamentals.html">Hour 1 slides: C fundamentals for problem solving</a>.</li>
-        <li><a href="../../../es248/arrays_complete_presentation.html">Hour 2 slides: arrays and memory in C</a>.</li>
-        <li><a href="https://judge.csbasics.in/">judge.csbasics.in</a>: ES242N_diagnostic_gen and ES242N_diagnostic_c.</li>
-        <li><a href="../diagnostic-test/">Diagnostic test page</a>: platform links and instructions.</li>
-      </ul>
-    </section>
-
-    <section class="slide-band">
-      <h2>Lab Targets</h2>
-      <ul class="compact-list">
-        <li>ES242N_diagnostic_gen: UNIQUE-ELEMENT first, then SADDLE-POINT, then ALTERNATING-PARITY.</li>
-        <li>ES242N_diagnostic_c: ARRAY-OPERATIONS, NAME-CLEAN.</li>
-        <li>Priority for today: simple loops and arrays first; hard parity logic and string cleanup can wait.</li>
-      </ul>
-    </section>
-
-    <section class="slide-band">
-      <h2>Filtered LeetCode Array Practice</h2>
-      <p class="lead">This is the array-only subset from the larger LeetCode problem bank. Do these before moving to strings, hash tables, binary search, or bit manipulation.</p>
-      <h3>Core</h3>
-      <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/find-greatest-common-divisor-of-array/">LeetCode 1979: Find Greatest Common Divisor of Array</a></li>
-        <li><a href="https://leetcode.com/problems/max-consecutive-ones/">LeetCode 485: Max Consecutive Ones</a></li>
-        <li><a href="https://leetcode.com/problems/move-zeroes/">LeetCode 283: Move Zeroes</a></li>
-      </ul>
-      <h3>Reinforcement</h3>
-      <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/missing-number/">LeetCode 268: Missing Number</a></li>
-        <li><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">LeetCode 121: Best Time to Buy and Sell Stock</a></li>
-      </ul>
-      <h3>Stretch</h3>
-      <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/">LeetCode 1752: Check if Array Is Sorted and Rotated</a></li>
-        <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a></li>
+        <li><a href="https://leetcode.com/problems/check-if-array-is-sorted-and-rotated/">LeetCode 1752: Check if Array Is Sorted and Rotated</a>: careful loop logic.</li>
+        <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a>: two sorted arrays and in-place updates.</li>
       </ul>
       <p>When LeetCode shows <code>int* nums</code>, treat <code>nums</code> like an array and use <code>nums[i]</code> to access the element at index <code>i</code>.</p>
     </section>
