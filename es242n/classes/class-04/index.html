@@ -70,15 +70,15 @@
 
     <section class="slide-band">
       <h2>Practice After This Day</h2>
-      <p class="lead">Start with the judged problems. Use the quiz to check pointer and memory concepts before writing more C code.</p>
+      <p class="lead">Use any of these for practice. The list mixes course diagnostic problems, LeetCode problems, concept quizzes, and small local C drills.</p>
     </section>
 
-    <section class="agenda" aria-label="Judged practice list">
+    <section class="agenda" aria-label="Practice list">
       <article class="agenda-item">
         <div class="marker">01</div>
         <div>
-          <h2>judge.csbasics.in diagnostic contests</h2>
-          <p>Open <a href="https://judge.csbasics.in/">judge.csbasics.in</a> and continue the reopened contests <code>ES242N_diagnostic_gen</code> and <code>ES242N_diagnostic_c</code>.</p>
+          <h2>Diagnostic contest practice</h2>
+          <p>Open <a href="https://judge.csbasics.in/">judge.csbasics.in</a> and use the reopened contests <code>ES242N_diagnostic_gen</code> and <code>ES242N_diagnostic_c</code> for practice.</p>
           <ul class="compact-list">
             <li><code>UNIQUE-ELEMENT</code>: array scan and XOR-style reasoning.</li>
             <li><code>ARRAY-OPERATIONS</code>: array updates in C.</li>
@@ -91,7 +91,7 @@
         <div class="marker">02</div>
         <div>
           <h2>LeetCode arrays</h2>
-          <p>These are real LeetCode problems that match the array and in-place update work from the first two C days.</p>
+          <p>These match the array and in-place update work from the first two C days.</p>
           <ul class="compact-list">
             <li><a href="https://leetcode.com/problems/running-sum-of-1d-array/">LeetCode 1480: Running Sum of 1D Array</a></li>
             <li><a href="https://leetcode.com/problems/remove-element/">LeetCode 27: Remove Element</a></li>
@@ -116,33 +116,25 @@
         <div>
           <h2>Concept quiz</h2>
           <p><a href="./pointer-memory-quiz.html">In-class pointer and memory quiz</a>: immediate feedback on addresses, dereferencing, array decay, 2D arrays, <code>malloc</code>, and <code>free</code>.</p>
-          <p><a href="./pointer-memory-quiz.html?set=homework">Homework practice quiz</a>: more questions combining the diagnostic MCQ style with today's pointer and memory material.</p>
+          <p><a href="./pointer-memory-quiz.html?set=practice">More practice questions</a>: combines the diagnostic MCQ style with today's pointer and memory material.</p>
         </div>
       </article>
-    </section>
-
-    <section class="slide-band">
-      <h2>Optional Local C Drills</h2>
-      <p>These are not online-judge problems. Use them only to check whether you can write the pointer code locally with <code>gcc</code>.</p>
-    </section>
-
-    <section class="agenda" aria-label="Optional local C drills">
       <article class="agenda-item">
-        <div class="marker">A</div>
+        <div class="marker">05</div>
         <div>
           <h2>Swap using pointers</h2>
           <p>Write <code>void swap(int *a, int *b)</code>. In <code>main</code>, read two integers, call <code>swap(&x, &y)</code>, and print the swapped values.</p>
         </div>
       </article>
       <article class="agenda-item">
-        <div class="marker">B</div>
+        <div class="marker">06</div>
         <div>
           <h2>Minimum and maximum through pointers</h2>
           <p>Write <code>void min_max(int arr[], int n, int *mn, int *mx)</code>. Read <code>n</code>, then <code>n</code> integers, and print the minimum and maximum returned through pointer arguments.</p>
         </div>
       </article>
       <article class="agenda-item">
-        <div class="marker">C</div>
+        <div class="marker">07</div>
         <div>
           <h2>Return a new reversed array</h2>
           <p>Write a function that uses <code>malloc</code> to create a reversed copy of an input array and returns the pointer. Print the returned array in <code>main</code>, then call <code>free</code>.</p>

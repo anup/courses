@@ -510,7 +510,7 @@
       }
     ];
 
-    const homeworkQuestions = [
+    const extraPracticeQuestions = [
       {
         tier: "Diagnostic review",
         prompt: "In scanf(\"%d\", &x), why is &x passed instead of x?",
@@ -663,13 +663,13 @@
     ];
 
     const params = new URLSearchParams(window.location.search);
-    const quizSet = params.get("set") === "homework" ? "homework" : "class";
-    const questions = quizSet === "homework" ? homeworkQuestions : classQuestions;
+    const quizSet = params.get("set") === "practice" ? "practice" : "class";
+    const questions = quizSet === "practice" ? extraPracticeQuestions : classQuestions;
     const quizHeading = document.getElementById("quiz-heading");
     const quizDescription = document.getElementById("quiz-description");
-    if (quizSet === "homework") {
-      document.title = "ES242(N) Day 4 Homework Practice Quiz";
-      quizHeading.textContent = "Homework Practice Quiz";
+    if (quizSet === "practice") {
+      document.title = "ES242(N) Day 4 Extra Practice Quiz";
+      quizHeading.textContent = "Extra Practice Quiz";
       quizDescription.textContent = "Practice questions combining the diagnostic MCQ style with today's pointer and memory material. Click an answer to check it immediately.";
     }
 
