@@ -120,26 +120,51 @@
       top: 0;
       background: var(--panel);
       color: var(--ink);
-      padding: 10px 8px;
-      text-align: right;
+      padding: 0;
+      text-align: center;
       font-weight: 600;
       font-size: 0.78em;
-      cursor: pointer;
       user-select: none;
       border-bottom: 2px solid var(--line);
       white-space: normal;
       word-wrap: break-word;
       line-height: 1.25;
-      vertical-align: bottom;
+      vertical-align: top;
     }
-    .table-block th:focus-visible {
+    .table-block th:focus-within {
       outline: 2px solid var(--accent);
       outline-offset: -2px;
     }
+    .table-block th .th-button {
+      display: grid;
+      grid-template-rows: 2.9em 1em;
+      width: 100%;
+      min-height: 72px;
+      align-items: center;
+      padding: 10px 8px;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      font: inherit;
+      font-weight: inherit;
+      line-height: inherit;
+      text-align: center;
+      cursor: pointer;
+    }
+    .table-block th .th-button:focus-visible {
+      outline: none;
+    }
     .table-block th .arrow {
+      display: block;
       font-size: 0.7em;
       color: var(--muted);
-      margin-left: 4px;
+      margin: 0;
+      line-height: 1;
+      align-self: end;
+    }
+    .table-block th .th-label {
+      display: block;
+      align-self: end;
     }
     .table-block th[aria-sort] .arrow { color: var(--ink); }
     .table-block td {
@@ -160,6 +185,12 @@
     }
     .table-block tr:last-child td { border-bottom: none; }
     .table-block tr:hover td { background: var(--code-bg); }
+    .table-block td.empty-row {
+      padding: 18px 14px;
+      text-align: center;
+      color: var(--muted);
+      font-variant-numeric: normal;
+    }
 
     .rank-1, .rank-2, .rank-3 { color: var(--accent-ink); }
 
@@ -180,6 +211,14 @@
       margin-bottom: 12px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.001ms !important;
+      }
+    }
 
     .hide { display: none !important; }
 
@@ -199,7 +238,11 @@
       font-weight: 400;
       white-space: normal;
     }
-    th:hover .tip { opacity: 0.95; transform: translateY(-30px); }
+    th:hover .tip,
+    th:focus-within .tip {
+      opacity: 0.95;
+      transform: translateY(-30px);
+    }
 
     .lead-note {
       font-size: 0.88em;
@@ -221,17 +264,34 @@
       white-space: nowrap;
       border: 0;
     }
+    .sr-only:focus {
+      width: auto;
+      height: auto;
+      clip: auto;
+      white-space: normal;
+      left: 18px;
+      top: 18px;
+      z-index: 20;
+      padding: 8px 12px;
+      border: 2px solid var(--accent);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+    }
 
     @media (max-width: 640px) {
       .leaderboard-shell { padding: 18px 12px 36px; }
       .tab { padding: 8px 12px; font-size: 0.72em; }
       .table-block td, .table-block th { padding: 6px 8px; font-size: 0.85em; }
+      .table-block th { padding: 0; }
+      .table-block th .th-button { min-height: 62px; padding: 8px 6px; }
       .table-block td.lang-cell { min-width: 140px; }
     }
   </style>
 </head>
 <body>
-  <main class="shell leaderboard-shell">
+  <a class="skip-link" href="#leaderboard-main">Skip to main content</a>
+  <main class="shell leaderboard-shell" id="leaderboard-main">
     <div class="topline">
       <a class="brand" href="./">ES242(N)</a>
       <nav class="nav" aria-label="Course navigation">
@@ -320,6 +380,21 @@
       performance:  { col: -1, asc: true }
     };
     var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
+    var HIDDEN_COLUMNS = {
+      leaderboard: {
+        "exam i (/25)": true,
+        "exam ii (/25)": true,
+        "attendance bonus (+3)": true,
+        "final total": true
+      },
+      grades: {
+        "exam i (/25)": true,
+        "exam ii (/25)": true,
+        "attendance bonus (+3)": true,
+        "final total": true
+      },
+      performance: {}
+    };
 
     var TOOLTIPS = {};
     var TOOLTIP_PATTERNS = [];
@@ -367,6 +442,28 @@
         if (TOOLTIP_PATTERNS[i].re.test(h)) return TOOLTIP_PATTERNS[i].tip;
       }
       return "";
+    }
+
+    function displayHeader(header) {
+      var h = String(header || "");
+      if (h === "Total (/100)") return "Current Total (100)";
+      return h.replace(/\(\/([^)]+)\)/g, "($1)");
+    }
+
+    function visibleDataForView(view, data) {
+      var hidden = HIDDEN_COLUMNS[view] || {};
+      var keep = [];
+      data.headers.forEach(function (header, i) {
+        if (!hidden[String(header || "").toLowerCase()]) keep.push(i);
+      });
+      return {
+        headers: keep.map(function (i) { return data.headers[i]; }),
+        rows: (data.rows || []).map(function (row) {
+          return keep.map(function (i) { return row[i]; });
+        }),
+        courseName: data.courseName,
+        lastUpdated: data.lastUpdated
+      };
     }
 
     function announce(msg) {
@@ -471,6 +568,7 @@
           ["leaderboard", "grades", "performance"].forEach(function (view) {
             var data = allData[view];
             if (!data) return;
+            data = visibleDataForView(view, data);
             cache[view] = data;
             var prefix = VIEW_PREFIX[view];
             renderTable(prefix + "-head", prefix + "-body", data.headers, data.rows, view);
@@ -497,20 +595,16 @@
       headers.forEach(function (h, i) {
         var th = document.createElement("th");
         th.setAttribute("scope", "col");
-        th.setAttribute("tabindex", "0");
-        th.setAttribute("role", "columnheader");
-        if (TEXT_HEADERS.indexOf((h || "").toLowerCase()) !== -1) {
-          th.style.textAlign = "left";
-        }
         th.style.position = "relative";
         var tip = getTooltip(h);
         if (tip) th.setAttribute("title", tip);
         var tipHtml = tip ? '<span class="tip" role="tooltip">' + esc(tip) + '</span>' : '';
-        th.innerHTML = esc(h) + ' <span class="arrow" aria-hidden="true">&#9650;</span>' + tipHtml;
-        th.addEventListener("click", function () { sortTable(view, i); });
-        th.addEventListener("keydown", function (e) {
-          if (e.key === "Enter" || e.key === " ") { e.preventDefault(); sortTable(view, i); }
-        });
+        th.innerHTML =
+          '<button class="th-button" type="button" aria-label="Sort by ' + esc(displayHeader(h)) + '">' +
+          '<span class="th-label">' + esc(displayHeader(h)) + '</span>' +
+          '<span class="arrow" aria-hidden="true">&#9650;</span>' +
+          '</button>' + tipHtml;
+        th.querySelector(".th-button").addEventListener("click", function () { sortTable(view, i); });
         head.appendChild(th);
       });
       fillBody(bodyId, headers, rows, view);
@@ -522,6 +616,16 @@
       var textCols = {};
       var langCol = -1;
       var rankCol = -1;
+      if (!rows || rows.length === 0) {
+        var emptyTr = document.createElement("tr");
+        var emptyTd = document.createElement("td");
+        emptyTd.className = "empty-row";
+        emptyTd.colSpan = Math.max(headers.length, 1);
+        emptyTd.textContent = "No rows returned yet. Grades may need recalculation, or anonymous codes may not have been generated for the source rows.";
+        emptyTr.appendChild(emptyTd);
+        body.appendChild(emptyTr);
+        return;
+      }
       headers.forEach(function (h, i) {
         var hl = (h || "").toLowerCase();
         if (hl === "rank") rankCol = i;
@@ -579,7 +683,7 @@
         if (arrow) arrow.innerHTML = (i === colIdx) ? (state.asc ? "&#9650;" : "&#9660;") : "&#9650;";
       });
 
-      announce("Sorted by " + data.headers[colIdx] + ", " + (state.asc ? "ascending" : "descending"));
+      announce("Sorted by " + displayHeader(data.headers[colIdx]) + ", " + (state.asc ? "ascending" : "descending"));
       applySearch();
     }
 

@@ -1,0 +1,656 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 4 Pointer and Memory Quiz</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <style>
+    .quiz-shell {
+      max-width: 840px;
+      margin: 0 auto;
+    }
+    .quiz-card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 0;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .quiz-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 16px 22px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .quiz-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .progress-track {
+      height: 5px;
+      background: var(--code-bg);
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent);
+      transition: width 0.35s ease;
+    }
+    .question-title {
+      margin: 0;
+      font-size: 1.28rem;
+      line-height: 1.45;
+    }
+    .question-area {
+      padding: 24px 26px 8px;
+    }
+    .question-code {
+      display: block;
+      white-space: pre;
+      overflow-x: auto;
+      margin: 14px 0;
+      padding: 14px;
+      border-radius: 8px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      font-size: 0.92rem;
+    }
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      padding: 14px 26px 4px;
+    }
+    .option {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      text-align: left;
+      border: 2px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      padding: 13px 15px;
+      border-radius: 11px;
+      font: inherit;
+      cursor: pointer;
+      transition: border-color 0.18s ease, background 0.18s ease, transform 0.08s ease;
+    }
+    .option:hover:not(:disabled),
+    .option:active:not(:disabled) {
+      border-color: var(--accent);
+      background: var(--code-bg);
+      transform: translateY(-1px);
+    }
+    .option:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 2px;
+    }
+    .option:disabled {
+      cursor: default;
+      opacity: 1;
+      transform: none;
+    }
+    .option-letter {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 999px;
+      background: var(--code-bg);
+      color: var(--muted);
+      font-weight: 700;
+      font-size: 0.82rem;
+      flex: 0 0 auto;
+      margin-top: 1px;
+    }
+    .option-text {
+      line-height: 1.55;
+    }
+    .option.correct {
+      border-color: #238636;
+      background: rgba(35, 134, 54, 0.12);
+    }
+    .option.correct .option-letter {
+      background: #238636;
+      color: white;
+    }
+    .option.wrong {
+      border-color: #da3633;
+      background: rgba(218, 54, 51, 0.10);
+    }
+    .option.wrong .option-letter {
+      background: #da3633;
+      color: white;
+    }
+    .option.correct .option-text::after,
+    .option.wrong .option-text::after {
+      display: block;
+      margin-top: 5px;
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+    .option.correct .option-text::after {
+      content: "Correct";
+      color: #238636;
+    }
+    .option.wrong .option-text::after {
+      content: "Selected answer";
+      color: #da3633;
+    }
+    .feedback {
+      display: none;
+      margin: 18px 26px 0;
+      padding: 13px 15px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--code-bg);
+      line-height: 1.55;
+    }
+    .feedback.show {
+      display: block;
+    }
+    .feedback strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+    .quiz-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 20px 26px 24px;
+    }
+    .quiz-button {
+      border: 1px solid var(--border);
+      background: var(--accent);
+      color: var(--accent-contrast);
+      border-radius: 8px;
+      padding: 10px 16px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .quiz-button.secondary {
+      background: var(--panel);
+      color: var(--text);
+    }
+    .quiz-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    .review-list {
+      display: grid;
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .review-item {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      background: var(--panel);
+    }
+    .review-item.ok {
+      border-color: #238636;
+    }
+    .review-item.bad {
+      border-color: #da3633;
+    }
+    .review-item h3 {
+      margin: 0 0 8px;
+      font-size: 1rem;
+    }
+    .hidden {
+      display: none;
+    }
+    @media (max-width: 720px) {
+      .quiz-top {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+      .option {
+        align-items: flex-start;
+      }
+      .quiz-actions {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell quiz-shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./">Day 4</a>
+        <a href="./pointer-memory-quiz.html" aria-current="page">Quiz</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 04 practice</p>
+      <h1>Pointer and Memory Quiz</h1>
+      <p class="lead">Click an answer to check it immediately. The explanation appears before you move to the next question.</p>
+    </section>
+
+    <section id="quiz-card" class="quiz-card" aria-live="polite">
+      <div class="quiz-top">
+        <div class="quiz-meta">
+          <span id="question-count"></span>
+          <span id="tier-count"></span>
+        </div>
+        <span id="score-count"></span>
+      </div>
+      <div class="progress-track" aria-hidden="true">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+      <div class="question-area">
+        <h2 id="question-title" class="question-title"></h2>
+        <pre id="question-code" class="question-code hidden"><code></code></pre>
+      </div>
+      <div id="options" class="options"></div>
+      <div id="feedback" class="feedback"></div>
+      <div class="quiz-actions">
+        <button id="restart-button" class="quiz-button secondary" type="button">Restart</button>
+        <button id="next-button" class="quiz-button" type="button" disabled>Next</button>
+      </div>
+    </section>
+
+    <section id="result-card" class="quiz-card hidden" aria-live="polite">
+      <h2 id="result-title"></h2>
+      <p id="result-summary" class="lead"></p>
+      <div class="quiz-actions">
+        <button id="review-restart-button" class="quiz-button secondary" type="button">Restart</button>
+      </div>
+      <div id="review-list" class="review-list"></div>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      {
+        tier: "Easy",
+        prompt: "In C, what does &x mean when x is an ordinary variable?",
+        options: [
+          "The value stored in x.",
+          "The memory address of x.",
+          "The bitwise AND of x.",
+          "A copy of x."
+        ],
+        correct: 1,
+        explanation: "& is the address-of operator. It gives the memory address where x is stored."
+      },
+      {
+        tier: "Easy",
+        prompt: "Given the code below, what does *p mean?",
+        code: "int x = 7;\nint *p = &x;",
+        options: [
+          "The address of p.",
+          "The address of x.",
+          "The value stored at the address inside p.",
+          "A multiplication involving p."
+        ],
+        correct: 2,
+        explanation: "*p dereferences p. Since p stores the address of x, *p is the value stored in x."
+      },
+      {
+        tier: "Easy",
+        prompt: "Which line correctly changes x to 10?",
+        code: "int x = 5;\nint *p = &x;",
+        options: [
+          "p = 10;",
+          "&x = 10;",
+          "*p = 10;",
+          "p* = 10;"
+        ],
+        correct: 2,
+        explanation: "*p = 10 writes to the memory location pointed to by p. Here, that location is x."
+      },
+      {
+        tier: "Easy",
+        prompt: "In C, which function header can swap two integers in the caller?",
+        options: [
+          "void swap(int a, int b)",
+          "void swap(int *a, int *b)",
+          "int swap(int a, int b)",
+          "void swap(int &a, int &b)"
+        ],
+        correct: 1,
+        explanation: "C passes arguments by value. To modify caller variables in C, pass their addresses and use pointer parameters. int &a is C++ reference syntax, not C."
+      },
+      {
+        tier: "Easy",
+        prompt: "If p is an int *, what address does p + 1 represent?",
+        options: [
+          "The address one byte after p.",
+          "The address of the next int-sized memory location after p.",
+          "The integer value one greater than *p.",
+          "The address of the previous int-sized memory location before p."
+        ],
+        correct: 1,
+        explanation: "Pointer arithmetic is scaled by the pointed-to type. For int *, p + 1 is sizeof(int) bytes after p, so it refers to the next int-sized location, not the next byte."
+      },
+      {
+        tier: "Medium",
+        prompt: "What is printed?",
+        code: "int a[] = {10, 20, 30};\nint *p = a;\nprintf(\"%d\", *(p + 2));",
+        options: [
+          "10",
+          "20",
+          "30",
+          "Address of a[2]"
+        ],
+        correct: 2,
+        explanation: "p points to a[0]. p + 2 points to a[2], and *(p + 2) reads its value, 30."
+      },
+      {
+        tier: "Medium",
+        prompt: "Inside this function, what does sizeof(arr) give?",
+        code: "void f(int arr[]) {\n    printf(\"%zu\", sizeof(arr));\n}",
+        options: [
+          "Number of elements in the original array.",
+          "Total bytes in the original array.",
+          "Size of a pointer on that machine.",
+          "Always 0."
+        ],
+        correct: 2,
+        explanation: "In a function parameter, int arr[] is adjusted to int *arr. sizeof(arr) is therefore the size of a pointer."
+      },
+      {
+        tier: "Medium",
+        prompt: "Which statement about arrays passed to functions is correct?",
+        options: [
+          "The entire array is copied into the function.",
+          "The function receives a pointer to the first element.",
+          "The function automatically knows the array length.",
+          "Arrays cannot be passed to functions in C."
+        ],
+        correct: 1,
+        explanation: "When an array is passed to a function, it decays to a pointer to its first element. Pass the length separately."
+      },
+      {
+        tier: "Medium",
+        prompt: "Given int a[3][4]; what is a suitable function parameter for receiving this 2D array?",
+        options: [
+          "int **a",
+          "int *a",
+          "int a[][4]",
+          "int a[][]"
+        ],
+        correct: 2,
+        explanation: "For a true 2D array, C needs to know the number of columns. int a[][4] is adjusted to int (*a)[4]."
+      },
+      {
+        tier: "Medium",
+        prompt: "For the array below, what is a[1][2]?",
+        code: "int a[2][3] = {{1, 2, 3}, {4, 5, 6}};",
+        options: [
+          "2",
+          "3",
+          "5",
+          "6"
+        ],
+        correct: 3,
+        explanation: "a[1] is the second row: {4, 5, 6}. a[1][2] is the third element of that row, 6."
+      },
+      {
+        tier: "Hard",
+        prompt: "What is wrong with this code?",
+        code: "int *bad() {\n    int x = 42;\n    return &x;\n}",
+        options: [
+          "Nothing; it safely returns the address of x.",
+          "It returns the address of a local variable whose lifetime ends when the function returns.",
+          "It returns an int, not an int *.",
+          "x must be declared as float."
+        ],
+        correct: 1,
+        explanation: "x is an automatic local variable. Its lifetime ends when bad returns, so the returned pointer dangles."
+      },
+      {
+        tier: "Hard",
+        prompt: "Which version correctly allocates space for n integers?",
+        options: [
+          "int *a = malloc(n);",
+          "int *a = malloc(n * sizeof(int));",
+          "int a = malloc(n * sizeof(int));",
+          "int *a = free(n * sizeof(int));"
+        ],
+        correct: 1,
+        explanation: "malloc takes a number of bytes. n integers need n * sizeof(int) bytes."
+      },
+      {
+        tier: "Hard",
+        prompt: "What should you do when you are done using memory allocated by malloc?",
+        options: [
+          "Nothing; C frees it automatically at the end of the function.",
+          "Assign 0 to the first element.",
+          "Call free exactly once on the pointer returned by malloc.",
+          "Call malloc again on the same pointer."
+        ],
+        correct: 2,
+        explanation: "Memory from malloc must be released with free. Freeing it zero times leaks memory; freeing it twice is also wrong."
+      },
+      {
+        tier: "Hard",
+        prompt: "What is the problem here?",
+        code: "int *p = malloc(5 * sizeof(int));\nfree(p);\nprintf(\"%d\", p[0]);",
+        options: [
+          "malloc cannot allocate arrays.",
+          "free should be called before malloc.",
+          "p is used after the allocated memory has been freed.",
+          "p[0] is always guaranteed to be 0."
+        ],
+        correct: 2,
+        explanation: "After free(p), the allocated block is no longer valid to access. Reading p[0] is use-after-free."
+      },
+      {
+        tier: "Hard",
+        prompt: "Which description best matches int (*p)[4]?",
+        options: [
+          "p is an array of 4 pointers to int.",
+          "p is a pointer to a single int.",
+          "p is a pointer to an array of 4 integers.",
+          "p is a function that returns 4 integers."
+        ],
+        correct: 2,
+        explanation: "The parentheses make *p bind before [4]. So p points to an array of 4 int values."
+      },
+      {
+        tier: "Stretch",
+        prompt: "A 2D array in C such as int a[3][4] is stored:",
+        options: [
+          "As 3 separate heap allocations.",
+          "As a linked list of rows.",
+          "In one contiguous block in row-major order.",
+          "In column-major order by default."
+        ],
+        correct: 2,
+        explanation: "A true C 2D array is contiguous. Row 0 comes first, then row 1, then row 2."
+      },
+      {
+        tier: "Stretch",
+        prompt: "Which function header is suitable for printing a 3 x 4 integer matrix?",
+        options: [
+          "void print(int **a)",
+          "void print(int a[][])",
+          "void print(int a[][4])",
+          "void print(int *a[3][4])"
+        ],
+        correct: 2,
+        explanation: "The number of columns is needed to compute a[i][j]. int a[][4] is the appropriate parameter form here."
+      },
+      {
+        tier: "Stretch",
+        prompt: "What is the safest immediate check after calling malloc?",
+        code: "int *a = malloc(n * sizeof(int));",
+        options: [
+          "if (n == 0)",
+          "if (a == NULL)",
+          "if (*a == 0)",
+          "if (sizeof(a) == n)"
+        ],
+        correct: 1,
+        explanation: "malloc returns NULL if allocation fails. Check the pointer before dereferencing it."
+      }
+    ];
+
+    const letters = ["A", "B", "C", "D"];
+    let index = 0;
+    let score = 0;
+    let locked = false;
+    const answers = [];
+
+    const quizCard = document.getElementById("quiz-card");
+    const resultCard = document.getElementById("result-card");
+    const questionCount = document.getElementById("question-count");
+    const tierCount = document.getElementById("tier-count");
+    const scoreCount = document.getElementById("score-count");
+    const progressFill = document.getElementById("progress-fill");
+    const questionTitle = document.getElementById("question-title");
+    const questionCode = document.getElementById("question-code");
+    const questionCodeInner = questionCode.querySelector("code");
+    const optionsEl = document.getElementById("options");
+    const feedbackEl = document.getElementById("feedback");
+    const nextButton = document.getElementById("next-button");
+    const restartButton = document.getElementById("restart-button");
+    const reviewRestartButton = document.getElementById("review-restart-button");
+    const resultTitle = document.getElementById("result-title");
+    const resultSummary = document.getElementById("result-summary");
+    const reviewList = document.getElementById("review-list");
+
+    function escapeHtml(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function renderQuestion() {
+      const q = questions[index];
+      locked = false;
+      questionCount.textContent = "Question " + (index + 1) + " of " + questions.length;
+      tierCount.textContent = q.tier;
+      scoreCount.textContent = "Score: " + score + "/" + questions.length;
+      progressFill.style.width = ((index) / questions.length * 100) + "%";
+      questionTitle.textContent = q.prompt;
+      feedbackEl.className = "feedback";
+      feedbackEl.innerHTML = "";
+      nextButton.disabled = true;
+      nextButton.textContent = index === questions.length - 1 ? "See Results" : "Next";
+
+      if (q.code) {
+        questionCode.classList.remove("hidden");
+        questionCodeInner.textContent = q.code;
+      } else {
+        questionCode.classList.add("hidden");
+        questionCodeInner.textContent = "";
+      }
+
+      optionsEl.innerHTML = "";
+      q.options.forEach((option, optionIndex) => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "option";
+        button.setAttribute("aria-label", "Option " + letters[optionIndex] + ": " + option);
+        button.innerHTML =
+          '<span class="option-letter">' + letters[optionIndex] + '</span>' +
+          '<span class="option-text">' + escapeHtml(option) + '</span>';
+        button.addEventListener("click", () => chooseOption(optionIndex));
+        optionsEl.appendChild(button);
+      });
+    }
+
+    function chooseOption(optionIndex) {
+      if (locked) return;
+      locked = true;
+
+      const q = questions[index];
+      const isCorrect = optionIndex === q.correct;
+      if (isCorrect) score += 1;
+      answers[index] = optionIndex;
+
+      Array.from(optionsEl.children).forEach((button, i) => {
+        button.disabled = true;
+        if (i === q.correct) {
+          button.classList.add("correct");
+        } else if (i === optionIndex && !isCorrect) {
+          button.classList.add("wrong");
+        }
+      });
+
+      feedbackEl.className = "feedback show";
+      feedbackEl.innerHTML =
+        "<strong>" + (isCorrect ? "Correct." : "Not quite.") + "</strong>" +
+        "<div>Correct answer: " + letters[q.correct] + ". " + escapeHtml(q.options[q.correct]) + "</div>" +
+        "<div>" + escapeHtml(q.explanation) + "</div>";
+
+      scoreCount.textContent = "Score: " + score + "/" + questions.length;
+      nextButton.disabled = false;
+    }
+
+    function renderResults() {
+      quizCard.classList.add("hidden");
+      resultCard.classList.remove("hidden");
+      progressFill.style.width = "100%";
+      resultTitle.textContent = "Score: " + score + "/" + questions.length;
+      resultSummary.textContent = "Review each question below. The quiz is for practice, so the answer key is visible.";
+      reviewList.innerHTML = "";
+
+      questions.forEach((q, i) => {
+        const selected = answers[i];
+        const ok = selected === q.correct;
+        const item = document.createElement("article");
+        item.className = "review-item " + (ok ? "ok" : "bad");
+        item.innerHTML =
+          "<h3>Q" + (i + 1) + ". " + escapeHtml(q.prompt) + "</h3>" +
+          (q.code ? '<pre class="question-code"><code>' + escapeHtml(q.code) + "</code></pre>" : "") +
+          "<p>Your answer: " + (selected === undefined ? "Not answered" : letters[selected] + ". " + escapeHtml(q.options[selected])) + "</p>" +
+          "<p>Correct answer: " + letters[q.correct] + ". " + escapeHtml(q.options[q.correct]) + "</p>" +
+          "<p>" + escapeHtml(q.explanation) + "</p>";
+        reviewList.appendChild(item);
+      });
+    }
+
+    function restart() {
+      index = 0;
+      score = 0;
+      locked = false;
+      answers.length = 0;
+      resultCard.classList.add("hidden");
+      quizCard.classList.remove("hidden");
+      renderQuestion();
+    }
+
+    nextButton.addEventListener("click", () => {
+      if (index === questions.length - 1) {
+        renderResults();
+      } else {
+        index += 1;
+        renderQuestion();
+      }
+    });
+    restartButton.addEventListener("click", restart);
+    reviewRestartButton.addEventListener("click", restart);
+
+    renderQuestion();
+  </script>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
