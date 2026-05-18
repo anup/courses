@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Class 4</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Class navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Class 4</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">class 04</p>
+      <h1>18 May 2026: Pointers and Memory</h1>
+      <p class="lead">Pointer fundamentals, arrays and pointers, 2D arrays, dynamic memory, and returning pointers from functions.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="../../../es248/pointers-I.html">Pointers and Memory: Part I</a></li>
+        <li><a href="../../../es248/pointers-II.html">Pointers and Memory: Part II</a></li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Class agenda">
+      <article class="agenda-item">
+        <div class="marker">01</div>
+        <div>
+          <h2>Pointer model</h2>
+          <p>Memory addresses, the address-of operator, dereferencing, pointer types, pointer arithmetic, and arrays decaying to pointers.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">02</div>
+        <div>
+          <h2>Common pointer failures</h2>
+          <p>Wild pointers, dangling pointers, memory leaks, and why ownership matters once memory is allocated manually.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">03</div>
+        <div>
+          <h2>2D arrays and memory layout</h2>
+          <p>Row-major order, passing 2D arrays to functions, and how array dimensions affect pointer types.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">04</div>
+        <div>
+          <h2>Dynamic memory</h2>
+          <p><code>malloc</code>, heap allocation, freeing memory, and when returned pointers remain valid after a function returns.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Next Class</h2>
+      <p class="lead">Diagnostic-test practice and quizzes first, then function pointers. Structures/unions should be introduced only after trimming the size, padding, and packing discussion.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
