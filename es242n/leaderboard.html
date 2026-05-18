@@ -104,7 +104,6 @@
     }
 
     .table-block {
-      overflow-x: auto;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--panel);
@@ -114,20 +113,24 @@
       border-collapse: collapse;
       font-size: 0.92em;
       font-family: system-ui, sans-serif;
+      table-layout: auto;
     }
     .table-block th {
       position: sticky;
       top: 0;
       background: var(--panel);
       color: var(--ink);
-      padding: 10px 12px;
+      padding: 10px 8px;
       text-align: right;
       font-weight: 600;
-      font-size: 0.82em;
+      font-size: 0.78em;
       cursor: pointer;
       user-select: none;
       border-bottom: 2px solid var(--line);
-      white-space: nowrap;
+      white-space: normal;
+      word-wrap: break-word;
+      line-height: 1.25;
+      vertical-align: bottom;
     }
     .table-block th:focus-visible {
       outline: 2px solid var(--accent);
@@ -140,11 +143,12 @@
     }
     .table-block th[aria-sort] .arrow { color: var(--ink); }
     .table-block td {
-      padding: 8px 12px;
+      padding: 8px 8px;
       border-bottom: 1px solid var(--line);
       text-align: right;
       font-variant-numeric: tabular-nums;
-      white-space: nowrap;
+      white-space: normal;
+      word-wrap: break-word;
     }
     .table-block td.text-cell { text-align: left; font-variant-numeric: normal; }
     .table-block td.lang-cell {
