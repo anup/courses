@@ -117,10 +117,25 @@
       text-align: left;
     }
     .reveal section.center { text-align: center; }
+    .skip-link {
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      z-index: 20;
+      padding: 8px 12px;
+      border: 2px solid var(--accent-color);
+      border-radius: 6px;
+      background: white;
+      color: var(--main-color);
+      transform: translateY(-180%);
+      transition: transform 0.15s ease;
+    }
+    .skip-link:focus { transform: translateY(0); }
   </style>
 </head>
 <body>
-  <div class="reveal">
+  <a class="skip-link" href="#main-content">Skip to slides</a>
+  <main id="main-content" class="reveal">
     <div class="slides">
 
       <!-- 1. Title -->
@@ -271,7 +286,7 @@ Hello, ES242N!</code></pre>
         <h2>printf — format specifiers</h2>
         <p class="small muted">Python: <code>print(x)</code> figures it out. C: you tell <code>printf</code> the type.</p>
         <table>
-          <tr><th>Specifier</th><th>For type</th><th>Example</th></tr>
+          <tr><th scope="col">Specifier</th><th scope="col">For type</th><th scope="col">Example</th></tr>
           <tr><td><code>%d</code></td><td><code>int</code></td><td><code>printf("%d\n", 42);</code></td></tr>
           <tr><td><code>%ld</code></td><td><code>long</code></td><td><code>printf("%ld\n", n);</code></td></tr>
           <tr><td><code>%f</code></td><td><code>float</code>, <code>double</code></td><td><code>printf("%.2f\n", 3.14);</code></td></tr>
@@ -300,7 +315,7 @@ scanf("%lf", &amp;price);</code></pre>
         <h2>Data types and their sizes</h2>
         <p class="small muted">On Linux x86_64 (lab machines):</p>
         <table style="font-size: 0.62em;">
-          <tr><th>Type</th><th>Size</th><th>Signed range</th><th>Unsigned range</th></tr>
+          <tr><th scope="col">Type</th><th scope="col">Size</th><th scope="col">Signed range</th><th scope="col">Unsigned range</th></tr>
           <tr><td><code>char</code></td><td>1 byte</td><td>−128 to 127</td><td>0 to 255</td></tr>
           <tr><td><code>short</code></td><td>2 bytes</td><td>−32,768 to 32,767</td><td>0 to 65,535</td></tr>
           <tr><td><code>int</code></td><td>4 bytes</td><td>~ ±2.1 × 10⁹</td><td>0 to ~4.2 × 10⁹</td></tr>
@@ -357,7 +372,7 @@ If a problem said:    −10¹² ≤ a[i] ≤ 10¹²
         <h2>Bitwise operators</h2>
         <p class="small muted">Each <code>int</code> is 32 bits. You can manipulate them.</p>
         <table style="font-size: 0.7em;">
-          <tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
+          <tr><th scope="col">Operator</th><th scope="col">Meaning</th><th scope="col">Example</th></tr>
           <tr><td><code>&amp;</code></td><td>bitwise AND</td><td><code>5 &amp; 3</code> = 1</td></tr>
           <tr><td><code>|</code></td><td>bitwise OR</td><td><code>5 | 3</code> = 7</td></tr>
           <tr><td><code>^</code></td><td>bitwise XOR</td><td><code>5 ^ 3</code> = 6</td></tr>
@@ -423,7 +438,7 @@ while (n &gt; 0) {
     printf("ODD NEGATIVE OR ZERO\n");
 }</code></pre>
         <table style="font-size: 0.72em;">
-          <tr><th>Compare</th><th>Logical</th><th>Assignment</th></tr>
+          <tr><th scope="col">Compare</th><th scope="col">Logical</th><th scope="col">Assignment</th></tr>
           <tr><td><code>==</code> equals</td><td><code>&amp;&amp;</code> AND</td><td><code>=</code> assign</td></tr>
           <tr><td><code>!=</code> not equal</td><td><code>||</code> OR</td><td></td></tr>
           <tr><td><code>&lt;</code> <code>&gt;</code> <code>&lt;=</code> <code>&gt;=</code></td><td><code>!</code> NOT</td><td></td></tr>
@@ -475,7 +490,7 @@ while (n &gt; 0) {
           Solve in order. Same machinery — <code>while</code>, <code>%10</code>, <code>/10</code> — applied at increasing depth.
         </p>
         <table style="font-size: 0.7em;">
-          <tr><th>#</th><th>Problem</th><th>Where</th></tr>
+          <tr><th scope="col">#</th><th scope="col">Problem</th><th scope="col">Where</th></tr>
           <tr>
             <td>1</td>
             <td><strong>Sum of Digits</strong> — read N, print the sum of its decimal digits.</td>
@@ -513,7 +528,7 @@ while (n &gt; 0) {
       </section>
 
     </div>
-  </div>
+  </main>
 
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>

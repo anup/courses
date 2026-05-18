@@ -70,70 +70,84 @@
 
     <section class="slide-band">
       <h2>Practice After This Day</h2>
-      <p class="lead">Do these in C before moving to larger problems. The goal is to become comfortable reading and writing pointer code, not just recognizing it on slides.</p>
+      <p class="lead">Start with the judged problems. Use the quiz to check pointer and memory concepts before writing more C code.</p>
     </section>
 
-    <section class="agenda" aria-label="Pointer practice list">
+    <section class="agenda" aria-label="Judged practice list">
       <article class="agenda-item">
         <div class="marker">01</div>
         <div>
-          <h2>Swap using pointers</h2>
-          <p>Write <code>void swap(int *a, int *b)</code>. Call it from <code>main</code> and check that the original variables actually change.</p>
+          <h2>judge.csbasics.in diagnostic contests</h2>
+          <p>Open <a href="https://judge.csbasics.in/">judge.csbasics.in</a> and continue the reopened contests <code>ES242N_diagnostic_gen</code> and <code>ES242N_diagnostic_c</code>.</p>
+          <ul class="compact-list">
+            <li><code>UNIQUE-ELEMENT</code>: array scan and XOR-style reasoning.</li>
+            <li><code>ARRAY-OPERATIONS</code>: array updates in C.</li>
+            <li><code>SADDLE-POINT</code>: 2D arrays, row minima, and column maxima.</li>
+            <li><code>ALTERNATING-PARITY</code>: parity checks while scanning input.</li>
+          </ul>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">02</div>
         <div>
-          <h2>Minimum and maximum</h2>
-          <p>Write <code>void min_max(int arr[], int n, int *mn, int *mx)</code>. Return both answers through pointer arguments.</p>
+          <h2>LeetCode arrays</h2>
+          <p>These are real LeetCode problems that match the array and in-place update work from the first two C days.</p>
+          <ul class="compact-list">
+            <li><a href="https://leetcode.com/problems/running-sum-of-1d-array/">LeetCode 1480: Running Sum of 1D Array</a></li>
+            <li><a href="https://leetcode.com/problems/remove-element/">LeetCode 27: Remove Element</a></li>
+            <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a></li>
+          </ul>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">03</div>
         <div>
-          <h2>Array scan with pointer movement</h2>
-          <p>Write a sum or count function using a moving pointer instead of <code>arr[i]</code>. Compare it with your usual array-index version.</p>
+          <h2>LeetCode 2D arrays</h2>
+          <p>Do these after revising row/column indexing and row-major layout.</p>
+          <ul class="compact-list">
+            <li><a href="https://leetcode.com/problems/richest-customer-wealth/">LeetCode 1672: Richest Customer Wealth</a></li>
+            <li><a href="https://leetcode.com/problems/transpose-matrix/">LeetCode 867: Transpose Matrix</a></li>
+            <li><a href="https://leetcode.com/problems/matrix-diagonal-sum/">LeetCode 1572: Matrix Diagonal Sum</a></li>
+          </ul>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">04</div>
         <div>
-          <h2>Return a new array</h2>
-          <p>Write a function that uses <code>malloc</code> to create and return a reversed copy of an input array. Free the returned array in <code>main</code>.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">05</div>
-        <div>
-          <h2>2D array row sums</h2>
-          <p>Write a function that prints the sum of each row of a 2D array. Pay attention to the column size in the function parameter.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">06</div>
-        <div>
-          <h2>2D array column maximum</h2>
-          <p>Write a function that prints the maximum value in each column. This forces you to switch the order of the row and column loops.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">07</div>
-        <div>
-          <h2>SADDLE-POINT</h2>
-          <p>Retry the diagnostic SADDLE-POINT problem after the 2D-array exercises. First find the minimum in each row; then check whether it is also the maximum in its column.</p>
+          <h2>Concept quiz</h2>
+          <p><a href="./pointer-memory-quiz.html">In-class pointer and memory quiz</a>: immediate feedback on addresses, dereferencing, array decay, 2D arrays, <code>malloc</code>, and <code>free</code>.</p>
+          <p><a href="./pointer-memory-quiz.html?set=homework">Homework practice quiz</a>: more questions combining the diagnostic MCQ style with today's pointer and memory material.</p>
         </div>
       </article>
     </section>
 
     <section class="slide-band">
-      <h2>LeetCode Follow-up</h2>
-      <p>After the local C exercises, try these problems. They are still array problems, but they make more sense after pointers, in-place updates, and 2D arrays.</p>
-      <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/remove-element/">LeetCode 27: Remove Element</a>: update an array in-place and return the new length.</li>
-        <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a>: fill an array from the back using index movement.</li>
-        <li><a href="https://leetcode.com/problems/transpose-matrix/">LeetCode 867: Transpose Matrix</a>: practice row and column indexing in a 2D array.</li>
-      </ul>
-      <p>When LeetCode shows <code>int* nums</code>, treat it as an array and use indexing first. Once that works, try rewriting the same logic using pointer movement.</p>
+      <h2>Optional Local C Drills</h2>
+      <p>These are not online-judge problems. Use them only to check whether you can write the pointer code locally with <code>gcc</code>.</p>
+    </section>
+
+    <section class="agenda" aria-label="Optional local C drills">
+      <article class="agenda-item">
+        <div class="marker">A</div>
+        <div>
+          <h2>Swap using pointers</h2>
+          <p>Write <code>void swap(int *a, int *b)</code>. In <code>main</code>, read two integers, call <code>swap(&x, &y)</code>, and print the swapped values.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">B</div>
+        <div>
+          <h2>Minimum and maximum through pointers</h2>
+          <p>Write <code>void min_max(int arr[], int n, int *mn, int *mx)</code>. Read <code>n</code>, then <code>n</code> integers, and print the minimum and maximum returned through pointer arguments.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">C</div>
+        <div>
+          <h2>Return a new reversed array</h2>
+          <p>Write a function that uses <code>malloc</code> to create a reversed copy of an input array and returns the pointer. Print the returned array in <code>main</code>, then call <code>free</code>.</p>
+        </div>
+      </article>
     </section>
 
     <section class="slide-band">
