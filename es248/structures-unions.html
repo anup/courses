@@ -507,6 +507,8 @@ void printScorecard(struct Batsman b) {
         <div style="display: flex; gap: 5px; align-items: center;">
             <span class="memory-label">username[50]:</span>
             <div class="memory-block" style="width: 250px;">[50 bytes]</div>
+            <div class="memory-block padding-block" style="width: 40px;">[2]</div>
+            <span style="color: var(--warning-color); font-weight: bold;">← padding before int</span>
         </div>
         <div style="display: flex; gap: 5px; align-items: center;">
             <span class="memory-label">rating:</span>
@@ -531,7 +533,7 @@ void printScorecard(struct Batsman b) {
             <div class="memory-block" style="width: 80px;">[4 bytes]</div>
         </div>
     </div>
-    <p class="key-point" style="margin-top: 30px;">CPU prefers accessing data at aligned addresses (4-byte boundaries for <code>int</code>)</p>
+    <p class="key-point" style="margin-top: 30px;">50 + 2 padding + 4 + 4 + 4 + 3 + 1 padding + 4 = 72 bytes</p>
 </section>
 
 <section>
