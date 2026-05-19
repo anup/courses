@@ -253,6 +253,69 @@
       line-height: 1.5;
     }
 
+    .lc-map-title {
+      margin: 24px 0 8px;
+      font-size: 1rem;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+    .lc-map-wrap {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+      padding: 8px 0;
+    }
+    .lc-map-scroll { overflow-x: auto; }
+    .lc-map {
+      border-collapse: collapse;
+      font-family: system-ui, sans-serif;
+    }
+    .lc-map th, .lc-map td { padding: 2px 1px; vertical-align: middle; }
+    .lc-map th.lc-map-code,
+    .lc-map td.lc-map-code {
+      position: sticky;
+      left: 0;
+      background: var(--panel);
+      z-index: 1;
+      padding: 2px 10px 2px 14px;
+      font-weight: 600;
+      font-size: 0.82em;
+      color: var(--ink);
+      border-right: 1px solid var(--line);
+      text-align: left;
+    }
+    .lc-map thead th.lc-map-code { border-bottom: 1px solid var(--line); }
+    .lc-map td.lc-map-cell { width: 14px; height: 14px; }
+    .lc-map th.lc-map-cell {
+      width: 14px; height: 18px;
+      font-size: 0.55em;
+      color: var(--muted);
+      text-align: center;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      white-space: nowrap;
+    }
+    .lc-map td.lc-sep, .lc-map th.lc-sep {
+      width: 8px; padding: 0;
+      border-left: 2px solid var(--ink);
+      opacity: 0.35;
+    }
+    .lc-dot {
+      display: inline-block;
+      width: 12px; height: 12px;
+      border-radius: 2px;
+      vertical-align: middle;
+      cursor: pointer;
+      transition: transform 0.12s;
+    }
+    .lc-dot:hover { transform: scale(1.6); }
+    .lc-dot-solved { background: #16a34a; }
+    .lc-dot-unsolved { background: var(--line); }
+    .lc-dot-easy.lc-dot-solved   { background: #4ade80; }
+    .lc-dot-medium.lc-dot-solved { background: #16a34a; }
+    .lc-dot-hard.lc-dot-solved   { background: #166534; }
+
     /* Visually-hidden but accessible to screen readers. */
     .sr-only {
       position: absolute;
@@ -378,6 +441,22 @@
         <button class="scroll-arrow scroll-arrow-right" id="lc-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
         <div class="table-block" id="lc-table" tabindex="0" aria-label="LeetCode table, scrollable">
           <table aria-label="LeetCode Practice"><thead><tr id="lc-head"></tr></thead><tbody id="lc-body"></tbody></table>
+        </div>
+      </div>
+
+      <h2 class="lc-map-title hide" id="lc-map-title">Problem map</h2>
+      <p class="lead-note hide" id="lc-map-caption">
+        Each square is a foundation problem. <span class="lc-dot lc-dot-solved" aria-hidden="true"></span>
+        solved, <span class="lc-dot lc-dot-unsolved" aria-hidden="true"></span> not yet. The first group is
+        problems we have linked from class pages; the rest is the foundation set ordered by difficulty.
+        Hover any square to see the title; click to open the problem on LeetCode.
+      </p>
+      <div class="lc-map-wrap hide" id="lc-map-wrap">
+        <div class="lc-map-scroll" tabindex="0" aria-label="LeetCode problem map, scrollable">
+          <table class="lc-map" aria-label="Problem-by-student map">
+            <thead><tr id="lc-map-head"></tr></thead>
+            <tbody id="lc-map-body"></tbody>
+          </table>
         </div>
       </div>
     </section>
@@ -555,6 +634,84 @@
       if (q) announce(visible + " result" + (visible !== 1 ? "s" : "") + " found");
     }
 
+    function renderProblemMap(lc) {
+      var head = document.getElementById("lc-map-head");
+      var body = document.getElementById("lc-map-body");
+      var wrap = document.getElementById("lc-map-wrap");
+      var title = document.getElementById("lc-map-title");
+      var caption = document.getElementById("lc-map-caption");
+      var problems = (lc && lc.problems) || [];
+      var splitAt = lc.problemSplitIndex || 0;
+      var solvedByCode = lc.solvedByCode || {};
+      head.innerHTML = "";
+      body.innerHTML = "";
+
+      if (!problems.length || !lc.rows || !lc.rows.length) {
+        wrap.classList.add("hide");
+        title.classList.add("hide");
+        caption.classList.add("hide");
+        return;
+      }
+      wrap.classList.remove("hide");
+      title.classList.remove("hide");
+      caption.classList.remove("hide");
+
+      // Header row
+      var corner = document.createElement("th");
+      corner.className = "lc-map-code";
+      corner.textContent = "Code";
+      head.appendChild(corner);
+      problems.forEach(function (p, idx) {
+        if (idx === splitAt && splitAt > 0) {
+          var sep = document.createElement("th");
+          sep.className = "lc-sep";
+          head.appendChild(sep);
+        }
+        var th = document.createElement("th");
+        th.className = "lc-map-cell";
+        var label = p.title || p.slug;
+        th.title = label + (p.difficulty ? " — " + p.difficulty : "") + (p.classes ? " (" + p.classes + ")" : "");
+        th.textContent = label;
+        head.appendChild(th);
+      });
+
+      // Body rows, sorted by Foundations Solved desc (matches the counts table order)
+      lc.rows.forEach(function (row) {
+        var code = row[0];
+        var solvedSet = {};
+        (solvedByCode[code] || []).forEach(function (s) { solvedSet[s] = true; });
+        var tr = document.createElement("tr");
+        var codeCell = document.createElement("td");
+        codeCell.className = "lc-map-code";
+        codeCell.textContent = code;
+        tr.appendChild(codeCell);
+        problems.forEach(function (p, idx) {
+          if (idx === splitAt && splitAt > 0) {
+            var sep = document.createElement("td");
+            sep.className = "lc-sep";
+            tr.appendChild(sep);
+          }
+          var td = document.createElement("td");
+          td.className = "lc-map-cell";
+          var solved = !!solvedSet[p.slug];
+          var dot = document.createElement("a");
+          dot.href = "https://leetcode.com/problems/" + p.slug + "/";
+          dot.target = "_blank";
+          dot.rel = "noopener";
+          var diffClass = p.difficulty ? "lc-dot-" + p.difficulty.toLowerCase() : "";
+          dot.className = "lc-dot " + diffClass + " " + (solved ? "lc-dot-solved" : "lc-dot-unsolved");
+          var label = (solved ? "Solved: " : "Not solved: ") + (p.title || p.slug);
+          if (p.difficulty) label += " (" + p.difficulty + ")";
+          if (p.classes) label += " — " + p.classes;
+          dot.title = label;
+          dot.setAttribute("aria-label", label);
+          td.appendChild(dot);
+          tr.appendChild(td);
+        });
+        body.appendChild(tr);
+      });
+    }
+
     function setupScrollArrows(prefix) {
       var tableEl   = document.getElementById(prefix + "-table");
       var leftArr   = document.getElementById(prefix + "-arrow-left");
@@ -605,6 +762,7 @@
                 ? "Foundations Solved is out of " + foundationsTotal + " curated problems. Total Solved counts every accepted submission we have seen, capped by LeetCode's 20-most-recent window."
                 : "Total Solved counts every accepted submission we have seen.";
             }
+            renderProblemMap(allData.leetcode);
           }
 
           if (allData.leaderboard && allData.leaderboard.lastUpdated) {
