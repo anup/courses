@@ -452,7 +452,8 @@ scanf("%c", &initial);
 
 scanf("%d", &age);
 scanf("%[^\n]", name);
-// reads empty string!</code></pre>
+// fails immediately if next char is '\n'
+// name is left unchanged</code></pre>
                     </div>
                 </div>
                 <div class="key-point">
@@ -476,8 +477,12 @@ scanf("%d", &age);
 scanf(" %[^\n]", name);   // ✓ space skips the '\n'</code></pre>
                 <div class="key-point">
                     The space in the format string means: <span class="highlight">"skip all whitespace (spaces, tabs, newlines) before reading"</span>.
-                    Always use <code>" %c"</code> and <code>" %[^\n]"</code> after reading numbers.
+                    Use <code>" %c"</code> and <code>" %[^\n]"</code> after reading numbers when you want to ignore the leftover newline.
                 </div>
+                <p class="warning-box" style="font-size: 0.75em;">
+                    Caveat: the leading space skips <em>all</em> leading whitespace, not just one newline.
+                    This is fine for most contest input, but use <code>fgets</code> if leading spaces or blank lines matter.
+                </p>
             </section>
 
             <section>
