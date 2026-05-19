@@ -26,7 +26,7 @@
     <section class="hero">
       <p class="eyebrow">day 05</p>
       <h1>20 May 2026: C Consolidation</h1>
-      <p class="lead">Diagnostic-test practice, function pointers, structures and unions, strings in C, and a focused problem list for the next round of practice.</p>
+      <p class="lead">Diagnostic-test practice, function pointers, structures and unions, and a focused problem list for the next round of practice. Strings in C may be introduced if time permits.</p>
     </section>
 
     <section class="slide-band">
@@ -35,8 +35,7 @@
         <li><a href="../../../es242n/classes/class-04/pointer-memory-quiz.html">Pointer and memory quiz</a></li>
         <li><a href="../../../es248/pointers-III.html">Function Pointers, qsort, and bsearch</a></li>
         <li><a href="../../../es248/structures-unions.html">Structures and Unions</a></li>
-        <li><a href="../../../es248/strings.html">Strings in C</a></li>
-        <li><a href="../../../es248/time-complexity.html">Time Complexity</a> if time permits</li>
+        <li><a href="../../../es248/strings.html">Strings in C</a> if time permits</li>
       </ul>
     </section>
 
@@ -65,8 +64,8 @@
       <article class="agenda-item">
         <div class="marker">04</div>
         <div>
-          <h2>Strings in C</h2>
-          <p>Cover character arrays, the terminating <code>'\0'</code>, reading strings safely, <code>strlen</code>, <code>strcmp</code>, and why strings are not compared with <code>==</code>.</p>
+          <h2>Strings in C, if time permits</h2>
+          <p>If the class reaches this point, introduce character arrays, the terminating <code>'\0'</code>, reading strings safely, <code>strlen</code>, <code>strcmp</code>, and why strings are not compared with <code>==</code>.</p>
         </div>
       </article>
       <article class="agenda-item">
@@ -80,27 +79,14 @@
 
     <section class="slide-band">
       <h2>Practice After This Day</h2>
-      <p class="lead">Use this list to continue from the material covered so far. Problems marked as diagnostic are on judge.csbasics.in; LeetCode problems are for additional practice.</p>
+      <p class="lead">Use this list to continue from the material covered so far. The diagnostic contest will be revisited through quiz-style review in class.</p>
     </section>
 
     <section class="agenda" aria-label="Practice list">
       <article class="agenda-item">
         <div class="marker">A</div>
         <div>
-          <h2>Diagnostic contest problems</h2>
-          <ul class="compact-list">
-            <li><code>UNIQUE-ELEMENT</code>: 1D arrays and XOR-style reasoning.</li>
-            <li><code>ARRAY-OPERATIONS</code>: array updates and careful indexing.</li>
-            <li><code>ALTERNATING-PARITY</code>: scan input and track the longest valid segment.</li>
-            <li><code>SADDLE-POINT</code>: 2D arrays, row minima, and column maxima.</li>
-            <li><code>NAME-CLEAN</code>: attempt after the strings discussion.</li>
-          </ul>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">B</div>
-        <div>
-          <h2>LeetCode strings</h2>
+          <h2>LeetCode strings, after strings are covered</h2>
           <ul class="compact-list">
             <li><a href="https://leetcode.com/problems/reverse-string/">LeetCode 344: Reverse String</a></li>
             <li><a href="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/">LeetCode 28: Find the Index of the First Occurrence in a String</a></li>
@@ -110,25 +96,27 @@
         </div>
       </article>
       <article class="agenda-item">
-        <div class="marker">C</div>
+        <div class="marker">B</div>
         <div>
-          <h2>LeetCode arrays and 2D arrays</h2>
+          <h2>LeetCode sorting and binary search</h2>
+          <p>These problems do not force function pointers, but in C the sorting ones are good places to practice <code>qsort</code> and comparator functions.</p>
           <ul class="compact-list">
-            <li><a href="https://leetcode.com/problems/remove-element/">LeetCode 27: Remove Element</a></li>
-            <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a></li>
-            <li><a href="https://leetcode.com/problems/richest-customer-wealth/">LeetCode 1672: Richest Customer Wealth</a></li>
-            <li><a href="https://leetcode.com/problems/matrix-diagonal-sum/">LeetCode 1572: Matrix Diagonal Sum</a></li>
+            <li><a href="https://leetcode.com/problems/binary-search/">LeetCode 704: Binary Search</a></li>
+            <li><a href="https://leetcode.com/problems/search-insert-position/">LeetCode 35: Search Insert Position</a></li>
+            <li><a href="https://leetcode.com/problems/sort-an-array/">LeetCode 912: Sort an Array</a> — solve in C using <code>qsort</code>.</li>
+            <li><a href="https://leetcode.com/problems/h-index/">LeetCode 274: H-Index</a> — sort first, then scan.</li>
           </ul>
         </div>
       </article>
       <article class="agenda-item">
-        <div class="marker">D</div>
+        <div class="marker">C</div>
         <div>
           <h2>C structure exercises</h2>
           <p>Use structures to store records cleanly. For names, assume there are no spaces.</p>
           <ul class="compact-list">
             <li>Top scorer: read <code>n</code>, then <code>n</code> lines of <code>name roll marks</code>. Print the student with highest marks; if tied, choose the smaller roll number.</li>
             <li>Sort students: read the same input and print all students sorted by marks descending, then roll number ascending. Use <code>qsort</code>.</li>
+            <li>Find a student by roll number: sort student records by roll number, then use <code>bsearch</code> to find and print the matching record.</li>
             <li>Sort dates: read <code>n</code>, then <code>n</code> dates as <code>dd mm yyyy</code>. Store each date in a structure and print dates in chronological order.</li>
           </ul>
         </div>
