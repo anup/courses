@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 5</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 5</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 05</p>
+      <h1>20 May 2026: C Consolidation</h1>
+      <p class="lead">Diagnostic-test practice, function pointers, structures and unions, strings in C, and a focused problem list for the next round of practice.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="../../../es242n/classes/class-04/pointer-memory-quiz.html">Pointer and memory quiz</a></li>
+        <li><a href="../../../es248/pointers-III.html">Function Pointers, qsort, and bsearch</a></li>
+        <li><a href="../../../es248/structures-unions.html">Structures and Unions</a></li>
+        <li><a href="../../../es248/strings.html">Strings in C</a></li>
+        <li><a href="../../../es248/time-complexity.html">Time Complexity</a> if time permits</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Day plan">
+      <article class="agenda-item">
+        <div class="marker">01</div>
+        <div>
+          <h2>Diagnostic practice and quiz review</h2>
+          <p>Start by revisiting the diagnostic-style questions and the coding problems that students are still debugging. Use this to settle syntax, pointer, array, and 2D-array issues before adding new C features.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">02</div>
+        <div>
+          <h2>Function pointers</h2>
+          <p>Introduce function-pointer syntax through small examples, then connect it to <code>qsort</code> comparators. Keep the focus on reading the type and writing one correct comparator.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">03</div>
+        <div>
+          <h2>Structures and unions</h2>
+          <p>Use structures to group related values, pass records to functions, and sort arrays of records. Treat structure size carefully: use the slide assumptions for hand calculations, and use <code>sizeof</code> in real code.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">04</div>
+        <div>
+          <h2>Strings in C</h2>
+          <p>Cover character arrays, the terminating <code>'\0'</code>, reading strings safely, <code>strlen</code>, <code>strcmp</code>, and why strings are not compared with <code>==</code>.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">05</div>
+        <div>
+          <h2>Practice briefing</h2>
+          <p>End by showing which problems match arrays, 2D arrays, strings, and record-style C programming. Students should leave knowing what to attempt next and what evidence counts for practice credit.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice After This Day</h2>
+      <p class="lead">Use this list to continue from the material covered so far. Problems marked as diagnostic are on judge.csbasics.in; LeetCode problems are for additional practice.</p>
+    </section>
+
+    <section class="agenda" aria-label="Practice list">
+      <article class="agenda-item">
+        <div class="marker">A</div>
+        <div>
+          <h2>Diagnostic contest problems</h2>
+          <ul class="compact-list">
+            <li><code>UNIQUE-ELEMENT</code>: 1D arrays and XOR-style reasoning.</li>
+            <li><code>ARRAY-OPERATIONS</code>: array updates and careful indexing.</li>
+            <li><code>ALTERNATING-PARITY</code>: scan input and track the longest valid segment.</li>
+            <li><code>SADDLE-POINT</code>: 2D arrays, row minima, and column maxima.</li>
+            <li><code>NAME-CLEAN</code>: attempt after the strings discussion.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">B</div>
+        <div>
+          <h2>LeetCode strings</h2>
+          <ul class="compact-list">
+            <li><a href="https://leetcode.com/problems/reverse-string/">LeetCode 344: Reverse String</a></li>
+            <li><a href="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/">LeetCode 28: Find the Index of the First Occurrence in a String</a></li>
+            <li><a href="https://leetcode.com/problems/valid-anagram/">LeetCode 242: Valid Anagram</a></li>
+            <li><a href="https://leetcode.com/problems/first-unique-character-in-a-string/">LeetCode 387: First Unique Character in a String</a></li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">C</div>
+        <div>
+          <h2>LeetCode arrays and 2D arrays</h2>
+          <ul class="compact-list">
+            <li><a href="https://leetcode.com/problems/remove-element/">LeetCode 27: Remove Element</a></li>
+            <li><a href="https://leetcode.com/problems/merge-sorted-array/">LeetCode 88: Merge Sorted Array</a></li>
+            <li><a href="https://leetcode.com/problems/richest-customer-wealth/">LeetCode 1672: Richest Customer Wealth</a></li>
+            <li><a href="https://leetcode.com/problems/matrix-diagonal-sum/">LeetCode 1572: Matrix Diagonal Sum</a></li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">D</div>
+        <div>
+          <h2>C structure exercises</h2>
+          <p>Use structures to store records cleanly. For names, assume there are no spaces.</p>
+          <ul class="compact-list">
+            <li>Top scorer: read <code>n</code>, then <code>n</code> lines of <code>name roll marks</code>. Print the student with highest marks; if tied, choose the smaller roll number.</li>
+            <li>Sort students: read the same input and print all students sorted by marks descending, then roll number ascending. Use <code>qsort</code>.</li>
+            <li>Sort dates: read <code>n</code>, then <code>n</code> dates as <code>dd mm yyyy</code>. Store each date in a structure and print dates in chronological order.</li>
+          </ul>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

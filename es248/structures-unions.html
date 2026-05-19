@@ -615,32 +615,63 @@ qsort(players, n, sizeof(struct Player), compare);</code></pre>
     </div>
 </section>
 
-<!-- PADDING RULES -->
-<section>
-    <h2>The Rules of Padding</h2>
-    <div style="text-align: left; max-width: 90%; margin: 0 auto;">
-        <div class="key-point" style="margin: 20px 0;">
-            <strong>Rule 1: Alignment Requirement</strong>
-            <p style="margin: 10px 0 0 0;">Each type must be stored at a memory address divisible by its size:</p>
-            <ul style="margin: 10px 0 0 20px; font-size: 0.9em;">
-                <li><code>char</code> (1 byte) → any address</li>
-                <li><code>short</code> (2 bytes) → address divisible by 2</li>
-                <li><code>int</code> (4 bytes) → address divisible by 4</li>
-                <li><code>double</code> (8 bytes) → address divisible by 8</li>
-            </ul>
-        </div>
-        <div class="key-point fragment" style="margin: 20px 0;">
-            <strong>Rule 2: Struct Start Address</strong>
-            <p style="margin: 10px 0 0 0;">The struct itself starts at an address aligned to its largest member.</p>
-            <p style="margin: 5px 0 0 0; font-size: 0.85em;">If largest member is <code>double</code> (8 bytes), struct starts at 0, 8, 16, 24, 32...</p>
-        </div>
-        <div class="key-point fragment" style="margin: 20px 0;">
-            <strong>Rule 3: Padding at the End</strong>
-            <p style="margin: 10px 0 0 0;">Total size must be a multiple of the largest alignment requirement.</p>
-            <p style="margin: 5px 0 0 0; font-size: 0.85em;">This ensures arrays work correctly (each element starts at valid address).</p>
-        </div>
-    </div>
-</section>
+	<!-- PADDING RULES -->
+	<section>
+	    <h2>Before We Calculate Size</h2>
+	    <div class="warning-box" style="text-align: left;">
+	        <strong>Structure layout is not a pure C-language rule</strong>
+	        <p>The C standard does not say that <code>int</code> must be 4 bytes or that <code>double</code> must be 8-byte aligned. Those choices come from the compiler and the platform ABI.</p>
+	        <p>For hand calculations in this lecture, use the assumptions stated on the slide. In real programs, use <code>sizeof</code> and <code>offsetof</code>; do not hard-code structure sizes.</p>
+	    </div>
+	</section>
+
+	<section>
+	    <h2>The Rules of Padding</h2>
+	    <div style="text-align: left; max-width: 90%; margin: 0 auto;">
+	        <div class="key-point" style="margin: 20px 0;">
+	            <strong>Rule 1: Alignment Requirement</strong>
+	            <p style="margin: 10px 0 0 0;">Under this lecture's simple model, each type starts at an address divisible by its alignment:</p>
+	            <ul style="margin: 10px 0 0 20px; font-size: 0.9em;">
+	                <li><code>char</code>: size 1, alignment 1 → any address</li>
+	                <li><code>short</code>: size 2, alignment 2 → address divisible by 2</li>
+	                <li><code>int</code>: size 4, alignment 4 → address divisible by 4</li>
+	                <li><code>double</code>: size 8, alignment 8 → address divisible by 8</li>
+	            </ul>
+	            <p class="subtle-note">On some systems size and alignment are not identical. The compiler decides the real layout.</p>
+	        </div>
+	        <div class="key-point fragment" style="margin: 20px 0;">
+	            <strong>Rule 2: Struct Start Address</strong>
+	            <p style="margin: 10px 0 0 0;">The struct itself is aligned to the strictest alignment required by any member.</p>
+	            <p style="margin: 5px 0 0 0; font-size: 0.85em;">If the strictest member is an 8-byte-aligned <code>double</code>, each struct object starts at 0, 8, 16, 24, 32...</p>
+	        </div>
+	        <div class="key-point fragment" style="margin: 20px 0;">
+	            <strong>Rule 3: Padding at the End</strong>
+	            <p style="margin: 10px 0 0 0;">Total size is rounded up to a multiple of the struct's alignment.</p>
+	            <p style="margin: 5px 0 0 0; font-size: 0.85em;">This ensures arrays work correctly (each element starts at valid address).</p>
+	        </div>
+	    </div>
+	</section>
+
+	<section>
+	    <h2>What About Packing?</h2>
+	    <div class="split-container">
+	        <div>
+	            <pre><code class="language-c">struct S {
+    char c;
+    int x;
+};</code></pre>
+	            <p>Normal layout may add padding before <code>x</code> and at the end.</p>
+	        </div>
+	        <div>
+	            <pre><code class="language-c">// Compiler-specific examples
+#pragma pack(1)
+struct S { char c; int x; };
+#pragma pack()</code></pre>
+	            <p>Packing asks the compiler to reduce or remove padding.</p>
+	        </div>
+	    </div>
+	    <p class="warning-box">Do not use packing to "fix" size questions in this course. It is compiler-specific, can create slower or unsafe misaligned access, and should be used only when a binary file/network format requires it.</p>
+	</section>
 
 <section>
     <h2>Why Alignment?</h2>
