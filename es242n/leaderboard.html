@@ -317,6 +317,7 @@
       <button class="tab" role="tab" aria-selected="true" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
     </div>
 
     <div class="search-bar">
@@ -365,6 +366,21 @@
         </div>
       </div>
     </section>
+
+    <section id="leetcode-view" class="hide" role="tabpanel" aria-labelledby="tab-leetcode">
+      <p class="lead-note" id="lc-summary"></p>
+      <div class="loading hide" id="lc-loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div><br>Loading LeetCode…
+      </div>
+      <div class="error-msg hide" id="lc-error" role="alert"></div>
+      <div class="scroll-wrap hide" id="lc-scroll-wrap">
+        <button class="scroll-arrow scroll-arrow-left" id="lc-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+        <button class="scroll-arrow scroll-arrow-right" id="lc-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+        <div class="table-block" id="lc-table" tabindex="0" aria-label="LeetCode table, scrollable">
+          <table aria-label="LeetCode Practice"><thead><tr id="lc-head"></tr></thead><tbody id="lc-body"></tbody></table>
+        </div>
+      </div>
+    </section>
   </main>
 
   <script src="leaderboard-config.js"></script>
@@ -378,9 +394,10 @@
     var sortState = {
       leaderboard:  { col: 0, asc: true },
       grades:       { col: -1, asc: true },
-      performance:  { col: -1, asc: true }
+      performance:  { col: -1, asc: true },
+      leetcode:     { col: 1, asc: false }
     };
-    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf" };
+    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc" };
     var HIDDEN_COLUMNS = {
       leaderboard: {
         "exam i (/25)": true,
@@ -394,7 +411,8 @@
         "attendance bonus (+3)": true,
         "final total": true
       },
-      performance: {}
+      performance: {},
+      leetcode: {}
     };
 
     var TOOLTIPS = {};
@@ -474,7 +492,7 @@
     }
 
     function showError(message) {
-      ["lb", "gr", "pf"].forEach(function (prefix) {
+      ["lb", "gr", "pf", "lc"].forEach(function (prefix) {
         document.getElementById(prefix + "-loading").classList.add("hide");
         var err = document.getElementById(prefix + "-error");
         err.textContent = message;
@@ -509,14 +527,15 @@
         t.setAttribute("aria-selected", isActive ? "true" : "false");
         t.setAttribute("tabindex", isActive ? "0" : "-1");
       });
-      ["leaderboard", "grades", "performance"].forEach(function (v) {
+      ["leaderboard", "grades", "performance", "leetcode"].forEach(function (v) {
         document.getElementById(v + "-view").classList.toggle("hide", v !== view);
       });
       applySearch();
       var labels = {
         leaderboard:  "Showing leaderboard",
         grades:       "Showing detailed grades",
-        performance:  "Showing contest performance"
+        performance:  "Showing contest performance",
+        leetcode:     "Showing LeetCode practice"
       };
       announce(labels[view]);
     }
@@ -566,7 +585,7 @@
           if (allData.error) throw new Error(allData.message || "Server error");
           if (allData.config) initTooltips(allData.config);
 
-          ["leaderboard", "grades", "performance"].forEach(function (view) {
+          ["leaderboard", "grades", "performance", "leetcode"].forEach(function (view) {
             var data = allData[view];
             if (!data) return;
             data = visibleDataForView(view, data);
@@ -577,6 +596,16 @@
             document.getElementById(prefix + "-scroll-wrap").classList.remove("hide");
             setupScrollArrows(prefix);
           });
+
+          if (allData.leetcode) {
+            var foundationsTotal = allData.leetcode.foundationsTotal || 0;
+            var summary = document.getElementById("lc-summary");
+            if (summary) {
+              summary.textContent = foundationsTotal
+                ? "Foundations Solved is out of " + foundationsTotal + " curated problems. Total Solved counts every accepted submission we have seen, capped by LeetCode's 20-most-recent window."
+                : "Total Solved counts every accepted submission we have seen.";
+            }
+          }
 
           if (allData.leaderboard && allData.leaderboard.lastUpdated) {
             document.getElementById("last-updated").textContent =
