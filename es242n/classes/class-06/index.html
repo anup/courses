@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 6</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 6</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 06</p>
+      <h1>22 May 2026: Linked Lists</h1>
+      <p class="lead">Linked lists first as an array-based structure, then as pointer-based nodes in C.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="../../../es248/linked-list-I.html">Linked Lists — Part I: Array-Based Linked Lists</a></li>
+        <li><a href="../../../es248/linked-list-II.html">Linked Lists — Part II: Pointer-Based Linked Lists</a></li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Day notes">
+      <article class="agenda-item">
+        <div class="marker">I</div>
+        <div>
+          <h2>Array-based linked lists</h2>
+          <p>Use <code>data[]</code>, <code>nxt[]</code>, <code>head</code>, and the availability list to build the linked-list idea without pointer syntax.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">II</div>
+        <div>
+          <h2>Pointer-based linked lists</h2>
+          <p>Connect the same operations to <code>struct Node</code>, <code>malloc</code>, and <code>node-&gt;next</code>.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
