@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>One Problem, Three Implementations — The Josephus Progression</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 420px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .quip {
+            background: #fef6e4;
+            border-left: 4px solid #d4a73d;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-style: italic;
+            color: #6b5310;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .three-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+
+        .reveal .seat-circle text { font-size: 18px; font-weight: 600; fill: var(--main-color); }
+        .reveal .seat-alive { fill: #ffffff; stroke: var(--accent-color); stroke-width: 3; }
+        .reveal .seat-out   { fill: #f8d7da; stroke: #c0392b; stroke-width: 3; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>One Problem, Three Implementations</h1>
+    <h3 style="color:#7f8c8d;">Josephus — finally, we code it</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Day 7 &middot; 25 May 2026</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ICEBREAKER
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Before we begin — a tiny puzzle</h2>
+
+    <p>Seven people stand in a circle. Starting from position 1, count <strong>1, 2, 3</strong> — whoever lands on 3 leaves. Resume counting from the next person.</p>
+
+    <p class="big-q">Who is the last one standing?</p>
+
+    <div class="center-content" style="margin: 1em 0;">
+        <svg viewBox="-130 -130 260 260" width="240" height="240" class="seat-circle">
+            <circle cx="0"   cy="-100" r="22" class="seat-alive"/>
+            <circle cx="78"  cy="-62"  r="22" class="seat-alive"/>
+            <circle cx="97"  cy="22"   r="22" class="seat-alive"/>
+            <circle cx="43"  cy="90"   r="22" class="seat-alive"/>
+            <circle cx="-43" cy="90"   r="22" class="seat-alive"/>
+            <circle cx="-97" cy="22"   r="22" class="seat-alive"/>
+            <circle cx="-78" cy="-62"  r="22" class="seat-alive"/>
+            <text x="0" y="-94"   text-anchor="middle">1</text>
+            <text x="78" y="-56"  text-anchor="middle">2</text>
+            <text x="97" y="28"   text-anchor="middle">3</text>
+            <text x="43" y="96"   text-anchor="middle">4</text>
+            <text x="-43" y="96"  text-anchor="middle">5</text>
+            <text x="-97" y="28"  text-anchor="middle">6</text>
+            <text x="-78" y="-56" text-anchor="middle">7</text>
+        </svg>
+    </div>
+
+    <div class="quip">Turn to your neighbour. 60 seconds. Pen, paper, fingers — no laptops yet.</div>
+</section>
+
+<!-- Reveal -->
+<section>
+    <h2>Survivor: position <span class="highlight">4</span></h2>
+
+    <p>Order of elimination: <code>3 &rarr; 6 &rarr; 2 &rarr; 7 &rarr; 5 &rarr; 1</code>. Last standing: <strong>4</strong>.</p>
+
+    <div class="center-content" style="margin: 1em 0;">
+        <svg viewBox="-130 -130 260 260" width="240" height="240" class="seat-circle">
+            <circle cx="0"   cy="-100" r="22" class="seat-out"/>
+            <circle cx="78"  cy="-62"  r="22" class="seat-out"/>
+            <circle cx="97"  cy="22"   r="22" class="seat-out"/>
+            <circle cx="43"  cy="90"   r="22" class="seat-alive" style="stroke: var(--success-color); stroke-width: 4;"/>
+            <circle cx="-43" cy="90"   r="22" class="seat-out"/>
+            <circle cx="-97" cy="22"   r="22" class="seat-out"/>
+            <circle cx="-78" cy="-62"  r="22" class="seat-out"/>
+            <text x="0" y="-94"   text-anchor="middle">1</text>
+            <text x="78" y="-56"  text-anchor="middle">2</text>
+            <text x="97" y="28"   text-anchor="middle">3</text>
+            <text x="43" y="96"   text-anchor="middle" style="fill: var(--success-color);">4</text>
+            <text x="-43" y="96"  text-anchor="middle">5</text>
+            <text x="-97" y="28"  text-anchor="middle">6</text>
+            <text x="-78" y="-56" text-anchor="middle">7</text>
+        </svg>
+    </div>
+
+    <div class="quip">If you guessed 4, you'd have made it out of the cave. If you didn't — well, that's what the next 80 minutes are for.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CONTEXT — WE'VE DONE THIS
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Wait — haven't we done this?</h2>
+
+    <p>We sketched Josephus when we did arrays. We waved at it again with linked lists. Both times we said <em>"we'll code it properly soon."</em></p>
+
+    <p class="big-q">Soon is today.</p>
+
+    <div class="info-box">
+        Plan: solve Josephus three times. Once with an array. Once with pointers over the same array. Once with a circular linked list. Compare what changed.
+    </div>
+</section>
+
+<!-- The problem -->
+<section>
+    <h2>What you'll code</h2>
+
+    <div class="info-box">
+        <strong>Input:</strong> <code>n</code> and <code>k</code>.<br>
+        <strong>Process:</strong> <code>n</code> people, numbered 1 to <code>n</code>, in a circle. Count <code>k</code>; the <code>k</code>-th leaves. Repeat.<br>
+        <strong>Output:</strong> the 1-indexed survivor.
+    </div>
+
+    <p>Check your code on: <code>n = 7, k = 3 &rarr; 4</code>. &nbsp; Stretch: <code>n = 41, k = 3 &rarr; 31</code>.</p>
+
+    <div class="quip">41 and 3 are the original numbers from the cave. If your program prints 31, congratulations — you'd have lived to write a book.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ROUND 1 — ARRAY
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Round 1 — Array</h1>
+    <p class="small" style="margin-top:1em;">Mark the dead. Keep walking past them.</p>
+</section>
+
+<section>
+    <h2>Approach — array</h2>
+
+    <p>Use a flag array. <code>1</code> = alive, <code>0</code> = out. When someone is eliminated, <strong>don't shift anything</strong> — just flip their flag.</p>
+
+    <h4 style="margin-top:1em;">Hints</h4>
+    <ul>
+        <li>Array of size <code>n</code> for the flags.</li>
+        <li>Walk with an index. Wrap using <code>(idx + 1) % n</code>.</li>
+        <li>Skip indices whose flag is <code>0</code>. They don't count toward the <code>k</code>.</li>
+        <li>Stop when exactly one flag is still <code>1</code>. Print that position.</li>
+    </ul>
+
+    <div class="quip">No shifting, no resizing. Just a circular walk past a growing graveyard of zeros.</div>
+</section>
+
+<section>
+    <h2>Your turn — array</h2>
+
+    <div class="info-box">
+        Read <code>n</code>, <code>k</code>. Print the 1-indexed survivor.<br>
+        Submit on <a href="https://judge.csbasics.in/">judge.csbasics.in</a>.<br>
+        <strong>Verify:</strong> <code>7 3 &rarr; 4</code>. &nbsp; <strong>Stretch:</strong> <code>41 3 &rarr; 31</code>.
+    </div>
+
+    <div class="quip">If <code>7 3</code> prints 4, you've out-survived six imaginary people. Modest, but a start.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ROUND 2 — POINTER
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Round 2 — Pointer</h1>
+    <p class="small" style="margin-top:1em;">Same array. Same memory. Different syntax.</p>
+</section>
+
+<section>
+    <h2>Approach — pointer</h2>
+
+    <p><code>alive[i]</code> is just sugar for <code>*(alive + i)</code>. Same array; walk it with a pointer instead of an index.</p>
+
+    <h4 style="margin-top:1em;">Hints</h4>
+    <ul>
+        <li>Two anchors: <code>start</code> at the first element, <code>end</code> just past the last.</li>
+        <li>One moving pointer <code>cur</code>. Advance with <code>cur++</code>.</li>
+        <li>Wrap with <code>if (cur == end) cur = start;</code> — that's the circle.</li>
+        <li>Read and write flags as <code>*cur</code>. No <code>[]</code> allowed.</li>
+        <li>Survivor's index at the end: <code>cur - start</code>.</li>
+    </ul>
+
+    <div class="key-point">The algorithm hasn't changed. Only the syntax for "where am I."</div>
+</section>
+
+<section>
+    <h2>Your turn — pointer</h2>
+
+    <div class="info-box">
+        Same logic, pointer arithmetic only. No <code>alive[i]</code>.<br>
+        Output must match your array version, line for line.
+    </div>
+
+    <div class="warning-box">If <code>[]</code> feels easy and <code>*cur</code> feels foreign — that gap is exactly what this exercise exists to close.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     ROUND 3 — LINKED LIST
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Round 3 — Circular linked list</h1>
+    <p class="small" style="margin-top:1em;">Don't mark the dead. Unlink them.</p>
+</section>
+
+<section>
+    <h2>Approach — circular linked list</h2>
+
+    <p>Build a circular linked list of <code>n</code> nodes. Each <code>next</code> points to the next person. The last node's <code>next</code> loops back to the first.</p>
+
+    <p>Elimination is no longer "flip a flag." It's <strong><code>prev-&gt;next = cur-&gt;next</code></strong>, then <code>free(cur)</code>.</p>
+
+    <div class="center-content" style="margin: 0.7em 0;">
+        <svg viewBox="-150 -150 300 300" width="270" height="270" class="seat-circle">
+            <defs>
+                <marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                    <path d="M0,0 L0,6 L6,3 z" fill="#7f8c8d"/>
+                </marker>
+            </defs>
+            <circle cx="0"    cy="-110" r="22" class="seat-alive"/>
+            <circle cx="86"   cy="-68"  r="22" class="seat-alive"/>
+            <circle cx="108"  cy="24"   r="22" class="seat-alive"/>
+            <circle cx="48"   cy="100"  r="22" class="seat-alive"/>
+            <circle cx="-48"  cy="100"  r="22" class="seat-alive"/>
+            <circle cx="-108" cy="24"   r="22" class="seat-alive"/>
+            <circle cx="-86"  cy="-68"  r="22" class="seat-alive"/>
+            <text x="0" y="-104"   text-anchor="middle">1</text>
+            <text x="86" y="-62"   text-anchor="middle">2</text>
+            <text x="108" y="30"   text-anchor="middle">3</text>
+            <text x="48" y="106"   text-anchor="middle">4</text>
+            <text x="-48" y="106"  text-anchor="middle">5</text>
+            <text x="-108" y="30"  text-anchor="middle">6</text>
+            <text x="-86" y="-62"  text-anchor="middle">7</text>
+            <path d="M 22,-105 Q 60,-100 64,-72"      stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 100,-50 Q 115,-15 108,2"        stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 100,46  Q 88,80 66,92"          stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M 26,108 Q 0,118 -26,108"          stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M -66,92 Q -90,80 -100,46"         stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M -108,2 Q -115,-15 -100,-50"      stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M -64,-72 Q -60,-100 -22,-105"     stroke="#7f8c8d" fill="none" stroke-width="2" marker-end="url(#arrow)"/>
+        </svg>
+    </div>
+</section>
+
+<section>
+    <h2>Hints</h2>
+
+    <ul>
+        <li>Build one node at a time with <code>malloc</code>. Keep a <code>head</code> and a <code>tail</code>.</li>
+        <li>After the last node: <code>tail-&gt;next = head</code>. That one line is what makes it a circle.</li>
+        <li>From <code>cur</code>, walk <code>k − 1</code> steps. Keep a <code>prev</code> the whole time.</li>
+        <li>Unlink: <code>prev-&gt;next = cur-&gt;next</code>. Save <code>cur</code> in a temp so you can <code>free</code> it.</li>
+        <li>Move <code>cur</code> to <code>cur-&gt;next</code>. Stop when <code>cur-&gt;next == cur</code>.</li>
+    </ul>
+
+    <div class="warning-box">Forgetting <code>tail-&gt;next = head</code> is the classic bug. The program walks off the end and crashes spectacularly. Now you know.</div>
+</section>
+
+<section>
+    <h2>Your turn — linked list</h2>
+
+    <div class="info-box">
+        Build a circular list with <code>malloc</code>. Eliminate by unlinking and <code>free</code>-ing.<br>
+        Same survivor as your array and pointer versions — verify.
+    </div>
+
+    <div class="quip">Three programs, one answer. If two of them disagree, one of them is lying. Welcome to debugging.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     RECKONING — BIG-O
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">So which one was best?</h1>
+    <p class="small" style="margin-top:1em;">Three implementations. Time to ask what each one cost.</p>
+</section>
+
+<section>
+    <h2>What did the array cost?</h2>
+
+    <p>Late in the game, most slots are dead, but you still walk through them to find the next live one. You skim over a lot of zeros to count each living person.</p>
+
+    <p>Pointer version: <em>identical</em> cost. Pointer arithmetic is not magic — it accesses the same memory.</p>
+
+    <div class="info-box">Same work in different syntax is not faster. It just makes you fluent in C.</div>
+</section>
+
+<section>
+    <h2>What did the linked list cost?</h2>
+
+    <p>Each round, walk exactly <code>k − 1</code> nodes, then unlink. No stepping over dead cells — there are none. You removed them.</p>
+
+    <div class="key-point"><strong>The win isn't asymptotic — it's structural.</strong> The data structure has the same shape as the problem (a circle). The code reads almost line-for-line like the problem statement.</div>
+</section>
+
+<section>
+    <h2>Side by side</h2>
+
+    <table>
+        <tr><th>Operation</th><th>Array (marked)</th><th>Linked list</th></tr>
+        <tr><td>Find next alive</td><td>walk past dead slots</td><td>always one step</td></tr>
+        <tr><td>Eliminate</td><td>flip a flag — O(1)</td><td>rewire pointer — O(1)</td></tr>
+        <tr><td>Extra memory</td><td>fixed flag array</td><td>n nodes via <code>malloc</code></td></tr>
+        <tr><td>Reads like the problem</td><td>not really</td><td>almost line-for-line</td></tr>
+    </table>
+
+    <div class="quip">Pick the structure whose shape matches the problem. Josephus is a circle. The linked list literally is one. The array had to fake it.</div>
+</section>
+
+<section>
+    <h2>Big-O — the formal version</h2>
+
+    <p>The growth families you just felt — flat, linear, quadratic — get named in the <a href="../../../es248/time-complexity.html">Time Complexity deck</a>:</p>
+
+    <ul>
+        <li>Linear search &rarr; <code>O(n)</code></li>
+        <li>Binary search &rarr; <code>O(log n)</code></li>
+        <li>Bubble sort &rarr; <code>O(n²)</code></li>
+    </ul>
+
+    <div class="info-box">Same families, formal names, and why we get to drop constants and lower-order terms.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     WRAP PROBLEM
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Wrap problem — reverse a sequence, three ways</h2>
+
+    <div class="info-box">
+        Same drill, different problem. Reverse <code>n</code> integers using:
+        <ol style="margin-top:0.4em;">
+            <li>An array — swap from both ends, with indices.</li>
+            <li>The same swap — with pointer arithmetic.</li>
+            <li>A pointer-based linked list — return a new head pointing the other way.</li>
+        </ol>
+    </div>
+
+    <p>The linked-list version is the only one where you <em>cannot</em> "swap from both ends." You have to walk forward. That's the data structure forcing the algorithm's hand.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     RECAP + WHAT'S NEXT
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>What we did today</h2>
+
+    <ul>
+        <li>Took a problem we'd only sketched — Josephus — and finally <strong>coded</strong> it.</li>
+        <li>Coded it three times. Same algorithm, different data structure.</li>
+        <li>Saw why the linked list reads like the problem and the array doesn't.</li>
+        <li>Met Big-O informally; the formal names live in the time-complexity deck.</li>
+    </ul>
+
+    <div class="key-point"><strong>Take-away:</strong> when picking a data structure, ask "does this look like the problem?" If yes, the code mostly writes itself.</div>
+</section>
+
+<section>
+    <h2>Next class — Wed 27 May</h2>
+
+    <h3 style="color: var(--accent-color);">Recursion intro</h3>
+
+    <p>Try this before next class: print a linked list <em>without using any loop</em>. You'll end up with a function that calls itself. That's recursion. Bring the code, or bring questions.</p>
+
+    <div class="quip">There's also a recursive way to solve Josephus, and it's genuinely delightful. We'll get to it post-mid-sem, alongside merge sort and quicksort.</div>
+</section>
+
+<section class="center-content">
+    <h1>Questions?</h1>
+    <p class="small" style="margin-top:3em; color:#95a5a6;">ES 242(N) &middot; Day 7 &middot; 25 May 2026</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        plugins: [ RevealHighlight ],
+        slideNumber: true,
+        transition: 'slide'
+    });
+</script>
+</body>
+</html>

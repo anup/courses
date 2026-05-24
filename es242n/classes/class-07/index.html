@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 7</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 7</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 07</p>
+      <h1>25 May 2026: Time Complexity</h1>
+      <p class="lead">Today's agenda is time complexity. We get there by solving one problem — Josephus — three times: with an array, with pointers over the same array, and with a circular linked list. The logic stays the same; only the data structure changes. At the end, we name what each version cost.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="josephus-progression.html">One Problem, Three Implementations — The Josephus Progression</a> — main deck for the day</li>
+        <li><a href="../../../es248/time-complexity.html">Time Complexity</a> — referenced in the reflection at the end of Session 2</li>
+      </ul>
+      <p style="margin-top: 1rem;">Existing reference decks if students want to revisit pointer or linked-list mechanics:
+        <a href="../../../es248/pointers-I.html">Pointers I</a>,
+        <a href="../../../es248/pointers-II.html">Pointers II</a>,
+        <a href="../../../es248/pointers-III.html">Pointers III</a>,
+        <a href="../../../es248/linked-list-I.html">Linked List I</a>,
+        <a href="../../../es248/linked-list-II.html">Linked List II</a>.
+      </p>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Icebreaker, Josephus on array, Josephus on pointers</h2>
+          <p>Icebreaker puzzle (7 people, k=3, who survives?). Solve Josephus on an array using the mark-and-skip approach. Then rewrite the same logic using pointer arithmetic over the same memory. Same algorithm, different syntax.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Josephus on linked list, Big-O reflection, wrap problem</h2>
+          <p>Build a circular linked list and eliminate by unlinking. Compare the three implementations side by side and connect the cost intuition to the formal Big-O families from the time-complexity deck (linear search, binary search, bubble sort). Wrap with one fresh problem solved three ways.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class practice</h2>
+      <p class="lead">Every student is expected to submit at least one accepted solution in class today.</p>
+    </section>
+
+    <section class="agenda" aria-label="Practice list">
+      <article class="agenda-item">
+        <div class="marker">A</div>
+        <div>
+          <h2>Josephus — array version</h2>
+          <p>Implement <code>josephus_array(n, k)</code>. Use a flag array <code>alive[]</code>, walk with <code>idx = (idx + 1) % n</code>, and mark eliminated positions as <code>0</code>. Verify that <code>n = 7, k = 3</code> produces survivor <code>4</code>.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">B</div>
+        <div>
+          <h2>Josephus — pointer version</h2>
+          <p>Implement <code>josephus_pointer(n, k)</code> using only pointer arithmetic over the same <code>alive[]</code> array. No <code>alive[i]</code> syntax. Walk with <code>cur++</code> and wrap with <code>if (cur == end) cur = start;</code>. Verify the answer matches the array version.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">C</div>
+        <div>
+          <h2>Josephus — circular linked list version</h2>
+          <p>Build a circular linked list using <code>malloc</code>. Walk <code>k - 1</code> steps each round, rewire <code>prev-&gt;next = cur-&gt;next</code>, and <code>free</code> the eliminated node. Verify the answer matches the previous two implementations.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">R</div>
+        <div>
+          <h2>Reflection — Big-O of each version</h2>
+          <p>For each implementation, count the work done per elimination and across the whole game. Connect the patterns to <code>O(n)</code>, <code>O(n²)</code>, and <code>O(log n)</code> using the linear search, bubble sort, and binary search examples in the time-complexity deck.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">X</div>
+        <div>
+          <h2>Wrap — reverse a sequence three ways</h2>
+          <p>Reverse a sequence of <code>n</code> integers using (1) an array with index-based two-pointer swap, (2) the same swap using pointer arithmetic, and (3) a pointer-based linked list returning a new head. Notice that the linked-list version is the only one that cannot just "swap from both ends."</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Exam I scope (announcement)</h2>
+      <p class="lead">Exam I is scheduled for 3–5 June. Scope is locked today.</p>
+    </section>
+
+    <section class="agenda" aria-label="Exam scope">
+      <article class="agenda-item">
+        <div class="marker">IN</div>
+        <div>
+          <h2>In scope as topics</h2>
+          <p>C fundamentals; 1D and 2D arrays; pointers; structures; strings; linked lists (array-based and pointer-based); Big-O intuition; stacks; queues; recursion basics; linear search; binary search.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">PR</div>
+        <div>
+          <h2>In scope as practice patterns</h2>
+          <p>Bubble sort, selection sort, and insertion sort appear as nested-loop practice problems, not as formal sorting topics with complexity analysis.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">OUT</div>
+        <div>
+          <h2>Not in Exam I</h2>
+          <p>Merge sort, quicksort, recursion-tree analysis, trees, heaps, BSTs, hashing, and graphs are all post-mid-sem material and are not in Exam I scope.</p>
+        </div>
+      </article>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
