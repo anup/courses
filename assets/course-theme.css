@@ -219,6 +219,14 @@ h1 {
   border-color: var(--line-strong);
 }
 
+.tile.tile-feature {
+  border-color: var(--accent);
+}
+
+.tile.tile-feature strong {
+  color: var(--accent-ink);
+}
+
 .tile strong {
   display: block;
   margin-bottom: 8px;
