@@ -381,6 +381,7 @@
       <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="upcoming-view" id="tab-upcoming" data-view="upcoming">Upcoming Contests</button>
     </div>
 
     <div class="search-bar">
@@ -430,6 +431,21 @@
       </div>
     </section>
 
+    <section id="upcoming-view" class="hide" role="tabpanel" aria-labelledby="tab-upcoming">
+      <p class="lead-note">Every upcoming contest in the course window (LeetCode, CodeChef, AtCoder, Codeforces). Times are IST. Click a contest to open its page.</p>
+      <div class="loading hide" id="up-loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div><br>Loading upcoming contests…
+      </div>
+      <div class="error-msg hide" id="up-error" role="alert"></div>
+      <div class="scroll-wrap hide" id="up-scroll-wrap">
+        <button class="scroll-arrow scroll-arrow-left" id="up-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+        <button class="scroll-arrow scroll-arrow-right" id="up-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+        <div class="table-block" id="up-table" tabindex="0" aria-label="Upcoming contests table, scrollable">
+          <table aria-label="Upcoming Contests"><thead><tr id="up-head"></tr></thead><tbody id="up-body"></tbody></table>
+        </div>
+      </div>
+    </section>
+
     <section id="leetcode-view" class="hide" role="tabpanel" aria-labelledby="tab-leetcode">
       <p class="lead-note" id="lc-summary"></p>
       <div class="loading hide" id="lc-loading" aria-live="polite">
@@ -474,9 +490,11 @@
       leaderboard:  { col: 0, asc: true },
       grades:       { col: -1, asc: true },
       performance:  { col: -1, asc: true },
-      leetcode:     { col: 1, asc: false }
+      leetcode:     { col: 1, asc: false },
+      upcoming:     { col: 2, asc: true }
     };
-    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc" };
+    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc", upcoming: "up" };
+    var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming"];
     var HIDDEN_COLUMNS = {
       leaderboard: {
         "exam i (/25)": true,
@@ -491,7 +509,8 @@
         "final total": true
       },
       performance: {},
-      leetcode: {}
+      leetcode: {},
+      upcoming: {}
     };
 
     var TOOLTIPS = {};
@@ -571,13 +590,20 @@
     }
 
     function showError(message) {
-      ["lb", "gr", "pf", "lc"].forEach(function (prefix) {
+      ["lb", "gr", "pf", "lc", "up"].forEach(function (prefix) {
         document.getElementById(prefix + "-loading").classList.add("hide");
         var err = document.getElementById(prefix + "-error");
         err.textContent = message;
         err.classList.remove("hide");
       });
     }
+
+    (function applyViewFromUrl() {
+      var match = window.location.search.match(/[?&]view=([^&]+)/);
+      if (!match) return;
+      var requested = decodeURIComponent(match[1]);
+      if (ALL_VIEWS.indexOf(requested) !== -1) currentView = requested;
+    })();
 
     if (!API_BASE || API_BASE.indexOf("REPLACE_") === 0) {
       showError("Leaderboard endpoint is not configured yet. Set ES242N_LEADERBOARD_CONFIG.API_BASE in leaderboard-config.js.");
@@ -606,15 +632,18 @@
         t.setAttribute("aria-selected", isActive ? "true" : "false");
         t.setAttribute("tabindex", isActive ? "0" : "-1");
       });
-      ["leaderboard", "grades", "performance", "leetcode"].forEach(function (v) {
+      ALL_VIEWS.forEach(function (v) {
         document.getElementById(v + "-view").classList.toggle("hide", v !== view);
       });
+      var searchBar = document.querySelector(".search-bar");
+      if (searchBar) searchBar.classList.toggle("hide", view === "upcoming");
       applySearch();
       var labels = {
         leaderboard:  "Showing leaderboard",
         grades:       "Showing detailed grades",
         performance:  "Showing contest performance",
-        leetcode:     "Showing LeetCode practice"
+        leetcode:     "Showing LeetCode practice",
+        upcoming:     "Showing upcoming contests"
       };
       announce(labels[view]);
     }
@@ -742,7 +771,7 @@
           if (allData.error) throw new Error(allData.message || "Server error");
           if (allData.config) initTooltips(allData.config);
 
-          ["leaderboard", "grades", "performance", "leetcode"].forEach(function (view) {
+          ALL_VIEWS.forEach(function (view) {
             var data = allData[view];
             if (!data) return;
             data = visibleDataForView(view, data);
@@ -769,6 +798,7 @@
             document.getElementById("last-updated").textContent =
               "Last updated: " + allData.leaderboard.lastUpdated;
           }
+          if (currentView !== "leaderboard") switchTab(currentView);
           announce("Data loaded");
         })
         .catch(function (err) {
@@ -826,14 +856,24 @@
         var tr = document.createElement("tr");
         row.forEach(function (cell, i) {
           var td = document.createElement("td");
-          td.textContent = cell;
-          if (i === langCol) td.className = "lang-cell";
-          else if (textCols[i]) td.className = "text-cell";
-          if (i === rankCol) {
-            td.style.fontWeight = "700";
-            if (cell === 1) td.classList.add("rank-1");
-            else if (cell === 2) td.classList.add("rank-2");
-            else if (cell === 3) td.classList.add("rank-3");
+          if (cell && typeof cell === "object" && cell.href) {
+            var a = document.createElement("a");
+            a.href = cell.href;
+            a.target = "_blank";
+            a.rel = "noopener";
+            a.textContent = cell.text == null ? cell.href : cell.text;
+            td.appendChild(a);
+            td.className = "text-cell";
+          } else {
+            td.textContent = cell;
+            if (i === langCol) td.className = "lang-cell";
+            else if (textCols[i]) td.className = "text-cell";
+            if (i === rankCol) {
+              td.style.fontWeight = "700";
+              if (cell === 1) td.classList.add("rank-1");
+              else if (cell === 2) td.classList.add("rank-2");
+              else if (cell === 3) td.classList.add("rank-3");
+            }
           }
           tr.appendChild(td);
         });
@@ -851,6 +891,8 @@
 
       var sorted = data.rows.slice().sort(function (a, b) {
         var va = a[colIdx], vb = b[colIdx];
+        if (va && typeof va === "object" && "text" in va) va = va.text;
+        if (vb && typeof vb === "object" && "text" in vb) vb = vb.text;
         if (typeof va === "number" && typeof vb === "number")
           return state.asc ? va - vb : vb - va;
         va = String(va == null ? "" : va).toLowerCase();
