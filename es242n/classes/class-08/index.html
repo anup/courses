@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 8</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 8</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 08</p>
+      <h1>27 May 2026: Stacks and Queues</h1>
+      <p class="lead">Two linear data structures built on what you already know. Stacks are LIFO; queues are FIFO. Both have array-backed and linked-list-backed implementations, and both show up everywhere — function calls, expression evaluation, BFS, task scheduling.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="../../../es248/stacks.html">Stacks</a> — operations, implementations, and applications</li>
+        <li><a href="../../../es248/queues.html">Queues</a> — operations, circular array, linked list, and applications</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Stacks</h2>
+          <p>What a stack is, push/pop/top/isEmpty, array-backed and linked-list-backed implementations, classic applications: balanced parentheses, function calls, undo, expression evaluation.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Queues</h2>
+          <p>What a queue is, enqueue/dequeue/front/isEmpty, array-backed (circular buffer) and linked-list-backed implementations, classic applications: BFS, task scheduling, buffering. If we run long on stacks, queues spill into the start of the next class.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class practice</h2>
+      <p class="lead">Submit accepted solutions on <a href="https://judge.csbasics.in/">judge.csbasics.in</a>. Start with the implementation problems; the application problems build on them.</p>
+    </section>
+
+    <section class="agenda" aria-label="Practice list">
+      <article class="agenda-item">
+        <div class="marker">1</div>
+        <div>
+          <h2>Implement a stack — array-backed</h2>
+          <p>Operations: <code>push</code>, <code>pop</code>, <code>top</code>, <code>isEmpty</code>. Fixed capacity. Return / report stack overflow and underflow conditions explicitly.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">2</div>
+        <div>
+          <h2>Implement a stack — linked-list-backed</h2>
+          <p>Same operations as above. Push at the head; pop from the head. No capacity limit (apart from <code>malloc</code> failure).</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">3</div>
+        <div>
+          <h2>Balanced parentheses</h2>
+          <p>Given a string containing <code>( ) [ ] { }</code>, return whether it is balanced. Push opening brackets; pop and match on closing brackets.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">4</div>
+        <div>
+          <h2>Reverse a string using a stack</h2>
+          <p>Push every character onto a stack, then pop them all to build the reversed string. Demonstrates the LIFO property of a stack directly.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">5</div>
+        <div>
+          <h2>Implement a queue — array-backed (circular buffer)</h2>
+          <p>Operations: <code>enqueue</code>, <code>dequeue</code>, <code>front</code>, <code>isEmpty</code>. Use front and rear indices that wrap with <code>%</code>. Handle full vs empty distinction explicitly.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">6</div>
+        <div>
+          <h2>Implement a queue — linked-list-backed</h2>
+          <p>Same operations. Keep a <code>head</code> (front, dequeue from here) and a <code>tail</code> (rear, enqueue here). Both pointers move; remember to update <code>tail</code> when the queue becomes empty.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">7</div>
+        <div>
+          <h2>Reverse a queue using a stack</h2>
+          <p>Dequeue everything into a stack; pop the stack back into the queue. The first element dequeued ends up at the rear; the last ends up at the front. Reversed.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">★</div>
+        <div>
+          <h2>Stretch — evaluate a postfix expression</h2>
+          <p>Given a postfix expression like <code>"3 4 + 2 *"</code> (= 14), evaluate it using a stack. Push numbers; on an operator, pop two operands, apply, push the result. The final stack top is the answer.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Next class — Fri 29 May</h2>
+      <p class="lead"><strong>Recursion.</strong> A function reducing a problem to a smaller version of itself, until the smallest version is trivial. We'll work on linked lists, trees, the filesystem, expression trees — and revisit Monday's Josephus in two lines.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

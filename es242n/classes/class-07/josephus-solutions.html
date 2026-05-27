@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Day 7 — Reference Solutions</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.5em; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.0em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.5em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.5em;
+            line-height: 1.45;
+            width: 100%;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em 1.2em;
+            border-radius: 8px;
+            max-height: 540px;
+            overflow: auto;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.5em 0; }
+        .reveal li { margin: 0.25em 0; line-height: 1.45; }
+        .reveal p { margin: 0.4em 0; }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Day 7 — Reference Solutions</h1>
+    <h3 style="color:#7f8c8d;">Josephus three ways, plus reverse three ways</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Day 7 &middot; 25 May 2026</p>
+</section>
+
+<section>
+    <h2>Before you read these</h2>
+
+    <div class="warning-box">
+        These solutions are reference code. If you haven't yet attempted the array, pointer, and linked-list versions yourself, <strong>stop and code first</strong>. Reading the answer to a problem you haven't fought with is the fastest way to feel like you understood without actually having understood.
+    </div>
+
+    <p>Every solution here compiles cleanly with <code>gcc -std=c11 -Wall</code>. Verify with <code>n = 7, k = 3 &rarr; 4</code> and <code>n = 41, k = 3 &rarr; 31</code>.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     JOSEPHUS — ARRAY
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Josephus — array (mark and skip)</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int josephus_array(int n, int k) {
+    int alive[n];
+    for (int i = 0; i &lt; n; i++) alive[i] = 1;
+
+    int remaining = n;
+    int idx = -1;  // first ++ lands on index 0
+
+    while (remaining &gt; 1) {
+        int count = 0;
+        while (count &lt; k) {
+            idx = (idx + 1) % n;
+            if (alive[idx]) count++;
+        }
+        alive[idx] = 0;
+        remaining--;
+    }
+
+    for (int i = 0; i &lt; n; i++)
+        if (alive[i]) return i + 1;   // 1-indexed
+    return -1;
+}
+
+int main(void) {
+    int n, k;
+    scanf("%d %d", &amp;n, &amp;k);
+    printf("%d\n", josephus_array(n, k));
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+    <h2>What this version is doing</h2>
+
+    <ul>
+        <li><code>alive[i] = 1</code> for "still in the circle," <code>0</code> for "out."</li>
+        <li>The outer loop runs until one person remains.</li>
+        <li>The inner loop steps the index forward, wrapping with <code>%</code>. Only alive slots count toward <code>k</code>; dead ones are silently skipped.</li>
+        <li>After eliminating, we leave the index sitting on the eliminated slot. The next round's first <code>++</code> moves us off it.</li>
+    </ul>
+
+    <div class="info-box">VLA (<code>int alive[n]</code>) requires C99 or later. Use <code>gcc -std=c11</code>. If your platform refuses VLAs, fall back to <code>int alive[1000]</code> with a comment noting the bound.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     JOSEPHUS — POINTER
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Josephus — pointer arithmetic</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+int josephus_pointer(int n, int k) {
+    int alive[n];
+    int *start = alive;
+    int *end   = alive + n;
+
+    for (int *p = start; p &lt; end; p++) *p = 1;
+
+    int remaining = n;
+    int *cur = end - 1;  // first cur++ lands on start
+
+    while (remaining &gt; 1) {
+        int count = 0;
+        while (count &lt; k) {
+            cur++;
+            if (cur == end) cur = start;
+            if (*cur) count++;
+        }
+        *cur = 0;
+        remaining--;
+    }
+
+    for (int *p = start; p &lt; end; p++)
+        if (*p) return (int)(p - start) + 1;
+    return -1;
+}
+
+int main(void) {
+    int n, k;
+    scanf("%d %d", &amp;n, &amp;k);
+    printf("%d\n", josephus_pointer(n, k));
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+    <h2>What changed from the array version</h2>
+
+    <ul>
+        <li>No <code>[]</code> anywhere. <code>*cur</code> reads the flag; <code>*cur = 0</code> writes it.</li>
+        <li>Two anchor pointers: <code>start</code> and <code>end</code>. The circular wrap is now <code>if (cur == end) cur = start;</code>, not <code>%</code>.</li>
+        <li>Survivor's index is <code>cur - start</code>. Pointer subtraction returns the number of elements between, not bytes.</li>
+    </ul>
+
+    <div class="key-point">The algorithm is unchanged. We just rewrote "where am I" in the other dialect of C.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     JOSEPHUS — LINKED LIST
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Josephus — circular linked list</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct Node {
+    int pos;
+    struct Node *next;
+} Node;
+
+int josephus_list(int n, int k) {
+    Node *head = malloc(sizeof(Node));
+    head-&gt;pos = 1;
+    Node *tail = head;
+    for (int i = 2; i &lt;= n; i++) {
+        tail-&gt;next = malloc(sizeof(Node));
+        tail = tail-&gt;next;
+        tail-&gt;pos = i;
+    }
+    tail-&gt;next = head;          // close the loop
+
+    Node *prev = tail;
+    Node *cur  = head;
+
+    while (cur-&gt;next != cur) {
+        for (int s = 1; s &lt; k; s++) { prev = cur; cur = cur-&gt;next; }
+        prev-&gt;next = cur-&gt;next;
+        free(cur);
+        cur = prev-&gt;next;
+    }
+
+    int survivor = cur-&gt;pos;
+    free(cur);
+    return survivor;
+}
+
+int main(void) {
+    int n, k;
+    scanf("%d %d", &amp;n, &amp;k);
+    printf("%d\n", josephus_list(n, k));
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+    <h2>What changed from the array version</h2>
+
+    <ul>
+        <li>No "alive flag." There are no dead nodes — we removed them.</li>
+        <li>Walk <code>k - 1</code> steps each round. The <code>k</code>-th node is <code>cur</code>; unlink with <code>prev-&gt;next = cur-&gt;next</code> and <code>free(cur)</code>.</li>
+        <li>Loop exit: <code>cur-&gt;next == cur</code>. A node whose <code>next</code> points to itself is a one-element circular list.</li>
+    </ul>
+
+    <div class="info-box">Every <code>malloc</code> is matched by a <code>free</code>, including the survivor at the end. Quietly correct memory hygiene is worth more than a "no leaks" comment.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     REVERSE — ARRAY (INDEX)
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Reverse — array, indices</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void reverse_array(int *a, int n) {
+    int i = 0, j = n - 1;
+    while (i &lt; j) {
+        int t = a[i]; a[i] = a[j]; a[j] = t;
+        i++;
+        j--;
+    }
+}
+
+int main(void) {
+    int n;
+    scanf("%d", &amp;n);
+    int a[n];
+    for (int i = 0; i &lt; n; i++) scanf("%d", &amp;a[i]);
+
+    reverse_array(a, n);
+
+    for (int i = 0; i &lt; n; i++) printf("%d%c", a[i], i == n - 1 ? '\n' : ' ');
+    return 0;
+}</code></pre>
+
+    <p class="small">Two indices walk in from both ends, swap, meet in the middle. The array isn't shifted; only contents move.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     REVERSE — ARRAY (POINTER)
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Reverse — array, pointer arithmetic</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void reverse_pointer(int *a, int n) {
+    int *lo = a;
+    int *hi = a + n - 1;
+    while (lo &lt; hi) {
+        int t = *lo; *lo = *hi; *hi = t;
+        lo++;
+        hi--;
+    }
+}
+
+int main(void) {
+    int n;
+    scanf("%d", &amp;n);
+    int a[n];
+    for (int *p = a; p &lt; a + n; p++) scanf("%d", p);
+
+    reverse_pointer(a, n);
+
+    for (int *p = a; p &lt; a + n; p++) printf("%d%c", *p, p == a + n - 1 ? '\n' : ' ');
+    return 0;
+}</code></pre>
+
+    <p class="small">Same swap, same number of comparisons. The only difference is that <code>lo</code> and <code>hi</code> hold addresses, and the comparison <code>lo &lt; hi</code> is comparing addresses.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     REVERSE — LINKED LIST
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Reverse — singly linked list</h2>
+
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+typedef struct Node {
+    int val;
+    struct Node *next;
+} Node;
+
+Node *reverse_list(Node *head) {
+    Node *prev = NULL;
+    Node *cur  = head;
+    while (cur) {
+        Node *nxt = cur-&gt;next;
+        cur-&gt;next = prev;
+        prev = cur;
+        cur  = nxt;
+    }
+    return prev;   // new head
+}
+
+int main(void) {
+    int n;
+    scanf("%d", &amp;n);
+
+    Node *head = NULL, *tail = NULL;
+    for (int i = 0; i &lt; n; i++) {
+        Node *node = malloc(sizeof(Node));
+        scanf("%d", &amp;node-&gt;val);
+        node-&gt;next = NULL;
+        if (!head) head = node;
+        else tail-&gt;next = node;
+        tail = node;
+    }
+
+    head = reverse_list(head);
+
+    for (Node *p = head; p; p = p-&gt;next)
+        printf("%d%c", p-&gt;val, p-&gt;next ? ' ' : '\n');
+    return 0;
+}</code></pre>
+</section>
+
+<section>
+    <h2>Why the linked list can't "swap from both ends"</h2>
+
+    <ul>
+        <li>There is no random access. You cannot jump to position <code>n - 1</code> in one step; you'd have to walk there.</li>
+        <li>So instead of swapping, we <em>flip pointers</em>. Each node's <code>next</code> is rewritten to point at what used to be its predecessor.</li>
+        <li>Three pointers do the work: <code>prev</code> (where we came from), <code>cur</code> (where we are), <code>nxt</code> (saved so we don't lose the rest of the list when we overwrite <code>cur-&gt;next</code>).</li>
+        <li>When <code>cur</code> falls off the end, <code>prev</code> is the new head.</li>
+    </ul>
+
+    <div class="key-point">The data structure shaped the algorithm. The array let us swap; the linked list forced us to walk forward and rewrite pointers as we went.</div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>The point of all six solutions</h2>
+
+    <p>Six programs, two problems. Within each problem, the algorithm is the same and the data structure changes. Between the two problems, the technique changes (mark-and-skip vs. two-pointer swap vs. pointer flip) but the lesson is the same: <strong>the data structure shapes how the algorithm reads.</strong></p>
+
+    <div class="info-box">If two of your three Josephus implementations disagree, the bug is in whichever one disagrees with the other two. Use the agreeing pair as the oracle.</div>
+</section>
+
+<section class="center-content">
+    <h1>End of reference deck</h1>
+    <p class="small" style="margin-top:1.5em;">Back to the main deck: <a href="josephus-progression.html">One Problem, Three Implementations</a></p>
+    <p class="small" style="margin-top:3em; color:#95a5a6;">ES 242(N) &middot; Day 7 &middot; 25 May 2026</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        plugins: [ RevealHighlight ],
+        slideNumber: true,
+        transition: 'slide'
+    });
+</script>
+</body>
+</html>
