@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 9</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 9</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 09</p>
+      <h1>29 May 2026: Stacks and Queues — Applications</h1>
+      <p class="lead">We finish stacks and queues by putting them to work: postfix evaluation with a stack, and grid traversal with DFS (stack) and BFS (queue). Recursion — which is DFS using the hidden call stack — comes next class, on Monday.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="applications.html">Stacks and Queues in Action</a> — postfix, DFS/BFS on a grid, shortest path</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Postfix and the DFS/BFS idea</h2>
+          <p>Postfix (RPN) evaluation with a stack. Then the grid-traversal skeleton: the same code with a stack for "go deep" (DFS) and a queue for "go wide" (BFS).</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Grid traversal problems</h2>
+          <p>Flood fill and number of islands, solved both ways. Shortest path if time permits — where BFS earns its keep. Plus time on the practice lists below.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class problems</h2>
+      <p class="lead">Work these during class on <a href="https://judge.csbasics.in/">judge.csbasics.in</a> or LeetCode. Start with postfix; the grid problems build on the same traversal idea.</p>
+    </section>
+
+    <section class="agenda" aria-label="In-class problems">
+      <article class="agenda-item">
+        <div class="marker">1</div>
+        <div>
+          <h2>Evaluate postfix (RPN)</h2>
+          <p><a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/">LeetCode 150</a>. Push operands; on an operator, pop two, apply, push the result. The first value popped is the right operand — watch the order for <code>−</code> and <code>/</code>.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">2</div>
+        <div>
+          <h2>Flood fill</h2>
+          <p><a href="https://leetcode.com/problems/flood-fill/">LeetCode 733</a>. Recolour a connected region. Either DFS (stack) or BFS (queue) works — you only need to reach every cell.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">3</div>
+        <div>
+          <h2>Number of islands</h2>
+          <p><a href="https://leetcode.com/problems/number-of-islands/">LeetCode 200</a>. Count connected groups of land. Solve it once with a stack and once with a queue — notice the code barely changes.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">4</div>
+        <div>
+          <h2>Shortest path in a grid (if time)</h2>
+          <p><a href="https://leetcode.com/problems/shortest-path-in-binary-matrix/">LeetCode 1091</a>. This is where BFS earns its keep: explore in waves and the first arrival at the target is the shortest path. DFS does not give this.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — stacks: simulate with push and pop</h2>
+      <p class="lead">Scan the input once; push and pop to track state. The "second problem" family — more of the same idea.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/baseball-game/">682. Baseball Game</a> (Easy) — apply a record of operations to a stack of scores.</li>
+        <li><a href="https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/">1047. Remove All Adjacent Duplicates In String</a> (Easy) — pop when the top matches the current character.</li>
+        <li><a href="https://leetcode.com/problems/backspace-string-compare/">844. Backspace String Compare</a> (Easy) — <code>#</code> means backspace; build each string on a stack, then compare.</li>
+        <li><a href="https://leetcode.com/problems/make-the-string-great/">1544. Make The String Great</a> (Easy) — pop adjacent pairs that differ only in case.</li>
+        <li><a href="https://leetcode.com/problems/removing-stars-from-a-string/">2390. Removing Stars From a String</a> (Medium) — <code>*</code> pops the most recent character.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — stacks: matching and parentheses</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/valid-parentheses/">20. Valid Parentheses</a> (Easy) — the canonical matching problem.</li>
+        <li><a href="https://leetcode.com/problems/remove-outermost-parentheses/">1021. Remove Outermost Parentheses</a> (Easy) — track depth with a counter or stack.</li>
+        <li><a href="https://leetcode.com/problems/minimum-add-to-make-parentheses-valid/">921. Minimum Add to Make Parentheses Valid</a> (Medium) — count unmatched brackets.</li>
+        <li><a href="https://leetcode.com/problems/minimum-remove-to-make-valid-parentheses/">1249. Minimum Remove to Make Valid Parentheses</a> (Medium) — stack of indices to delete.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — grid traversal (DFS and BFS)</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/max-area-of-island/">695. Max Area of Island</a> (Medium) — like number of islands, but track the size of each region.</li>
+        <li><a href="https://leetcode.com/problems/number-of-enclaves/">1020. Number of Enclaves</a> (Medium) — land cells that cannot reach the boundary.</li>
+        <li><a href="https://leetcode.com/problems/surrounded-regions/">130. Surrounded Regions</a> (Medium) — flip regions not connected to the border.</li>
+        <li><a href="https://leetcode.com/problems/rotting-oranges/">994. Rotting Oranges</a> (Medium) — multi-source BFS; all rotten cells spread in waves at once.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — queues</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/number-of-recent-calls/">933. Number of Recent Calls</a> (Easy) — a queue as a sliding time window.</li>
+        <li><a href="https://leetcode.com/problems/design-circular-queue/">622. Design Circular Queue</a> (Medium) — extends today's array-backed circular buffer.</li>
+        <li><a href="https://leetcode.com/problems/dota2-senate/">649. Dota2 Senate</a> (Medium) — two queues taking turns.</li>
+        <li><a href="https://leetcode.com/problems/reveal-cards-in-increasing-order/">950. Reveal Cards In Increasing Order</a> (Medium) — simulate the reveal with a queue of indices.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Next class — Mon 1 June</h2>
+      <p class="lead"><strong>Recursion.</strong> A function reducing a problem to a smaller version of itself. The bridge from today: DFS with an explicit stack is exactly what recursion does with the hidden call stack.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Exam I</h2>
+      <p class="lead">Exam I is 3–5 June. Stacks, queues, and their applications are in scope, along with everything from the earlier weeks. Recursion basics are in scope; deeper recursion and sorting are post-mid-sem.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

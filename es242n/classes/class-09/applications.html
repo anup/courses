@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stacks and Queues — Applications</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --danger-color: #c0392b;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section { height: 100%; overflow-y: auto !important; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 460px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul, .reveal ol { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.7em;
+            width: 92%;
+        }
+        .reveal th { background: var(--main-color); color: white; padding: 0.5em 0.7em; }
+        .reveal td { padding: 0.4em 0.7em; border: 1px solid #dee2e6; }
+        .reveal tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+        .reveal .card {
+            background: var(--light-bg);
+            border-top: 4px solid var(--accent-color);
+            border-radius: 8px;
+            padding: 0.8em 1em;
+        }
+        .reveal .card h3, .reveal .card h4 { margin-top: 0; }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.82em; }
+
+        /* deck-specific: pseudocode (matches recursion deck) */
+        .reveal .pseudocode {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.9em 1.3em;
+            margin: 0.8em auto;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            line-height: 1.75;
+            color: var(--main-color);
+            border-radius: 6px;
+            max-width: 88%;
+            text-align: left;
+        }
+        .reveal .pseudocode .head { color: var(--accent-color); font-weight: 700; }
+        .reveal .pseudocode .kw { color: #8e44ad; font-weight: 600; }
+
+        /* deck-specific: postfix stack visualization */
+        .reveal .stack-steps {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.6em;
+            margin: 0.8em 0;
+            font-size: 0.7em;
+        }
+        .reveal .stack-step { text-align: center; }
+        .reveal .stack-step .tok {
+            font-family: 'Monaco', monospace;
+            font-weight: 700;
+            color: var(--accent-color);
+            margin-bottom: 0.3em;
+        }
+        .reveal .stack-col {
+            display: flex;
+            flex-direction: column-reverse;
+            border: 2px solid #95a5a6;
+            border-top: none;
+            border-radius: 0 0 6px 6px;
+            min-height: 130px;
+            padding: 3px;
+            gap: 3px;
+        }
+        .reveal .stack-cell {
+            background: var(--light-bg);
+            border: 1px solid var(--accent-color);
+            border-radius: 3px;
+            padding: 0.25em;
+            font-family: 'Monaco', monospace;
+            font-weight: 600;
+        }
+
+        /* deck-specific: grid */
+        .reveal .grid-svg .open   { fill: #ffffff; stroke: #bdc3c7; stroke-width: 1.5; }
+        .reveal .grid-svg .wall   { fill: #34495e; stroke: #2c3e50; stroke-width: 1.5; }
+        .reveal .grid-svg .start  { fill: #d4edda; stroke: var(--success-color); stroke-width: 3; }
+        .reveal .grid-svg .target { fill: #fdebd0; stroke: var(--warning-color); stroke-width: 3; }
+        .reveal .grid-svg .visited{ fill: #dae8fc; stroke: #2980b9; stroke-width: 1.5; }
+        .reveal .grid-svg text { font-family: 'Monaco', monospace; font-size: 15px; fill: var(--main-color); text-anchor: middle; font-weight: 600; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ─── TITLE ─── -->
+<section class="center-content">
+    <h1>Stacks and Queues in Action</h1>
+    <p style="margin-top:1.3em; color:#7f8c8d;">You built them. Now use them.</p>
+    <p style="margin-top:1.8em; font-size:0.72em; color:#95a5a6;">ES 242(N) &middot; 29 May 2026</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — POSTFIX
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Postfix — a stack does the arithmetic</p>
+</section>
+
+<section>
+    <h2>Two ways to write the same expression</h2>
+    <table>
+        <tr><th>Form</th><th>Example</th><th>Operator goes…</th></tr>
+        <tr><td>Infix</td><td><code>(3 + 4) &times; 2</code></td><td>between the operands</td></tr>
+        <tr><td>Postfix (RPN)</td><td><code>3 4 + 2 &times;</code></td><td>after the operands</td></tr>
+    </table>
+    <p style="margin-top:0.8em;">Postfix needs <strong>no parentheses</strong> and <strong>no precedence rules</strong>. The order of the tokens already says everything.</p>
+    <div class="info-box">RPN = Reverse Polish Notation. Calculators and compilers convert infix to postfix internally, because postfix is trivial to evaluate — with a stack.</div>
+</section>
+
+<section>
+    <h2>Evaluate <code>3 4 + 2 &times;</code> with a stack</h2>
+    <div class="stack-steps">
+        <div class="stack-step">
+            <div class="tok">read 3</div>
+            <div class="stack-col"><div class="stack-cell">3</div></div>
+            <div class="small">push</div>
+        </div>
+        <div class="stack-step">
+            <div class="tok">read 4</div>
+            <div class="stack-col"><div class="stack-cell">3</div><div class="stack-cell">4</div></div>
+            <div class="small">push</div>
+        </div>
+        <div class="stack-step">
+            <div class="tok">read +</div>
+            <div class="stack-col"><div class="stack-cell">7</div></div>
+            <div class="small">pop 4, pop 3,<br>push 3+4</div>
+        </div>
+        <div class="stack-step">
+            <div class="tok">read 2</div>
+            <div class="stack-col"><div class="stack-cell">7</div><div class="stack-cell">2</div></div>
+            <div class="small">push</div>
+        </div>
+        <div class="stack-step">
+            <div class="tok">read &times;</div>
+            <div class="stack-col"><div class="stack-cell">14</div></div>
+            <div class="small">pop 2, pop 7,<br>push 7&times;2</div>
+        </div>
+    </div>
+    <p class="big-q">Answer: the value left on the stack — <span class="highlight">14</span>.</p>
+</section>
+
+<section>
+    <h2>The rule</h2>
+    <div class="pseudocode">
+        <span class="head">eval_postfix(tokens):</span><br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">for each</span> token:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> token is a number: push it<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> token is an operator:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;b ← pop, &nbsp; a ← pop<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;push (a op b)<br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">return</span> pop
+    </div>
+    <div class="warning-box"><strong>Order matters for <code>−</code> and <code>/</code>:</strong> the first value popped is the right operand. For <code>5 3 −</code> you pop 3, then 5, and compute <code>5 − 3</code>, not <code>3 − 5</code>.</div>
+</section>
+
+<section>
+    <h2>Your turn — postfix</h2>
+    <div class="info-box">
+        <a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/">LeetCode 150 — Evaluate Reverse Polish Notation</a> (Medium).<br>
+        Tokens are an array of strings: numbers, or one of <code>+ − &times; /</code>.<br>
+        Evaluate and return the result.
+    </div>
+    <p>Verify on paper first: <code>["3","4","+","2","*"]</code> &rarr; 14. &nbsp; <code>["5","3","-"]</code> &rarr; 2.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — DFS AND BFS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Exploring a grid — DFS and BFS</p>
+</section>
+
+<section class="center-content">
+    <h2>A grid is just a 2D array of cells.</h2>
+    <svg class="grid-svg" viewBox="0 0 300 300" width="300" height="300">
+        <!-- 5x5 grid; walls at a few cells -->
+        <g>
+            <!-- row 0 -->
+            <rect class="start" x="2"   y="2"   width="56" height="56" rx="4"/>
+            <rect class="open"  x="60"  y="2"   width="56" height="56" rx="4"/>
+            <rect class="open"  x="118" y="2"   width="56" height="56" rx="4"/>
+            <rect class="wall"  x="176" y="2"   width="56" height="56" rx="4"/>
+            <rect class="open"  x="234" y="2"   width="56" height="56" rx="4"/>
+            <!-- row 1 -->
+            <rect class="open"  x="2"   y="60"  width="56" height="56" rx="4"/>
+            <rect class="wall"  x="60"  y="60"  width="56" height="56" rx="4"/>
+            <rect class="open"  x="118" y="60"  width="56" height="56" rx="4"/>
+            <rect class="wall"  x="176" y="60"  width="56" height="56" rx="4"/>
+            <rect class="open"  x="234" y="60"  width="56" height="56" rx="4"/>
+            <!-- row 2 -->
+            <rect class="open"  x="2"   y="118" width="56" height="56" rx="4"/>
+            <rect class="open"  x="60"  y="118" width="56" height="56" rx="4"/>
+            <rect class="open"  x="118" y="118" width="56" height="56" rx="4"/>
+            <rect class="open"  x="176" y="118" width="56" height="56" rx="4"/>
+            <rect class="open"  x="234" y="118" width="56" height="56" rx="4"/>
+            <!-- row 3 -->
+            <rect class="wall"  x="2"   y="176" width="56" height="56" rx="4"/>
+            <rect class="wall"  x="60"  y="176" width="56" height="56" rx="4"/>
+            <rect class="open"  x="118" y="176" width="56" height="56" rx="4"/>
+            <rect class="open"  x="176" y="176" width="56" height="56" rx="4"/>
+            <rect class="open"  x="234" y="176" width="56" height="56" rx="4"/>
+            <!-- row 4 -->
+            <rect class="open"  x="2"   y="234" width="56" height="56" rx="4"/>
+            <rect class="open"  x="60"  y="234" width="56" height="56" rx="4"/>
+            <rect class="open"  x="118" y="234" width="56" height="56" rx="4"/>
+            <rect class="wall"  x="176" y="234" width="56" height="56" rx="4"/>
+            <rect class="target" x="234" y="234" width="56" height="56" rx="4"/>
+        </g>
+        <text x="30" y="35">S</text>
+        <text x="262" y="267">T</text>
+    </svg>
+    <p class="small">White = open · dark = wall · green = start (S) · orange = target (T). From a cell you may step up, down, left, or right.</p>
+</section>
+
+<section>
+    <h2>One question, two strategies</h2>
+    <div class="two-col">
+        <div class="card" style="border-top-color: var(--accent-color);">
+            <h3 style="color: var(--accent-color);">DFS — go deep</h3>
+            <p>Follow one path as far as it goes. Hit a dead end? Back up and try another branch.</p>
+            <p><strong>Tool: a stack.</strong> Last cell in is the first explored next.</p>
+        </div>
+        <div class="card" style="border-top-color: var(--success-color);">
+            <h3 style="color: var(--success-color);">BFS — go wide</h3>
+            <p>Explore all cells one step away, then all cells two steps away, and so on — in waves.</p>
+            <p><strong>Tool: a queue.</strong> First cell in is the first explored next.</p>
+        </div>
+    </div>
+    <div class="key-point">Same algorithm skeleton. Swap the stack for a queue and the traversal order changes from "deep" to "wide." That is the entire difference.</div>
+</section>
+
+<section>
+    <h2>DFS — with a stack</h2>
+    <div class="pseudocode">
+        <span class="head">dfs(grid, start):</span><br>
+        &nbsp;&nbsp;&nbsp;push start onto a stack<br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">while</span> stack is not empty:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cell ← pop<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> cell already visited: skip<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mark cell visited<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> open neighbour: push it
+    </div>
+    <p>Pop the most recently pushed cell each time → you dive down one path before exploring siblings.</p>
+</section>
+
+<section>
+    <h2>BFS — with a queue</h2>
+    <div class="pseudocode">
+        <span class="head">bfs(grid, start):</span><br>
+        &nbsp;&nbsp;&nbsp;enqueue start<br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">while</span> queue is not empty:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;cell ← dequeue<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">if</span> cell already visited: skip<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mark cell visited<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">for each</span> open neighbour: enqueue it
+    </div>
+    <p>Dequeue the oldest cell each time → you finish everything one step away before going further.</p>
+    <div class="info-box">The two functions are identical except for one word: <strong>pop</strong> (stack) versus <strong>dequeue</strong> (queue). The container is the algorithm.</div>
+</section>
+
+<section>
+    <h2>Warm-up — Flood Fill</h2>
+    <div class="info-box">
+        <a href="https://leetcode.com/problems/flood-fill/">LeetCode 733 — Flood Fill</a> (Easy).<br>
+        Given a grid of colours and a start cell, recolour the whole connected region of the same colour (like the paint-bucket tool).
+    </div>
+    <p>Walk outward from the start cell to every same-colour neighbour, recolouring as you go. BFS (queue) or DFS (stack) — both work, because you only need to <em>reach</em> every cell, not reach it quickly.</p>
+</section>
+
+<section>
+    <h2>The classic — Number of Islands</h2>
+    <div class="info-box">
+        <a href="https://leetcode.com/problems/number-of-islands/">LeetCode 200 — Number of Islands</a> (Medium).<br>
+        Grid of <code>'1'</code> (land) and <code>'0'</code> (water). Count the connected groups of land.
+    </div>
+    <p>Scan the grid. Every time you find an unvisited land cell, that's a <strong>new island</strong> — run a traversal from it to mark the entire island visited, then keep scanning.</p>
+    <p>Solve it once with a stack (DFS), once with a queue (BFS). Same answer. Notice the code barely changes.</p>
+</section>
+
+<section class="center-content">
+    <h2>A hint about the next class.</h2>
+    <p class="big-q">DFS with an explicit stack is exactly what recursion does — using the hidden call stack.</p>
+    <p style="color:#7f8c8d;">When we do recursion next, remember this slide.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — SHORTEST PATH
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">When BFS beats DFS — shortest path</p>
+</section>
+
+<section>
+    <h2>Why a queue, not a stack?</h2>
+    <p>BFS explores in <strong>waves</strong>: all cells 1 step away, then 2 steps, then 3. So the <em>first</em> time BFS reaches the target, it has arrived by the <strong>shortest</strong> route.</p>
+    <p>DFS dives down one path first — it might reach the target by a long, winding route before ever trying the short one.</p>
+    <div class="key-point">If the question is "<em>can</em> I reach it?", either works. If the question is "<em>what is the shortest</em> way to reach it?", you need BFS — the queue is what makes the waves possible.</div>
+</section>
+
+<section>
+    <h2>Your turn — shortest path</h2>
+    <div class="info-box">
+        <a href="https://leetcode.com/problems/shortest-path-in-binary-matrix/">LeetCode 1091 — Shortest Path in Binary Matrix</a> (Medium).<br>
+        Grid of <code>0</code> (open) and <code>1</code> (blocked). Find the length of the shortest path from the top-left to the bottom-right, moving in 8 directions.
+    </div>
+    <p>BFS from the start. Track the distance with each cell as you enqueue it. The first time you dequeue the target, that distance is the answer.</p>
+</section>
+
+<!-- ─── RECAP ─── -->
+<section>
+    <h2>What we did</h2>
+    <ul>
+        <li><strong>Postfix:</strong> a stack evaluates arithmetic with no parentheses — push operands, apply operators by popping two.</li>
+        <li><strong>DFS:</strong> a stack explores deep. <strong>BFS:</strong> a queue explores wide. Same code, different container.</li>
+        <li><strong>Shortest path:</strong> BFS's waves mean the first arrival is the shortest — that's why the queue matters.</li>
+    </ul>
+    <div class="key-point">Pick the container that matches the job. Stack for "go deep" and for "undo the most recent thing." Queue for "fairly, in order" and for "shortest first."</div>
+</section>
+
+<section class="center-content">
+    <h1>Questions?</h1>
+    <p class="small" style="margin-top:2em; color:#95a5a6;">Next: recursion.</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        plugins: [ RevealHighlight ],
+        slideNumber: true,
+        transition: 'slide'
+    });
+</script>
+</body>
+</html>
