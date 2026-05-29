@@ -1,0 +1,11 @@
+# Private instructor materials — never commit or deploy
+*.private.html
+*.private.md
+
+# Day 9 solutions — kept local until you choose to share/deploy.
+# To publish: delete this line, then commit and push solutions.html.
+es242n/classes/class-09/solutions.html
+
+# Cheating / fairness talk — sensitive; kept local.
+# To publish: delete this line, then commit and push fairness.html.
+es242n/classes/class-09/fairness.html
