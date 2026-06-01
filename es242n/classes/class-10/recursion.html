@@ -624,6 +624,38 @@ return bsearch(a, mid + 1, hi, x);   // chose the right half</code></pre>
     </div>
 </section>
 
+<!-- trace a small game to derive the shift -->
+<section>
+    <h2>Why does it shrink? — trace <code>n = 4, k = 3</code></h2>
+
+    <div class="two-col" style="align-items:start;">
+        <div class="card center-content">
+            <h3>Step 1: first elimination</h3>
+            <svg class="circle-svg" viewBox="-100 -100 200 200" width="170" height="170" style="margin-top:0.3em;">
+                <circle cx="0"   cy="-80" r="20"/><text x="0"   y="-74">0</text>
+                <circle cx="80"  cy="0"   r="20"/><text x="80"  y="6">1</text>
+                <circle class="out" cx="0" cy="80" r="20"/><text x="0" y="86">2</text>
+                <circle cx="-80" cy="0"   r="20"/><text x="-80" y="6">3</text>
+            </svg>
+            <p class="small">Count 3 starting at 0 → land on 2 → eliminate.</p>
+        </div>
+        <div class="card">
+            <h3>Step 2: relabel for recursion</h3>
+            <p>Three people left: <code>0, 1, 3</code>. The next count starts at <strong>position 3</strong>.</p>
+            <p style="margin-top:0.3em;">To recurse, treat this as a fresh 3-person game with new labels:</p>
+            <table style="font-size:0.78em; width:auto; margin:0.3em 0;">
+                <tr><th>new label</th><th>old label</th></tr>
+                <tr><td>0</td><td>3</td></tr>
+                <tr><td>1</td><td>0</td></tr>
+                <tr><td>2</td><td>1</td></tr>
+            </table>
+            <p style="margin-top:0.2em;"><code>old = (new + 3) mod 4</code></p>
+        </div>
+    </div>
+
+    <div class="key-point" style="margin-top:0.4em;">Same shift for any <code>n</code> and <code>k</code>: <code>old = (new + k) mod n</code>. Below, the same idea for <code>n = 7</code>.</div>
+</section>
+
 <section>
     <h2>The label shift is the whole trick</h2>
     <table>
@@ -719,21 +751,91 @@ return bsearch(a, mid + 1, hi, x);   // chose the right half</code></pre>
     </div>
 </section>
 
+<!-- the search as a tree -->
+<section class="center-content">
+    <h2>The shape of the search</h2>
+    <p>Each permutation of <code>{1, 2, 3}</code> is a path from root to leaf in this tree:</p>
+
+    <svg viewBox="0 0 720 320" width="720" height="320" style="margin-top:0.4em;">
+        <!-- edges -->
+        <line x1="360" y1="50" x2="130" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="50" x2="360" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="50" x2="590" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <line x1="130" y1="135" x2="70"  y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="130" y1="135" x2="190" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="135" x2="300" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="135" x2="420" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="590" y1="135" x2="530" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="590" y1="135" x2="650" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <line x1="70"  y1="205" x2="70"  y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="190" y1="205" x2="190" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="300" y1="205" x2="300" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="420" y1="205" x2="420" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="530" y1="205" x2="530" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="650" y1="205" x2="650" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <!-- root -->
+        <rect x="320" y="20" width="80" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="360" y="40" text-anchor="middle" font-family="Monaco, monospace" font-size="14" fill="#2c3e50">[ ]</text>
+
+        <!-- level 1 -->
+        <rect x="100" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="130" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[1]</text>
+        <rect x="330" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="360" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[2]</text>
+        <rect x="560" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="590" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[3]</text>
+
+        <!-- level 2 -->
+        <rect x="35"  y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="70"  y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[1,2]</text>
+        <rect x="155" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="190" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[1,3]</text>
+        <rect x="265" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="300" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[2,1]</text>
+        <rect x="385" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="420" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[2,3]</text>
+        <rect x="495" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="530" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[3,1]</text>
+        <rect x="615" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="650" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[3,2]</text>
+
+        <!-- level 3 leaves -->
+        <rect x="30"  y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="70"  y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[1,2,3]</text>
+        <rect x="150" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="190" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[1,3,2]</text>
+        <rect x="260" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="300" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[2,1,3]</text>
+        <rect x="380" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="420" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[2,3,1]</text>
+        <rect x="490" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="530" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[3,1,2]</text>
+        <rect x="610" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="650" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[3,2,1]</text>
+    </svg>
+
+    <p style="color:#7f8c8d; margin-top:0.4em;">At each level we pick the next item from those <em>not yet used</em>. The 6 leaves are the 6 permutations.</p>
+</section>
+
 <section>
-    <h2>What state do we have to manage?</h2>
+    <h2>What do we need to remember?</h2>
+    <p>Look at any partial path in the tree — say <code>[ ] → [1] → [1, 3]</code>. To extend it one more step, the function needs to know:</p>
     <div class="two-col">
         <div class="card">
-            <h3>What we've picked so far</h3>
+            <h3>What's on the path so far</h3>
             <p class="mono">chosen[0..depth-1]</p>
-            <p class="small">The partial permutation being built.</p>
+            <p class="small">The partial permutation being built — the path from the root.</p>
         </div>
         <div class="card">
-            <h3>What's still available</h3>
+            <h3>What can still be picked</h3>
             <p class="mono">used[0..n-1]</p>
-            <p class="small">A flag per item — already in <code>chosen</code> or not.</p>
+            <p class="small">A flag per item — already on the path, or still available.</p>
         </div>
     </div>
-    <div class="info-box">This is what the data <em>doesn't</em> give you. You carry it yourself.</div>
+    <div class="info-box">At depth <code>d</code>, the recursive call picks the next position from items where <code>used[i] == 0</code>.</div>
 </section>
 
 <section>
