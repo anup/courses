@@ -529,6 +529,18 @@ while (!empty()) {
     <div class="info-box">The function still has a base case and a recursive call. What changes is where the smaller problem comes from.</div>
 </section>
 
+<!-- Revisit Friday's grid DFS through the new lens -->
+<section>
+    <h2>What about Friday's DFS?</h2>
+    <p>We showed grid DFS in Session 1 as the bridge from your hand-rolled stack to recursion. By the taxonomy on the previous slide, it actually belongs here.</p>
+    <ul>
+        <li>A grid is <em>not</em> recursive data — there is no smaller grid sitting inside it.</li>
+        <li>That is why DFS on a grid needs <code>visited[]</code>. The data has cycles; without external bookkeeping the recursion never terminates.</li>
+        <li>The recursion <em>shape</em> is still the same as for trees — one function, recursive calls on connected pieces. But the data does not shrink on its own, so we carry our own state.</li>
+    </ul>
+    <div class="key-point">Permutations (coming up) do the same thing — non-recursive data, external state. The recursion shape transfers; the bookkeeping is what's new.</div>
+</section>
+
 <!-- Binary search -->
 <section class="center-content">
     <h2>The cleanest generative example: binary search</h2>
