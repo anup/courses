@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recursion</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+            --danger-color: #c0392b;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; }
+        .reveal h1, .reveal h2, .reveal h3 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.5em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.5em; line-height: 1.3; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.4em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre { margin: 0.6em auto; box-shadow: 0 4px 12px rgba(0,0,0,0.12); border-radius: 8px; font-size: 0.58em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 0.9em 1.1em; border-radius: 8px; max-height: 420px; overflow: auto; }
+
+        .reveal .key-point, .reveal .info-box, .reveal .warning-box, .reveal .success-box {
+            padding: 0.7em 1.05em; margin: 0.7em 0; border-left: 4px solid; border-radius: 4px; font-size: 0.85em;
+        }
+        .reveal .key-point   { background: #fff3cd; border-color: #ffc107; }
+        .reveal .info-box    { background: #dae8fc; border-color: #2980b9; }
+        .reveal .warning-box { background: #ffe5e5; border-color: var(--warning-color); }
+        .reveal .success-box { background: #d4edda; border-color: var(--success-color); }
+
+        .reveal ul, .reveal ol { margin: 0.5em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal p { margin: 0.5em 0; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 92%; }
+        .reveal th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal td { padding: 0.45em 0.8em; border: 1px solid #dee2e6; }
+        .reveal tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.4em; font-weight: 600; color: var(--main-color);
+            text-align: center; margin: 0.8em 0; line-height: 1.35;
+        }
+        .small { font-size: 0.78em; color: #6c757d; }
+        .highlight { color: var(--accent-color); font-weight: 700; }
+        .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.85em; }
+
+        .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.7em 0; }
+        .three-col { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9em; margin: 0.7em 0; }
+        .card { background: var(--light-bg); border-top: 4px solid var(--accent-color); border-radius: 8px; padding: 0.7em 0.9em; }
+        .card h3, .card h4 { margin-top: 0; }
+
+        .pseudocode {
+            background: var(--light-bg); border-left: 4px solid var(--accent-color);
+            padding: 0.9em 1.3em; margin: 0.8em auto;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 0.9em; line-height: 1.7;
+            color: var(--main-color); border-radius: 6px; max-width: 88%; text-align: left;
+        }
+        .pseudocode .head { color: var(--accent-color); font-weight: 700; }
+        .pseudocode .kw   { color: #8e44ad; font-weight: 600; }
+
+        .list-svg .node-box  { fill: #fff; stroke: var(--accent-color); stroke-width: 2.2; }
+        .list-svg .node-faded{ fill: #ecf0f1; stroke: #bdc3c7; stroke-width: 2; }
+        .list-svg .arrow     { stroke: #34495e; stroke-width: 2.2; fill: none; }
+        .list-svg text       { font-family: 'Monaco', monospace; font-size: 16px; fill: var(--main-color); font-weight: 600; }
+        .list-svg .text-faded{ fill: #95a5a6; }
+
+        .tree-svg .node { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .tree-svg .edge { stroke: #95a5a6; stroke-width: 1.8; fill: none; }
+        .tree-svg text  { font-size: 16px; font-weight: 700; fill: var(--main-color); text-anchor: middle; }
+
+        .stack-frame {
+            background: var(--light-bg); border-left: 4px solid var(--accent-color);
+            padding: 0.45em 0.8em; margin: 0.22em 0;
+            font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; border-radius: 3px;
+        }
+        .stack-frame.active { border-left-color: var(--warning-color); background: #fff3cd; font-weight: 600; }
+        .stack-frame.done   { opacity: 0.42; border-left-color: var(--success-color); }
+
+        .grid-svg rect.open    { fill: #ffffff; stroke: #bdc3c7; stroke-width: 1.5; }
+        .grid-svg rect.wall    { fill: #34495e; stroke: #2c3e50; stroke-width: 1.5; }
+        .grid-svg rect.visited { fill: #dae8fc; stroke: #2980b9; stroke-width: 1.5; }
+        .grid-svg rect.start   { fill: #d4edda; stroke: var(--success-color); stroke-width: 3; }
+        .grid-svg text         { font-family: 'Monaco', monospace; font-size: 14px; font-weight: 700; fill: var(--main-color); text-anchor: middle; }
+
+        .circle-svg circle      { fill: #fff; stroke: var(--accent-color); stroke-width: 3; }
+        .circle-svg circle.out  { fill: #f8d7da; stroke: var(--danger-color); }
+        .circle-svg text        { font-family: 'Monaco', monospace; font-size: 16px; font-weight: 700; fill: var(--main-color); text-anchor: middle; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ════════════════════════════════════════════════
+     OPENER
+════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Recursion</h1>
+    <p style="margin-top:1.5em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Day 10 &middot; 1 June 2026</p>
+</section>
+
+<section>
+    <h2>What we'll do today</h2>
+    <ul>
+        <li>Start with the linked list you already know, and see why recursion fits it naturally.</li>
+        <li>Look at what the call stack does while a function calls itself.</li>
+        <li>Connect it back to the DFS you wrote on Friday.</li>
+        <li>End with a few problems that don't quite fit the list pattern — binary search, Josephus, permutations.</li>
+    </ul>
+    <p style="margin-top:1em; color:#7f8c8d;">Recursion is something most of you have seen. Today is mostly about making it feel a little less mysterious.</p>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     SESSION 1 — STRUCTURAL RECURSION
+════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Session 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Structural recursion — the smaller piece is already there</p>
+</section>
+
+<!-- The linked list is recursive -->
+<section class="center-content">
+    <h2>A linked list you already know</h2>
+    <svg class="list-svg" viewBox="0 0 700 110" width="700" height="110" style="margin-top:0.8em;">
+        <defs>
+            <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+                <path d="M0,0 L0,6 L6,3 z" fill="#34495e"/>
+            </marker>
+        </defs>
+        <rect class="node-box" x="20"  y="30" width="110" height="50" rx="5"/>
+        <text x="75"  y="62" text-anchor="middle">10</text>
+        <line class="arrow" x1="130" y1="55" x2="180" y2="55" marker-end="url(#arr)"/>
+        <rect class="node-box" x="180" y="30" width="110" height="50" rx="5"/>
+        <text x="235" y="62" text-anchor="middle">20</text>
+        <line class="arrow" x1="290" y1="55" x2="340" y2="55" marker-end="url(#arr)"/>
+        <rect class="node-box" x="340" y="30" width="110" height="50" rx="5"/>
+        <text x="395" y="62" text-anchor="middle">30</text>
+        <line class="arrow" x1="450" y1="55" x2="500" y2="55" marker-end="url(#arr)"/>
+        <rect class="node-box" x="500" y="30" width="110" height="50" rx="5"/>
+        <text x="555" y="62" text-anchor="middle">40</text>
+        <line class="arrow" x1="610" y1="55" x2="660" y2="55" marker-end="url(#arr)"/>
+        <text x="685" y="60" text-anchor="middle">NULL</text>
+    </svg>
+</section>
+
+<section class="center-content">
+    <h2>Cover the first node.</h2>
+    <svg class="list-svg" viewBox="0 0 700 110" width="700" height="110" style="margin-top:0.8em;">
+        <rect class="node-faded" x="20"  y="30" width="110" height="50" rx="5"/>
+        <text x="75"  y="62" class="text-faded" text-anchor="middle">10</text>
+        <line class="arrow" x1="130" y1="55" x2="180" y2="55" marker-end="url(#arr)" style="opacity:0.4"/>
+        <rect class="node-box" x="180" y="30" width="110" height="50" rx="5"/>
+        <text x="235" y="62" text-anchor="middle">20</text>
+        <line class="arrow" x1="290" y1="55" x2="340" y2="55" marker-end="url(#arr)"/>
+        <rect class="node-box" x="340" y="30" width="110" height="50" rx="5"/>
+        <text x="395" y="62" text-anchor="middle">30</text>
+        <line class="arrow" x1="450" y1="55" x2="500" y2="55" marker-end="url(#arr)"/>
+        <rect class="node-box" x="500" y="30" width="110" height="50" rx="5"/>
+        <text x="555" y="62" text-anchor="middle">40</text>
+        <line class="arrow" x1="610" y1="55" x2="660" y2="55" marker-end="url(#arr)"/>
+        <text x="685" y="60" text-anchor="middle">NULL</text>
+    </svg>
+    <p class="big-q" style="margin-top:0.8em;">What's left? Is it still a list?</p>
+</section>
+
+<section class="center-content">
+    <h2>Yes — a shorter list.</h2>
+    <p class="big-q" style="margin-top:1em;">A list is either empty,<br>or a node followed by a (smaller) list.</p>
+    <p style="margin-top:1em; color:#7f8c8d;">The word "list" appears on both sides. That is what "recursive data" means.</p>
+</section>
+
+<section>
+    <h2>The self-reference is in the type</h2>
+    <pre><code class="language-c">struct Node {
+    int data;
+    struct Node *next;     // a pointer to another Node
+};</code></pre>
+    <div class="info-box">
+        <code>next</code> is not a different kind of thing. It points to the same kind of thing — the rest of the list.
+    </div>
+</section>
+
+<section class="center-content">
+    <h2>Function follows data.</h2>
+    <p class="big-q" style="margin-top:1em;">When the data is "thing + smaller thing,"<br>the function tends to be "do one piece + call on smaller thing."</p>
+</section>
+
+<!-- Worked example: sumList -->
+<section>
+    <h2>Try it by hand — sum a list</h2>
+    <p>Suppose we want a function <code>sumList(head)</code> that returns the sum of all values in the list.</p>
+
+    <svg class="list-svg" viewBox="0 0 520 90" width="520" height="90" style="margin:0.4em auto; display:block;">
+        <rect class="node-box" x="20"  y="20" width="90" height="50" rx="5"/>
+        <text x="65"  y="52" text-anchor="middle">7</text>
+        <line class="arrow" x1="110" y1="45" x2="150" y2="45" marker-end="url(#arr)"/>
+        <rect class="node-box" x="150" y="20" width="90" height="50" rx="5"/>
+        <text x="195" y="52" text-anchor="middle">3</text>
+        <line class="arrow" x1="240" y1="45" x2="280" y2="45" marker-end="url(#arr)"/>
+        <rect class="node-box" x="280" y="20" width="90" height="50" rx="5"/>
+        <text x="325" y="52" text-anchor="middle">5</text>
+        <line class="arrow" x1="370" y1="45" x2="410" y2="45" marker-end="url(#arr)"/>
+        <text x="440" y="50" text-anchor="middle">NULL</text>
+    </svg>
+    <p style="text-align:center;">For this list the answer is <strong>7 + 3 + 5 = 15</strong>.</p>
+
+    <p style="margin-top:0.6em;">Same function on shorter lists:</p>
+    <pre><code>sumList(NULL)                =  0
+sumList(5 -&gt; NULL)           =  5
+sumList(3 -&gt; 5 -&gt; NULL)       =  3 + 5      =  8
+sumList(7 -&gt; 3 -&gt; 5 -&gt; NULL)  =  7 + 3 + 5  = 15</code></pre>
+    <div class="key-point">The longer list's answer is <code>head-&gt;data + sumList(rest)</code>. That's the recursive case staring back at you.</div>
+</section>
+
+<section>
+    <h2>So the function writes itself</h2>
+    <pre><code class="language-c">int sumList(struct Node *head) {
+    if (head == NULL) return 0;            // base case
+    return head-&gt;data + sumList(head-&gt;next); // smaller call
+}</code></pre>
+    <p>Two pieces: the smallest case, and the smaller call. Nothing else.</p>
+</section>
+
+<!-- The leap -->
+<section class="center-content">
+    <h2>The hardest move: <span class="highlight">trust the call</span></h2>
+    <p style="margin-top:1em;">When you write <code>sumList</code>, you have not finished writing it yet.</p>
+    <p>You must <strong>assume</strong> that <code>sumList(head-&gt;next)</code> already works.</p>
+    <p>Once you assume that, the current line is obvious: add this node's value to it.</p>
+    <div class="key-point" style="margin-top:1em;">Don't simulate the whole tree of calls in your head. Trust one call. That's the leap.</div>
+</section>
+
+<!-- One datatype, four problems -->
+<section class="center-content">
+    <h2>One datatype, four problems</h2>
+    <p style="color:#7f8c8d; margin-top:1em;">Same skeleton. Only the combining line changes.</p>
+</section>
+
+<section>
+    <h2>Count nodes</h2>
+    <pre><code class="language-c">int countNodes(struct Node *head) {
+    if (head == NULL) return 0;
+    return 1 + countNodes(head-&gt;next);
+}</code></pre>
+    <p>One per node. Trust the rest.</p>
+</section>
+
+<section>
+    <h2>Find a value</h2>
+    <pre><code class="language-c">int findValue(struct Node *head, int x) {
+    if (head == NULL) return 0;
+    if (head-&gt;data == x) return 1;
+    return findValue(head-&gt;next, x);
+}</code></pre>
+    <p>Check this node, or trust the rest.</p>
+</section>
+
+<section>
+    <h2>Print forward</h2>
+    <pre><code class="language-c">void printForward(struct Node *head) {
+    if (head == NULL) return;
+    printf("%d ", head-&gt;data);
+    printForward(head-&gt;next);
+}</code></pre>
+    <p>Print this node. Then print the rest.</p>
+    <p class="small">For <code>10 -&gt; 20 -&gt; 30</code> the output is <code>10 20 30</code>.</p>
+</section>
+
+<section>
+    <h2>Print reverse — move ONE line</h2>
+    <pre><code class="language-c">void printReverse(struct Node *head) {
+    if (head == NULL) return;
+    printReverse(head-&gt;next);    // ← moved up
+    printf("%d ", head-&gt;data);
+}</code></pre>
+    <div class="success-box">Same code, same recursion, same list. Only the <code>printf</code> moved.</div>
+    <p class="small">For <code>10 -&gt; 20 -&gt; 30</code> the output is now <code>30 20 10</code>.</p>
+</section>
+
+<section>
+    <h2>Why does reverse work? The stack remembers.</h2>
+    <div class="stack-frame">printReverse(10): waiting for printReverse(20) to finish, then print 10</div>
+    <div class="stack-frame">printReverse(20): waiting for printReverse(30) to finish, then print 20</div>
+    <div class="stack-frame">printReverse(30): waiting for printReverse(NULL) to finish, then print 30</div>
+    <div class="stack-frame active">printReverse(NULL): base case, returns</div>
+    <p style="margin-top:0.8em;">The deepest frame returns first. Each frame above it prints <em>after</em> its child returned. LIFO order → reverse output.</p>
+    <div class="key-point">Work <strong>before</strong> the recursive call → forward order. Work <strong>after</strong> the recursive call → reverse order.</div>
+</section>
+
+<!-- Reverse a list recursively — structural, harder combine -->
+<section>
+    <h2>Reverse a list — same shape, harder combine</h2>
+    <p>Same skeleton as <code>sumList</code>: base case at <code>NULL</code>, recursive call on <code>head-&gt;next</code>. What changes is the <strong>combine step</strong>.</p>
+    <pre><code class="language-c">struct Node *reverseRec(struct Node *head) {
+    if (head == NULL || head-&gt;next == NULL) return head;
+
+    struct Node *newHead = reverseRec(head-&gt;next);   // trust: rest is reversed
+    head-&gt;next-&gt;next = head;                         // old "next" now points BACK to me
+    head-&gt;next = NULL;                               // I'm the new tail
+    return newHead;
+}</code></pre>
+    <div class="key-point">
+        <strong>Trust the call.</strong> <code>reverseRec(head-&gt;next)</code> returns the head of the already-reversed sublist. Don't simulate it. Just rewire the current node onto the end.
+    </div>
+    <p class="small">Verdict: <strong>structural</strong> recursion — the smaller piece is right there in the data. Only the combine does pointer surgery instead of value math.</p>
+</section>
+
+<!-- Address the obvious question -->
+<section>
+    <h2>"Wait — couldn't we just use a loop?"</h2>
+    <p>Yes. For <code>count</code>, <code>sum</code>, <code>find</code>, <code>printForward</code> — a <code>while</code> loop does the same job:</p>
+    <ul>
+        <li>Iteration uses <strong>O(1)</strong> extra space.</li>
+        <li>Recursion uses <strong>O(n)</strong> stack frames.</li>
+    </ul>
+    <p>For straight forward traversal on a list, iteration is the better engineering choice. Fair question.</p>
+
+    <p style="margin-top:0.8em;"><strong>So why teach it on lists at all?</strong></p>
+    <ul>
+        <li>The <em>template</em> (base case → smaller call → combine) is easiest to learn on data you already know.</li>
+        <li>Recursion has its own wins, where iteration gets awkward:
+            <ul>
+                <li>Work that happens <em>after</em> the call returns — <code>printReverse</code>, <code>reverseRec</code>. No extra data structure needed; the call stack is the stack.</li>
+                <li>Branched data — trees, search trees. Same template. Iteration needs you to manage a stack by hand, like Friday.</li>
+            </ul>
+        </li>
+    </ul>
+
+    <div class="key-point">The list is the warm-up. The wins start at <code>printReverse</code> and grow from there.</div>
+</section>
+
+<!-- Trees -->
+<section class="center-content">
+    <h2>A tree — same idea, two smaller pieces</h2>
+    <div style="display:flex; align-items:center; justify-content:center; gap:2em; margin-top:1em;">
+        <svg class="tree-svg" viewBox="0 0 380 220" width="320" height="200">
+            <line class="edge" x1="190" y1="40" x2="110" y2="110"/>
+            <line class="edge" x1="190" y1="40" x2="270" y2="110"/>
+            <line class="edge" x1="110" y1="110" x2="60"  y2="180"/>
+            <line class="edge" x1="110" y1="110" x2="160" y2="180"/>
+            <line class="edge" x1="270" y1="110" x2="220" y2="180"/>
+            <line class="edge" x1="270" y1="110" x2="320" y2="180"/>
+            <circle class="node" cx="190" cy="40"  r="22"/>
+            <circle class="node" cx="110" cy="110" r="22"/>
+            <circle class="node" cx="270" cy="110" r="22"/>
+            <circle class="node" cx="60"  cy="180" r="22"/>
+            <circle class="node" cx="160" cy="180" r="22"/>
+            <circle class="node" cx="220" cy="180" r="22"/>
+            <circle class="node" cx="320" cy="180" r="22"/>
+            <text x="190" y="46">7</text>
+            <text x="110" y="116">3</text>
+            <text x="270" y="116">9</text>
+            <text x="60"  y="186">1</text>
+            <text x="160" y="186">5</text>
+            <text x="220" y="186">8</text>
+            <text x="320" y="186">12</text>
+        </svg>
+    </div>
+    <p style="margin-top:0.5em; color:#7f8c8d;">A tree is empty, or a node with a left subtree and a right subtree.</p>
+</section>
+
+<section>
+    <h2>Sum a tree — two recursive calls</h2>
+    <pre><code class="language-c">struct TreeNode {
+    int data;
+    struct TreeNode *left;
+    struct TreeNode *right;
+};
+
+int treeSum(struct TreeNode *t) {
+    if (t == NULL) return 0;
+    return t-&gt;data + treeSum(t-&gt;left) + treeSum(t-&gt;right);
+}</code></pre>
+    <p>One self-reference in the data → one recursive call (list). Two self-references in the data → two recursive calls (tree). Function follows data.</p>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     THE DFS BRIDGE
+════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.4em;">The bridge from Friday</h1>
+    <p style="color:#7f8c8d;">You already wrote the call stack. By hand. With <code>push</code> and <code>pop</code>.</p>
+</section>
+
+<section>
+    <h2>Friday — DFS with an explicit stack</h2>
+    <pre><code class="language-c">visited[start] = 1;
+push(start);
+while (!empty()) {
+    Cell u = pop();
+    for each neighbour v of u:
+        if (!visited[v]) {
+            visited[v] = 1;       // mark BEFORE push
+            push(v);
+        }
+}</code></pre>
+</section>
+
+<section>
+    <h2>Today — DFS with recursion</h2>
+    <pre><code class="language-c">void dfs(Cell u) {
+    visited[u] = 1;               // mark on entry
+    for each neighbour v of u:
+        if (!visited[v]) {
+            dfs(v);
+        }
+}</code></pre>
+    <div class="success-box">
+        Same algorithm. No explicit stack. The <strong>call stack</strong> does what your hand-rolled stack did.
+    </div>
+</section>
+
+<section>
+    <h2>Same algorithm. Different where the stack lives.</h2>
+    <table>
+        <tr><th>Friday (iterative)</th><th>Today (recursive)</th></tr>
+        <tr><td>Stack of <code>Cell</code> values you control.</td><td>Stack of function frames the language controls.</td></tr>
+        <tr><td><code>push(v)</code> adds a frame.</td><td><code>dfs(v)</code> adds a frame.</td></tr>
+        <tr><td><code>pop()</code> removes one.</td><td>A <code>return</code> removes one.</td></tr>
+        <tr><td>You wrote it.</td><td>The compiler wrote it.</td></tr>
+    </table>
+</section>
+
+<!-- Marking sub-sequence -->
+<section class="center-content">
+    <h2>Wait — where did the marking move to?</h2>
+    <p style="color:#7f8c8d; margin-top:0.8em;">Look again at the two versions. The <code>visited[...] = 1</code> line is in a different place.</p>
+</section>
+
+<section>
+    <h2>Friday: mark BEFORE the push.</h2>
+    <pre><code class="language-c">if (!visited[v]) {
+    visited[v] = 1;       // ← here, before push
+    push(v);
+}</code></pre>
+    <div class="info-box">Invariant: <strong>anything in the stack is already marked.</strong> A cell never gets pushed twice.</div>
+</section>
+
+<section>
+    <h2>Today: mark on entry.</h2>
+    <pre><code class="language-c">void dfs(Cell u) {
+    visited[u] = 1;       // ← here, first line of the function
+    for each neighbour v of u:
+        if (!visited[v]) {
+            dfs(v);
+        }
+}</code></pre>
+    <div class="info-box">Invariant: <strong>anything being processed is already marked.</strong> The function's first action is to mark its own cell.</div>
+</section>
+
+<section>
+    <h2>Same moment, different place to write it.</h2>
+    <table>
+        <tr><th>Mechanism</th><th>Where you mark</th><th>Who owns the mark</th></tr>
+        <tr><td>Explicit stack</td><td>Just before <code>push(v)</code></td><td>The pusher marks the cell.</td></tr>
+        <tr><td>Recursion</td><td>First line of <code>dfs(u)</code></td><td>The function marks its own cell.</td></tr>
+    </table>
+    <div class="key-point">
+        The function call IS the push. So "mark before push" becomes "mark on entry." The bookkeeping moves from the caller's hands to the callee's.
+    </div>
+</section>
+
+<section>
+    <h2>What if we forget?</h2>
+    <pre><code class="language-c">void dfs(Cell u) {
+    // (forgot: visited[u] = 1)
+    for each neighbour v of u:
+        dfs(v);
+}</code></pre>
+    <p>Two adjacent cells <code>A — B</code>:</p>
+    <ul style="font-size:0.85em;">
+        <li><code>dfs(A)</code> calls <code>dfs(B)</code> (B is A's neighbour).</li>
+        <li><code>dfs(B)</code> calls <code>dfs(A)</code> (A is B's neighbour).</li>
+        <li><code>dfs(A)</code> calls <code>dfs(B)</code> again. And again. And again.</li>
+    </ul>
+    <div class="warning-box">
+        The mark is what makes recursion <em>stop</em>. Without it, the call stack grows forever — same kind of bug as forgetting the base case.
+    </div>
+</section>
+
+<section class="center-content">
+    <h2>The deal</h2>
+    <p style="margin-top:1em;">In the recursive version, each call <strong>owns</strong> its cell:</p>
+    <ul style="display:inline-block; text-align:left; margin-top:0.5em;">
+        <li>It marks itself.</li>
+        <li>It processes itself.</li>
+        <li>It delegates to its neighbours by calling <code>dfs(v)</code>.</li>
+    </ul>
+    <p style="margin-top:1em; color:#7f8c8d;">The caller just writes <code>dfs(v)</code> and walks away. That's "trust the call."</p>
+</section>
+
+<!-- Session 1 recap -->
+<section class="center-content">
+    <h2>Session 1 in three lines</h2>
+    <div class="key-point" style="font-size:1em; margin-top:1em;">
+        <p>1. Trust the call. Assume the smaller call works; build on it.</p>
+        <p>2. Code follows the shape of the data. List → one recursive call. Tree → two.</p>
+        <p>3. The call stack is the stack you wrote Friday. The language manages it for you.</p>
+    </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     SESSION 2 — GENERATIVE RECURSION
+════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Session 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Generative recursion — when you choose the smaller piece</p>
+</section>
+
+<section>
+    <h2>Two kinds of recursion</h2>
+    <table>
+        <tr><th></th><th>Structural (Session 1)</th><th>Generative (today)</th></tr>
+        <tr><td>Smaller piece</td><td>Already in the data</td><td>You construct it</td></tr>
+        <tr><td>Examples</td><td>List, tree, expression</td><td>Binary search, Josephus, permutations</td></tr>
+        <tr><td>Progress</td><td>Automatic — pointer / subtree</td><td>You must prove the call is smaller</td></tr>
+    </table>
+    <div class="info-box">The function still has a base case and a recursive call. What changes is where the smaller problem comes from.</div>
+</section>
+
+<!-- Binary search -->
+<section class="center-content">
+    <h2>The cleanest generative example: binary search</h2>
+    <p style="margin-top:1em; color:#7f8c8d;">Sorted array. Find <code>x</code>. The smaller piece is the half you pick.</p>
+</section>
+
+<section>
+    <h2>Binary search — both ways</h2>
+
+    <p style="margin-bottom:0.2em;"><strong>Iterative</strong> (what most of you have written before):</p>
+    <pre><code class="language-c">int bsearch(int a[], int n, int x) {
+    int lo = 0, hi = n - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (a[mid] == x) return mid;
+        if (x &lt; a[mid]) hi = mid - 1;
+        else            lo = mid + 1;
+    }
+    return -1;
+}</code></pre>
+
+    <p style="margin-bottom:0.2em;"><strong>Recursive</strong>:</p>
+    <pre><code class="language-c">int bsearch(int a[], int lo, int hi, int x) {
+    if (lo &gt; hi) return -1;                       // base: empty interval
+    int mid = lo + (hi - lo) / 2;
+    if (a[mid] == x) return mid;
+    if (x &lt; a[mid]) return bsearch(a, lo, mid - 1, x);
+    return                bsearch(a, mid + 1, hi, x);
+}</code></pre>
+</section>
+
+<section>
+    <h2>So why do it recursively?</h2>
+    <p>Both versions work. Both are <code>O(log n)</code> time. Iteration is <code>O(1)</code> space; recursion is <code>O(log n)</code> (one frame per halving). For binary search alone, iteration is the leaner choice.</p>
+
+    <p style="margin-top:0.8em;">Look at the recursive code again. You can <em>see</em> the smaller piece being chosen:</p>
+    <pre><code class="language-c">return bsearch(a, lo, mid - 1, x);   // chose the left half
+return bsearch(a, mid + 1, hi, x);   // chose the right half</code></pre>
+    <p>That's <strong>generative recursion</strong> made visible. The array doesn't hand you the smaller range — you pick it. That same pattern — <em>split, recurse on the smaller piece, combine</em> — is what powers:</p>
+    <ul>
+        <li>Merge sort and quicksort.</li>
+        <li>Binary search trees (search, insert, delete).</li>
+        <li>Divide-and-conquer in general.</li>
+    </ul>
+    <div class="key-point">For binary search alone, iteration is fine. The recursive form is the seed pattern for what's coming after the mid-sem.</div>
+</section>
+
+<section class="center-content">
+    <h2>Only one branch lives at a time</h2>
+    <p style="margin-top:0.6em;">At every call, you discard half the interval. After at most <code>log₂(n)</code> calls, the interval is empty.</p>
+    <div class="key-point" style="margin-top:0.8em;">Depth <code>O(log n)</code>, work <code>O(log n)</code>. The recursion tree is a single path, not a fanning tree.</div>
+</section>
+
+<!-- Josephus -->
+<section class="center-content">
+    <h1 style="font-size:2.4em;">Josephus — Monday's payoff</h1>
+    <p style="color:#7f8c8d;">Iterative on Monday. Two lines today.</p>
+</section>
+
+<section>
+    <h2>Josephus, briefly</h2>
+    <div class="two-col">
+        <div class="card center-content">
+            <h3><code>n = 7, k = 3</code></h3>
+            <svg class="circle-svg" viewBox="-120 -120 240 240" width="220" height="220">
+                <circle cx="0"   cy="-90" r="20"/><text x="0"  y="-84">1</text>
+                <circle cx="70"  cy="-56" r="20"/><text x="70" y="-50">2</text>
+                <circle class="out" cx="88" cy="20" r="20"/><text x="88" y="26">3</text>
+                <circle cx="39"  cy="81"  r="20"/><text x="39" y="87">4</text>
+                <circle cx="-39" cy="81"  r="20"/><text x="-39" y="87">5</text>
+                <circle cx="-88" cy="20"  r="20"/><text x="-88" y="26">6</text>
+                <circle cx="-70" cy="-56" r="20"/><text x="-70" y="-50">7</text>
+            </svg>
+        </div>
+        <div class="card">
+            <h3>After person 3 leaves</h3>
+            <p>The next count starts at person 4.</p>
+            <p>What remains is a <strong>6-person Josephus game</strong> — but the labels are shifted.</p>
+            <p class="small">Notice: the smaller game isn't physically there in your data. You reason it.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>The label shift is the whole trick</h2>
+    <table>
+        <tr><th>new label (after one elimination)</th><th>old label (in the n-game)</th></tr>
+        <tr><td>0</td><td>3</td></tr>
+        <tr><td>1</td><td>4</td></tr>
+        <tr><td>2</td><td>5</td></tr>
+        <tr><td>3</td><td>6</td></tr>
+        <tr><td>4</td><td>0</td></tr>
+        <tr><td>5</td><td>1</td></tr>
+    </table>
+    <p class="big-q" style="margin-top:0.5em;">old = (new + k) mod n</p>
+</section>
+
+<!-- bridge from insight to code -->
+<section>
+    <h2>From the insight to a recursive function</h2>
+
+    <p>Give the answer a name: let <code>josephus(n, k)</code> = the survivor's (0-indexed) label in an <code>n</code>-person game with skip <code>k</code>.</p>
+
+    <p style="margin-top:0.6em;">Now translate each piece of the insight into that name:</p>
+    <div class="pseudocode" style="line-height:1.9;">
+        <strong>new</strong> = the survivor in the <em>smaller</em> game<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; = <code>josephus(n − 1, k)</code><br><br>
+        <strong>old</strong> = (new + k) mod n<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; = <code>(josephus(n − 1, k) + k) % n</code><br><br>
+        <strong>base case:</strong> <code>josephus(1, k)</code> = 0<br>
+        &nbsp;&nbsp;&nbsp;&nbsp; (with 1 person, the survivor is at index 0 — trivially)
+    </div>
+
+    <div class="key-point">Three lines of arithmetic become a recursive function. We never wrote a loop or simulated an elimination — we just named the smaller game and reused the relation.</div>
+</section>
+
+<section>
+    <h2>Two lines.</h2>
+    <pre><code class="language-c">int josephus(int n, int k) {
+    if (n == 1) return 0;                       // base: 1 person, index 0
+    return (josephus(n - 1, k) + k) % n;        // (new + k) mod n
+}</code></pre>
+    <p>Read the second line as the insight: take the smaller game's answer (<code>new</code>), shift by <code>k</code>, wrap with <code>mod n</code> to get this game's answer (<code>old</code>).</p>
+    <p class="small">Print <code>josephus(n, k) + 1</code> if your answer should be 1-indexed.</p>
+</section>
+
+<section>
+    <h2>Trace <code>n = 7, k = 3</code></h2>
+    <table>
+        <tr><th>n</th><th>(josephus(n-1) + k) mod n</th><th>survivor (0-indexed)</th></tr>
+        <tr><td>1</td><td>base</td><td>0</td></tr>
+        <tr><td>2</td><td>(0 + 3) % 2</td><td>1</td></tr>
+        <tr><td>3</td><td>(1 + 3) % 3</td><td>1</td></tr>
+        <tr><td>4</td><td>(1 + 3) % 4</td><td>0</td></tr>
+        <tr><td>5</td><td>(0 + 3) % 5</td><td>3</td></tr>
+        <tr><td>6</td><td>(3 + 3) % 6</td><td>0</td></tr>
+        <tr><td>7</td><td>(0 + 3) % 7</td><td><strong>3</strong></td></tr>
+    </table>
+    <p class="big-q">1-indexed answer: <code>4</code> — same as Monday's iterative version.</p>
+</section>
+
+<!-- Permutations -->
+<section class="center-content">
+    <h1 style="font-size:2.4em;">Permutations — bookkeeping enters</h1>
+    <p style="color:#7f8c8d;">The new skill today is not recursion. It is <strong>managing state across recursive calls</strong>.</p>
+</section>
+
+<section>
+    <h2>The problem</h2>
+    <p>Given <code>{1, 2, 3}</code>, print all six permutations:</p>
+    <pre><code>1 2 3
+1 3 2
+2 1 3
+2 3 1
+3 1 2
+3 2 1</code></pre>
+    <p>The recursion is: <em>"pick one item for the current position; recurse to fill the rest."</em></p>
+</section>
+
+<!-- iterative permutations — the motivating contrast -->
+<section>
+    <h2>What does this look like iteratively?</h2>
+    <p>For just <code>{1, 2, 3}</code> — three positions to fill, no repeats:</p>
+    <pre><code class="language-c">for (int i = 0; i &lt; 3; i++) {
+    for (int j = 0; j &lt; 3; j++) {
+        if (j == i) continue;
+        for (int k = 0; k &lt; 3; k++) {
+            if (k == i || k == j) continue;
+            printf("%d %d %d\n", arr[i], arr[j], arr[k]);
+        }
+    }
+}</code></pre>
+    <p>Three items → three nested loops. Eight items → <strong>eight</strong> nested loops. <code>n</code> items → <code>n</code> nested loops — and you cannot write that many loops if <code>n</code> isn't known at compile time.</p>
+    <div class="warning-box">
+        Iteration handles <strong>fixed</strong> depth well. Combinatorial problems have depth that <strong>varies with the input</strong>. That is exactly where recursion replaces a tower of loops with a single function.
+    </div>
+</section>
+
+<section>
+    <h2>What state do we have to manage?</h2>
+    <div class="two-col">
+        <div class="card">
+            <h3>What we've picked so far</h3>
+            <p class="mono">chosen[0..depth-1]</p>
+            <p class="small">The partial permutation being built.</p>
+        </div>
+        <div class="card">
+            <h3>What's still available</h3>
+            <p class="mono">used[0..n-1]</p>
+            <p class="small">A flag per item — already in <code>chosen</code> or not.</p>
+        </div>
+    </div>
+    <div class="info-box">This is what the data <em>doesn't</em> give you. You carry it yourself.</div>
+</section>
+
+<section>
+    <h2>The three-step idea</h2>
+    <div class="pseudocode">
+        <span class="head">permute(depth):</span><br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">if</span> depth == n: print chosen; return<br>
+        &nbsp;&nbsp;&nbsp;<span class="kw">for each</span> item i not yet used:<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mark i used; place i at chosen[depth]&nbsp;&nbsp; <span style="color:#7f8c8d">// pick</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;permute(depth + 1)&nbsp;&nbsp; <span style="color:#7f8c8d">// recurse</span><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;mark i not used&nbsp;&nbsp; <span style="color:#7f8c8d">// undo</span>
+    </div>
+    <div class="key-point">
+        <strong>Pick. Recurse. Undo.</strong> The undo is what's new. Without it, the recursion can't generate <em>all</em> permutations — it would commit to its first choice forever.
+    </div>
+</section>
+
+<section>
+    <h2>Code</h2>
+    <pre><code class="language-c">int arr[N], chosen[N], used[N];
+
+void permute(int depth, int n) {
+    if (depth == n) {
+        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
+        printf("\n");
+        return;
+    }
+    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        used[i] = 1;
+        chosen[depth] = arr[i];
+        permute(depth + 1, n);
+        used[i] = 0;              // ← undo
+    }
+}</code></pre>
+</section>
+
+<section class="center-content">
+    <h2>This is still DFS.</h2>
+    <p style="margin-top:0.8em;">Each <code>permute()</code> call is a node in an invisible tree of partial permutations.</p>
+    <svg class="tree-svg" viewBox="0 0 600 200" width="600" height="200" style="margin-top:0.6em;">
+        <line class="edge" x1="300" y1="20"  x2="150" y2="90"/>
+        <line class="edge" x1="300" y1="20"  x2="300" y2="90"/>
+        <line class="edge" x1="300" y1="20"  x2="450" y2="90"/>
+        <line class="edge" x1="150" y1="90"  x2="100" y2="170"/>
+        <line class="edge" x1="150" y1="90"  x2="200" y2="170"/>
+        <line class="edge" x1="300" y1="90"  x2="260" y2="170"/>
+        <line class="edge" x1="300" y1="90"  x2="340" y2="170"/>
+        <line class="edge" x1="450" y1="90"  x2="410" y2="170"/>
+        <line class="edge" x1="450" y1="90"  x2="500" y2="170"/>
+        <circle class="node" cx="300" cy="20" r="20"/><text x="300" y="26">{}</text>
+        <circle class="node" cx="150" cy="90" r="20"/><text x="150" y="96">1</text>
+        <circle class="node" cx="300" cy="90" r="20"/><text x="300" y="96">2</text>
+        <circle class="node" cx="450" cy="90" r="20"/><text x="450" y="96">3</text>
+        <circle class="node" cx="100" cy="170" r="20"/><text x="100" y="176">12</text>
+        <circle class="node" cx="200" cy="170" r="20"/><text x="200" y="176">13</text>
+        <circle class="node" cx="260" cy="170" r="20"/><text x="260" y="176">21</text>
+        <circle class="node" cx="340" cy="170" r="20"/><text x="340" y="176">23</text>
+        <circle class="node" cx="410" cy="170" r="20"/><text x="410" y="176">31</text>
+        <circle class="node" cx="500" cy="170" r="20"/><text x="500" y="176">32</text>
+    </svg>
+    <p class="small">"Undo" is what lets the DFS back up to try a different branch.</p>
+</section>
+
+<section class="center-content">
+    <h2>The big picture: three flavours of DFS</h2>
+    <table>
+        <tr><th>Friday</th><th>Session 1</th><th>Session 2</th></tr>
+        <tr><td>Grid + explicit stack</td><td>Tree + recursion</td><td>State-space tree + recursion</td></tr>
+        <tr><td>You wrote the stack</td><td>The compiler writes the stack</td><td>You carry "what I've picked" by hand</td></tr>
+    </table>
+    <div class="key-point">Same algorithm. Three shapes of data.</div>
+</section>
+
+<!-- Caveats -->
+<section>
+    <h2>The warning — Fibonacci</h2>
+    <pre><code class="language-c">int fib(int n) {
+    if (n &lt; 2) return n;
+    return fib(n - 1) + fib(n - 2);
+}</code></pre>
+    <p>Three lines. <code>fib(45)</code> takes minutes.</p>
+    <div class="warning-box">
+        The recurrence is honest. The naive code recomputes the same answers exponentially many times. (Memoisation fixes it. Post-mid-sem.)
+    </div>
+</section>
+
+<section>
+    <h2>Recursion isn't free</h2>
+    <table>
+        <tr><th>Style</th><th>Time</th><th>Extra space</th></tr>
+        <tr><td>Iterative list traversal</td><td>O(n)</td><td>O(1)</td></tr>
+        <tr><td>Recursive list traversal</td><td>O(n)</td><td>O(n) — one frame per node</td></tr>
+        <tr><td>Recursive binary search</td><td>O(log n)</td><td>O(log n)</td></tr>
+    </table>
+    <p>Recursion can be cleaner code and still cost more memory. Pick the version that makes the idea visible.</p>
+</section>
+
+<!-- Practice -->
+<section>
+    <h2>Practice — in class</h2>
+    <p><strong>Session 1 — structural:</strong></p>
+    <ol>
+        <li>Write <code>countNodes</code>, <code>sumList</code>, <code>findValue</code>, <code>printForward</code>, <code>printReverse</code>.</li>
+        <li>Write <code>reverseRec</code> — the recursive reverse from the slide. Pointer reasoning matters here.</li>
+        <li>Write recursive linear search.</li>
+        <li>Recursive DFS on a grid — connected-component count.</li>
+    </ol>
+    <p style="margin-top:0.6em;"><strong>Session 2 — generative + combinatorial:</strong></p>
+    <ol>
+        <li>Print all permutations of <code>{1, 2, 3, 4}</code>.</li>
+        <li>Print all subsets of <code>{1, 2, 3}</code> (similar pick / undo).</li>
+        <li>Trace <code>josephus(7, 3)</code> by hand.</li>
+    </ol>
+    <div class="info-box">More problems — linked-list, tree, grid-DFS, generative, and backtracking categories with LeetCode links — on the <strong>Day 10 page</strong>.</div>
+</section>
+
+<!-- Recap -->
+<section class="center-content">
+    <h2>Before you write any recursion, ask three questions</h2>
+    <ol style="display:inline-block; text-align:left; font-size:1.1em; margin-top:0.5em;">
+        <li>What is the <strong>base case</strong>?</li>
+        <li>What is the <strong>smaller problem</strong>? Is it in the data, or do I have to construct it?</li>
+        <li>Who marks the cell / undoes the choice — the caller or the function itself?</li>
+    </ol>
+</section>
+
+<section class="center-content">
+    <h1>Questions?</h1>
+</section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({ hash: true, plugins: [ RevealHighlight ], slideNumber: true, transition: 'slide' });
+</script>
+</body>
+</html>
