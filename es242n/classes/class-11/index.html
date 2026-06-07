@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 11</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 11</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 11</p>
+      <h1>8 June 2026: Permutations and Backtracking</h1>
+      <p class="lead">Post-midsem opens with the same problem you saw on Day 10 — permutations of <code>{1, 2, 3}</code> — but this time we slow down and build the intuition piece by piece. Choose. Recurse. Undo.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="permutations.html">Permutations — building the intuition</a> — both sessions</li>
+        <li><a href="../class-10/recursion.html">Day 10 recursion deck</a> — the source we're slowing down for reference</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Intuition and state</h2>
+          <p>Try permutations on paper first. Discover the choice tree. Name the two pieces of state — <code>chosen[]</code> and <code>used[]</code> — and see why we need both. End with a hand trace of one path.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Code, bugs, and practice</h2>
+          <p>Write <code>permute()</code> together. Trace it. Then break it: what goes wrong without <em>undo</em>? Without <code>used[]</code>? Without the base case? Close with the practice list for Wednesday.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class problems</h2>
+      <p class="lead">Submit accepted solutions on <a href="https://judge.csbasics.in/">judge.csbasics.in</a>. The take-home practice list (LeetCode) follows below.</p>
+    </section>
+
+    <section class="agenda" aria-label="In-class problems">
+      <article class="agenda-item">
+        <div class="marker">1</div>
+        <div>
+          <h2>Permutations on paper</h2>
+          <p>Before any code: list every permutation of <code>{A, B, C}</code> on paper. What pattern did your hand follow?</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">2</div>
+        <div>
+          <h2>Write <code>permute()</code></h2>
+          <p>Write the recursive function from scratch using <code>chosen[]</code>, <code>used[]</code>, and <code>depth</code>. Test it on <code>{1, 2, 3}</code> then <code>{1, 2, 3, 4}</code>.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">3</div>
+        <div>
+          <h2>Break it on purpose</h2>
+          <p>Comment out the undo line. Run it. What output do you get? Now restore undo and remove the <code>used[i]</code> check — what's wrong this time?</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">4</div>
+        <div>
+          <h2>Trace <code>permute(0)</code> for <code>n = 3</code></h2>
+          <p>By hand. At every call, write the values of <code>depth</code>, <code>chosen[]</code>, and <code>used[]</code>. Mark which calls hit the base case and print.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>LeetCode practice — between today and Wednesday</h2>
+      <p class="lead">Backtracking only. Sorting practice arrives after the 13 June class. These are the warmups that will pay off in Quiz 1 (15 June).</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/permutations/">46. Permutations</a> (Medium) — exactly the function from class. Print or return all permutations of distinct integers.</li>
+        <li><a href="https://leetcode.com/problems/permutations-ii/">47. Permutations II</a> (Medium) — same, but the input has duplicates. Skip on equal-and-not-yet-tried.</li>
+        <li><a href="https://leetcode.com/problems/letter-case-permutation/">784. Letter Case Permutation</a> (Medium) — branch at each letter: lowercase or uppercase.</li>
+        <li><a href="https://leetcode.com/problems/binary-watch/">401. Binary Watch</a> (Easy) — pick hours and minutes from a bit pattern; bookkeeping practice without too much algorithm.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming Wednesday (12 June)</h2>
+      <p class="lead">Backtracking part 2: subsets, generate parentheses, and an extended recap before Saturday's sorting class. Quiz 1 on 15 June will cover backtracking <em>and</em> the sorting we do on 13 June.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

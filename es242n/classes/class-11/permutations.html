@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permutations — Building the Intuition</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+
+        .reveal {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-size: 28px;
+        }
+
+        .reveal .slides section {
+            height: 100%;
+            overflow-y: auto !important;
+        }
+
+        .reveal .slides section.stack {
+            overflow-y: visible !important;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+            color: var(--main-color);
+            font-weight: 600;
+            text-transform: none;
+            margin-bottom: 0.6em;
+        }
+
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+
+        .reveal pre {
+            margin: 0.7em auto;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+            border-radius: 8px;
+            font-size: 0.55em;
+            line-height: 1.4;
+        }
+
+        .reveal code {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace;
+            padding: 0.1em 0.3em;
+            background: var(--light-bg);
+            border-radius: 3px;
+            color: #e74c3c;
+        }
+
+        .reveal pre code {
+            background: var(--code-bg);
+            color: #abb2bf;
+            padding: 1em;
+            border-radius: 8px;
+            max-height: 480px;
+            overflow: auto;
+        }
+
+        .reveal .key-point {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .warning-box {
+            background: #ffe5e5;
+            border-left: 4px solid var(--warning-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .success-box {
+            background: #d4edda;
+            border-left: 4px solid var(--success-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .info-box {
+            background: #dae8fc;
+            border-left: 4px solid #2980b9;
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            border-radius: 4px;
+            font-size: 0.85em;
+        }
+
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+
+        .reveal blockquote {
+            background: var(--light-bg);
+            border-left: 4px solid var(--accent-color);
+            padding: 0.7em 1.1em;
+            margin: 0.7em 0;
+            font-style: normal;
+            border-radius: 4px;
+        }
+
+        .reveal .two-col {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.2em;
+            margin: 0.7em 0;
+        }
+
+        .reveal .card {
+            background: var(--light-bg);
+            padding: 0.8em 1em;
+            border-radius: 8px;
+            border-top: 4px solid var(--accent-color);
+        }
+
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        .reveal table {
+            margin: 0.7em auto;
+            border-collapse: collapse;
+            font-size: 0.75em;
+            width: 90%;
+        }
+        .reveal table th {
+            background: var(--main-color);
+            color: white;
+            padding: 0.5em 0.8em;
+        }
+        .reveal table td {
+            padding: 0.4em 0.8em;
+            border: 1px solid #dee2e6;
+        }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+
+        .big-q {
+            font-size: 1.35em;
+            font-weight: 600;
+            color: var(--main-color);
+            text-align: center;
+            margin: 0.9em 0;
+            line-height: 1.4;
+        }
+
+        /* deck-specific: cards-on-table visual */
+        .reveal .card-row {
+            display: flex;
+            justify-content: center;
+            gap: 0.8em;
+            margin: 1em 0;
+        }
+        .reveal .letter-card {
+            width: 60px; height: 80px;
+            border: 2px solid var(--main-color);
+            border-radius: 8px;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 1.6em; font-weight: 700;
+            color: var(--main-color);
+        }
+        .reveal .letter-card.placed { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+        .reveal .letter-card.used { opacity: 0.3; text-decoration: line-through; }
+        .reveal .letter-card.slot { background: var(--light-bg); color: #bdc3c7; border-style: dashed; }
+
+        /* slot row labels above */
+        .reveal .slot-labels {
+            display: flex; justify-content: center; gap: 0.8em;
+            font-size: 0.7em; color: #95a5a6; margin-top: -0.4em;
+            margin-bottom: 0.8em;
+        }
+        .reveal .slot-labels .label { width: 60px; text-align: center; }
+
+        /* state boxes */
+        .reveal .state-box {
+            display: inline-block;
+            border: 1.5px solid var(--main-color);
+            border-radius: 6px;
+            padding: 0.4em 0.8em;
+            margin: 0.3em;
+            background: #fff;
+        }
+        .reveal .state-box .label { font-size: 0.7em; color: #95a5a6; display: block; }
+        .reveal .state-box .value { font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1em; color: var(--main-color); }
+
+        /* trace table */
+        .reveal .trace td.depth { font-weight: 600; color: var(--main-color); }
+        .reveal .trace td.arr   { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.95em; }
+        .reveal .trace td.note  { font-size: 0.85em; color: #6c757d; }
+
+        /* large code reference slide */
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Permutations</h1>
+    <h3 style="color:#7f8c8d;">Building the intuition we skipped</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 11 &middot; 8 June 2026</p>
+</section>
+
+<section>
+    <h2>Today's plan</h2>
+    <p>We saw permutations on Day 10. The code worked. Most of us did not understand <em>why</em>.</p>
+    <p>So today we start over. Slowly.</p>
+    <ul>
+        <li>Tiny examples first.</li>
+        <li>Then one big insight.</li>
+        <li>Then paper. Then code.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — TINY EXAMPLES FIRST
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Start small. Really small.</p>
+</section>
+
+<section>
+    <h2>One letter: <code>{A}</code></h2>
+    <p>How many ways to arrange one letter?</p>
+    <pre><code>A</code></pre>
+    <p>One.</p>
+    <p class="small">That was easy. Stay with me.</p>
+</section>
+
+<section>
+    <h2>Two letters: <code>{A, B}</code></h2>
+    <pre><code>A B
+B A</code></pre>
+    <p>Two arrangements.</p>
+</section>
+
+<section>
+    <h2>Three letters: <code>{A, B, C}</code></h2>
+    <pre><code>A B C
+A C B
+B A C
+B C A
+C A B
+C B A</code></pre>
+    <p>Six.</p>
+</section>
+
+<section>
+    <h2>Four letters: <code>{A, B, C, D}</code></h2>
+    <p>Don't list them. Just guess: how many?</p>
+    <p class="fragment"><strong>24.</strong></p>
+    <p class="fragment small">Don't believe me? You can count them later. The number is what matters.</p>
+</section>
+
+<section>
+    <h2>A pattern</h2>
+    <table style="width:60%;">
+        <tr><th>Letters</th><th>Arrangements</th></tr>
+        <tr><td>1</td><td>1</td></tr>
+        <tr><td>2</td><td>2</td></tr>
+        <tr><td>3</td><td>6</td></tr>
+        <tr><td>4</td><td>24</td></tr>
+    </table>
+    <p class="fragment">That's <code>1!, 2!, 3!, 4!</code>. <em>n factorial.</em></p>
+    <p class="fragment small">Why does it grow so fast? That's the question that gives us the algorithm.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — THE SECRET
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The one insight</p>
+</section>
+
+<section class="center-content">
+    <p class="big-q" style="font-size:1.6em;">If you knew how to list permutations of two letters,<br>could you list permutations of three?</p>
+</section>
+
+<section>
+    <h2>Look at the three-letter list again</h2>
+    <pre style="font-size:0.8em;"><code>A | B C        ← A first, then perms of {B, C}
+A | C B
+B | A C        ← B first, then perms of {A, C}
+B | C A
+C | A B        ← C first, then perms of {A, B}
+C | B A</code></pre>
+    <p style="margin-top:0.6em;">The list splits into <strong>three groups of two</strong>.</p>
+</section>
+
+<section>
+    <h2>Read the bar again</h2>
+    <p>Every line is:</p>
+    <p style="text-align:center; font-size:1.3em; margin:1em 0;">
+        <strong>(a first letter)</strong> &nbsp;|&nbsp; <strong>(a permutation of the rest)</strong>
+    </p>
+    <div class="key-point">
+        Permutations of three letters = pick one letter, then list permutations of the other two.
+    </div>
+</section>
+
+<section>
+    <h2>That's a recursive recipe</h2>
+    <p>To permute <code>{A, B, C}</code>:</p>
+    <ol>
+        <li>Pick <code>A</code> first. List permutations of <code>{B, C}</code>. Glue <code>A</code> in front of each.</li>
+        <li>Pick <code>B</code> first. List permutations of <code>{A, C}</code>. Glue <code>B</code> in front.</li>
+        <li>Pick <code>C</code> first. List permutations of <code>{A, B</code>}. Glue <code>C</code> in front.</li>
+    </ol>
+    <p class="small">Each smaller problem is exactly the same kind of problem — just with one fewer letter.</p>
+</section>
+
+<section>
+    <h2>And what about <code>{B, C}</code>?</h2>
+    <p>The same trick again:</p>
+    <ol>
+        <li>Pick <code>B</code> first. List permutations of <code>{C}</code>. Glue <code>B</code> in front.</li>
+        <li>Pick <code>C</code> first. List permutations of <code>{B}</code>. Glue <code>C</code> in front.</li>
+    </ol>
+    <p>And <code>{C}</code> is one letter — just C. Done.</p>
+    <div class="info-box">
+        Every recursion needs a stopping point. Ours is: "one letter — just print it."
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — DO IT BY HAND
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Now do it on paper</p>
+</section>
+
+<section>
+    <h2>Two boxes on your page</h2>
+    <p>Draw two boxes:</p>
+    <div class="two-col" style="margin-top:1em;">
+        <div class="card">
+            <h4>PLACED</h4>
+            <p class="small">What I've put down so far, in order.</p>
+        </div>
+        <div class="card">
+            <h4>AVAILABLE</h4>
+            <p class="small">What letters I can still pick.</p>
+        </div>
+    </div>
+    <p class="small" style="margin-top:0.6em;">We start with PLACED empty and AVAILABLE = <code>{A, B, C}</code>.</p>
+</section>
+
+<section>
+    <h2>Step 1: pick a letter</h2>
+    <p>From AVAILABLE, pick one. Say we pick <code>B</code>.</p>
+    <div class="two-col" style="margin-top:1em;">
+        <div class="card">
+            <h4>PLACED</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;">B</p>
+        </div>
+        <div class="card">
+            <h4>AVAILABLE</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;">A, C</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Step 2: pick again</h2>
+    <p>From the new AVAILABLE = <code>{A, C}</code>, pick one. Say we pick <code>A</code>.</p>
+    <div class="two-col" style="margin-top:1em;">
+        <div class="card">
+            <h4>PLACED</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;">B, A</p>
+        </div>
+        <div class="card">
+            <h4>AVAILABLE</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;">C</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Step 3: forced</h2>
+    <p>Only <code>C</code> is left. Pick it.</p>
+    <div class="two-col" style="margin-top:1em;">
+        <div class="card">
+            <h4>PLACED</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;">B, A, C</p>
+        </div>
+        <div class="card">
+            <h4>AVAILABLE</h4>
+            <p style="font-family:Monaco,monospace; font-size:1.2em;"><em>empty</em></p>
+        </div>
+    </div>
+    <div class="success-box">
+        AVAILABLE is empty → PLACED is one permutation. Print it: <code>B A C</code>.
+    </div>
+</section>
+
+<section>
+    <h2>One path, done</h2>
+    <p>That whole process — pick, pick, pick until empty — produced <strong>one</strong> permutation.</p>
+    <p>To get all six, we need to repeat with different first picks. Then different second picks. And so on.</p>
+    <p class="fragment small">Drawing this out, it's a tree.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — THE TREE OF CHOICES
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The tree the recursion walks</p>
+</section>
+
+<section class="center-content">
+    <h2>Every choice opens a branch</h2>
+
+    <svg viewBox="0 0 720 320" width="720" height="320" style="margin-top:0.4em;">
+        <line x1="360" y1="50" x2="130" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="50" x2="360" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="50" x2="590" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <line x1="130" y1="135" x2="70"  y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="130" y1="135" x2="190" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="135" x2="300" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="360" y1="135" x2="420" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="590" y1="135" x2="530" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="590" y1="135" x2="650" y2="180" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <line x1="70"  y1="205" x2="70"  y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="190" y1="205" x2="190" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="300" y1="205" x2="300" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="420" y1="205" x2="420" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="530" y1="205" x2="530" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+        <line x1="650" y1="205" x2="650" y2="260" stroke="#95a5a6" stroke-width="1.8"/>
+
+        <rect x="320" y="20" width="80" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="360" y="40" text-anchor="middle" font-family="Monaco, monospace" font-size="14" fill="#2c3e50">[ ]</text>
+
+        <rect x="100" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="130" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[A]</text>
+        <rect x="330" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="360" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[B]</text>
+        <rect x="560" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#3498db" stroke-width="2"/>
+        <text x="590" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#2c3e50">[C]</text>
+
+        <rect x="35"  y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="70"  y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[A,B]</text>
+        <rect x="155" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="190" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[A,C]</text>
+        <rect x="265" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="300" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[B,A]</text>
+        <rect x="385" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="420" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[B,C]</text>
+        <rect x="495" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="530" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[C,A]</text>
+        <rect x="615" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#3498db" stroke-width="1.8"/>
+        <text x="650" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#2c3e50">[C,B]</text>
+
+        <rect x="30"  y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="70"  y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[A,B,C]</text>
+        <rect x="150" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="190" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[A,C,B]</text>
+        <rect x="260" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="300" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[B,A,C]</text>
+        <rect x="380" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="420" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[B,C,A]</text>
+        <rect x="490" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="530" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[C,A,B]</text>
+        <rect x="610" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
+        <text x="650" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[C,B,A]</text>
+    </svg>
+    <p style="color:#7f8c8d; margin-top:0.4em;">Six green leaves. Six permutations. One per path.</p>
+</section>
+
+<section>
+    <h2>Where are the boxes?</h2>
+    <p>At every node, PLACED is whatever's written inside that node.</p>
+    <p>AVAILABLE is "the original letters" minus "what's in the node."</p>
+    <div class="info-box">
+        The recursion never <em>stores</em> the tree. The tree is the picture of what the recursion does. Each node is a function call.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 5 — NAMING THE BOXES IN CODE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 5</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">From paper to code</p>
+</section>
+
+<section>
+    <h2>PLACED in code</h2>
+    <p>PLACED is an ordered list. In C, we use an array.</p>
+    <p>Call it <code>chosen[]</code>.</p>
+    <pre><code>chosen[0] = B
+chosen[1] = A
+chosen[2] = C</code></pre>
+    <p>The length of the placed list = how deep we are. We'll call that depth.</p>
+</section>
+
+<section>
+    <h2>AVAILABLE in code</h2>
+    <p>One way: keep a real list, remove from it, put it back.</p>
+    <p>Easier way: keep a flag for each letter — "still available" or "taken."</p>
+    <pre><code>used[0] = 0   ← A is available
+used[1] = 1   ← B is taken
+used[2] = 0   ← C is available</code></pre>
+    <p>The available letters are the ones with <code>used[i] == 0</code>.</p>
+</section>
+
+<section>
+    <h2>Why <code>used[]</code> instead of a real list?</h2>
+    <p>If we removed B from a list, we'd have to slide elements around. And then put B back.</p>
+    <p>Flipping a flag is one operation. No sliding.</p>
+    <div class="info-box">
+        We don't actually remove anything. We just mark what's no longer available. The recursion sees the array the same way it always did.
+    </div>
+</section>
+
+<section>
+    <h2>Three pieces of state</h2>
+    <table style="width:75%;">
+        <tr><th>On paper</th><th>In code</th><th>What it tells us</th></tr>
+        <tr><td>PLACED</td><td><code>chosen[]</code></td><td>What's in the prefix, in order</td></tr>
+        <tr><td>AVAILABLE</td><td><code>used[]</code></td><td>Which letters are no longer pickable</td></tr>
+        <tr><td>Position</td><td><code>depth</code></td><td>Which slot we're filling right now</td></tr>
+    </table>
+    <p class="small" style="margin-top:0.6em;">Three things. That's the whole state.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 6 — ONE STEP OF THE ALGORITHM
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 6</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">What does one step do?</p>
+</section>
+
+<section>
+    <h2>Pretend you are <code>permute(depth)</code></h2>
+    <p>You have been called. Your job:</p>
+    <ol>
+        <li>Look at slot <code>depth</code>.</li>
+        <li>Try every available letter in that slot.</li>
+        <li>For each try, ask the recursive call to handle the rest.</li>
+        <li>Then put the letter back so the next try is clean.</li>
+    </ol>
+    <p>That's it.</p>
+</section>
+
+<section>
+    <h2>In plain English</h2>
+    <pre style="font-size:0.78em;"><code>for each letter i:
+    if i is taken: skip
+    place i at slot depth
+    mark i as taken
+    ask the recursion to fill slots after depth
+    un-mark i</code></pre>
+    <p class="small">Six lines. The five words "ask the recursion to fill" are doing the heavy lifting.</p>
+</section>
+
+<section>
+    <h2>One thing to notice</h2>
+    <p>The loop is the only place we make a choice. The recursion never picks for us; it just <em>fills the rest</em>.</p>
+    <p>Every node in the tree is one entry to <code>permute()</code>. The for-loop inside it makes the branches.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 7 — TRUST THE CALL
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 7</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Trust the call</p>
+</section>
+
+<section>
+    <h2>When we write <code>permute(depth + 1)</code>...</h2>
+    <p>...what are we trusting that call to do?</p>
+    <p class="fragment" style="margin-top:1em;"><strong>Print every permutation that <em>starts</em> with the values already in <code>chosen[0..depth]</code>.</strong></p>
+    <p class="fragment small" style="margin-top:1em;">We do not trace inside the call. We trust it.</p>
+</section>
+
+<section>
+    <h2>Why this is the hard part</h2>
+    <p>If you try to imagine the recursion fully expanded, you'll see hundreds of calls and panic.</p>
+    <p>Instead, ask:</p>
+    <ul>
+        <li>"What does this one call do?"</li>
+        <li>"What does it promise the smaller call will do?"</li>
+    </ul>
+    <div class="key-point">
+        Define one level. Trust the level below. The whole tree falls out for free.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 8 — UNDO
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 8</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Why "undo" matters</p>
+</section>
+
+<section>
+    <h2>After the recursive call returns</h2>
+    <p>The recursion has printed everything that starts with the letters we placed.</p>
+    <p>Now we want to try a <em>different</em> letter in slot <code>depth</code>.</p>
+    <p>But our last choice is still in <code>chosen[depth]</code>, and still marked in <code>used[]</code>.</p>
+    <p class="fragment">If we don't put things back, the next iteration of the loop sees the wrong state.</p>
+</section>
+
+<section>
+    <h2>What "undo" does</h2>
+    <p>One line. Right after the recursive call:</p>
+    <pre><code>used[i] = 0;</code></pre>
+    <p>That's it. We're un-marking the letter we tried so the next loop iteration starts fresh.</p>
+    <p class="small">We don't bother clearing <code>chosen[depth]</code> — the next iteration will overwrite it anyway.</p>
+</section>
+
+<section>
+    <h2>What if we forget?</h2>
+    <p>Try this thought experiment.</p>
+    <p>Pick A → recurse → it prints <code>A B C</code> and <code>A C B</code> → returns.</p>
+    <p>Loop wants to try B. But <code>used[A] = 1</code> still — we never un-marked A.</p>
+    <div class="warning-box">
+        The recursion at depth 1 also sees A as taken, even though it's been removed from slot 0 already. The whole subtree is wrong.
+    </div>
+    <p>In practice: the program prints far fewer permutations than it should, or crashes.</p>
+</section>
+
+<section class="center-content">
+    <p class="big-q" style="font-size:2em;">Choose.<br>Recurse.<br>Undo.</p>
+    <p style="margin-top:1.5em; color:#7f8c8d;">Then try the next choice.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 9 — THE CODE, LINE BY LINE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 9</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The code, line by line</p>
+</section>
+
+<section>
+    <h2>Step 1: the signature</h2>
+    <pre><code class="language-c">void permute(int depth, int n) {
+
+}</code></pre>
+    <p><code>depth</code> = which slot we're filling. <code>n</code> = total number of slots.</p>
+</section>
+
+<section>
+    <h2>Step 2: the base case</h2>
+    <pre><code class="language-c">void permute(int depth, int n) {
+    if (depth == n) {
+        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
+        printf("\n");
+        return;
+    }
+}</code></pre>
+    <p>When all slots are filled, print and stop.</p>
+</section>
+
+<section>
+    <h2>Step 3: the loop over choices</h2>
+    <pre><code class="language-c">void permute(int depth, int n) {
+    if (depth == n) { /* print and return */ }
+
+    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;     // skip taken letters
+
+    }
+}</code></pre>
+    <p>Try every letter <code>arr[i]</code>. Skip the ones already in use.</p>
+</section>
+
+<section>
+    <h2>Step 4: choose</h2>
+    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        chosen[depth] = arr[i];    // place it in this slot
+        used[i] = 1;               // mark it taken
+
+    }</code></pre>
+    <p>The "choose" step is two lines: place into <code>chosen</code>, flip the flag in <code>used</code>.</p>
+</section>
+
+<section>
+    <h2>Step 5: recurse</h2>
+    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        chosen[depth] = arr[i];
+        used[i] = 1;
+        permute(depth + 1, n);     // trust this call
+
+    }</code></pre>
+    <p>One line. We trust it to fill the rest.</p>
+</section>
+
+<section>
+    <h2>Step 6: undo</h2>
+    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        chosen[depth] = arr[i];
+        used[i] = 1;
+        permute(depth + 1, n);
+        used[i] = 0;               // ← undo
+    }</code></pre>
+    <p>One line. Un-mark the letter so the next iteration is clean.</p>
+</section>
+
+<section>
+    <h2>The whole thing</h2>
+    <pre><code class="language-c">int arr[N], chosen[N], used[N];
+
+void permute(int depth, int n) {
+    if (depth == n) {
+        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
+        printf("\n");
+        return;
+    }
+    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        chosen[depth] = arr[i];
+        used[i] = 1;
+        permute(depth + 1, n);
+        used[i] = 0;
+    }
+}</code></pre>
+    <p class="small">Fifteen lines. The seven inside the for-loop are the whole pattern.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 10 — HAND TRACE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 10</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Trace <code>permute(0)</code> for <code>arr = {1, 2, 3}</code></p>
+</section>
+
+<section>
+    <h2>State at every call</h2>
+    <table class="trace">
+        <tr><th>depth</th><th>chosen</th><th>used</th><th>action</th></tr>
+        <tr><td class="depth">0</td><td class="arr">[_, _, _]</td><td class="arr">[0,0,0]</td><td class="note">try i=0 → pick 1</td></tr>
+        <tr><td class="depth">1</td><td class="arr">[1, _, _]</td><td class="arr">[1,0,0]</td><td class="note">try i=1 → pick 2</td></tr>
+        <tr><td class="depth">2</td><td class="arr">[1, 2, _]</td><td class="arr">[1,1,0]</td><td class="note">try i=2 → pick 3</td></tr>
+        <tr><td class="depth">3</td><td class="arr">[1, 2, 3]</td><td class="arr">[1,1,1]</td><td class="note"><strong>print "1 2 3"</strong></td></tr>
+        <tr><td class="depth">2</td><td class="arr">[1, 2, _]</td><td class="arr">[1,1,0]</td><td class="note">undo i=2; loop ends; return</td></tr>
+        <tr><td class="depth">1</td><td class="arr">[1, _, _]</td><td class="arr">[1,0,0]</td><td class="note">undo i=1; try i=2 → pick 3</td></tr>
+        <tr><td class="depth">2</td><td class="arr">[1, 3, _]</td><td class="arr">[1,0,1]</td><td class="note">try i=1 → pick 2</td></tr>
+        <tr><td class="depth">3</td><td class="arr">[1, 3, 2]</td><td class="arr">[1,1,1]</td><td class="note"><strong>print "1 3 2"</strong></td></tr>
+        <tr><td colspan="4" class="note" style="text-align:center;">…and so on through "2 1 3", "2 3 1", "3 1 2", "3 2 1".</td></tr>
+    </table>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 11 — BUGS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 11</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">When it goes wrong</p>
+</section>
+
+<section>
+    <h2>The four common bugs</h2>
+    <table>
+        <tr><th>What you see</th><th>The cause</th></tr>
+        <tr><td>Only one permutation prints</td><td>Forgot <code>used[i] = 0</code></td></tr>
+        <tr><td>Repeated letters in output</td><td>Missing <code>if (used[i]) continue</code></td></tr>
+        <tr><td>Stack overflow / crash</td><td>Missing or wrong base case</td></tr>
+        <tr><td>All on one line</td><td>Forgot <code>printf("\n")</code></td></tr>
+    </table>
+    <div class="info-box">
+        Three of these four are bugs in <em>state management</em>. The fourth is just printing. Backtracking is mostly state bookkeeping.
+    </div>
+</section>
+
+<section>
+    <h2>The diagnostic move</h2>
+    <p>If your output is wrong, add one print at the top of <code>permute()</code>:</p>
+    <pre><code class="language-c">void permute(int depth, int n) {
+    for (int i = 0; i &lt; depth; i++) printf("%d ", chosen[i]);
+    printf("\n");
+    /* ... rest as before ... */
+}</code></pre>
+    <p>Now you see every node of the tree, in the order the recursion visits them. Bugs jump out.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 12 — PRACTICE + WRAP
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 12</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Practice and wrap</p>
+</section>
+
+<section>
+    <h2>Practice between now and Wednesday</h2>
+    <ul>
+        <li><a href="https://leetcode.com/problems/permutations/" target="_blank">LeetCode 46. Permutations</a> — exactly the function from class.</li>
+        <li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank">LeetCode 47. Permutations II</a> — with duplicates. Subtle skip rule.</li>
+        <li><a href="https://leetcode.com/problems/letter-case-permutation/" target="_blank">LeetCode 784. Letter Case Permutation</a> — branch at each letter.</li>
+        <li>In-class: print all permutations of <code>{1, 2, 3, 4}</code>. Then break each piece on purpose.</li>
+    </ul>
+    <p class="small" style="margin-top:0.6em;">Subsets and generate parens on Wednesday. Sorting on Saturday. Quiz 1 covers all three.</p>
+</section>
+
+<section class="center-content">
+    <h2>Today's takeaway</h2>
+    <p class="big-q" style="font-size:1.8em; margin-top:1em;">Choose.<br>Recurse.<br>Undo.</p>
+    <p style="margin-top:1.4em; color:#7f8c8d;">Two state arrays. One recursive call you trust. One line that puts things back.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     INSTRUCTOR TYPING REFERENCE
+════════════════════════════════════════════════════ -->
+<section class="ref-code">
+    <h3 style="margin-bottom:0.4em; color:#7f8c8d;">Typing reference</h3>
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+#define N 20
+
+int arr[N], chosen[N], used[N];
+
+void permute(int depth, int n) {
+    if (depth == n) {
+        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
+        printf("\n");
+        return;
+    }
+    for (int i = 0; i &lt; n; i++) {
+        if (used[i]) continue;
+        chosen[depth] = arr[i];
+        used[i] = 1;
+        permute(depth + 1, n);
+        used[i] = 0;
+    }
+}
+
+int main(void) {
+    int n;
+    scanf("%d", &amp;n);
+    for (int i = 0; i &lt; n; i++) scanf("%d", &amp;arr[i]);
+    permute(0, n);
+    return 0;
+}</code></pre>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>
