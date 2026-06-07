@@ -9,3 +9,7 @@ es242n/classes/class-09/solutions.html
 # Cheating / fairness talk — sensitive; kept local.
 # To publish: delete this line, then commit and push fairness.html.
 es242n/classes/class-09/fairness.html
+
+# Instructor-only planning notes (quiz strategy, raw marks, rationale).
+# Kept out of Git to prevent accidental publication via GitHub Pages.
+es242n/instructor-notes/
