@@ -631,7 +631,6 @@ void permute(int depth, int n) {
     ...
 }</code></pre>
     <p>We don't allocate new arrays per call. We don't pass them as parameters. They live above the recursion and every call touches the same memory.</p>
-    <p class="small">(You could pass them as pointers instead. Same effect. Globals keep the signature clean and the cohort focused on the algorithm.)</p>
 </section>
 
 <!-- ─── 10f. Why shared state matters ──────────────── -->
