@@ -573,12 +573,14 @@ D A C B      D B C A      D C B A</code></pre>
     <p>Pretend you are <code>permute()</code> called somewhere in the middle of the recursion. The letters are <code>{A, B, C, D}</code>.</p>
     <p>You don't know where you came from. You just have to do your job: <strong>fill the next empty slot</strong>.</p>
     <p>What do you need to be told from outside?</p>
-    <ul class="fragment">
-        <li><strong>Which slot</strong> you're filling next — so you know where to write.</li>
-        <li><strong>What letters are already on the path</strong> — so you can print them when you reach the bottom.</li>
-        <li><strong>Which letters are still available</strong> — so you don't pick one that's already on the path.</li>
+    <p class="fragment" style="margin-top:0.6em;"><strong>One thing: the path so far.</strong></p>
+    <p class="fragment small">If you know the path, you know:</p>
+    <ul class="fragment small">
+        <li>how deep you are (the path's length),</li>
+        <li>which letters are still available (everything <em>not</em> on the path),</li>
+        <li>what to print if you reach the bottom (the path itself).</li>
     </ul>
-    <p class="fragment">Three things. The next three slides give each one a name in code: <code>depth</code>, <code>chosen[]</code>, <code>used[]</code>.</p>
+    <p class="fragment">In C, we hold this one piece of information in three variables — <code>chosen[]</code>, <code>depth</code>, <code>used[]</code> — to keep every access cheap. The next three slides explain each one.</p>
 </section>
 
 <!-- ─── 10b. The path so far — chosen[] ───────────── -->
