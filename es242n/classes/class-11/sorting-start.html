@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorting — Part 1: Merge Sort</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.7em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 0.8em 1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+
+        /* deck-specific: array boxes for merge trace */
+        .reveal .arr-row {
+            display: flex; justify-content: center; gap: 4px;
+            margin: 0.6em 0; font-family: 'Monaco', 'Menlo', monospace;
+        }
+        .reveal .arr-row .cell {
+            min-width: 44px; padding: 0.35em 0.5em;
+            border: 1.5px solid var(--main-color);
+            border-radius: 4px; background: #fff;
+            text-align: center; font-weight: 600;
+        }
+        .reveal .arr-row .cell.left { background: #dae8fc; border-color: #2980b9; }
+        .reveal .arr-row .cell.right { background: #d4edda; border-color: var(--success-color); }
+        .reveal .arr-row .cell.merged { background: #fff3cd; border-color: #ffc107; }
+        .reveal .arr-row .cell.pointer { box-shadow: 0 0 0 3px var(--warning-color); }
+        .reveal .arr-label { text-align: center; font-size: 0.8em; color: #6c757d; margin-top: -0.3em; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ─── Title ────────────────────────────────────── -->
+<section class="center-content">
+    <h1>Sorting — Part 1</h1>
+    <h3 style="color:#7f8c8d;">Merge Sort</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 11 (overflow) &middot; 8 June 2026</p>
+</section>
+
+<!-- ─── 1. The problem ───────────────────────────── -->
+<section>
+    <h2>The problem</h2>
+    <p>Given an unsorted array, produce a sorted one.</p>
+    <pre><code class="nohighlight">input:    [ 5, 2, 8, 1, 9, 3, 7, 4 ]
+output:   [ 1, 2, 3, 4, 5, 7, 8, 9 ]</code></pre>
+    <p>You already know one or two ways to do this: bubble sort, selection sort, insertion sort. They all cost <code>O(n²)</code>.</p>
+    <p>Today we look at a different approach that costs <code>O(n log n)</code> — the same recursive idea you just used for permutations, with a different shape.</p>
+</section>
+
+<!-- ─── 2. The recursive idea ─────────────────────── -->
+<section>
+    <h2>Divide and conquer</h2>
+    <p>If we had two <em>sorted</em> halves of the array, could we make the whole thing sorted?</p>
+    <pre><code class="nohighlight">left half (sorted):   [ 2, 5, 8 ]
+right half (sorted):  [ 1, 3, 9 ]
+                                   →   [ 1, 2, 3, 5, 8, 9 ]</code></pre>
+    <p>Yes — and the procedure is straightforward. Walk both halves with two pointers; pick the smaller front each time.</p>
+    <div class="key-point">
+        Sorting <code>n</code> elements becomes: sort the left half, sort the right half, merge them. Each smaller problem is the same kind of problem.
+    </div>
+</section>
+
+<!-- ─── 3. The recursion ──────────────────────────── -->
+<section>
+    <h2>The recursion writes itself</h2>
+    <p>Same shape as permutations: solve <code>n</code> using two solutions of <code>n/2</code>.</p>
+    <pre><code class="nohighlight">mergeSort(arr, lo, hi):
+    if lo &gt;= hi: return                  // base case
+    mid = (lo + hi) / 2
+    mergeSort(arr, lo, mid)               // sort left
+    mergeSort(arr, mid+1, hi)             // sort right
+    merge(arr, lo, mid, hi)               // combine</code></pre>
+    <p>Three lines of real work. Three things to understand: the base case, the two recursive calls, and what <code>merge</code> does.</p>
+</section>
+
+<!-- ─── 4. Splitting visual ────────────────────────── -->
+<section>
+    <h2>How the splits look</h2>
+    <p>For input <code>[5, 2, 8, 1, 9, 3, 7, 4]</code>:</p>
+    <pre><code class="nohighlight">                [5, 2, 8, 1, 9, 3, 7, 4]
+                  /                     \
+            [5, 2, 8, 1]             [9, 3, 7, 4]
+             /        \               /         \
+         [5, 2]     [8, 1]        [9, 3]      [7, 4]
+          /  \       /  \          /  \        /  \
+        [5] [2]    [8] [1]       [9] [3]     [7] [4]      ← base cases (length 1)</code></pre>
+    <p>Splitting goes down. <strong>The actual sorting work happens on the way back up</strong>, in the merge step.</p>
+</section>
+
+<!-- ─── 5. Merge — the main mechanic ─────────────── -->
+<section class="center-content">
+    <h2>The merge step</h2>
+    <p class="small">This is the only new mechanic. Everything else is recursion you already know.</p>
+</section>
+
+<section>
+    <h2>Merge — two sorted halves into one</h2>
+    <p>Two pointers, one for each half. Take the smaller front. Repeat.</p>
+    <div class="arr-row">
+        <span class="cell left pointer">2</span><span class="cell left">5</span><span class="cell left">8</span>
+        <span style="width:20px;"></span>
+        <span class="cell right pointer">1</span><span class="cell right">3</span><span class="cell right">9</span>
+        <span style="width:20px;">→</span>
+        <span class="cell merged">_</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span>
+    </div>
+    <p>Compare 2 and 1. <code>1</code> is smaller. Take it.</p>
+    <div class="arr-row">
+        <span class="cell left pointer">2</span><span class="cell left">5</span><span class="cell left">8</span>
+        <span style="width:20px;"></span>
+        <span class="cell">.</span><span class="cell right pointer">3</span><span class="cell right">9</span>
+        <span style="width:20px;">→</span>
+        <span class="cell merged">1</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span><span class="cell">_</span>
+    </div>
+    <p>Now compare 2 and 3. <code>2</code> is smaller. Take it. Continue until both halves are empty.</p>
+</section>
+
+<section>
+    <h2>Merge — the full walk</h2>
+    <table>
+        <tr><th>Step</th><th>Left ptr → next value</th><th>Right ptr → next value</th><th>Take</th><th>Output so far</th></tr>
+        <tr><td>1</td><td>→ 2</td><td>→ 1</td><td><strong>1</strong> (right)</td><td>[1]</td></tr>
+        <tr><td>2</td><td>→ 2</td><td>→ 3</td><td><strong>2</strong> (left)</td><td>[1, 2]</td></tr>
+        <tr><td>3</td><td>→ 5</td><td>→ 3</td><td><strong>3</strong> (right)</td><td>[1, 2, 3]</td></tr>
+        <tr><td>4</td><td>→ 5</td><td>→ 9</td><td><strong>5</strong> (left)</td><td>[1, 2, 3, 5]</td></tr>
+        <tr><td>5</td><td>→ 8</td><td>→ 9</td><td><strong>8</strong> (left)</td><td>[1, 2, 3, 5, 8]</td></tr>
+        <tr><td>6</td><td>(empty)</td><td>→ 9</td><td><strong>9</strong> (right; rest of right)</td><td>[1, 2, 3, 5, 8, 9]</td></tr>
+    </table>
+    <p>When one half empties, copy the rest of the other half. Done.</p>
+</section>
+
+<!-- ─── 6. Merge code ────────────────────────────── -->
+<section>
+    <h2>Merge — the code</h2>
+    <pre><code class="language-c">void merge(int arr[], int lo, int mid, int hi) {
+    int tmp[hi - lo + 1];
+    int i = lo, j = mid + 1, k = 0;
+
+    while (i &lt;= mid &amp;&amp; j &lt;= hi) {
+        if (arr[i] &lt;= arr[j]) tmp[k++] = arr[i++];
+        else                  tmp[k++] = arr[j++];
+    }
+    while (i &lt;= mid) tmp[k++] = arr[i++];   // leftovers from left
+    while (j &lt;= hi)  tmp[k++] = arr[j++];   // leftovers from right
+
+    for (int x = 0; x &lt;= hi - lo; x++)
+        arr[lo + x] = tmp[x];
+}</code></pre>
+    <p>Three loops. The first picks from whichever side has the smaller front. The next two flush whatever is left of one side after the other empties. The last copies the merged result back into <code>arr</code>.</p>
+</section>
+
+<!-- ─── 7. Merge sort code ────────────────────────── -->
+<section class="ref-code">
+    <h2>Merge sort — the full code</h2>
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+
+void merge(int arr[], int lo, int mid, int hi) {
+    int tmp[hi - lo + 1];
+    int i = lo, j = mid + 1, k = 0;
+    while (i &lt;= mid &amp;&amp; j &lt;= hi)
+        tmp[k++] = (arr[i] &lt;= arr[j]) ? arr[i++] : arr[j++];
+    while (i &lt;= mid) tmp[k++] = arr[i++];
+    while (j &lt;= hi)  tmp[k++] = arr[j++];
+    for (int x = 0; x &lt;= hi - lo; x++) arr[lo + x] = tmp[x];
+}
+
+void mergeSort(int arr[], int lo, int hi) {
+    if (lo &gt;= hi) return;
+    int mid = (lo + hi) / 2;
+    mergeSort(arr, lo, mid);
+    mergeSort(arr, mid + 1, hi);
+    merge(arr, lo, mid, hi);
+}
+
+int main(void) {
+    int arr[] = {5, 2, 8, 1, 9, 3, 7, 4};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    mergeSort(arr, 0, n - 1);
+    for (int i = 0; i &lt; n; i++) printf("%d ", arr[i]);
+    return 0;
+}</code></pre>
+</section>
+
+<!-- ─── 8. Trust the call (again) ────────────────── -->
+<section>
+    <h2>Trust the recursive call (again)</h2>
+    <p>When we write <code>mergeSort(arr, lo, mid)</code>, what do we trust?</p>
+    <blockquote>
+        "That call leaves <code>arr[lo..mid]</code> sorted."
+    </blockquote>
+    <p>That's the contract. We don't trace inside it.</p>
+    <p>Once we trust it, the rest is mechanical:</p>
+    <ul>
+        <li>Sort the left half (trust).</li>
+        <li>Sort the right half (trust).</li>
+        <li>Merge — the only step we have to actually code.</li>
+    </ul>
+    <div class="info-box">
+        Same mindset as <code>permute()</code>. Define what one call promises. Trust the recursion to keep that promise.
+    </div>
+</section>
+
+<!-- ─── 9. Time complexity ────────────────────────── -->
+<section>
+    <h2>Why it's <code>O(n log n)</code></h2>
+    <p>At each level of the recursion, we do one <code>merge</code> over <code>n</code> total elements — <code>O(n)</code> work per level.</p>
+    <p>The recursion has <code>log₂(n)</code> levels (we halve until size 1).</p>
+    <p>Total: <code>n × log₂(n) = O(n log n)</code>.</p>
+    <table>
+        <tr><th>n</th><th>n²</th><th>n log n</th></tr>
+        <tr><td>100</td><td>10,000</td><td>~700</td></tr>
+        <tr><td>1,000</td><td>1,000,000</td><td>~10,000</td></tr>
+        <tr><td>1,000,000</td><td>10¹²</td><td>~20,000,000</td></tr>
+    </table>
+    <p>For <code>n = 10⁶</code>: bubble sort would take hours. Merge sort takes a fraction of a second.</p>
+</section>
+
+<!-- ─── 10. What's next ──────────────────────────── -->
+<section>
+    <h2>Coming Saturday: Quick Sort</h2>
+    <p>Another divide-and-conquer sort. Same complexity on average. Different style.</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>Merge sort</h4>
+            <p>Splits first (trivial split — halve), then does the real work on the way back up (merge).</p>
+        </div>
+        <div class="card">
+            <h4>Quick sort</h4>
+            <p>Does the real work on the way down (partition), then the recursive calls are trivial.</p>
+        </div>
+    </div>
+    <p class="small">Both <code>O(n log n)</code> on average. The arrangement of "where the work happens" is the interesting contrast.</p>
+</section>
+
+<section class="center-content">
+    <h2>Today's takeaway</h2>
+    <p class="big-q" style="font-size:1.7em; margin-top:1em;">Split. Recurse. Merge.</p>
+    <p style="margin-top:1.4em; color:#7f8c8d;">One new mechanic: merging two sorted halves with two pointers.</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>

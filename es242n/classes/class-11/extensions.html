@@ -367,6 +367,102 @@ void subsets(int depth, int n) {
 </section>
 
 <!-- ═══════════════════════════════════════════════════
+     PART 3 — APPLY THE TEMPLATE (Generate Parens)
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Apply the template</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Generate Parentheses — same idea, new constraints</p>
+</section>
+
+<section>
+    <h2>The problem (LC 22)</h2>
+    <p>Print all well-formed strings of <code>n</code> pairs of parentheses.</p>
+    <pre><code class="nohighlight">n = 3:    ((()))    (()())    (())()    ()(())    ()()()</code></pre>
+    <p>5 strings. (In general: the Catalan number <code>C_n</code>.)</p>
+    <p>Every string has <code>2n</code> characters and uses exactly <code>n</code> opens and <code>n</code> closes. <em>Well-formed</em> means: at every prefix, the close count never exceeds the open count.</p>
+</section>
+
+<section>
+    <h2>What's a choice?</h2>
+    <p>At each position, we have at most two choices: place <code>(</code> or place <code>)</code>.</p>
+    <p>Two constraints decide which are <em>legal</em> at this position:</p>
+    <ul>
+        <li>We can place <code>(</code> only if we haven't yet placed all <code>n</code> opens.</li>
+        <li>We can place <code>)</code> only if there's an unmatched <code>(</code> waiting — that is, <code>close &lt; open</code>.</li>
+    </ul>
+    <div class="key-point">
+        Same choose-recurse-undo skeleton. The choices and constraints are new. The recursion structure is identical.
+    </div>
+</section>
+
+<section>
+    <h2>The state we carry</h2>
+    <table style="width:85%;">
+        <tr><th>Name</th><th>What it holds</th></tr>
+        <tr><td><code>chosen[]</code></td><td>The string so far.</td></tr>
+        <tr><td><code>open</code></td><td>How many <code>(</code> we've placed.</td></tr>
+        <tr><td><code>close</code></td><td>How many <code>)</code> we've placed.</td></tr>
+    </table>
+    <p>"Depth" is implicit: <code>open + close</code> = next slot to fill. No <code>used[]</code> — characters come from an unlimited supply; only the counters constrain us.</p>
+</section>
+
+<section>
+    <h2>The code</h2>
+    <pre><code class="language-c">char chosen[64];
+
+void gen(int open, int close, int n) {
+    if (open + close == 2 * n) {
+        chosen[2*n] = '\0';
+        printf("%s\n", chosen);
+        return;
+    }
+    if (open &lt; n) {
+        chosen[open + close] = '(';
+        gen(open + 1, close, n);
+    }
+    if (close &lt; open) {
+        chosen[open + close] = ')';
+        gen(open, close + 1, n);
+    }
+}
+
+int main(void) { gen(0, 0, 3); return 0; }</code></pre>
+    <p>Same shape as <code>permute()</code>. Two recursive calls (the two choices) gated by constraints. Implicit undo because each branch overwrites <code>chosen[open + close]</code> within its own scope — we never read past the depth we're at.</p>
+</section>
+
+<section>
+    <h2>Trace for <code>n = 2</code></h2>
+    <pre><code class="nohighlight">                       ""    (open=0, close=0)
+                     /     \
+                  "("          [no — close &lt; open is false]
+              (1, 0)
+              /     \
+           "(("          "()"
+          (2, 0)         (1, 1)
+            |            /    \
+          "(()"      "()("       [no — open &lt; n already at n=2 ... wait, open=1 so OK]
+          (2, 1)     (2, 1)
+            |            |
+         "(())"        "()()"
+         PRINT         PRINT</code></pre>
+    <p>Two valid leaves for <code>n = 2</code>: <code>(())</code> and <code>()()</code>. Constraints prune illegal branches before we waste effort on them.</p>
+</section>
+
+<section>
+    <h2>What we learn</h2>
+    <table>
+        <tr><th>Problem</th><th>What "choose" means</th><th>Bookkeeping</th></tr>
+        <tr><td>Permutations</td><td>pick any unused letter (n choices)</td><td><code>used[]</code></td></tr>
+        <tr><td>Subsets</td><td>include or exclude this element</td><td>none — visit in order</td></tr>
+        <tr><td>Permutations II</td><td>permutations + skip duplicate prefixes</td><td><code>used[]</code> + sorted input</td></tr>
+        <tr><td>Generate Parens</td><td>place <code>(</code> or <code>)</code>, gated by counters</td><td>two counters</td></tr>
+    </table>
+    <div class="success-box">
+        Same skeleton. Different choice, different completion test, different bookkeeping. The recursion writes the rest.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
      WRAP
 ════════════════════════════════════════════════════ -->
 <section class="center-content">
