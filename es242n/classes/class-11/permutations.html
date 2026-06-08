@@ -574,10 +574,11 @@ D A C B      D B C A      D C B A</code></pre>
     <p>You don't know where you came from. You just have to do your job: <strong>fill the next empty slot</strong>.</p>
     <p>What do you need to be told from outside?</p>
     <ul class="fragment">
-        <li>Which slot is the next empty one.</li>
-        <li>What letters are already placed (so you don't reuse them).</li>
+        <li><strong>Which slot</strong> you're filling next — so you know where to write.</li>
+        <li><strong>What letters are already on the path</strong> — so you can print them when you reach the bottom.</li>
+        <li><strong>Which letters are still available</strong> — so you don't pick one that's already on the path.</li>
     </ul>
-    <p class="fragment">Two pieces of information. In code, we'll keep them in three arrays — <code>chosen[]</code>, <code>used[]</code>, and a <code>depth</code> counter — because we want fast lookups, not because there's a third concept.</p>
+    <p class="fragment">Three things. The next three slides give each one a name in code: <code>depth</code>, <code>chosen[]</code>, <code>used[]</code>.</p>
 </section>
 
 <!-- ─── 10b. The path so far — chosen[] ───────────── -->
