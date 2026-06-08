@@ -68,7 +68,7 @@
             color: #abb2bf;
             padding: 1em;
             border-radius: 8px;
-            max-height: 480px;
+            max-height: 420px;
             overflow: auto;
         }
 
@@ -166,282 +166,177 @@
             line-height: 1.4;
         }
 
-        /* deck-specific: cards-on-table visual */
-        .reveal .card-row {
-            display: flex;
-            justify-content: center;
-            gap: 0.8em;
-            margin: 1em 0;
-        }
-        .reveal .letter-card {
-            width: 60px; height: 80px;
-            border: 2px solid var(--main-color);
-            border-radius: 8px;
-            background: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-family: 'Monaco', 'Menlo', monospace;
-            font-size: 1.6em; font-weight: 700;
-            color: var(--main-color);
-        }
-        .reveal .letter-card.placed { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
-        .reveal .letter-card.used { opacity: 0.3; text-decoration: line-through; }
-        .reveal .letter-card.slot { background: var(--light-bg); color: #bdc3c7; border-style: dashed; }
-
-        /* slot row labels above */
-        .reveal .slot-labels {
-            display: flex; justify-content: center; gap: 0.8em;
-            font-size: 0.7em; color: #95a5a6; margin-top: -0.4em;
-            margin-bottom: 0.8em;
-        }
-        .reveal .slot-labels .label { width: 60px; text-align: center; }
-
-        /* state boxes */
-        .reveal .state-box {
-            display: inline-block;
-            border: 1.5px solid var(--main-color);
-            border-radius: 6px;
-            padding: 0.4em 0.8em;
-            margin: 0.3em;
-            background: #fff;
-        }
-        .reveal .state-box .label { font-size: 0.7em; color: #95a5a6; display: block; }
-        .reveal .state-box .value { font-family: 'Monaco', 'Menlo', monospace; font-size: 1.1em; color: var(--main-color); }
-
-        /* trace table */
+        /* deck-specific: trace table styling for state-per-call view */
         .reveal .trace td.depth { font-weight: 600; color: var(--main-color); }
         .reveal .trace td.arr   { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.95em; }
         .reveal .trace td.note  { font-size: 0.85em; color: #6c757d; }
 
-        /* large code reference slide */
+        /* deck-specific: typing-reference slide */
         .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
         .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+
+        /* deck-specific: animated tree-walk slide */
+        .reveal .walk-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 1fr;
+            gap: 1em;
+            align-items: start;
+        }
+        .reveal .walk-out {
+            background: var(--code-bg);
+            color: #abb2bf;
+            border-radius: 8px;
+            padding: 0.9em 1em;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.9em;
+            line-height: 1.6;
+        }
+        .reveal .walk-out .out-line {
+            display: block;
+            white-space: pre;
+        }
+        .reveal .walk-out .out-line .arrow { color: #7f8c8d; margin-right: 0.5em; }
+        .reveal .walk-label {
+            text-align: center;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 0.95em;
+            color: var(--accent-color);
+            margin-top: 0.2em;
+        }
     </style>
 </head>
 <body>
 <div class="reveal">
 <div class="slides">
 
-<!-- ═══════════════════════════════════════════════════
-     TITLE
-════════════════════════════════════════════════════ -->
+<!-- ─── Title ────────────────────────────────────── -->
 <section class="center-content">
     <h1>Permutations</h1>
-    <h3 style="color:#7f8c8d;">Building the intuition we skipped</h3>
+    <h3 style="color:#7f8c8d;">Building the intuition</h3>
     <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 11 &middot; 8 June 2026</p>
 </section>
 
+<!-- ─── 1. The challenge ─────────────────────────── -->
 <section>
-    <h2>Today's plan</h2>
-    <p>We saw permutations on Day 10. The code worked. Most of us did not understand <em>why</em>.</p>
-    <p>So today we start over. Slowly.</p>
-    <ul>
-        <li>Tiny examples first.</li>
-        <li>Then one big insight.</li>
-        <li>Then paper. Then code.</li>
-    </ul>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 1 — TINY EXAMPLES FIRST
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 1</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Start small. Really small.</p>
-</section>
-
-<section>
-    <h2>One letter: <code>{A}</code></h2>
-    <p>How many ways to arrange one letter?</p>
-    <pre><code>A</code></pre>
-    <p>One.</p>
-    <p class="small">That was easy. Stay with me.</p>
-</section>
-
-<section>
-    <h2>Two letters: <code>{A, B}</code></h2>
-    <pre><code>A B
-B A</code></pre>
-    <p>Two arrangements.</p>
-</section>
-
-<section>
-    <h2>Three letters: <code>{A, B, C}</code></h2>
-    <pre><code>A B C
-A C B
-B A C
-B C A
-C A B
-C B A</code></pre>
-    <p>Six.</p>
-</section>
-
-<section>
-    <h2>Four letters: <code>{A, B, C, D}</code></h2>
-    <p>Don't list them. Just guess: how many?</p>
-    <p class="fragment"><strong>24.</strong></p>
-    <p class="fragment small">Don't believe me? You can count them later. The number is what matters.</p>
-</section>
-
-<section>
-    <h2>A pattern</h2>
-    <table style="width:60%;">
-        <tr><th>Letters</th><th>Arrangements</th></tr>
-        <tr><td>1</td><td>1</td></tr>
-        <tr><td>2</td><td>2</td></tr>
-        <tr><td>3</td><td>6</td></tr>
-        <tr><td>4</td><td>24</td></tr>
-    </table>
-    <p class="fragment">That's <code>1!, 2!, 3!, 4!</code>. <em>n factorial.</em></p>
-    <p class="fragment small">Why does it grow so fast? That's the question that gives us the algorithm.</p>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 2 — THE SECRET
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 2</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">The one insight</p>
-</section>
-
-<section class="center-content">
-    <p class="big-q" style="font-size:1.6em;">If you knew how to list permutations of two letters,<br>could you list permutations of three?</p>
-</section>
-
-<section>
-    <h2>Look at the three-letter list again</h2>
-    <pre style="font-size:0.8em;"><code>A | B C        ← A first, then perms of {B, C}
-A | C B
-B | A C        ← B first, then perms of {A, C}
-B | C A
-C | A B        ← C first, then perms of {A, B}
-C | B A</code></pre>
-    <p style="margin-top:0.6em;">The list splits into <strong>three groups of two</strong>.</p>
-</section>
-
-<section>
-    <h2>Read the bar again</h2>
-    <p>Every line is:</p>
-    <p style="text-align:center; font-size:1.3em; margin:1em 0;">
-        <strong>(a first letter)</strong> &nbsp;|&nbsp; <strong>(a permutation of the rest)</strong>
-    </p>
-    <div class="key-point">
-        Permutations of three letters = pick one letter, then list permutations of the other two.
-    </div>
-</section>
-
-<section>
-    <h2>That's a recursive recipe</h2>
-    <p>To permute <code>{A, B, C}</code>:</p>
-    <ol>
-        <li>Pick <code>A</code> first. List permutations of <code>{B, C}</code>. Glue <code>A</code> in front of each.</li>
-        <li>Pick <code>B</code> first. List permutations of <code>{A, C}</code>. Glue <code>B</code> in front.</li>
-        <li>Pick <code>C</code> first. List permutations of <code>{A, B</code>}. Glue <code>C</code> in front.</li>
-    </ol>
-    <p class="small">Each smaller problem is exactly the same kind of problem — just with one fewer letter.</p>
-</section>
-
-<section>
-    <h2>And what about <code>{B, C}</code>?</h2>
-    <p>The same trick again:</p>
-    <ol>
-        <li>Pick <code>B</code> first. List permutations of <code>{C}</code>. Glue <code>B</code> in front.</li>
-        <li>Pick <code>C</code> first. List permutations of <code>{B}</code>. Glue <code>C</code> in front.</li>
-    </ol>
-    <p>And <code>{C}</code> is one letter — just C. Done.</p>
+    <h2>The challenge</h2>
+    <p>Print all permutations of <code>{1, 2, 3, 4}</code>.</p>
+    <p>The iterative approach needs four nested loops, with skip-if-equal conditions everywhere:</p>
+    <pre><code class="language-c">for (i = 0; i &lt; n; i++)
+  for (j = 0; j &lt; n; j++) { if (j == i) continue;
+    for (k = 0; k &lt; n; k++) { if (k == i || k == j) continue;
+      for (l = 0; l &lt; n; l++) { if (l == i || l == j || l == k) continue;
+        printf("%d %d %d %d\n", a[i], a[j], a[k], a[l]);
+}}}</code></pre>
+    <p>For arbitrary <code>n</code>, you cannot write <code>n</code> nested loops — <code>n</code> is a runtime value.</p>
     <div class="info-box">
-        Every recursion needs a stopping point. Ours is: "one letter — just print it."
+        Fixed-depth iteration. Variable-depth problem. We need a different tool.
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 3 — DO IT BY HAND
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 3</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Now do it on paper</p>
-</section>
-
+<!-- ─── 2. Why n! (build big from small) ──────────── -->
 <section>
-    <h2>Two boxes on your page</h2>
-    <p>Draw two boxes:</p>
-    <div class="two-col" style="margin-top:1em;">
-        <div class="card">
-            <h4>PLACED</h4>
-            <p class="small">What I've put down so far, in order.</p>
-        </div>
-        <div class="card">
-            <h4>AVAILABLE</h4>
-            <p class="small">What letters I can still pick.</p>
-        </div>
-    </div>
-    <p class="small" style="margin-top:0.6em;">We start with PLACED empty and AVAILABLE = <code>{A, B, C}</code>.</p>
+    <h2>Why <code>n!</code>?</h2>
+    <p>One way to see it: build big from small.</p>
+    <p>Suppose we already have all six permutations of <code>{A, B, C}</code>:</p>
+    <pre><code>A B C    B A C    C A B
+A C B    B C A    C B A</code></pre>
+    <p>To get permutations of <code>{A, B, C, D}</code>, take each one and insert <code>D</code> in every position:</p>
+    <pre><code>A B C  →  D A B C   A D B C   A B D C   A B C D     (4 new)
+A C B  →  D A C B   A D C B   A C D B   A C B D     (4 new)
+…</code></pre>
+    <p>4 positions × 6 permutations = <strong>24</strong>. Add E: 5 × 24 = 120. That's why permutations(n) = n × permutations(n−1) = <code>n!</code>.</p>
 </section>
 
+<!-- ─── 3. Switch direction ─────────────────────── -->
 <section>
-    <h2>Step 1: pick a letter</h2>
-    <p>From AVAILABLE, pick one. Say we pick <code>B</code>.</p>
-    <div class="two-col" style="margin-top:1em;">
-        <div class="card">
-            <h4>PLACED</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;">B</p>
-        </div>
-        <div class="card">
-            <h4>AVAILABLE</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;">A, C</p>
-        </div>
+    <h2>That's recursive — but going the other way is easier to code</h2>
+    <p>The "insert into every gap" view builds <em>all</em> permutations of <code>n-1</code> first, stores them, then expands. To print 120 perms of 5 items, we'd hold all 24 perms of 4 in memory first.</p>
+    <p>Same recursion, opposite direction: instead of <em>adding the last letter</em>, <em>decide the first letter</em>, then recurse on what's left.</p>
+    <div class="key-point">
+        Same recurrence, n × T(n−1). One direction stores the small ones. The other prints one permutation at a time.
     </div>
 </section>
 
+<!-- ─── 4. Group by first letter ──────────────────── -->
 <section>
-    <h2>Step 2: pick again</h2>
-    <p>From the new AVAILABLE = <code>{A, C}</code>, pick one. Say we pick <code>A</code>.</p>
-    <div class="two-col" style="margin-top:1em;">
-        <div class="card">
-            <h4>PLACED</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;">B, A</p>
-        </div>
-        <div class="card">
-            <h4>AVAILABLE</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;">C</p>
-        </div>
+    <h2>Every permutation starts with something</h2>
+    <p>All 24 permutations of <code>{A, B, C, D}</code> split into four groups of six:</p>
+    <table style="width:75%;">
+        <tr><th>First letter</th><th>How many start that way</th></tr>
+        <tr><td><strong>A</strong></td><td>6</td></tr>
+        <tr><td><strong>B</strong></td><td>6</td></tr>
+        <tr><td><strong>C</strong></td><td>6</td></tr>
+        <tr><td><strong>D</strong></td><td>6</td></tr>
+    </table>
+    <p>Four groups, six each. 24.</p>
+</section>
+
+<!-- ─── 5. Each group IS a smaller permutation problem ─── -->
+<section>
+    <h2>Look inside one group</h2>
+    <p>Take the six that start with <code>A</code>:</p>
+    <pre><code>A B C D     A C B D     A D B C
+A B D C     A C D B     A D C B</code></pre>
+    <p>Strip the <code>A</code>:</p>
+    <pre><code>B C D       C B D       D B C
+B D C       C D B       D C B</code></pre>
+    <p>Those are exactly the six permutations of <code>{B, C, D}</code>.</p>
+    <div class="key-point">
+        Permutations starting with <code>A</code> = <code>A</code>, then every permutation of the remaining letters.
     </div>
 </section>
 
+<!-- ─── 6. The recurrence ─────────────────────────── -->
 <section>
-    <h2>Step 3: forced</h2>
-    <p>Only <code>C</code> is left. Pick it.</p>
-    <div class="two-col" style="margin-top:1em;">
-        <div class="card">
-            <h4>PLACED</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;">B, A, C</p>
-        </div>
-        <div class="card">
-            <h4>AVAILABLE</h4>
-            <p style="font-family:Monaco,monospace; font-size:1.2em;"><em>empty</em></p>
-        </div>
+    <h2>The same problem, smaller input</h2>
+    <div style="text-align:center; font-family:Monaco,Menlo,monospace; font-size:0.95em; line-height:1.8; background:var(--light-bg); padding:1.2em; border-radius:8px;">
+        permutations(<code>{A, B, C, D}</code>) =<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>A</code> · permutations(<code>{B, C, D}</code>) &nbsp;∪<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>B</code> · permutations(<code>{A, C, D}</code>) &nbsp;∪<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>C</code> · permutations(<code>{A, B, D}</code>) &nbsp;∪<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<code>D</code> · permutations(<code>{A, B, C}</code>)
     </div>
+    <p>Each line is the same problem with one fewer letter.</p>
+    <p>That's recursion. The function calls itself, on a smaller input, with confidence that the call will work.</p>
+</section>
+
+<!-- ─── 7. Trust the call ─────────────────────────── -->
+<section>
+    <h2>What does the recursive call promise?</h2>
+    <blockquote style="font-size:1.05em;">
+        "<code>permute({remaining letters})</code> prints <em>every</em> permutation of those letters."
+    </blockquote>
+    <p>That's the contract. The whole job of one call to <code>permute</code>:</p>
+    <ul>
+        <li>Pick a first letter from what's left.</li>
+        <li>Hand the remaining letters to the recursive call.</li>
+        <li>Trust it to print every permutation of those.</li>
+        <li>Move on to the next first letter.</li>
+    </ul>
+    <div class="info-box">
+        Define what <em>one</em> call promises. Trust the recursion to keep that promise. We never trace inside the call.
+    </div>
+</section>
+
+<!-- ─── 8. Concrete trust-the-call ────────────────── -->
+<section>
+    <h2>Concretely — pick <code>D</code> first</h2>
+    <p>Fix <code>D</code> in slot 0. Call <code>permute({A, B, C})</code>. By the promise, it prints:</p>
+    <pre><code>A B C        B A C        C A B
+A C B        B C A        C B A</code></pre>
+    <p>With <code>D</code> in front of each:</p>
+    <pre><code>D A B C      D B A C      D C A B
+D A C B      D B C A      D C B A</code></pre>
+    <p>Six permutations starting with <code>D</code>. Repeat with <code>A</code>, <code>B</code>, <code>C</code> as the first letter. 24 total.</p>
     <div class="success-box">
-        AVAILABLE is empty → PLACED is one permutation. Print it: <code>B A C</code>.
+        We wrote exactly <em>one</em> level of the algorithm — pick a letter, call, repeat. The recursion writes the rest.
     </div>
 </section>
 
-<section>
-    <h2>One path, done</h2>
-    <p>That whole process — pick, pick, pick until empty — produced <strong>one</strong> permutation.</p>
-    <p>To get all six, we need to repeat with different first picks. Then different second picks. And so on.</p>
-    <p class="fragment small">Drawing this out, it's a tree.</p>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 4 — THE TREE OF CHOICES
-════════════════════════════════════════════════════ -->
+<!-- ─── 9. The choice tree ────────────────────────── -->
 <section class="center-content">
-    <h1 style="font-size:2.8em;">Part 4</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">The tree the recursion walks</p>
-</section>
-
-<section class="center-content">
-    <h2>Every choice opens a branch</h2>
+    <h2>The recursion's invisible drawing</h2>
+    <p>Each call is a node. Each "pick a letter" is a branch. Each leaf is a permutation.</p>
 
     <svg viewBox="0 0 720 320" width="720" height="320" style="margin-top:0.4em;">
         <line x1="360" y1="50" x2="130" y2="105" stroke="#95a5a6" stroke-width="1.8"/>
@@ -498,250 +393,230 @@ C | B A</code></pre>
         <rect x="610" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2"/>
         <text x="650" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[C,B,A]</text>
     </svg>
-    <p style="color:#7f8c8d; margin-top:0.4em;">Six green leaves. Six permutations. One per path.</p>
+    <p style="color:#7f8c8d; margin-top:0.4em;">Six leaves for three letters. <code>n!</code> leaves for <code>n</code>.</p>
 </section>
 
+<!-- ─── 9b. Watch it walk (animated) ───────────────── -->
 <section>
-    <h2>Where are the boxes?</h2>
-    <p>At every node, PLACED is whatever's written inside that node.</p>
-    <p>AVAILABLE is "the original letters" minus "what's in the node."</p>
-    <div class="info-box">
-        The recursion never <em>stores</em> the tree. The tree is the picture of what the recursion does. Each node is a function call.
+    <h2>Watch the recursion walk it</h2>
+    <p class="small" style="margin-bottom:0.4em;">Each click: descend to a leaf, print, then back up and try the next branch. The blue path is "where the recursion is right now."</p>
+
+    <div class="walk-grid">
+        <div>
+            <svg viewBox="0 0 720 320" width="100%" style="max-height:380px;">
+                <!-- ── static dim tree ── -->
+                <g stroke="#dee2e6" stroke-width="1.8" fill="none">
+                    <line x1="360" y1="50" x2="130" y2="105"/>
+                    <line x1="360" y1="50" x2="360" y2="105"/>
+                    <line x1="360" y1="50" x2="590" y2="105"/>
+                    <line x1="130" y1="135" x2="70"  y2="180"/>
+                    <line x1="130" y1="135" x2="190" y2="180"/>
+                    <line x1="360" y1="135" x2="300" y2="180"/>
+                    <line x1="360" y1="135" x2="420" y2="180"/>
+                    <line x1="590" y1="135" x2="530" y2="180"/>
+                    <line x1="590" y1="135" x2="650" y2="180"/>
+                    <line x1="70"  y1="205" x2="70"  y2="260"/>
+                    <line x1="190" y1="205" x2="190" y2="260"/>
+                    <line x1="300" y1="205" x2="300" y2="260"/>
+                    <line x1="420" y1="205" x2="420" y2="260"/>
+                    <line x1="530" y1="205" x2="530" y2="260"/>
+                    <line x1="650" y1="205" x2="650" y2="260"/>
+                </g>
+
+                <!-- static nodes (dim) -->
+                <g font-family="Monaco, monospace" fill="#bdc3c7">
+                    <rect x="320" y="20" width="80" height="30" rx="5" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="360" y="40" text-anchor="middle" font-size="14">[ ]</text>
+                    <rect x="100" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="130" y="125" text-anchor="middle" font-size="13">[A]</text>
+                    <rect x="330" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="360" y="125" text-anchor="middle" font-size="13">[B]</text>
+                    <rect x="560" y="105" width="60" height="30" rx="5" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="590" y="125" text-anchor="middle" font-size="13">[C]</text>
+                    <rect x="35"  y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="70"  y="198" text-anchor="middle" font-size="12">[A,B]</text>
+                    <rect x="155" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="190" y="198" text-anchor="middle" font-size="12">[A,C]</text>
+                    <rect x="265" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="300" y="198" text-anchor="middle" font-size="12">[B,A]</text>
+                    <rect x="385" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="420" y="198" text-anchor="middle" font-size="12">[B,C]</text>
+                    <rect x="495" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="530" y="198" text-anchor="middle" font-size="12">[C,A]</text>
+                    <rect x="615" y="180" width="70" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="650" y="198" text-anchor="middle" font-size="12">[C,B]</text>
+                    <rect x="30"  y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="70"  y="278" text-anchor="middle" font-size="12">[A,B,C]</text>
+                    <rect x="150" y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="190" y="278" text-anchor="middle" font-size="12">[A,C,B]</text>
+                    <rect x="260" y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="300" y="278" text-anchor="middle" font-size="12">[B,A,C]</text>
+                    <rect x="380" y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="420" y="278" text-anchor="middle" font-size="12">[B,C,A]</text>
+                    <rect x="490" y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="530" y="278" text-anchor="middle" font-size="12">[C,A,B]</text>
+                    <rect x="610" y="260" width="80" height="25" rx="4" fill="#fff" stroke="#dee2e6" stroke-width="1.5"/>
+                    <text x="650" y="278" text-anchor="middle" font-size="12">[C,B,A]</text>
+                </g>
+
+                <!-- ── PATH 1: A → B → C ── -->
+                <g class="fragment current-visible" data-fragment-index="1">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="130" y2="105"/>
+                        <line x1="130" y1="135" x2="70"  y2="180"/>
+                        <line x1="70"  y1="205" x2="70"  y2="260"/>
+                    </g>
+                    <rect x="100" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="130" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[A]</text>
+                    <rect x="35"  y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="70"  y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[A,B]</text>
+                    <rect x="30"  y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="70"  y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[A,B,C]</text>
+                </g>
+
+                <!-- ── PATH 2: A → C → B ── -->
+                <g class="fragment current-visible" data-fragment-index="2">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="130" y2="105"/>
+                        <line x1="130" y1="135" x2="190" y2="180"/>
+                        <line x1="190" y1="205" x2="190" y2="260"/>
+                    </g>
+                    <rect x="100" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="130" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[A]</text>
+                    <rect x="155" y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="190" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[A,C]</text>
+                    <rect x="150" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="190" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[A,C,B]</text>
+                </g>
+
+                <!-- ── PATH 3: B → A → C ── -->
+                <g class="fragment current-visible" data-fragment-index="3">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="360" y2="105"/>
+                        <line x1="360" y1="135" x2="300" y2="180"/>
+                        <line x1="300" y1="205" x2="300" y2="260"/>
+                    </g>
+                    <rect x="330" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="360" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[B]</text>
+                    <rect x="265" y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="300" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[B,A]</text>
+                    <rect x="260" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="300" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[B,A,C]</text>
+                </g>
+
+                <!-- ── PATH 4: B → C → A ── -->
+                <g class="fragment current-visible" data-fragment-index="4">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="360" y2="105"/>
+                        <line x1="360" y1="135" x2="420" y2="180"/>
+                        <line x1="420" y1="205" x2="420" y2="260"/>
+                    </g>
+                    <rect x="330" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="360" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[B]</text>
+                    <rect x="385" y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="420" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[B,C]</text>
+                    <rect x="380" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="420" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[B,C,A]</text>
+                </g>
+
+                <!-- ── PATH 5: C → A → B ── -->
+                <g class="fragment current-visible" data-fragment-index="5">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="590" y2="105"/>
+                        <line x1="590" y1="135" x2="530" y2="180"/>
+                        <line x1="530" y1="205" x2="530" y2="260"/>
+                    </g>
+                    <rect x="560" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="590" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[C]</text>
+                    <rect x="495" y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="530" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[C,A]</text>
+                    <rect x="490" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="530" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[C,A,B]</text>
+                </g>
+
+                <!-- ── PATH 6: C → B → A ── -->
+                <g class="fragment current-visible" data-fragment-index="6">
+                    <g stroke="#3498db" stroke-width="3.5" fill="none">
+                        <line x1="360" y1="50" x2="590" y2="105"/>
+                        <line x1="590" y1="135" x2="650" y2="180"/>
+                        <line x1="650" y1="205" x2="650" y2="260"/>
+                    </g>
+                    <rect x="560" y="105" width="60" height="30" rx="5" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="590" y="125" text-anchor="middle" font-family="Monaco, monospace" font-size="13" fill="#fff" font-weight="700">[C]</text>
+                    <rect x="615" y="180" width="70" height="25" rx="4" fill="#3498db" stroke="#3498db" stroke-width="2"/>
+                    <text x="650" y="198" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#fff" font-weight="700">[C,B]</text>
+                    <rect x="610" y="260" width="80" height="25" rx="4" fill="#d4edda" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="650" y="278" text-anchor="middle" font-family="Monaco, monospace" font-size="12" fill="#1e7e34" font-weight="700">[C,B,A]</text>
+                </g>
+            </svg>
+        </div>
+
+        <div>
+            <div class="walk-out">
+                <span class="out-line fragment" data-fragment-index="1"><span class="arrow">▸</span>A B C</span>
+                <span class="out-line fragment" data-fragment-index="2"><span class="arrow">▸</span>A C B</span>
+                <span class="out-line fragment" data-fragment-index="3"><span class="arrow">▸</span>B A C</span>
+                <span class="out-line fragment" data-fragment-index="4"><span class="arrow">▸</span>B C A</span>
+                <span class="out-line fragment" data-fragment-index="5"><span class="arrow">▸</span>C A B</span>
+                <span class="out-line fragment" data-fragment-index="6"><span class="arrow">▸</span>C B A</span>
+            </div>
+            <p class="walk-label fragment" data-fragment-index="6">Done — all six permutations.</p>
+        </div>
     </div>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 5 — NAMING THE BOXES IN CODE
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 5</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">From paper to code</p>
-</section>
-
+<!-- ─── 10. What we carry across calls ──────────────── -->
 <section>
-    <h2>PLACED in code</h2>
-    <p>PLACED is an ordered list. In C, we use an array.</p>
-    <p>Call it <code>chosen[]</code>.</p>
-    <pre><code>chosen[0] = B
-chosen[1] = A
-chosen[2] = C</code></pre>
-    <p>The length of the placed list = how deep we are. We'll call that depth.</p>
-</section>
-
-<section>
-    <h2>AVAILABLE in code</h2>
-    <p>One way: keep a real list, remove from it, put it back.</p>
-    <p>Easier way: keep a flag for each letter — "still available" or "taken."</p>
-    <pre><code>used[0] = 0   ← A is available
-used[1] = 1   ← B is taken
-used[2] = 0   ← C is available</code></pre>
-    <p>The available letters are the ones with <code>used[i] == 0</code>.</p>
-</section>
-
-<section>
-    <h2>Why <code>used[]</code> instead of a real list?</h2>
-    <p>If we removed B from a list, we'd have to slide elements around. And then put B back.</p>
-    <p>Flipping a flag is one operation. No sliding.</p>
-    <div class="info-box">
-        We don't actually remove anything. We just mark what's no longer available. The recursion sees the array the same way it always did.
-    </div>
-</section>
-
-<section>
-    <h2>Three pieces of state</h2>
-    <table style="width:75%;">
-        <tr><th>On paper</th><th>In code</th><th>What it tells us</th></tr>
-        <tr><td>PLACED</td><td><code>chosen[]</code></td><td>What's in the prefix, in order</td></tr>
-        <tr><td>AVAILABLE</td><td><code>used[]</code></td><td>Which letters are no longer pickable</td></tr>
-        <tr><td>Position</td><td><code>depth</code></td><td>Which slot we're filling right now</td></tr>
+    <h2>What we carry across calls</h2>
+    <p>To walk the tree we need three pieces of state:</p>
+    <table style="width:85%;">
+        <tr><th>Name</th><th>What it holds</th></tr>
+        <tr><td><code>chosen[]</code></td><td>The path so far — letters we've placed, in order.</td></tr>
+        <tr><td><code>used[]</code></td><td>A flag per letter: <code>1</code> if already on the path, <code>0</code> if available.</td></tr>
+        <tr><td><code>depth</code></td><td>Which slot we're filling right now.</td></tr>
     </table>
-    <p class="small" style="margin-top:0.6em;">Three things. That's the whole state.</p>
+    <p>We don't actually remove letters when we pick them — we just mark <code>used[i] = 1</code>. Cheaper than shifting an array, easier to undo.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 6 — ONE STEP OF THE ALGORITHM
-════════════════════════════════════════════════════ -->
+<!-- ─── 11. The three-step pattern ──────────────────── -->
 <section class="center-content">
-    <h1 style="font-size:2.8em;">Part 6</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">What does one step do?</p>
-</section>
-
-<section>
-    <h2>Pretend you are <code>permute(depth)</code></h2>
-    <p>You have been called. Your job:</p>
-    <ol>
-        <li>Look at slot <code>depth</code>.</li>
-        <li>Try every available letter in that slot.</li>
-        <li>For each try, ask the recursive call to handle the rest.</li>
-        <li>Then put the letter back so the next try is clean.</li>
-    </ol>
-    <p>That's it.</p>
-</section>
-
-<section>
-    <h2>In plain English</h2>
-    <pre style="font-size:0.78em;"><code>for each letter i:
-    if i is taken: skip
-    place i at slot depth
-    mark i as taken
-    ask the recursion to fill slots after depth
-    un-mark i</code></pre>
-    <p class="small">Six lines. The five words "ask the recursion to fill" are doing the heavy lifting.</p>
-</section>
-
-<section>
-    <h2>One thing to notice</h2>
-    <p>The loop is the only place we make a choice. The recursion never picks for us; it just <em>fills the rest</em>.</p>
-    <p>Every node in the tree is one entry to <code>permute()</code>. The for-loop inside it makes the branches.</p>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 7 — TRUST THE CALL
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 7</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Trust the call</p>
-</section>
-
-<section>
-    <h2>When we write <code>permute(depth + 1)</code>...</h2>
-    <p>...what are we trusting that call to do?</p>
-    <p class="fragment" style="margin-top:1em;"><strong>Print every permutation that <em>starts</em> with the values already in <code>chosen[0..depth]</code>.</strong></p>
-    <p class="fragment small" style="margin-top:1em;">We do not trace inside the call. We trust it.</p>
-</section>
-
-<section>
-    <h2>Why this is the hard part</h2>
-    <p>If you try to imagine the recursion fully expanded, you'll see hundreds of calls and panic.</p>
-    <p>Instead, ask:</p>
-    <ul>
-        <li>"What does this one call do?"</li>
-        <li>"What does it promise the smaller call will do?"</li>
-    </ul>
-    <div class="key-point">
-        Define one level. Trust the level below. The whole tree falls out for free.
-    </div>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 8 — UNDO
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 8</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Why "undo" matters</p>
-</section>
-
-<section>
-    <h2>After the recursive call returns</h2>
-    <p>The recursion has printed everything that starts with the letters we placed.</p>
-    <p>Now we want to try a <em>different</em> letter in slot <code>depth</code>.</p>
-    <p>But our last choice is still in <code>chosen[depth]</code>, and still marked in <code>used[]</code>.</p>
-    <p class="fragment">If we don't put things back, the next iteration of the loop sees the wrong state.</p>
-</section>
-
-<section>
-    <h2>What "undo" does</h2>
-    <p>One line. Right after the recursive call:</p>
-    <pre><code>used[i] = 0;</code></pre>
-    <p>That's it. We're un-marking the letter we tried so the next loop iteration starts fresh.</p>
-    <p class="small">We don't bother clearing <code>chosen[depth]</code> — the next iteration will overwrite it anyway.</p>
-</section>
-
-<section>
-    <h2>What if we forget?</h2>
-    <p>Try this thought experiment.</p>
-    <p>Pick A → recurse → it prints <code>A B C</code> and <code>A C B</code> → returns.</p>
-    <p>Loop wants to try B. But <code>used[A] = 1</code> still — we never un-marked A.</p>
-    <div class="warning-box">
-        The recursion at depth 1 also sees A as taken, even though it's been removed from slot 0 already. The whole subtree is wrong.
-    </div>
-    <p>In practice: the program prints far fewer permutations than it should, or crashes.</p>
-</section>
-
-<section class="center-content">
-    <p class="big-q" style="font-size:2em;">Choose.<br>Recurse.<br>Undo.</p>
+    <p class="big-q" style="font-size:1.8em; margin-top:1em;">Choose.<br>Recurse.<br>Undo.</p>
     <p style="margin-top:1.5em; color:#7f8c8d;">Then try the next choice.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 9 — THE CODE, LINE BY LINE
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 9</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">The code, line by line</p>
+<!-- ─── 12. Pseudocode ────────────────────────────── -->
+<section>
+    <h2>Pseudocode</h2>
+    <pre><code>permute(depth):
+    if depth == n:
+        print chosen
+        return
+    for each i in 0..n-1:
+        if used[i]: continue
+        chosen[depth] = arr[i]; used[i] = 1   // choose
+        permute(depth + 1)                     // recurse
+        used[i] = 0                            // undo</code></pre>
+    <p>The for loop is "try each first letter." The recursive call is "trust it to fill the rest." The undo is what lets the loop actually move to the next iteration.</p>
 </section>
 
+<!-- ─── 13. Why undo ──────────────────────────────── -->
 <section>
-    <h2>Step 1: the signature</h2>
-    <pre><code class="language-c">void permute(int depth, int n) {
-
-}</code></pre>
-    <p><code>depth</code> = which slot we're filling. <code>n</code> = total number of slots.</p>
+    <h2>Why undo?</h2>
+    <p>When we picked <code>A</code> for slot 0, we marked <code>used[A] = 1</code> and called <code>permute(1)</code>. It printed all permutations starting with <code>A</code>, then returned.</p>
+    <p>Now the loop wants to try <code>B</code> in slot 0. But if <code>used[A]</code> is still 1, the recursion at depth 1 thinks <code>A</code> is unavailable — even though slot 0 will be <code>B</code> now, not <code>A</code>.</p>
+    <div class="warning-box">
+        We mutate <code>chosen</code> and <code>used</code> in place. Without undo, the next iteration's recursive call sees the previous iteration's state. The whole subtree comes out wrong.
+    </div>
+    <p>One line: <code>used[i] = 0</code>. That's the undo.</p>
 </section>
 
+<!-- ─── 14. The code ──────────────────────────────── -->
 <section>
-    <h2>Step 2: the base case</h2>
-    <pre><code class="language-c">void permute(int depth, int n) {
-    if (depth == n) {
-        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
-        printf("\n");
-        return;
-    }
-}</code></pre>
-    <p>When all slots are filled, print and stop.</p>
-</section>
+    <h2>The code</h2>
+    <pre><code class="language-c">#include &lt;stdio.h&gt;
+#define N 20
 
-<section>
-    <h2>Step 3: the loop over choices</h2>
-    <pre><code class="language-c">void permute(int depth, int n) {
-    if (depth == n) { /* print and return */ }
-
-    for (int i = 0; i &lt; n; i++) {
-        if (used[i]) continue;     // skip taken letters
-
-    }
-}</code></pre>
-    <p>Try every letter <code>arr[i]</code>. Skip the ones already in use.</p>
-</section>
-
-<section>
-    <h2>Step 4: choose</h2>
-    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
-        if (used[i]) continue;
-        chosen[depth] = arr[i];    // place it in this slot
-        used[i] = 1;               // mark it taken
-
-    }</code></pre>
-    <p>The "choose" step is two lines: place into <code>chosen</code>, flip the flag in <code>used</code>.</p>
-</section>
-
-<section>
-    <h2>Step 5: recurse</h2>
-    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
-        if (used[i]) continue;
-        chosen[depth] = arr[i];
-        used[i] = 1;
-        permute(depth + 1, n);     // trust this call
-
-    }</code></pre>
-    <p>One line. We trust it to fill the rest.</p>
-</section>
-
-<section>
-    <h2>Step 6: undo</h2>
-    <pre><code class="language-c">    for (int i = 0; i &lt; n; i++) {
-        if (used[i]) continue;
-        chosen[depth] = arr[i];
-        used[i] = 1;
-        permute(depth + 1, n);
-        used[i] = 0;               // ← undo
-    }</code></pre>
-    <p>One line. Un-mark the letter so the next iteration is clean.</p>
-</section>
-
-<section>
-    <h2>The whole thing</h2>
-    <pre><code class="language-c">int arr[N], chosen[N], used[N];
+int arr[N], chosen[N], used[N];
 
 void permute(int depth, int n) {
     if (depth == n) {
@@ -756,20 +631,19 @@ void permute(int depth, int n) {
         permute(depth + 1, n);
         used[i] = 0;
     }
+}
+
+int main(void) {
+    int n; scanf("%d", &amp;n);
+    for (int i = 0; i &lt; n; i++) scanf("%d", &amp;arr[i]);
+    permute(0, n);
+    return 0;
 }</code></pre>
-    <p class="small">Fifteen lines. The seven inside the for-loop are the whole pattern.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 10 — HAND TRACE
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 10</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Trace <code>permute(0)</code> for <code>arr = {1, 2, 3}</code></p>
-</section>
-
+<!-- ─── 15. Hand trace ────────────────────────────── -->
 <section>
-    <h2>State at every call</h2>
+    <h2>Trace <code>permute(0)</code> on <code>{1, 2, 3}</code></h2>
     <table class="trace">
         <tr><th>depth</th><th>chosen</th><th>used</th><th>action</th></tr>
         <tr><td class="depth">0</td><td class="arr">[_, _, _]</td><td class="arr">[0,0,0]</td><td class="note">try i=0 → pick 1</td></tr>
@@ -780,71 +654,43 @@ void permute(int depth, int n) {
         <tr><td class="depth">1</td><td class="arr">[1, _, _]</td><td class="arr">[1,0,0]</td><td class="note">undo i=1; try i=2 → pick 3</td></tr>
         <tr><td class="depth">2</td><td class="arr">[1, 3, _]</td><td class="arr">[1,0,1]</td><td class="note">try i=1 → pick 2</td></tr>
         <tr><td class="depth">3</td><td class="arr">[1, 3, 2]</td><td class="arr">[1,1,1]</td><td class="note"><strong>print "1 3 2"</strong></td></tr>
-        <tr><td colspan="4" class="note" style="text-align:center;">…and so on through "2 1 3", "2 3 1", "3 1 2", "3 2 1".</td></tr>
+        <tr><td colspan="4" class="note" style="text-align:center;">…continues through "2 1 3", "2 3 1", "3 1 2", "3 2 1".</td></tr>
     </table>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     PART 11 — BUGS
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 11</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">When it goes wrong</p>
-</section>
-
+<!-- ─── 16. Four bugs + diagnostic ──────────────────── -->
 <section>
-    <h2>The four common bugs</h2>
+    <h2>Four bugs and one diagnostic</h2>
     <table>
-        <tr><th>What you see</th><th>The cause</th></tr>
-        <tr><td>Only one permutation prints</td><td>Forgot <code>used[i] = 0</code></td></tr>
-        <tr><td>Repeated letters in output</td><td>Missing <code>if (used[i]) continue</code></td></tr>
-        <tr><td>Stack overflow / crash</td><td>Missing or wrong base case</td></tr>
+        <tr><th>What you see</th><th>Cause</th></tr>
+        <tr><td>Only one permutation</td><td>Forgot <code>used[i] = 0</code></td></tr>
+        <tr><td>Repeated letters</td><td>Missing <code>if (used[i]) continue</code></td></tr>
+        <tr><td>Crash / overflow</td><td>Missing base case</td></tr>
         <tr><td>All on one line</td><td>Forgot <code>printf("\n")</code></td></tr>
     </table>
     <div class="info-box">
-        Three of these four are bugs in <em>state management</em>. The fourth is just printing. Backtracking is mostly state bookkeeping.
+        Diagnostic: add <code>printf</code> for <code>chosen[0..depth-1]</code> at the top of <code>permute()</code>. You now see every node of the choice tree in visit order — bugs become obvious.
     </div>
 </section>
 
+<!-- ─── 17. Practice + takeaway ─────────────────────── -->
 <section>
-    <h2>The diagnostic move</h2>
-    <p>If your output is wrong, add one print at the top of <code>permute()</code>:</p>
-    <pre><code class="language-c">void permute(int depth, int n) {
-    for (int i = 0; i &lt; depth; i++) printf("%d ", chosen[i]);
-    printf("\n");
-    /* ... rest as before ... */
-}</code></pre>
-    <p>Now you see every node of the tree, in the order the recursion visits them. Bugs jump out.</p>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 12 — PRACTICE + WRAP
-════════════════════════════════════════════════════ -->
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 12</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Practice and wrap</p>
-</section>
-
-<section>
-    <h2>Practice between now and Wednesday</h2>
+    <h2>Practice — between now and Wednesday</h2>
     <ul>
-        <li><a href="https://leetcode.com/problems/permutations/" target="_blank">LeetCode 46. Permutations</a> — exactly the function from class.</li>
-        <li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank">LeetCode 47. Permutations II</a> — with duplicates. Subtle skip rule.</li>
+        <li><a href="https://leetcode.com/problems/permutations/" target="_blank">LeetCode 46. Permutations</a></li>
+        <li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank">LeetCode 47. Permutations II</a> — duplicates in input.</li>
         <li><a href="https://leetcode.com/problems/letter-case-permutation/" target="_blank">LeetCode 784. Letter Case Permutation</a> — branch at each letter.</li>
-        <li>In-class: print all permutations of <code>{1, 2, 3, 4}</code>. Then break each piece on purpose.</li>
+        <li>In-class: permutations of <code>{1, 2, 3, 4}</code>. Then break each piece on purpose to confirm the four bugs.</li>
     </ul>
-    <p class="small" style="margin-top:0.6em;">Subsets and generate parens on Wednesday. Sorting on Saturday. Quiz 1 covers all three.</p>
+    <p class="small">Subsets and generate parens on Wednesday. Sorting on Saturday. Quiz 1 covers all three.</p>
 </section>
 
 <section class="center-content">
     <h2>Today's takeaway</h2>
-    <p class="big-q" style="font-size:1.8em; margin-top:1em;">Choose.<br>Recurse.<br>Undo.</p>
-    <p style="margin-top:1.4em; color:#7f8c8d;">Two state arrays. One recursive call you trust. One line that puts things back.</p>
+    <p class="big-q" style="font-size:1.8em; margin-top:1em;">Same problem, smaller input.<br>Choose. Recurse. Undo.</p>
 </section>
 
-<!-- ═══════════════════════════════════════════════════
-     INSTRUCTOR TYPING REFERENCE
-════════════════════════════════════════════════════ -->
+<!-- ─── Typing reference ─────────────────────────── -->
 <section class="ref-code">
     <h3 style="margin-bottom:0.4em; color:#7f8c8d;">Typing reference</h3>
     <pre><code class="language-c">#include &lt;stdio.h&gt;
@@ -868,8 +714,7 @@ void permute(int depth, int n) {
 }
 
 int main(void) {
-    int n;
-    scanf("%d", &amp;n);
+    int n; scanf("%d", &amp;n);
     for (int i = 0; i &lt; n; i++) scanf("%d", &amp;arr[i]);
     permute(0, n);
     return 0;
