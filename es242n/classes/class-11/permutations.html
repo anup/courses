@@ -289,12 +289,14 @@ B D C       C D B       D C B</code></pre>
 <!-- ─── 6. The recurrence ─────────────────────────── -->
 <section>
     <h2>The same problem, smaller input</h2>
-    <div style="text-align:center; font-family:Monaco,Menlo,monospace; font-size:0.95em; line-height:1.8; background:var(--light-bg); padding:1.2em; border-radius:8px;">
-        permutations(<code>{A, B, C, D}</code>) =<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<code>A</code> · permutations(<code>{B, C, D}</code>) &nbsp;∪<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<code>B</code> · permutations(<code>{A, C, D}</code>) &nbsp;∪<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<code>C</code> · permutations(<code>{A, B, D}</code>) &nbsp;∪<br>
-        &nbsp;&nbsp;&nbsp;&nbsp;<code>D</code> · permutations(<code>{A, B, C}</code>)
+    <div style="text-align:center;">
+        <div style="display:inline-block; text-align:left; font-family:Monaco,Menlo,monospace; font-size:0.95em; line-height:1.8; background:var(--light-bg); padding:1.2em 1.6em; border-radius:8px;">
+            permutations(<code>{A, B, C, D}</code>) =<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>A</code> · permutations(<code>{B, C, D}</code>) &nbsp;∪<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>B</code> · permutations(<code>{A, C, D}</code>) &nbsp;∪<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>C</code> · permutations(<code>{A, B, D}</code>) &nbsp;∪<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<code>D</code> · permutations(<code>{A, B, C}</code>)
+        </div>
     </div>
     <p>Each line is the same problem with one fewer letter.</p>
     <p>That's recursion. The function calls itself, on a smaller input, with confidence that the call will work.</p>
