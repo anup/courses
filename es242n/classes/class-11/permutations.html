@@ -683,8 +683,8 @@ void permute(int depth, int n) {
     <p>One line — <code>used[i] = 0</code> right after the recursive call — restores the state, so each iteration of the loop starts clean.</p>
 </section>
 
-<!-- ─── 14. The code ──────────────────────────────── -->
-<section>
+<!-- ─── 14. The code (typing-ready) ─────────────────── -->
+<section class="ref-code">
     <h2>The code</h2>
     <pre><code class="language-c">#include &lt;stdio.h&gt;
 #define N 20
@@ -763,36 +763,6 @@ int main(void) {
     <p class="big-q" style="font-size:1.8em; margin-top:1em;">Same problem, smaller input.<br>Choose. Recurse. Undo.</p>
 </section>
 
-<!-- ─── Typing reference ─────────────────────────── -->
-<section class="ref-code">
-    <h3 style="margin-bottom:0.4em; color:#7f8c8d;">Typing reference</h3>
-    <pre><code class="language-c">#include &lt;stdio.h&gt;
-#define N 20
-
-int arr[N], chosen[N], used[N];
-
-void permute(int depth, int n) {
-    if (depth == n) {
-        for (int i = 0; i &lt; n; i++) printf("%d ", chosen[i]);
-        printf("\n");
-        return;
-    }
-    for (int i = 0; i &lt; n; i++) {
-        if (used[i]) continue;
-        chosen[depth] = arr[i];
-        used[i] = 1;
-        permute(depth + 1, n);
-        used[i] = 0;
-    }
-}
-
-int main(void) {
-    int n; scanf("%d", &amp;n);
-    for (int i = 0; i &lt; n; i++) scanf("%d", &amp;arr[i]);
-    permute(0, n);
-    return 0;
-}</code></pre>
-</section>
 
 </div>
 </div>
