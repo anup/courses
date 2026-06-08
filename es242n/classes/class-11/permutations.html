@@ -238,10 +238,10 @@
     <h2>Why <code>n!</code>?</h2>
     <p>One way to see it: build big from small.</p>
     <p>Suppose we already have all six permutations of <code>{A, B, C}</code>:</p>
-    <pre><code>A B C    B A C    C A B
+    <pre><code class="nohighlight">A B C    B A C    C A B
 A C B    B C A    C B A</code></pre>
     <p>To get permutations of <code>{A, B, C, D}</code>, take each one and insert <code>D</code> in every position:</p>
-    <pre><code>A B C  →  D A B C   A D B C   A B D C   A B C D     (4 new)
+    <pre><code class="nohighlight">A B C  →  D A B C   A D B C   A B D C   A B C D     (4 new)
 A C B  →  D A C B   A D C B   A C D B   A C B D     (4 new)
 …</code></pre>
     <p>4 positions × 6 permutations = <strong>24</strong>. Add E: 5 × 24 = 120. That's why permutations(n) = n × permutations(n−1) = <code>n!</code>.</p>
@@ -275,10 +275,10 @@ A C B  →  D A C B   A D C B   A C D B   A C B D     (4 new)
 <section>
     <h2>Look inside one group</h2>
     <p>Take the six that start with <code>A</code>:</p>
-    <pre><code>A B C D     A C B D     A D B C
+    <pre><code class="nohighlight">A B C D     A C B D     A D B C
 A B D C     A C D B     A D C B</code></pre>
     <p>Strip the <code>A</code>:</p>
-    <pre><code>B C D       C B D       D B C
+    <pre><code class="nohighlight">B C D       C B D       D B C
 B D C       C D B       D C B</code></pre>
     <p>Those are exactly the six permutations of <code>{B, C, D}</code>.</p>
     <div class="key-point">
@@ -322,10 +322,10 @@ B D C       C D B       D C B</code></pre>
 <section>
     <h2>Concretely — pick <code>D</code> first</h2>
     <p>Fix <code>D</code> in slot 0. Call <code>permute({A, B, C})</code>. By the promise, it prints:</p>
-    <pre><code>A B C        B A C        C A B
+    <pre><code class="nohighlight">A B C        B A C        C A B
 A C B        B C A        C B A</code></pre>
     <p>With <code>D</code> in front of each:</p>
-    <pre><code>D A B C      D B A C      D C A B
+    <pre><code class="nohighlight">D A B C      D B A C      D C A B
 D A C B      D B C A      D C B A</code></pre>
     <p>Six permutations starting with <code>D</code>. Repeat with <code>A</code>, <code>B</code>, <code>C</code> as the first letter. 24 total.</p>
     <div class="success-box">
@@ -587,7 +587,7 @@ D A C B      D B C A      D C B A</code></pre>
 <!-- ─── 12. Pseudocode ────────────────────────────── -->
 <section>
     <h2>Pseudocode</h2>
-    <pre><code>permute(depth):
+    <pre><code class="nohighlight">permute(depth):
     if depth == n:
         print chosen
         return
