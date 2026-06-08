@@ -565,17 +565,80 @@ D A C B      D B C A      D C B A</code></pre>
     </div>
 </section>
 
-<!-- ─── 10. What we carry across calls ──────────────── -->
+<!-- ─── 10a. What does the function need to know? ──── -->
 <section>
-    <h2>What we carry across calls</h2>
-    <p>To walk the tree we need three pieces of state:</p>
-    <table style="width:85%;">
-        <tr><th>Name</th><th>What it holds</th></tr>
-        <tr><td><code>chosen[]</code></td><td>The path so far — letters we've placed, in order.</td></tr>
-        <tr><td><code>used[]</code></td><td>A flag per letter: <code>1</code> if already on the path, <code>0</code> if available.</td></tr>
-        <tr><td><code>depth</code></td><td>Which slot we're filling right now.</td></tr>
-    </table>
-    <p>We don't actually remove letters when we pick them — we just mark <code>used[i] = 1</code>. Cheaper than shifting an array, easier to undo.</p>
+    <h2>Stand inside one call</h2>
+    <p>Pretend you are <code>permute()</code> called somewhere in the middle of the recursion. The letters are <code>{A, B, C, D}</code>.</p>
+    <p>You don't know where you came from. You just have to do your job: <strong>fill the next empty slot</strong>.</p>
+    <p>What do you need to be told from outside?</p>
+    <ul class="fragment">
+        <li>Which slot is the next empty one.</li>
+        <li>What letters are already placed (so you don't reuse them).</li>
+    </ul>
+    <p class="fragment">That's the state. Three things, once we make it concrete.</p>
+</section>
+
+<!-- ─── 10b. The path so far — chosen[] ───────────── -->
+<section>
+    <h2>The path so far — <code>chosen[]</code></h2>
+    <p>An array of length <code>n</code>. We write letters into it as we place them.</p>
+    <p>If the recursion has placed <code>B</code> in slot 0 and <code>A</code> in slot 1, then:</p>
+    <pre><code class="nohighlight">chosen = [ 'B', 'A', _, _ ]</code></pre>
+    <p>When all slots are filled, <code>chosen</code> holds one complete permutation. We print it.</p>
+    <div class="info-box">
+        <code>chosen[]</code> is the <em>answer we're building</em>. It grows as the recursion descends and shrinks (logically) as it backs up.
+    </div>
+</section>
+
+<!-- ─── 10c. What's still available — used[] ──────── -->
+<section>
+    <h2>What's still available — <code>used[]</code></h2>
+    <p>An array of length <code>n</code> with a flag per letter.</p>
+    <pre><code class="nohighlight">used = [ 1, 1, 0, 0 ]
+         A  B  C  D       ← A and B are taken; C and D are free</code></pre>
+    <p>Why not just look at <code>chosen[]</code> to know what's used? We could — but scanning it every iteration is <code>O(depth)</code>. <code>used[i]</code> is <code>O(1)</code>.</p>
+    <div class="info-box">
+        <code>chosen[]</code> tracks the <em>answer</em>. <code>used[]</code> tracks the <em>constraint</em>. Same information from two angles — kept separately so each is fast to check.
+    </div>
+</section>
+
+<!-- ─── 10d. Which slot — depth ──────────────────── -->
+<section>
+    <h2>Which slot — <code>depth</code></h2>
+    <p>The slot we're filling right now. It's also the number of letters already placed. Also the depth in the choice tree.</p>
+    <p>Unlike <code>chosen</code> and <code>used</code>, <code>depth</code> is a <strong>function parameter</strong> — each call gets its own value.</p>
+    <pre><code class="language-c">void permute(int depth, int n);   // depth comes in as a parameter
+
+permute(0, 4)  →  permute(1, 4)  →  permute(2, 4)  →  permute(3, 4)  →  print</code></pre>
+    <div class="key-point">
+        Every recursive call increases <code>depth</code> by one. When <code>depth == n</code>, all slots are filled.
+    </div>
+</section>
+
+<!-- ─── 10e. Where do they live in memory? ────────── -->
+<section>
+    <h2>Where do these arrays live?</h2>
+    <p><strong>Global.</strong> One copy in memory, shared across every recursive call.</p>
+    <pre><code class="language-c">int arr[N], chosen[N], used[N];   // declared once, outside any function
+
+void permute(int depth, int n) {
+    // every call to permute() reads and writes the SAME arr, chosen, used
+    ...
+}</code></pre>
+    <p>We don't allocate new arrays per call. We don't pass them as parameters. They live above the recursion and every call touches the same memory.</p>
+    <p class="small">(You could pass them as pointers instead. Same effect. Globals keep the signature clean and the cohort focused on the algorithm.)</p>
+</section>
+
+<!-- ─── 10f. Why shared state matters ──────────────── -->
+<section>
+    <h2>Shared state is the whole trick</h2>
+    <p>When <code>permute(0)</code> writes <code>chosen[0] = 'A'</code> and sets <code>used[A] = 1</code>, then calls <code>permute(1)</code>...</p>
+    <p>...<code>permute(1)</code> doesn't need to be <em>told</em> any of that. It just looks at <code>chosen[]</code> and <code>used[]</code> directly — the same memory <code>permute(0)</code> just wrote into.</p>
+    <div class="success-box">
+        That's how state flows down the recursion. Each call mutates the shared arrays; the deeper call reads the mutations as facts.
+    </div>
+    <p class="fragment" style="margin-top:0.8em;"><strong>But</strong> — when the deeper call returns and the outer loop wants to try the <em>next</em> letter, the mutations are still there. Stale.</p>
+    <p class="fragment">That's why we undo.</p>
 </section>
 
 <!-- ─── 11. The three-step pattern ──────────────────── -->
@@ -602,12 +665,18 @@ D A C B      D B C A      D C B A</code></pre>
 <!-- ─── 13. Why undo ──────────────────────────────── -->
 <section>
     <h2>Why undo?</h2>
-    <p>When we picked <code>A</code> for slot 0, we marked <code>used[A] = 1</code> and called <code>permute(1)</code>. It printed all permutations starting with <code>A</code>, then returned.</p>
-    <p>Now the loop wants to try <code>B</code> in slot 0. But if <code>used[A]</code> is still 1, the recursion at depth 1 thinks <code>A</code> is unavailable — even though slot 0 will be <code>B</code> now, not <code>A</code>.</p>
+    <p>Walk through what happens without it.</p>
+    <ol>
+        <li>The loop picks <code>A</code> for slot 0. We mark <code>used[A] = 1</code> and call <code>permute(1)</code>.</li>
+        <li><code>permute(1)</code> prints all permutations starting with <code>A</code>. Returns.</li>
+        <li>Back in the loop. Now we want to try <code>B</code> in slot 0.</li>
+        <li>But <code>used[A]</code> is still <code>1</code> from step 1 — the shared arrays still carry that mutation.</li>
+        <li>The next call to <code>permute(1)</code> reads <code>used[A] = 1</code> and skips <code>A</code> — even though slot 0 is now <code>B</code>, so <code>A</code> is actually free again.</li>
+    </ol>
     <div class="warning-box">
-        We mutate <code>chosen</code> and <code>used</code> in place. Without undo, the next iteration's recursive call sees the previous iteration's state. The whole subtree comes out wrong.
+        Shared state from one iteration leaks into the next. The subtree comes out wrong.
     </div>
-    <p>One line: <code>used[i] = 0</code>. That's the undo.</p>
+    <p>One line — <code>used[i] = 0</code> right after the recursive call — restores the state, so each iteration of the loop starts clean.</p>
 </section>
 
 <!-- ─── 14. The code ──────────────────────────────── -->
@@ -675,14 +744,40 @@ int main(void) {
 
 <!-- ─── 17. Practice + takeaway ─────────────────────── -->
 <section>
-    <h2>Practice — between now and Wednesday</h2>
-    <ul>
-        <li><a href="https://leetcode.com/problems/permutations/" target="_blank">LeetCode 46. Permutations</a></li>
-        <li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank">LeetCode 47. Permutations II</a> — duplicates in input.</li>
-        <li><a href="https://leetcode.com/problems/letter-case-permutation/" target="_blank">LeetCode 784. Letter Case Permutation</a> — branch at each letter.</li>
-        <li>In-class: permutations of <code>{1, 2, 3, 4}</code>. Then break each piece on purpose to confirm the four bugs.</li>
-    </ul>
-    <p class="small">Subsets and generate parens on Wednesday. Sorting on Saturday. Quiz 1 covers all three.</p>
+    <h2>Practice — between now and Friday</h2>
+    <p>10 June is no class. Friday's class works through subsets and generate-parens, so Tier 2 below will pay off twice. Work the tiers in order.</p>
+    <div class="two-col">
+        <div>
+            <h4>Tier 1 — confirm permutations</h4>
+            <ul>
+                <li><a href="https://leetcode.com/problems/permutations/" target="_blank">LC 46. Permutations</a></li>
+                <li><a href="https://leetcode.com/problems/permutations-ii/" target="_blank">LC 47. Permutations II</a> (duplicates)</li>
+                <li><a href="https://leetcode.com/problems/letter-case-permutation/" target="_blank">LC 784. Letter Case Permutation</a></li>
+            </ul>
+            <h4>Tier 2 — same pattern, new shapes</h4>
+            <ul>
+                <li><a href="https://leetcode.com/problems/subsets/" target="_blank">LC 78. Subsets</a> (include/exclude)</li>
+                <li><a href="https://leetcode.com/problems/combinations/" target="_blank">LC 77. Combinations</a></li>
+                <li><a href="https://leetcode.com/problems/generate-parentheses/" target="_blank">LC 22. Generate Parentheses</a></li>
+                <li><a href="https://leetcode.com/problems/letter-combinations-of-a-phone-number/" target="_blank">LC 17. Letter Combinations of a Phone Number</a></li>
+            </ul>
+        </div>
+        <div>
+            <h4>Tier 3 — stretch</h4>
+            <ul>
+                <li><a href="https://leetcode.com/problems/combination-sum/" target="_blank">LC 39. Combination Sum</a> (reuse allowed)</li>
+                <li><a href="https://leetcode.com/problems/word-search/" target="_blank">LC 79. Word Search</a> (grid + backtracking)</li>
+                <li><a href="https://leetcode.com/problems/n-queens/" target="_blank">LC 51. N-Queens</a> (column / diagonal bookkeeping)</li>
+            </ul>
+            <h4>In C, locally</h4>
+            <ul>
+                <li>Permutations of <code>{1, 2, 3, 4}</code> end-to-end.</li>
+                <li>Trace <code>permute(0)</code> on paper for <code>n = 4</code>.</li>
+                <li>Break each piece on purpose — drop <code>used[]=0</code>, drop <code>if (used[i]) continue</code>, drop the base case. Confirm each of the four bugs from the slide.</li>
+            </ul>
+        </div>
+    </div>
+    <p class="small">Sorting comes Saturday. Quiz 1 (15 Jun) tests backtracking + sorting together.</p>
 </section>
 
 <section class="center-content">

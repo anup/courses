@@ -91,19 +91,63 @@
     </section>
 
     <section class="slide-band">
-      <h2>LeetCode practice — between today and Wednesday</h2>
-      <p class="lead">Backtracking only. Sorting practice arrives after the 13 June class. These are the warmups that will pay off in Quiz 1 (15 June).</p>
-      <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/permutations/">46. Permutations</a> (Medium) — exactly the function from class. Print or return all permutations of distinct integers.</li>
-        <li><a href="https://leetcode.com/problems/permutations-ii/">47. Permutations II</a> (Medium) — same, but the input has duplicates. Skip on equal-and-not-yet-tried.</li>
-        <li><a href="https://leetcode.com/problems/letter-case-permutation/">784. Letter Case Permutation</a> (Medium) — branch at each letter: lowercase or uppercase.</li>
-        <li><a href="https://leetcode.com/problems/binary-watch/">401. Binary Watch</a> (Easy) — pick hours and minutes from a bit pattern; bookkeeping practice without too much algorithm.</li>
-      </ul>
+      <h2>LeetCode practice — between today and Friday (12 June)</h2>
+      <p class="lead">10 June is no class. Friday's class works through subsets and generate-parens — Tier 2 below previews exactly that. Sorting practice arrives after 13 June; Quiz 1 (15 June) tests backtracking + sorting together.</p>
+    </section>
+
+    <section class="agenda" aria-label="Tiered backtracking practice">
+      <article class="agenda-item">
+        <div class="marker">T1</div>
+        <div>
+          <h2>Tier 1 — confirm permutations</h2>
+          <ul>
+            <li><a href="https://leetcode.com/problems/permutations/">46. Permutations</a> (Medium) — exactly the function from class.</li>
+            <li><a href="https://leetcode.com/problems/permutations-ii/">47. Permutations II</a> (Medium) — duplicates. Skip-on-equal rule.</li>
+            <li><a href="https://leetcode.com/problems/letter-case-permutation/">784. Letter Case Permutation</a> (Medium) — branch at each letter.</li>
+            <li><a href="https://leetcode.com/problems/binary-watch/">401. Binary Watch</a> (Easy) — bookkeeping practice.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">T2</div>
+        <div>
+          <h2>Tier 2 — same pattern, new shapes (Friday preview)</h2>
+          <ul>
+            <li><a href="https://leetcode.com/problems/subsets/">78. Subsets</a> (Medium) — include/exclude branching at each element.</li>
+            <li><a href="https://leetcode.com/problems/combinations/">77. Combinations</a> (Medium) — pick <code>k</code> of <code>n</code>.</li>
+            <li><a href="https://leetcode.com/problems/generate-parentheses/">22. Generate Parentheses</a> (Medium) — backtracking on a constrained alphabet.</li>
+            <li><a href="https://leetcode.com/problems/letter-combinations-of-a-phone-number/">17. Letter Combinations of a Phone Number</a> (Medium) — branch by digit's letters.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">T3</div>
+        <div>
+          <h2>Tier 3 — stretch</h2>
+          <ul>
+            <li><a href="https://leetcode.com/problems/combination-sum/">39. Combination Sum</a> (Medium) — pick / recurse / undo with reuse allowed.</li>
+            <li><a href="https://leetcode.com/problems/word-search/">79. Word Search</a> (Medium) — backtracking on a grid; combines DFS with combinatorial undo.</li>
+            <li><a href="https://leetcode.com/problems/n-queens/">51. N-Queens</a> (Hard) — column / diagonal bookkeeping. The classic backtracking problem.</li>
+          </ul>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">C</div>
+        <div>
+          <h2>In C, locally</h2>
+          <p>Submit on <a href="https://judge.csbasics.in/">judge.csbasics.in</a> if a problem is set up there.</p>
+          <ul>
+            <li>Permutations of <code>{1, 2, 3, 4}</code> end-to-end in C.</li>
+            <li>Trace <code>permute(0)</code> on paper for <code>n = 4</code>. State of <code>chosen</code>, <code>used</code>, and <code>depth</code> at every call.</li>
+            <li>Break each piece on purpose — remove <code>used[i] = 0</code>, remove <code>if (used[i]) continue</code>, remove the base case. Confirm each of the four bugs from class.</li>
+          </ul>
+        </div>
+      </article>
     </section>
 
     <section class="slide-band">
-      <h2>Coming Wednesday (12 June)</h2>
-      <p class="lead">Backtracking part 2: subsets, generate parentheses, and an extended recap before Saturday's sorting class. Quiz 1 on 15 June will cover backtracking <em>and</em> the sorting we do on 13 June.</p>
+      <h2>Coming Friday (12 June)</h2>
+      <p class="lead">Backtracking part 2: subsets, generate parentheses, and a state-management recap before Saturday's divide-and-conquer sorting class. Quiz 1 on 15 June will cover backtracking <em>and</em> the sorting we do on 13 June.</p>
     </section>
   </main>
   <script src="../../../assets/course-theme.js"></script>
