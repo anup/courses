@@ -577,7 +577,7 @@ D A C B      D B C A      D C B A</code></pre>
         <li>Which slot is the next empty one.</li>
         <li>What letters are already placed (so you don't reuse them).</li>
     </ul>
-    <p class="fragment">That's the state. Three things, once we make it concrete.</p>
+    <p class="fragment">Two pieces of information. In code, we'll keep them in three arrays — <code>chosen[]</code>, <code>used[]</code>, and a <code>depth</code> counter — because we want fast lookups, not because there's a third concept.</p>
 </section>
 
 <!-- ─── 10b. The path so far — chosen[] ───────────── -->
