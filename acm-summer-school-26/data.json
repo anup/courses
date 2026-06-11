@@ -1,6 +1,6 @@
 {
   "title": "ACM Summer School 2026 Leaderboard",
-  "generated_at": "2026-06-11T21:29:58+05:30",
+  "generated_at": "2026-06-11T21:47:54+05:30",
   "scoring_note": "For each contest, the highest team raw score is scaled to 100. Every other team gets raw_score / highest_raw_score * 100. The overall team score is the sum of these normalized contest scores. The baseline contest ACMSCHOOL261 is not included.",
   "contests": [
     {
@@ -584,786 +584,104 @@
       "total_raw": 1700.0,
       "total_solved": 17,
       "rank": 10
+    }
+  ],
+  "team_roster": [
+    {
+      "team": 1,
+      "team_name": "WELOVECP",
+      "captain": "Sparsh Vikas",
+      "handles": [
+        "thecreeperrr",
+        "colony_ally_77",
+        "harshraj_007",
+        "codemeabhishek",
+        "abhay_purohit"
+      ]
     },
     {
-      "codechef_handle": "ramkalyan10",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 22,
-          "solved": 5,
-          "total_time": "00:24:23"
-        },
-        "ACMSCHOOL263": {
-          "score": 872.0,
-          "rank": 10,
-          "solved": 10,
-          "total_time": "01:53:14"
-        },
-        "ACMSCHOOL264": {
-          "score": 200.0,
-          "rank": 13,
-          "solved": 2,
-          "total_time": "01:05:43"
-        }
-      },
-      "total_raw": 1572.0,
-      "total_solved": 17,
-      "rank": 11
+      "team": 2,
+      "team_name": "code_blooded",
+      "captain": "Naman Chandwani",
+      "handles": [
+        "alert_atom_38",
+        "trieyz",
+        "zest_wonder_97",
+        "cod3exl",
+        "vansh_tri"
+      ]
     },
     {
-      "codechef_handle": "stark_end_17",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 700.0,
-          "rank": 12,
-          "solved": 7,
-          "total_time": "01:24:27"
-        },
-        "ACMSCHOOL263": {
-          "score": 600.0,
-          "rank": 12,
-          "solved": 6,
-          "total_time": "01:51:37"
-        },
-        "ACMSCHOOL264": {
-          "score": 133.0,
-          "rank": 18,
-          "solved": 2,
-          "total_time": "00:11:05"
-        }
-      },
-      "total_raw": 1433.0,
-      "total_solved": 15,
-      "rank": 12
+      "team": 3,
+      "team_name": "buggers-squad",
+      "captain": "Shivansh Patel",
+      "handles": [
+        "amit3396",
+        "jonshi_patel",
+        "rapid_chime_10",
+        "anisha_19",
+        "pmmodi05"
+      ]
     },
     {
-      "codechef_handle": "harshraj_007",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 700.0,
-          "rank": 11,
-          "solved": 7,
-          "total_time": "01:18:51"
-        },
-        "ACMSCHOOL263": {
-          "score": 460.0,
-          "rank": 16,
-          "solved": 5,
-          "total_time": "02:03:25"
-        },
-        "ACMSCHOOL264": {
-          "score": 233.0,
-          "rank": 12,
-          "solved": 3,
-          "total_time": "01:34:57"
-        }
-      },
-      "total_raw": 1393.0,
-      "total_solved": 15,
-      "rank": 13
+      "team": 4,
+      "team_name": "Macwin",
+      "captain": "Vamsi Pedamallu",
+      "handles": [
+        "vamsi_peda",
+        "mahimadhomane2",
+        "rishi_k5",
+        "lasyareddy1196",
+        "derek_0126"
+      ]
     },
     {
-      "codechef_handle": "lucky_echo_60",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 16,
-          "solved": 5,
-          "total_time": "00:10:28"
-        },
-        "ACMSCHOOL263": {
-          "score": 600.0,
-          "rank": 13,
-          "solved": 6,
-          "total_time": "02:05:19"
-        },
-        "ACMSCHOOL264": {
-          "score": 200.0,
-          "rank": 16,
-          "solved": 2,
-          "total_time": "01:31:44"
-        }
-      },
-      "total_raw": 1300.0,
-      "total_solved": 13,
-      "rank": 14
+      "team": 5,
+      "team_name": "StackUnderflow",
+      "captain": "Ved Vyas",
+      "handles": [
+        "vishal1301",
+        "jithamanyu18",
+        "vedvyas2312",
+        "nudaad_21",
+        "pahel1708"
+      ]
     },
     {
-      "codechef_handle": "mahimadhomane2",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 600.0,
-          "rank": 15,
-          "solved": 6,
-          "total_time": "01:10:33"
-        },
-        "ACMSCHOOL263": {
-          "score": 500.0,
-          "rank": 14,
-          "solved": 5,
-          "total_time": "01:29:30"
-        },
-        "ACMSCHOOL264": {
-          "score": 200.0,
-          "rank": 17,
-          "solved": 2,
-          "total_time": "01:34:20"
-        }
-      },
-      "total_raw": 1300.0,
-      "total_solved": 13,
-      "rank": 15
+      "team": 6,
+      "team_name": "DARRN_IT!",
+      "captain": "Dev Chauhan",
+      "handles": [
+        "random_npc",
+        "ramkalyan10",
+        "namya_develops",
+        "lucky_echo_60",
+        "valid_cast_11"
+      ]
     },
     {
-      "codechef_handle": "jonshi_patel",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 600.0,
-          "rank": 14,
-          "solved": 6,
-          "total_time": "01:03:01"
-        },
-        "ACMSCHOOL263": {
-          "score": 360.0,
-          "rank": 20,
-          "solved": 4,
-          "total_time": "01:49:05"
-        },
-        "ACMSCHOOL264": {
-          "score": 300.0,
-          "rank": 8,
-          "solved": 3,
-          "total_time": "01:04:57"
-        }
-      },
-      "total_raw": 1260.0,
-      "total_solved": 13,
-      "rank": 16
+      "team": 7,
+      "team_name": "5_Brain_Cells",
+      "captain": "Siva Sai Swaroop Yanduri",
+      "handles": [
+        "swaroop_01",
+        "yashgondane",
+        "krishivjoshi",
+        "pilot_yash",
+        "wrkescape_26"
+      ]
     },
     {
-      "codechef_handle": "trieyz",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 600.0,
-          "rank": 13,
-          "solved": 6,
-          "total_time": "00:22:16"
-        },
-        "ACMSCHOOL263": {
-          "score": 360.0,
-          "rank": 19,
-          "solved": 4,
-          "total_time": "00:51:48"
-        },
-        "ACMSCHOOL264": {
-          "score": 300.0,
-          "rank": 10,
-          "solved": 3,
-          "total_time": "01:25:05"
-        }
-      },
-      "total_raw": 1260.0,
-      "total_solved": 13,
-      "rank": 17
-    },
-    {
-      "codechef_handle": "cod3exl",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 23,
-          "solved": 5,
-          "total_time": "00:30:47"
-        },
-        "ACMSCHOOL263": {
-          "score": 500.0,
-          "rank": 15,
-          "solved": 5,
-          "total_time": "01:40:10"
-        },
-        "ACMSCHOOL264": {
-          "score": 133.0,
-          "rank": 20,
-          "solved": 2,
-          "total_time": "01:22:57"
-        }
-      },
-      "total_raw": 1133.0,
-      "total_solved": 12,
-      "rank": 18
-    },
-    {
-      "codechef_handle": "pilot_yash",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 417.0,
-          "rank": 33,
-          "solved": 5,
-          "total_time": "00:30:43"
-        },
-        "ACMSCHOOL263": {
-          "score": 433.0,
-          "rank": 18,
-          "solved": 5,
-          "total_time": "01:59:23"
-        },
-        "ACMSCHOOL264": {
-          "score": 233.0,
-          "rank": 11,
-          "solved": 3,
-          "total_time": "01:32:31"
-        }
-      },
-      "total_raw": 1083.0,
-      "total_solved": 13,
-      "rank": 19
-    },
-    {
-      "codechef_handle": "codemeabhishek",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 28,
-          "solved": 5,
-          "total_time": "00:47:12"
-        },
-        "ACMSCHOOL263": {
-          "score": 450.0,
-          "rank": 17,
-          "solved": 5,
-          "total_time": "01:40:16"
-        },
-        "ACMSCHOOL264": {
-          "score": 100.0,
-          "rank": 24,
-          "solved": 1,
-          "total_time": "01:16:43"
-        }
-      },
-      "total_raw": 1050.0,
-      "total_solved": 11,
-      "rank": 20
-    },
-    {
-      "codechef_handle": "jithamanyu18",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 17,
-          "solved": 5,
-          "total_time": "00:13:06"
-        },
-        "ACMSCHOOL263": {
-          "score": 300.0,
-          "rank": 22,
-          "solved": 3,
-          "total_time": "02:08:46"
-        },
-        "ACMSCHOOL264": {
-          "score": 200.0,
-          "rank": 15,
-          "solved": 2,
-          "total_time": "01:14:41"
-        }
-      },
-      "total_raw": 1000.0,
-      "total_solved": 10,
-      "rank": 21
-    },
-    {
-      "codechef_handle": "rapid_chime_10",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 24,
-          "solved": 5,
-          "total_time": "00:32:40"
-        },
-        "ACMSCHOOL263": {
-          "score": 300.0,
-          "rank": 21,
-          "solved": 3,
-          "total_time": "01:36:54"
-        },
-        "ACMSCHOOL264": {
-          "score": 133.0,
-          "rank": 21,
-          "solved": 2,
-          "total_time": "01:30:18"
-        }
-      },
-      "total_raw": 933.0,
-      "total_solved": 10,
-      "rank": 22
-    },
-    {
-      "codechef_handle": "lasyareddy1196",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 28,
-          "solved": 5,
-          "total_time": "00:47:12"
-        },
-        "ACMSCHOOL263": {
-          "score": 260.0,
-          "rank": 24,
-          "solved": 3,
-          "total_time": "02:09:32"
-        },
-        "ACMSCHOOL264": {
-          "score": 80.0,
-          "rank": 27,
-          "solved": 1,
-          "total_time": "01:01:15"
-        }
-      },
-      "total_raw": 840.0,
-      "total_solved": 9,
-      "rank": 23
-    },
-    {
-      "codechef_handle": "valid_cast_11",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 468.0,
-          "rank": 32,
-          "solved": 5,
-          "total_time": "01:00:06"
-        },
-        "ACMSCHOOL263": {
-          "score": 260.0,
-          "rank": 23,
-          "solved": 3,
-          "total_time": "01:46:14"
-        },
-        "ACMSCHOOL264": {
-          "score": 100.0,
-          "rank": 23,
-          "solved": 1,
-          "total_time": "01:01:53"
-        }
-      },
-      "total_raw": 828.0,
-      "total_solved": 9,
-      "rank": 24
-    },
-    {
-      "codechef_handle": "code_aditya12",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 18,
-          "solved": 5,
-          "total_time": "00:13:59"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 29,
-          "solved": 2,
-          "total_time": "01:26:22"
-        },
-        "ACMSCHOOL264": {
-          "score": 60.0,
-          "rank": 28,
-          "solved": 1,
-          "total_time": "00:28:22"
-        }
-      },
-      "total_raw": 760.0,
-      "total_solved": 8,
-      "rank": 25
-    },
-    {
-      "codechef_handle": "anisha_19",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 20,
-          "solved": 5,
-          "total_time": "00:16:08"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 27,
-          "solved": 2,
-          "total_time": "01:14:10"
-        },
-        "ACMSCHOOL264": {
-          "score": 33.0,
-          "rank": 33,
-          "solved": 1,
-          "total_time": "00:36:09"
-        }
-      },
-      "total_raw": 733.0,
-      "total_solved": 8,
-      "rank": 26
-    },
-    {
-      "codechef_handle": "nudaad_21",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 21,
-          "solved": 5,
-          "total_time": "00:16:32"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 30,
-          "solved": 2,
-          "total_time": "01:47:36"
-        },
-        "ACMSCHOOL264": {
-          "score": 33.0,
-          "rank": 31,
-          "solved": 1,
-          "total_time": "00:22:03"
-        }
-      },
-      "total_raw": 733.0,
-      "total_solved": 8,
-      "rank": 27
-    },
-    {
-      "codechef_handle": "zest_wonder_97",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 19,
-          "solved": 5,
-          "total_time": "00:15:34"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 26,
-          "solved": 2,
-          "total_time": "00:18:37"
-        },
-        "ACMSCHOOL264": {
-          "score": 33.0,
-          "rank": 29,
-          "solved": 1,
-          "total_time": "00:14:09"
-        }
-      },
-      "total_raw": 733.0,
-      "total_solved": 8,
-      "rank": 28
-    },
-    {
-      "codechef_handle": "krishivjoshi",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 27,
-          "solved": 5,
-          "total_time": "00:46:21"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 25,
-          "solved": 2,
-          "total_time": "00:15:55"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 700.0,
-      "total_solved": 7,
-      "rank": 29
-    },
-    {
-      "codechef_handle": "namya_develops",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 30,
-          "solved": 5,
-          "total_time": "00:48:34"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 31,
-          "solved": 2,
-          "total_time": "01:48:51"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 700.0,
-      "total_solved": 7,
-      "rank": 30
-    },
-    {
-      "codechef_handle": "vansh_tri",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 367.0,
-          "rank": 35,
-          "solved": 5,
-          "total_time": "01:01:48"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 32,
-          "solved": 2,
-          "total_time": "02:05:58"
-        },
-        "ACMSCHOOL264": {
-          "score": 100.0,
-          "rank": 26,
-          "solved": 1,
-          "total_time": "01:31:59"
-        }
-      },
-      "total_raw": 667.0,
-      "total_solved": 8,
-      "rank": 31
-    },
-    {
-      "codechef_handle": "cuddly_band_34",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 25,
-          "solved": 5,
-          "total_time": "00:46:14"
-        },
-        "ACMSCHOOL263": {
-          "score": 110.0,
-          "rank": 33,
-          "solved": 2,
-          "total_time": "00:21:28"
-        },
-        "ACMSCHOOL264": {
-          "score": 33.0,
-          "rank": 30,
-          "solved": 1,
-          "total_time": "00:14:44"
-        }
-      },
-      "total_raw": 643.0,
-      "total_solved": 8,
-      "rank": 32
-    },
-    {
-      "codechef_handle": "vedvyas2312",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 417.0,
-          "rank": 34,
-          "solved": 5,
-          "total_time": "00:56:20"
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 38,
-          "solved": 1,
-          "total_time": "00:03:45"
-        },
-        "ACMSCHOOL264": {
-          "score": 100.0,
-          "rank": 22,
-          "solved": 1,
-          "total_time": "00:04:28"
-        }
-      },
-      "total_raw": 617.0,
-      "total_solved": 7,
-      "rank": 33
-    },
-    {
-      "codechef_handle": "abhay_purohit",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 31,
-          "solved": 5,
-          "total_time": "00:59:05"
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 36,
-          "solved": 1,
-          "total_time": "00:01:52"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 600.0,
-      "total_solved": 6,
-      "rank": 34
-    },
-    {
-      "codechef_handle": "rishi_k5",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 500.0,
-          "rank": 26,
-          "solved": 5,
-          "total_time": "00:46:16"
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 37,
-          "solved": 1,
-          "total_time": "00:02:07"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 600.0,
-      "total_solved": 6,
-      "rank": 35
-    },
-    {
-      "codechef_handle": "wrkescape_26",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 101.0,
-          "rank": 38,
-          "solved": 3,
-          "total_time": "00:30:48"
-        },
-        "ACMSCHOOL263": {
-          "score": 200.0,
-          "rank": 28,
-          "solved": 2,
-          "total_time": "01:23:38"
-        },
-        "ACMSCHOOL264": {
-          "score": 33.0,
-          "rank": 32,
-          "solved": 1,
-          "total_time": "00:33:06"
-        }
-      },
-      "total_raw": 334.0,
-      "total_solved": 6,
-      "rank": 36
-    },
-    {
-      "codechef_handle": "pahel1708",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 200.0,
-          "rank": 36,
-          "solved": 2,
-          "total_time": "00:51:16"
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 35,
-          "solved": 1,
-          "total_time": "00:01:49"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 300.0,
-      "total_solved": 3,
-      "rank": 37
-    },
-    {
-      "codechef_handle": "pmmodi05",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 39,
-          "solved": 1,
-          "total_time": "00:14:19"
-        },
-        "ACMSCHOOL264": {
-          "score": 100.0,
-          "rank": 25,
-          "solved": 1,
-          "total_time": "01:25:35"
-        }
-      },
-      "total_raw": 200.0,
-      "total_solved": 2,
-      "rank": 38
-    },
-    {
-      "codechef_handle": "vraj_7488",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 135.0,
-          "rank": 37,
-          "solved": 4,
-          "total_time": "01:26:29"
-        },
-        "ACMSCHOOL263": {
-          "score": 50.0,
-          "rank": 40,
-          "solved": 1,
-          "total_time": "00:02:35"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 185.0,
-      "total_solved": 5,
-      "rank": 39
-    },
-    {
-      "codechef_handle": "derek_0126",
-      "scores": {
-        "ACMSCHOOL262": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        },
-        "ACMSCHOOL263": {
-          "score": 100.0,
-          "rank": 34,
-          "solved": 1,
-          "total_time": "00:01:48"
-        },
-        "ACMSCHOOL264": {
-          "score": 0.0,
-          "rank": "",
-          "solved": 0,
-          "total_time": ""
-        }
-      },
-      "total_raw": 100.0,
-      "total_solved": 1,
-      "rank": 40
+      "team": 8,
+      "team_name": "TLE_Warriors",
+      "captain": "Heer Anilbhai Thakker",
+      "handles": [
+        "gummarajitha12",
+        "stark_end_17",
+        "cuddly_band_34",
+        "code_aditya12",
+        "vraj_7488"
+      ]
     }
   ]
 }
