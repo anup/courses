@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 13</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 13</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 13</p>
+      <h1>15 June 2026: Binary Trees</h1>
+      <p class="lead">Two sessions. The first data structure where recursion is the obvious tool — because the structure of the data <em>is</em> recursive. From the linked-list node to the binary-tree node, then traversals, then size/height/leaf count as the same skeleton with different return values.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="binary-trees.html">Binary Trees</a> — today's deck, both sessions</li>
+        <li><a href="../class-12/subsets-and-sorting.html">Day 12 deck</a> — Saturday's reference (the merge sort call tree was already a binary tree)</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — From recursion to trees as data</h2>
+          <p>Bridge from the linked-list node (one pointer) to the binary-tree node (two pointers). The recursive definition: a tree is empty, or a root + left tree + right tree — same shape as the linked-list definition. Build a small tree by hand in C using a <code>newNode()</code> helper. Then the three traversals as a single skeleton with the work line in three positions (preorder / inorder / postorder). Trace exercise on a 6-node tree.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Computing on trees and applying the pattern</h2>
+          <p>Same recursive skeleton, three different return values: <code>size</code>, <code>height</code>, <code>leafCount</code>. The unifying pattern: <code>combine(left answer, right answer, root info)</code>. Then three problems to apply the template:</p>
+          <ol>
+            <li><strong>Evaluate an expression tree</strong> — postorder gets a purpose. Each traversal turns out to produce a different classical notation (infix / prefix / postfix). The lesson lands: reading the expression and computing its value are different jobs.</li>
+            <li><strong>Mirror / invert a binary tree</strong> — structural recursion at its simplest.</li>
+            <li><strong>Root-to-leaf path sum</strong> — introduces a new pattern: information flowing <em>down</em> the recursion through a parameter (target shrinks as we descend). This is the technique that makes BST search work on Wednesday.</li>
+          </ol>
+          <p>Close with a one-line preview of BSTs (Wednesday) and array-backed trees (heaps, next week).</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>Build a 6-node tree given as a drawing — in C, using <code>newNode()</code> and explicit pointer assignments.</li>
+        <li>On paper, trace <code>preorder</code>, <code>inorder</code>, <code>postorder</code> on a 6-node tree.</li>
+        <li>Implement <code>size()</code>, <code>height()</code>, and <code>leafCount()</code> in C and run them on a tree you build yourself.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — binary trees (between now and Wednesday)</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/binary-tree-preorder-traversal/">144. Binary Tree Preorder Traversal</a></li>
+        <li><a href="https://leetcode.com/problems/binary-tree-inorder-traversal/">94. Binary Tree Inorder Traversal</a></li>
+        <li><a href="https://leetcode.com/problems/binary-tree-postorder-traversal/">145. Binary Tree Postorder Traversal</a></li>
+        <li><a href="https://leetcode.com/problems/maximum-depth-of-binary-tree/">104. Maximum Depth of Binary Tree</a> — height, three lines.</li>
+        <li><a href="https://leetcode.com/problems/minimum-depth-of-binary-tree/">111. Minimum Depth of Binary Tree</a> — careful base case when one child is NULL.</li>
+        <li><a href="https://leetcode.com/problems/count-complete-tree-nodes/">222. Count Complete Tree Nodes</a> — size, with a smarter early-exit possible.</li>
+        <li><a href="https://leetcode.com/problems/balanced-binary-tree/">110. Balanced Binary Tree</a> — uses height, with an early-exit trick when an imbalance is found.</li>
+        <li><a href="https://leetcode.com/problems/diameter-of-binary-tree/">543. Diameter of Binary Tree</a> — height computation plus tracking a running maximum.</li>
+        <li><a href="https://leetcode.com/problems/same-tree/">100. Same Tree</a> — two trees, structural equality, recursion on both pointers in lockstep.</li>
+        <li><a href="https://leetcode.com/problems/symmetric-tree/">101. Symmetric Tree</a> — mirror check, lockstep recursion.</li>
+        <li><a href="https://leetcode.com/problems/invert-binary-tree/">226. Invert Binary Tree</a> — exactly the function from Problem 2 in class.</li>
+        <li><a href="https://leetcode.com/problems/merge-two-binary-trees/">617. Merge Two Binary Trees</a> — lockstep recursion that builds a new tree.</li>
+        <li><a href="https://leetcode.com/problems/path-sum/">112. Path Sum</a> — exactly Problem 3 in class. Submit it.</li>
+        <li><a href="https://leetcode.com/problems/path-sum-ii/">113. Path Sum II</a> — return every path that sums to the target. State flowing down, answers built up.</li>
+        <li><a href="https://leetcode.com/problems/binary-tree-paths/">257. Binary Tree Paths</a> — collect every root-to-leaf path as a string.</li>
+        <li><a href="https://leetcode.com/problems/sum-of-left-leaves/">404. Sum of Left Leaves</a> — recursion that needs to know "am I a left child?" — pass the flag down.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Today, 8:30 PM – 10:30 PM:</strong> Quiz 1.</li>
+        <li><strong>Wednesday 17 June:</strong> BSTs part 1 — search, insert, min/max, in-order traversal.</li>
+        <li><strong>Friday 19 June:</strong> BSTs part 2 — deletion intuition, validate BST, and tree problems.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

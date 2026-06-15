@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Trees</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.7em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 0.8em 1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ─── Title ────────────────────────────────────── -->
+<section class="center-content">
+    <h1>Binary Trees</h1>
+    <h3 style="color:#7f8c8d;">Where recursion meets data</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 13 &middot; 15 June 2026</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BRIDGE — from what they know
+════════════════════════════════════════════════════ -->
+
+<section>
+    <h2>From linked list to binary tree</h2>
+    <p>A linked-list node holds a value and a pointer to <strong>one</strong> next node — the "rest of the list."</p>
+    <pre><code class="nohighlight">Node:
+    data
+    next  →  pointer to the next Node</code></pre>
+    <p>What if a node points to <strong>two</strong> smaller structures instead of one?</p>
+</section>
+
+<section>
+    <h2>The binary tree node</h2>
+    <pre><code class="nohighlight">Node:
+    data
+    left   →  pointer to the left subtree
+    right  →  pointer to the right subtree</code></pre>
+    <div class="key-point">
+        One pointer → a list. Two pointers → a binary tree. The pattern is the same: a node + smaller versions of the same structure.
+    </div>
+</section>
+
+<section>
+    <h2>The recursive definition</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Linked list</h4>
+            <p>A list is either:</p>
+            <ul>
+                <li>empty, or</li>
+                <li>a node + the rest of the list</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Binary tree</h4>
+            <p>A tree is either:</p>
+            <ul>
+                <li>empty, or</li>
+                <li>a root + left tree + right tree</li>
+            </ul>
+        </div>
+    </div>
+    <p>Same skeleton — a base case and a smaller version of itself. The tree just has two smaller versions instead of one.</p>
+</section>
+
+<section>
+    <h2>Where trees show up</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>File systems</h4>
+            <pre style="font-size:0.55em; line-height:1.4; box-shadow:none; margin:0.4em 0;"><code class="nohighlight">Documents/
+├── reports/
+│   ├── q1.pdf
+│   └── q2.pdf
+├── photos/
+│   ├── trip/
+│   └── family/
+└── code/
+    └── es242n/</code></pre>
+            <p class="small">Each folder can contain files and other folders. The structure is hierarchical: parent → children → grandchildren.</p>
+        </div>
+        <div class="card">
+            <h4>Expression trees</h4>
+            <div style="text-align:center;">
+                <svg viewBox="0 0 220 200" width="180" style="margin:0.3em auto;">
+                    <g stroke="#95a5a6" stroke-width="1.8" fill="none">
+                        <line x1="110" y1="35" x2="70" y2="95"/>
+                        <line x1="110" y1="35" x2="150" y2="95"/>
+                        <line x1="70" y1="115" x2="35" y2="170"/>
+                        <line x1="70" y1="115" x2="105" y2="170"/>
+                    </g>
+                    <circle cx="110" cy="30" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="110" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">*</text>
+                    <circle cx="70" cy="110" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="70" y="116" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">+</text>
+                    <circle cx="150" cy="110" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="150" y="116" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">5</text>
+                    <circle cx="35" cy="185" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="35" y="191" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">3</text>
+                    <circle cx="105" cy="185" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="105" y="191" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">4</text>
+                </svg>
+            </div>
+            <p class="small" style="text-align:center; margin-top:-0.2em;">The tree for <code>(3 + 4) * 5</code>. Compilers represent code this way before executing it.</p>
+        </div>
+    </div>
+    <p>Hierarchies are everywhere — anything where one thing contains or relates to several smaller things. The tree is the data structure that captures that shape.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     DRAW + BUILD
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Drawing a tree</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">and then writing the code that makes it</p>
+</section>
+
+<section class="center-content">
+    <h2>A small tree</h2>
+    <svg viewBox="0 0 500 280" width="500" height="280" style="margin-top:0.6em;">
+        <!-- edges -->
+        <g stroke="#95a5a6" stroke-width="2" fill="none">
+            <line x1="250" y1="50" x2="150" y2="130"/>
+            <line x1="250" y1="50" x2="350" y2="130"/>
+            <line x1="150" y1="160" x2="80" y2="230"/>
+            <line x1="150" y1="160" x2="220" y2="230"/>
+        </g>
+        <!-- nodes -->
+        <circle cx="250" cy="40" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="250" y="46" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">10</text>
+        <circle cx="150" cy="150" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="150" y="156" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">20</text>
+        <circle cx="350" cy="150" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="350" y="156" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">30</text>
+        <circle cx="80" cy="245" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="80" y="251" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">40</text>
+        <circle cx="220" cy="245" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="220" y="251" text-anchor="middle" font-family="Monaco, monospace" font-size="16" fill="#2c3e50" font-weight="700">50</text>
+    </svg>
+    <p>Root = 10. Left subtree rooted at 20. Right subtree rooted at 30. 40 and 50 are leaves of the left subtree.</p>
+</section>
+
+<section>
+    <h2>One helper to make a node</h2>
+    <pre><code class="nohighlight">newNode(data):
+    allocate a new Node
+    node.data  ← data
+    node.left  ← NULL
+    node.right ← NULL
+    return node</code></pre>
+    <p>That's the only place memory gets allocated. Every node is born with no children — we hook them up next.</p>
+</section>
+
+<section>
+    <h2>Build the tree, node by node</h2>
+    <pre><code class="nohighlight">root ← newNode(10)
+
+root.left  ← newNode(20)
+root.right ← newNode(30)
+
+root.left.left  ← newNode(40)
+root.left.right ← newNode(50)</code></pre>
+    <p>Each assignment is one edge in the drawing. <code>root.left</code> means "the left child of the root." <code>root.left.left</code> means "the left child of the left child of the root."</p>
+    <div class="info-box">
+        Read the chain of arrows as the path you walk down the tree.
+    </div>
+</section>
+
+<section>
+    <h2>Exercise — build this tree</h2>
+    <div class="two-col">
+        <div>
+            <svg viewBox="0 0 320 280" width="100%" style="max-height:280px;">
+                <g stroke="#95a5a6" stroke-width="2" fill="none">
+                    <line x1="160" y1="40" x2="90" y2="120"/>
+                    <line x1="160" y1="40" x2="230" y2="120"/>
+                    <line x1="90" y1="150" x2="50" y2="220"/>
+                    <line x1="90" y1="150" x2="130" y2="220"/>
+                    <line x1="230" y1="150" x2="270" y2="220"/>
+                </g>
+                <circle cx="160" cy="30" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="160" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">1</text>
+                <circle cx="90" cy="140" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="90" y="146" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">2</text>
+                <circle cx="230" cy="140" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="230" y="146" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">3</text>
+                <circle cx="50" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="50" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">4</text>
+                <circle cx="130" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="130" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">5</text>
+                <circle cx="270" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="270" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">6</text>
+            </svg>
+        </div>
+        <div>
+            <p>Write the C code that builds this tree.</p>
+            <p><strong>10 minutes.</strong></p>
+            <p>Use <code>newNode()</code>. One assignment per edge.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     TRAVERSALS
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Traversals</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Where do we print the root?</p>
+</section>
+
+<section>
+    <h2>The skeleton — three positions for "the work"</h2>
+    <pre><code class="nohighlight">traverse(root):
+    if root is NULL: return
+
+    // position 1: before left and right
+
+    traverse(root.left)
+
+    // position 2: between left and right
+
+    traverse(root.right)
+
+    // position 3: after left and right</code></pre>
+    <p>Same recursion, three places to do the work. The choice of position gives the three classic traversals.</p>
+</section>
+
+<section>
+    <h2>The three traversals</h2>
+    <table style="width:90%;">
+        <tr><th>Position of <code>printf</code></th><th>Name</th><th>Reads as</th></tr>
+        <tr><td>position 1 (before left)</td><td><strong>Preorder</strong></td><td>root, then left subtree, then right subtree</td></tr>
+        <tr><td>position 2 (between)</td><td><strong>Inorder</strong></td><td>left subtree, then root, then right subtree</td></tr>
+        <tr><td>position 3 (after right)</td><td><strong>Postorder</strong></td><td>left subtree, then right subtree, then root</td></tr>
+    </table>
+    <div class="key-point">
+        One skeleton. The position of the work line is the only choice. That's all there is to remember.
+    </div>
+</section>
+
+<section>
+    <h2>The three traversals — pseudocode</h2>
+    <pre><code class="nohighlight">preorder(root):
+    if root is NULL: return
+    print root.data           // before
+    preorder(root.left)
+    preorder(root.right)
+
+inorder(root):
+    if root is NULL: return
+    inorder(root.left)
+    print root.data           // between
+    inorder(root.right)
+
+postorder(root):
+    if root is NULL: return
+    postorder(root.left)
+    postorder(root.right)
+    print root.data           // after</code></pre>
+</section>
+
+<section class="center-content">
+    <h2>Trace exercise</h2>
+    <svg viewBox="0 0 500 320" width="500" height="320" style="margin-top:0.4em;">
+        <g stroke="#95a5a6" stroke-width="2" fill="none">
+            <line x1="250" y1="40" x2="150" y2="120"/>
+            <line x1="250" y1="40" x2="350" y2="120"/>
+            <line x1="150" y1="150" x2="80" y2="220"/>
+            <line x1="150" y1="150" x2="220" y2="220"/>
+            <line x1="350" y1="150" x2="420" y2="220"/>
+        </g>
+        <circle cx="250" cy="30" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="250" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">A</text>
+        <circle cx="150" cy="140" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="150" y="146" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">B</text>
+        <circle cx="350" cy="140" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="350" y="146" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">C</text>
+        <circle cx="80" cy="235" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="80" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">D</text>
+        <circle cx="220" cy="235" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="220" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">E</text>
+        <circle cx="420" cy="235" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+        <text x="420" y="241" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">F</text>
+    </svg>
+    <p>On paper: write the output of <code>preorder</code>, <code>inorder</code>, and <code>postorder</code> on this tree. <strong>10 minutes.</strong></p>
+</section>
+
+<section>
+    <h2>Trace exercise — answers</h2>
+    <ul>
+        <li><strong>Preorder</strong> (root before children): <code>A B D E C F</code></li>
+        <li><strong>Inorder</strong> (root between children): <code>D B E A C F</code></li>
+        <li><strong>Postorder</strong> (root after children): <code>D E B F C A</code></li>
+    </ul>
+    <p>If any disagreed with your answer, walk through it with the skeleton. The work line tells you where each letter prints.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SESSION 2 — RECURSIVE COMPUTATIONS
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Computing on trees</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Same skeleton. Different return value.</p>
+</section>
+
+<section>
+    <h2>Recap — the traversal skeleton</h2>
+    <pre><code class="language-c">void traverse(struct Node *root) {
+    if (root == NULL) return;
+    /* work */
+    traverse(root-&gt;left);
+    /* work */
+    traverse(root-&gt;right);
+    /* work */
+}</code></pre>
+    <p>Three things to compute next — <strong>size</strong>, <strong>height</strong>, <strong>leaf count</strong> — all use this skeleton with one change: they <em>return</em> a value instead of printing.</p>
+</section>
+
+<section>
+    <h2>Size — how many nodes?</h2>
+    <p>If the tree is empty: 0.</p>
+    <p>Otherwise: <strong>1 (the root) + size of left subtree + size of right subtree</strong>.</p>
+    <pre><code class="nohighlight">size(root):
+    if root is NULL: return 0
+    return 1 + size(root.left) + size(root.right)</code></pre>
+    <p>Trust the recursive calls: each returns the correct count for its subtree. Combine by adding 1 for the root.</p>
+</section>
+
+<section>
+    <h2>Height — how deep does the tree go?</h2>
+    <p>Height = the length of the longest path from the root down to any leaf.</p>
+    <p>If the tree is empty: <code>-1</code> (no nodes, no path).</p>
+    <p>Otherwise: <strong>1 + max(height of left subtree, height of right subtree)</strong>.</p>
+    <pre><code class="nohighlight">height(root):
+    if root is NULL: return -1
+    hl ← height(root.left)
+    hr ← height(root.right)
+    return 1 + max(hl, hr)</code></pre>
+    <p class="small">A single-node tree has height 0 (longest path: zero edges). A leaf's children are NULL with height <code>-1</code>; adding 1 gives 0.</p>
+</section>
+
+<section>
+    <h2>Leaf count — how many leaves?</h2>
+    <p>A leaf is a node with no children.</p>
+    <p>If the tree is empty: 0.<br>
+    If the node is a leaf (no left, no right): 1.<br>
+    Otherwise: <strong>leaves of left subtree + leaves of right subtree</strong>.</p>
+    <pre><code class="nohighlight">leafCount(root):
+    if root is NULL: return 0
+    if root.left is NULL AND root.right is NULL: return 1
+    return leafCount(root.left) + leafCount(root.right)</code></pre>
+</section>
+
+<section>
+    <h2>The unifying pattern</h2>
+    <p>Every recursive tree computation has the same shape:</p>
+    <pre><code class="nohighlight">f(root):
+    if root is empty:    return  base-case value
+    if root is a leaf:   return  leaf value          (sometimes)
+
+    left_answer  ← f(root.left)              // trust the call
+    right_answer ← f(root.right)             // trust the call
+    return combine(left_answer, right_answer, root.data)</code></pre>
+    <p>The function only changes in two places: the base-case value, and the <code>combine</code> step. The recursion writes itself.</p>
+</section>
+
+<section>
+    <h2>Practice — try it</h2>
+    <p>On the same tree from earlier (root <code>A</code>, six nodes):</p>
+    <ol>
+        <li>What does <code>size(root)</code> return?</li>
+        <li>What does <code>height(root)</code> return?</li>
+        <li>What does <code>leafCount(root)</code> return?</li>
+    </ol>
+    <p>Then, on your machine: implement all three. Build the same tree by hand (you already have the code) and run them. <strong>20 minutes.</strong></p>
+</section>
+
+<section>
+    <h2>Practice — answers</h2>
+    <ul>
+        <li><code>size(root) = 6</code> — six nodes total</li>
+        <li><code>height(root) = 2</code> — longest path A → B → D (or A → B → E) has 2 edges</li>
+        <li><code>leafCount(root) = 3</code> — D, E, F are the leaves</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PROBLEM SOLVING
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Three problems</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Same skeleton, three different jobs</p>
+</section>
+
+<!-- ─── Problem 1: Expression tree ────────────────── -->
+
+<section>
+    <h2>Problem 1 — Evaluate an expression tree</h2>
+    <p>Each leaf holds a number. Each internal node holds an operator: <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>.</p>
+    <div style="text-align:center; margin-top:0.5em;">
+        <svg viewBox="0 0 260 230" width="240">
+            <g stroke="#95a5a6" stroke-width="2" fill="none">
+                <line x1="130" y1="35" x2="80" y2="105"/>
+                <line x1="130" y1="35" x2="180" y2="105"/>
+                <line x1="80" y1="125" x2="40" y2="195"/>
+                <line x1="80" y1="125" x2="120" y2="195"/>
+            </g>
+            <circle cx="130" cy="30" r="20" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+            <text x="130" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="17" fill="#2c3e50" font-weight="700">*</text>
+            <circle cx="80" cy="120" r="20" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+            <text x="80" y="126" text-anchor="middle" font-family="Monaco, monospace" font-size="17" fill="#2c3e50" font-weight="700">+</text>
+            <circle cx="180" cy="120" r="20" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+            <text x="180" y="126" text-anchor="middle" font-family="Monaco, monospace" font-size="17" fill="#2c3e50" font-weight="700">5</text>
+            <circle cx="40" cy="210" r="20" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+            <text x="40" y="216" text-anchor="middle" font-family="Monaco, monospace" font-size="17" fill="#2c3e50" font-weight="700">3</text>
+            <circle cx="120" cy="210" r="20" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+            <text x="120" y="216" text-anchor="middle" font-family="Monaco, monospace" font-size="17" fill="#2c3e50" font-weight="700">4</text>
+        </svg>
+    </div>
+    <p style="text-align:center; margin-top:0.2em;">Expected result: <code>(3 + 4) * 5 = 35</code></p>
+    <p><strong>Walk this tree using all three traversals. What does each one give you?</strong> 5 minutes.</p>
+</section>
+
+<section>
+    <h2>What each traversal produces</h2>
+    <p>Walking the same tree three different ways gives three classical notations for the same expression:</p>
+    <table style="width:90%;">
+        <tr><th>Traversal</th><th>Order at each node</th><th>Output</th><th>Notation</th></tr>
+        <tr><td><strong>Inorder</strong></td><td>left → root → right</td><td><code>3 + 4 * 5</code></td><td>infix (what we normally write)</td></tr>
+        <tr><td><strong>Preorder</strong></td><td>root → left → right</td><td><code>* + 3 4 5</code></td><td>prefix</td></tr>
+        <tr><td><strong>Postorder</strong></td><td>left → right → root</td><td><code>3 4 + 5 *</code></td><td>postfix</td></tr>
+    </table>
+    <p style="margin-top:0.6em;">All three are valid ways to <em>print</em> the expression. But the question wasn't "print it" — it was "compute its value." Different jobs.</p>
+    <div class="info-box">
+        Inorder gives you the form humans read. Postorder gives you the form a computer evaluates without ambiguity. Which is the natural one for computing the value?
+    </div>
+</section>
+
+<section>
+    <h2>Postorder — why it fits evaluation</h2>
+    <p>Stand at the <code>*</code> root. To apply <code>*</code>, we need <em>two numbers</em> — its left and right operands. The left operand is the value of the <code>+</code> subtree, which itself needs <code>3</code> and <code>4</code> ready first.</p>
+    <div class="key-point">
+        <strong>An operator can't act until both its operands are ready.</strong> That forces the order: process left subtree, process right subtree, <em>then</em> apply the operator at the root. That's postorder.
+    </div>
+    <pre><code class="nohighlight">evaluate(root):
+    if root is a leaf:
+        return root.data
+
+    left_value  ← evaluate(root.left)
+    right_value ← evaluate(root.right)
+    return apply(root.op, left_value, right_value)</code></pre>
+    <p>Trace on the tree: <code>evaluate(3) → 3</code>; <code>evaluate(4) → 4</code>; <code>evaluate(+) → 3 + 4 = 7</code>; <code>evaluate(5) → 5</code>; <code>evaluate(*) → 7 * 5 = 35</code>.</p>
+    <div class="info-box">
+        Day 9: we evaluated postfix expressions using a stack — operands pushed, operators pop two and push the result. The expression tree is the same computation, structured as data instead of a stream. Postorder traversal of the tree <em>is</em> the postfix stack evaluation.
+    </div>
+</section>
+
+<!-- ─── Problem 2: Invert ─────────────────────────── -->
+
+<section>
+    <h2>Problem 2 — Mirror the tree</h2>
+    <p>Swap every node's left and right children. The result is the original tree's mirror image.</p>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <p class="small">Before</p>
+            <svg viewBox="0 0 240 220" width="200">
+                <g stroke="#95a5a6" stroke-width="2" fill="none">
+                    <line x1="120" y1="35" x2="60" y2="100"/>
+                    <line x1="120" y1="35" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="185"/>
+                    <line x1="60" y1="120" x2="90" y2="185"/>
+                </g>
+                <circle cx="120" cy="30" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="120" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">1</text>
+                <circle cx="60" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="60" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">2</text>
+                <circle cx="180" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="180" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">3</text>
+                <circle cx="30" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="30" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">4</text>
+                <circle cx="90" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="90" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">5</text>
+            </svg>
+        </div>
+        <div style="text-align:center;">
+            <p class="small">After</p>
+            <svg viewBox="0 0 240 220" width="200">
+                <g stroke="#95a5a6" stroke-width="2" fill="none">
+                    <line x1="120" y1="35" x2="60" y2="100"/>
+                    <line x1="120" y1="35" x2="180" y2="100"/>
+                    <line x1="180" y1="120" x2="150" y2="185"/>
+                    <line x1="180" y1="120" x2="210" y2="185"/>
+                </g>
+                <circle cx="120" cy="30" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="120" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">1</text>
+                <circle cx="60" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="60" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">3</text>
+                <circle cx="180" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="180" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">2</text>
+                <circle cx="150" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="150" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">5</text>
+                <circle cx="210" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                <text x="210" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">4</text>
+            </svg>
+        </div>
+    </div>
+    <p>3 minutes to think before turning the page.</p>
+</section>
+
+<section>
+    <h2>Problem 2 — solution</h2>
+    <pre><code class="nohighlight">invert(root):
+    if root is NULL: return
+
+    swap root.left and root.right
+    invert(root.left)
+    invert(root.right)</code></pre>
+    <p>Same skeleton as a traversal — the "work" line is now <code>swap</code> instead of <code>print</code>, and the work happens at position 1 (could equivalently happen at position 3 — both work).</p>
+    <div class="info-box">
+        Notice what makes this small: every node does the same simple job, the recursion takes care of getting to every node.
+    </div>
+</section>
+
+<!-- ─── Problem 3: Path sum ────────────────────────── -->
+
+<section>
+    <h2>Problem 3 — Root-to-leaf path sum</h2>
+    <p>Given a binary tree of integers and a target value, is there <em>any</em> path from the root down to a leaf whose values sum to the target?</p>
+    <div style="text-align:center; margin-top:0.3em;">
+        <svg viewBox="0 0 320 220" width="280">
+            <g stroke="#95a5a6" stroke-width="2" fill="none">
+                <line x1="160" y1="35" x2="90" y2="100"/>
+                <line x1="160" y1="35" x2="230" y2="100"/>
+                <line x1="90" y1="120" x2="50" y2="185"/>
+                <line x1="90" y1="120" x2="130" y2="185"/>
+                <line x1="230" y1="120" x2="270" y2="185"/>
+            </g>
+            <circle cx="160" cy="30" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="160" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">5</text>
+            <circle cx="90" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="90" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">4</text>
+            <circle cx="230" cy="115" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="230" y="121" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">8</text>
+            <circle cx="50" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="50" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">11</text>
+            <circle cx="130" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="130" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">2</text>
+            <circle cx="270" cy="200" r="18" fill="#fff" stroke="#3498db" stroke-width="2"/>
+            <text x="270" y="206" text-anchor="middle" font-family="Monaco, monospace" font-size="15" fill="#2c3e50" font-weight="700">1</text>
+        </svg>
+    </div>
+    <p>Target = <code>15</code>. Is there a root-to-leaf path that sums to 15?</p>
+    <p class="small">The three root-to-leaf paths: 5→4→11 (sum 20), 5→4→2 (sum 11), 5→8→1 (sum 14). None match 15 — answer is no.</p>
+    <p><strong>Try target = 14, and also target = 20.</strong> 3 minutes to think before turning the page.</p>
+</section>
+
+<section>
+    <h2>Problem 3 — solution</h2>
+    <pre><code class="nohighlight">hasPathSum(root, target):
+    if root is NULL: return FALSE
+
+    if root is a leaf:
+        return (root.data == target)
+
+    remaining ← target - root.data
+    return hasPathSum(root.left, remaining)
+        OR hasPathSum(root.right, remaining)</code></pre>
+    <p>For target = 14: at root 5, remaining becomes 9. Down the right side, at node 8, remaining becomes 1. The leaf 1 matches. Return TRUE.</p>
+    <p>For target = 20: at root 5, remaining becomes 15. Down the left side, at node 4, remaining becomes 11. The leaf 11 matches. Return TRUE.</p>
+    <div class="key-point">
+        New pattern: the target <em>flows down</em> the recursion, shrinking as we go. Up to now, our recursive answers were built <em>up</em> — combining left + right + root. Here, information also flows <em>down</em> through the parameter. This is the technique that makes BST search work on Wednesday.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PREVIEW
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h2>Coming up</h2>
+    <p class="big-q" style="font-size:1.5em; margin-top:1em;">Binary trees give shape.<br>BSTs add order.<br>Order lets us search.</p>
+    <p style="margin-top:1.5em; color:#7f8c8d;">Wednesday and Friday.</p>
+    <p class="small" style="margin-top:1.2em;">Today our tree uses pointers. Next week, heaps will show another way — storing a tree inside an array.</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        center: false,
+        slideNumber: true,
+        transition: 'slide',
+        width: 1280,
+        height: 720,
+        margin: 0.04,
+        minScale: 0.2,
+        maxScale: 2.0,
+        plugins: [ RevealHighlight, RevealNotes ]
+    });
+</script>
+</body>
+</html>
