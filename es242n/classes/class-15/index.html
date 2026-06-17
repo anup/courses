@@ -41,9 +41,10 @@
       <article class="agenda-item">
         <div class="marker">S1</div>
         <div>
-          <h2>Session 1 — Successor, predecessor, and delete</h2>
-          <p>Open with the inorder successor: the next value in the sorted walk after a given node. Two cases for finding it — node has a right subtree (leftmost of right subtree) vs. no right subtree (walk up to the first ancestor reached from the left). Predecessor as the mirror. Establish that for deletion we only need the right-subtree case.</p>
-          <p>Then deletion as the hardest BST operation. The three cases, by child count: leaf (just unlink), one child (promote the child), two children (the successor trick — copy successor's value, recursively delete the successor, which is now in case 1 or 2). Worked example on the canonical tree (delete the root 50). Full recursive pseudocode. Complexity: O(height), same as search and insert.</p>
+          <h2>Session 1 — Delete, the tool that solves it, then delete again</h2>
+          <p>Open with deletion as the hardest BST operation. Walk the three cases by child count: leaf (just unlink), one child (promote the child — sliding it up one level), two children (try promoting either child and watch a whole subtree get orphaned). Hitting that wall is what motivates the next tool: a single replacement <em>value</em> with very specific properties — must be already in the tree, larger than the entire left subtree, smaller than every other value in the right subtree.</p>
+          <p>That motivation introduces the inorder successor and predecessor. Define what each is, then prove successor fits the deletion requirement exactly. Two cases for finding successor (with right subtree → leftmost of it; without → walk up to a left-coming ancestor). Pseudocode for the deletion-relevant case. A short detour: <code>std::map</code> and <code>TreeMap</code> are not hash tables — they're red-black BSTs, and every <code>++iterator</code> on them is an inorder-successor walk you've been calling without knowing.</p>
+          <p>Then return to Case 3 with the successor in hand: copy the successor's value to the deleted node, recursively delete the original successor (which falls into Case 1 or 2). Full recursive pseudocode. Complexity: O(height), same as search and insert.</p>
         </div>
       </article>
       <article class="agenda-item">

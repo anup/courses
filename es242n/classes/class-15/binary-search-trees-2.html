@@ -108,113 +108,11 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════
-     PART 1 — SUCCESSOR & PREDECESSOR
+     PART 1 — DELETE: THE HARDEST OPERATION
 ════════════════════════════════════════════════════ -->
 
 <section class="center-content">
     <h1 style="font-size:2.8em;">Part 1</h1>
-    <p style="color:#7f8c8d; font-size:1.2em;">Inorder successor and predecessor</p>
-</section>
-
-<section>
-    <h2>What is the inorder successor?</h2>
-    <p>The <strong>inorder successor</strong> of a node N is the value that comes <em>right after</em> N in the inorder traversal.</p>
-    <p>Equivalently: the smallest value in the tree that is greater than N's value.</p>
-    <div class="two-col">
-        <div>
-            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
-                <g>
-                    <line x1="200" y1="40" x2="110" y2="120"/>
-                    <line x1="200" y1="40" x2="290" y2="120"/>
-                    <line x1="110" y1="140" x2="50" y2="220"/>
-                    <line x1="110" y1="140" x2="170" y2="220"/>
-                    <line x1="290" y1="140" x2="230" y2="220"/>
-                    <line x1="290" y1="140" x2="350" y2="220"/>
-                </g>
-                <circle cx="200" cy="30" r="22"/>
-                <text x="200" y="36">50</text>
-                <g class="target"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
-                <circle cx="290" cy="130" r="22"/>
-                <text x="290" y="136">70</text>
-                <circle cx="50" cy="230" r="22"/>
-                <text x="50" y="236">20</text>
-                <g class="visited"><circle cx="170" cy="230" r="22"/><text x="170" y="236">40</text></g>
-                <circle cx="230" cy="230" r="22"/>
-                <text x="230" y="236">60</text>
-                <circle cx="350" cy="230" r="22"/>
-                <text x="350" y="236">80</text>
-            </svg>
-        </div>
-        <div>
-            <p>Inorder of this tree: <code>20, 30, 40, 50, 60, 70, 80</code></p>
-            <p>So the successor of <strong>30</strong> is <strong>40</strong> (the next value emitted).</p>
-            <p>The predecessor of <strong>30</strong> is <strong>20</strong>.</p>
-        </div>
-    </div>
-</section>
-
-<section>
-    <h2>Why we care about these two</h2>
-    <p>Today's main use: <strong>delete</strong>.</p>
-    <p>When we delete a node with two children, we can't just promote one child — the other subtree would be orphaned. We need a <em>replacement value</em> for the deleted node that keeps the BST property intact at that position.</p>
-    <div class="key-point">
-        The only values that fit are the deleted node's <strong>inorder successor</strong> (the smallest value greater than it) or its <strong>predecessor</strong> (the largest value smaller than it). Either one slides in cleanly.
-    </div>
-    <p>Other places they show up:</p>
-    <ul>
-        <li>Walking values in sorted order, one at a time — used by BST iterators in standard libraries (C++ <code>std::map</code>, Java <code>TreeMap</code>).</li>
-        <li>"Find the smallest value greater than X" — search for X, then ask for its successor.</li>
-    </ul>
-</section>
-
-<section>
-    <h2>Finding the successor — two cases</h2>
-    <div class="two-col">
-        <div class="card">
-            <h4>Case A — node has a right subtree</h4>
-            <p>The successor is the <strong>leftmost</strong> node in the right subtree.</p>
-            <p class="small">Example: successor of 30 is 40 — the leftmost node in 30's right subtree.</p>
-        </div>
-        <div class="card">
-            <h4>Case B — no right subtree</h4>
-            <p>Walk <strong>up</strong> until you find an ancestor that you came from on the <em>left</em>. That ancestor is the successor.</p>
-            <p class="small">Example: successor of 40 is 50. 40 has no right child; walking up, 40 is the right child of 30, then 30 is the left child of 50 — so 50 is the successor.</p>
-        </div>
-    </div>
-    <div class="key-point">
-        Case A is the common one and the one we'll use for deletion. Case B requires a parent pointer or a search-from-root.
-    </div>
-</section>
-
-<section>
-    <h2>Successor — pseudocode (Case A only)</h2>
-    <p>For deletion, the node we care about always has a right subtree — so we only need Case A.</p>
-    <pre><code class="nohighlight">SUCCESSOR-IN-RIGHT-SUBTREE(node):
-    // assumes node.right ≠ NULL
-    current ← node.right
-    while current.left ≠ NULL:
-        current ← current.left
-    return current</code></pre>
-    <p>Walk into the right subtree, then keep going left. The leftmost node there is the successor. Time: <code>O(h)</code>.</p>
-</section>
-
-<section>
-    <h2>Predecessor — mirror image</h2>
-    <p>Predecessor is the value that comes <em>right before</em> N in inorder. Or: the largest value less than N's value.</p>
-    <p>The two cases mirror successor:</p>
-    <ul>
-        <li>Node has a <strong>left</strong> subtree → predecessor is the <strong>rightmost</strong> node in the left subtree.</li>
-        <li>No left subtree → walk up to the first ancestor reached from the <em>right</em>.</li>
-    </ul>
-    <p class="small">In the canonical tree, predecessor of 50 is 40 — the rightmost node in 50's left subtree.</p>
-</section>
-
-<!-- ═══════════════════════════════════════════════════
-     PART 2 — DELETE
-════════════════════════════════════════════════════ -->
-
-<section class="center-content">
-    <h1 style="font-size:2.8em;">Part 2</h1>
     <p style="color:#7f8c8d; font-size:1.2em;">Delete — the hardest BST operation</p>
 </section>
 
@@ -320,8 +218,8 @@
 </section>
 
 <section>
-    <h2>Case 3 — the node has two children</h2>
-    <p>Now we can't just promote one child — that would orphan the other subtree.</p>
+    <h2>Case 3 — naive promotion breaks</h2>
+    <p>The deleted node has two children. Try the strategy from Case 2 — promote one of them — and watch what happens.</p>
     <div class="two-col">
         <div>
             <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
@@ -347,31 +245,243 @@
                 <circle cx="350" cy="230" r="22"/>
                 <text x="350" y="236">80</text>
             </svg>
-            <p class="small" style="text-align:center;">Delete <strong>50</strong> (the root). It has both 30 and 70 as children.</p>
+            <p class="small" style="text-align:center;">Delete <strong>50</strong>. Children: <strong>30</strong> (left) and <strong>70</strong> (right).</p>
         </div>
         <div>
-            <p><strong>The trick:</strong></p>
-            <ol>
-                <li>Find the inorder successor of 50. Successor = leftmost of right subtree = <strong>60</strong>.</li>
-                <li>Copy 60's value into the node currently holding 50.</li>
-                <li>Now delete the original <strong>60</strong> from the right subtree. (60 was a leaf — falls into Case 1.)</li>
-            </ol>
-            <p>Result: 60 takes 50's spot at the root. The original 60 leaf is gone.</p>
+            <p><strong>Promote 30?</strong></p>
+            <ul>
+                <li>30 slides up to become the new root.</li>
+                <li>But 70 and its subtree (60, 70, 80) are left floating — their parent (50) is gone.</li>
+                <li><strong>70's entire subtree is orphaned.</strong></li>
+            </ul>
+            <p><strong>Promote 70?</strong></p>
+            <ul>
+                <li>70 slides up.</li>
+                <li>Now 30's subtree (20, 30, 40) is orphaned.</li>
+            </ul>
+            <div class="warning-box">
+                Promotion only works when the deleted node has at most one subtree. With two, one of them is always left without a parent.
+            </div>
         </div>
     </div>
 </section>
 
 <section>
-    <h2>Why the successor specifically?</h2>
-    <p>The replacement has to keep the BST property holding everywhere. The successor of 50 is — by definition — the <strong>smallest value greater than 50</strong>.</p>
-    <p>So when we put it at the root:</p>
+    <h2>What we really need</h2>
+    <p>Instead of moving a whole subtree, try a different idea: replace just the deleted node's <strong>value</strong>, not its position. The tree's shape stays the same; only the value at one slot changes. Both subtrees stay attached exactly where they were.</p>
+    <p>For the BST property to still hold, the replacement value must:</p>
     <ul>
-        <li>It is still greater than every value in the (untouched) left subtree.</li>
-        <li>It is still smaller than every other value in the right subtree (since it was the smallest in there).</li>
+        <li>Already exist somewhere in the tree (so we don't conjure new values).</li>
+        <li>Be <strong>larger</strong> than every value in the left subtree (preserves "left &lt; me").</li>
+        <li>Be <strong>smaller</strong> than every other value in the right subtree (preserves "me &lt; right").</li>
     </ul>
-    <p>The BST property is preserved — the tree stays sorted around the new root.</p>
-    <div class="info-box">
-        <strong>Predecessor works too.</strong> By symmetry, the largest value in the left subtree also fits. Convention: use successor.
+    <div class="key-point">
+        Only two values in the entire tree satisfy all three conditions: the deleted node's <strong>inorder successor</strong> and its <strong>predecessor</strong>.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — INORDER SUCCESSOR AND PREDECESSOR
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Inorder successor and predecessor</p>
+</section>
+
+<section>
+    <h2>What is the inorder successor?</h2>
+    <p>The <strong>inorder successor</strong> of a node N is the value that comes <em>right after</em> N in the inorder traversal.</p>
+    <p>Equivalently: the smallest value in the tree that is greater than N's value.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <g class="target"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <g class="visited"><circle cx="170" cy="230" r="22"/><text x="170" y="236">40</text></g>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p>Inorder of this tree: <code>20, 30, 40, 50, 60, 70, 80</code></p>
+            <p>So the successor of <strong>30</strong> is <strong>40</strong> (the next value emitted).</p>
+            <p>The predecessor of <strong>30</strong> is <strong>20</strong>.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why successor works as the replacement</h2>
+    <p>Recall the three conditions: the replacement must be greater than every value in the left subtree, smaller than every other value in the right subtree, and already in the tree.</p>
+    <p>The successor of the deleted node N is — by definition — the smallest value strictly greater than N. Walk the conditions:</p>
+    <ul>
+        <li><strong>Greater than N</strong> → greater than every value in N's left subtree (all of which are &lt; N). ✓</li>
+        <li><strong>Smallest value greater than N</strong> → every other value greater than N is bigger. So the successor is smaller than the rest of the right subtree. ✓</li>
+        <li><strong>Already in the tree</strong>. ✓</li>
+    </ul>
+    <p>The successor is exactly the value that fits at N's position. Predecessor works too, by symmetry.</p>
+</section>
+
+<section>
+    <h2>Finding the successor — two cases</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Case A — node has a right subtree</h4>
+            <p>The successor is the <strong>leftmost</strong> node in the right subtree.</p>
+            <p class="small">Example: successor of 30 is 40 — the leftmost node in 30's right subtree.</p>
+        </div>
+        <div class="card">
+            <h4>Case B — no right subtree</h4>
+            <p>Walk <strong>up</strong> until you find an ancestor that you came from on the <em>left</em>. That ancestor is the successor.</p>
+            <p class="small">Example: successor of 40 is 50. 40 has no right child; walking up, 40 is the right child of 30, then 30 is the left child of 50 — so 50 is the successor.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Case A is the common one and the one we use for deletion (the deleted node has two children, so it always has a right subtree). Case B requires a parent pointer or a search-from-root.
+    </div>
+</section>
+
+<section>
+    <h2>Successor — pseudocode (Case A only)</h2>
+    <p>For deletion, the node we care about always has a right subtree — so we only need Case A.</p>
+    <pre><code class="nohighlight">SUCCESSOR-IN-RIGHT-SUBTREE(node):
+    // assumes node.right ≠ NULL
+    current ← node.right
+    while current.left ≠ NULL:
+        current ← current.left
+    return current</code></pre>
+    <p>Walk into the right subtree, then keep going left. The leftmost node there is the successor. Time: <code>O(h)</code>.</p>
+</section>
+
+<section>
+    <h2>Predecessor — mirror image</h2>
+    <p>Predecessor is the value that comes <em>right before</em> N in inorder. Or: the largest value less than N's value.</p>
+    <p>The two cases mirror successor:</p>
+    <ul>
+        <li>Node has a <strong>left</strong> subtree → predecessor is the <strong>rightmost</strong> node in the left subtree.</li>
+        <li>No left subtree → walk up to the first ancestor reached from the <em>right</em>.</li>
+    </ul>
+    <p class="small">In the canonical tree, predecessor of 50 is 40 — the rightmost node in 50's left subtree.</p>
+</section>
+
+<section>
+    <h2>std::map gives you dhokha</h2>
+    <p>If you've used C++'s <code>std::map</code> or Java's <code>TreeMap</code>:</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>What it looks like</h4>
+            <ul>
+                <li>Key → value lookup</li>
+                <li>Feels like a dictionary</li>
+                <li>Easy to assume it's a hash table</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>What it actually is</h4>
+            <ul>
+                <li>A <strong>balanced BST</strong> — red-black tree</li>
+                <li>O(log n) for every operation</li>
+                <li>Inorder iteration gives keys in sorted order</li>
+            </ul>
+        </div>
+    </div>
+    <p>Why it matters:</p>
+    <ul>
+        <li><code>map.begin()</code> = smallest key. <code>map.rbegin()</code> = largest. (BST min and max.)</li>
+        <li><code>++iterator</code> = move to the next key in sorted order. (Inorder successor.)</li>
+        <li><code>map.lower_bound(x)</code> = smallest key ≥ x. (A successor-of-x walk.)</li>
+    </ul>
+    <p>The real hash table is <code>std::unordered_map</code> (C++) and <code>HashMap</code> (Java). Use that when you want O(1) and don't care about order.</p>
+    <div class="key-point">
+        The name "map" lies. Every <code>++it</code> you've ever written on a <code>std::map</code> is an inorder-successor walk you didn't know you were doing.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — DELETE: COMPLETING CASE 3
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Delete — completing Case 3</p>
+</section>
+
+<section>
+    <h2>Case 3 — using the successor</h2>
+    <p>We have the tool. To delete a node N with two children:</p>
+    <ol>
+        <li>Find N's inorder successor: walk right once, then keep going left. For N = 50: leftmost of 50's right subtree is <strong>60</strong>.</li>
+        <li>Copy 60's value into the node currently holding 50.</li>
+        <li>Delete the original 60 from the right subtree. 60 was a leaf — falls into Case 1.</li>
+    </ol>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>Before</strong></p>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:260px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <g class="target"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <g class="visited"><circle cx="230" cy="230" r="22"/><text x="230" y="236">60</text></g>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+            <p class="small" style="text-align:center;">Successor of 50 is <strong>60</strong>.</p>
+        </div>
+        <div class="fragment">
+            <p class="small" style="text-align:center;"><strong>After</strong></p>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:260px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">60</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+            <p class="small" style="text-align:center;">60 now occupies 50's slot. The original 60 leaf is gone. Both subtrees still attached.</p>
+        </div>
     </div>
 </section>
 
@@ -412,11 +522,11 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════════
-     PART 3 — VALIDATE BST
+     PART 4 — VALIDATE BST
 ════════════════════════════════════════════════════ -->
 
 <section class="center-content">
-    <h1 style="font-size:2.8em;">Part 3</h1>
+    <h1 style="font-size:2.8em;">Part 4</h1>
     <p style="color:#7f8c8d; font-size:1.2em;">Validate BST</p>
 </section>
 
@@ -506,11 +616,11 @@ VALIDATE(root, &minus;∞, +∞)</code></pre>
 </section>
 
 <!-- ═══════════════════════════════════════════════════
-     PART 4 — TREE PROBLEMS
+     PART 5 — TREE PROBLEMS
 ════════════════════════════════════════════════════ -->
 
 <section class="center-content">
-    <h1 style="font-size:2.8em;">Part 4</h1>
+    <h1 style="font-size:2.8em;">Part 5</h1>
     <p style="color:#7f8c8d; font-size:1.2em;">Tree problems</p>
 </section>
 
