@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 15</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 15</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 15</p>
+      <h1>19 June 2026: Binary Search Trees (Part 2)</h1>
+      <p class="lead">The hardest BST operation — deletion — through its three cases. Then validate-BST as the converse of Wednesday's punchline, and two tree problems where the BST property collapses an O(n) algorithm into O(height).</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="binary-search-trees-2.html">Binary Search Trees — Part 2</a> — today's deck, both sessions</li>
+        <li><a href="../class-14/binary-search-trees.html">Day 14 deck</a> — Wednesday's Part 1, where search/insert/inorder were built</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Successor, predecessor, and delete</h2>
+          <p>Open with the inorder successor: the next value in the sorted walk after a given node. Two cases for finding it — node has a right subtree (leftmost of right subtree) vs. no right subtree (walk up to the first ancestor reached from the left). Predecessor as the mirror. Establish that for deletion we only need the right-subtree case.</p>
+          <p>Then deletion as the hardest BST operation. The three cases, by child count: leaf (just unlink), one child (promote the child), two children (the successor trick — copy successor's value, recursively delete the successor, which is now in case 1 or 2). Worked example on the canonical tree (delete the root 50). Full recursive pseudocode. Complexity: O(height), same as search and insert.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Validate BST and tree problems</h2>
+          <p>Validate-BST as the converse of Wednesday's "inorder of a BST is sorted" punchline. Open by recalling the local-vs-global trap (the same counterexample tree from Part 1) — students see why the obvious parent-child check is wrong. Two correct approaches: inorder walk with a running <code>prev</code>, and min/max bounds passed down the recursion. Compare both — both O(n), both correct.</p>
+          <p>Three tree problems applying everything:</p>
+          <ol>
+            <li><strong>Lowest common ancestor</strong> — in a general binary tree this is O(n) (compare two paths). In a BST, the property turns it into a three-case walk down the tree: O(height).</li>
+            <li><strong>Sorted array → balanced BST</strong> — pick the middle as root, recurse on halves. Total O(n), height ≤ ⌈log₂ n⌉.</li>
+            <li><strong>Recover BST</strong> — restore a BST whose two values were swapped. One inorder pass spots the descending steps; the two values to swap fall out. Showcases Wednesday's <em>inorder = sorted</em> lemma used as a diagnostic.</li>
+          </ol>
+          <p>Close with the take-away: all four CRUD operations (search, insert, delete, kth smallest) are O(height). The BST property does the heavy lifting in each of them.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>Find the inorder successor and predecessor of every node in the canonical tree.</li>
+        <li>Delete 30 from the canonical tree by hand; identify which case applies and execute it.</li>
+        <li>Trace the validate-BST function (both approaches) on the trap tree from Part 1.</li>
+        <li>Find LCA of <code>20</code> and <code>60</code> in the canonical tree.</li>
+        <li>Build a balanced BST from <code>[1, 2, 3, 4, 5, 6, 7]</code> and confirm its height is 2.</li>
+        <li>Given a BST with two values swapped, write its inorder, identify the descending pair(s), and pick the two values to swap back.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — BSTs (between now and Quiz 2)</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/delete-node-in-a-bst/">450. Delete Node in a BST</a> — three cases, exactly as in class.</li>
+        <li><a href="https://leetcode.com/problems/validate-binary-search-tree/">98. Validate Binary Search Tree</a> — both approaches from class will pass.</li>
+        <li><a href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/">235. Lowest Common Ancestor of a Binary Search Tree</a> — the three-case recurrence.</li>
+        <li><a href="https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/">108. Convert Sorted Array to BST</a> — middle as root, recurse on halves.</li>
+        <li><a href="https://leetcode.com/problems/inorder-successor-in-bst/">285. Inorder Successor in BST</a> — both cases (with and without right subtree).</li>
+        <li><a href="https://leetcode.com/problems/recover-binary-search-tree/">99. Recover Binary Search Tree</a> — fix a BST where two nodes were swapped. Uses the inorder = sorted property.</li>
+        <li><a href="https://leetcode.com/problems/closest-binary-search-tree-value/">270. Closest Binary Search Tree Value</a> — walk that tracks the closest seen so far.</li>
+        <li><a href="https://leetcode.com/problems/trim-a-binary-search-tree/">669. Trim a Binary Search Tree</a> — recursive prune that keeps values in a range.</li>
+        <li><a href="https://leetcode.com/problems/binary-search-tree-iterator/">173. Binary Search Tree Iterator</a> — inorder walk on demand, exposed as <code>next()</code> and <code>hasNext()</code>.</li>
+        <li><a href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/">236. Lowest Common Ancestor of a Binary Tree</a> — the general (non-BST) version. Compare with 235 to feel what the BST property buys you.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Monday 22 June (AM):</strong> Heaps — array layout, parent / child indices, insert, delete root, heapify.</li>
+        <li><strong>Monday 22 June (8:30 PM):</strong> Quiz 2 — binary trees and BSTs. Heaps not included.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

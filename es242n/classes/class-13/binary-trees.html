@@ -18,8 +18,9 @@
             --success-color: #27ae60;
         }
         .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
-        .reveal .slides section { height: 100%; overflow-y: auto !important; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
         .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
         .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
         .reveal h1 { font-size: 2.2em; line-height: 1.2; }
         .reveal h2 { font-size: 1.6em; }
@@ -39,8 +40,11 @@
         .reveal li { margin: 0.3em 0; line-height: 1.5; }
         .reveal ol { margin: 0.7em 0; }
         .reveal p { margin: 0.45em 0; }
-        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.7em 0; }
-        .reveal .card { background: var(--light-bg); padding: 0.8em 1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 1em 1.4em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.5em; }
+        .reveal .card ul { margin: 0.4em 0; padding-left: 1.3em; font-size: 0.82em; }
+        .reveal .card li { margin: 0.4em 0; line-height: 1.5; }
         .reveal .small { font-size: 0.78em; color: #6c757d; }
         .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
         .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }

@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Trees</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.7em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 1em 1.4em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.5em; }
+        .reveal .card ul { margin: 0.4em 0; padding-left: 1.3em; font-size: 0.82em; }
+        .reveal .card li { margin: 0.4em 0; line-height: 1.5; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+        /* Tree drawing helpers (re-used from binary-trees.html) */
+        .tree-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .tree-svg text { font-family: 'Monaco', 'Menlo', monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .tree-svg line { stroke: #95a5a6; stroke-width: 2; fill: none; }
+        .tree-svg .bad circle { stroke: var(--warning-color); }
+        .tree-svg .bad text { fill: var(--warning-color); }
+        .tree-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Binary Search Trees</h1>
+    <h3 style="color:#7f8c8d;">When order makes a tree searchable</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 14 &middot; 17 June 2026</p>
+</section>
+
+<!-- ─── Bridge from Monday ───────────────────────── -->
+<section>
+    <h2>Where we left off</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Monday — binary trees</h4>
+            <ul>
+                <li>Built trees with <code>newNode()</code> and pointer assignments</li>
+                <li>Three traversals: preorder, inorder, postorder</li>
+                <li>Computed <code>size</code>, <code>height</code>, <code>leafCount</code></li>
+                <li>Three problems: expression eval, mirror, path sum</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Today — one rule about order</h4>
+            <ul>
+                <li>Left subtree &lt; node &lt; right subtree</li>
+                <li>Search becomes fast — binary search on a tree</li>
+                <li>Insert in the same time</li>
+                <li>Inorder traversal lands sorted — for free</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — THE BST PROPERTY
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The BST property</p>
+</section>
+
+<section>
+    <h2>The BST property</h2>
+    <p>A binary tree is a <strong>Binary Search Tree</strong> when, for every node <code>N</code>:</p>
+    <ul>
+        <li>Every value in <code>N</code>'s left subtree is <strong>less than</strong> <code>N</code>'s value.</li>
+        <li>Every value in <code>N</code>'s right subtree is <strong>greater than</strong> <code>N</code>'s value.</li>
+    </ul>
+    <div class="key-point">
+        The word <em>every</em> matters. The property must hold not just for immediate children — for every descendant.
+    </div>
+    <p class="small">Assume all values are distinct. Conventions for equal keys vary.</p>
+</section>
+
+<section>
+    <h2>Which of these are BSTs?</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 220 200" width="220" height="200">
+                <g>
+                    <line x1="110" y1="40" x2="60" y2="100"/>
+                    <line x1="110" y1="40" x2="160" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="170"/>
+                </g>
+                <circle cx="110" cy="30" r="20"/>
+                <text x="110" y="36">8</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">3</text>
+                <circle cx="160" cy="110" r="20"/>
+                <text x="160" y="116">12</text>
+                <circle cx="30" cy="180" r="20"/>
+                <text x="30" y="186">1</text>
+            </svg>
+            <p class="small" style="text-align:center;"><strong>A</strong></p>
+        </div>
+        <div>
+            <svg class="tree-svg" viewBox="0 0 220 200" width="220" height="200">
+                <g>
+                    <line x1="110" y1="40" x2="60" y2="100"/>
+                    <line x1="110" y1="40" x2="160" y2="100"/>
+                    <line x1="60" y1="120" x2="100" y2="170"/>
+                </g>
+                <circle cx="110" cy="30" r="20"/>
+                <text x="110" y="36">10</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">5</text>
+                <circle cx="160" cy="110" r="20"/>
+                <text x="160" y="116">20</text>
+                <circle cx="100" cy="180" r="20"/>
+                <text x="100" y="186">7</text>
+            </svg>
+            <p class="small" style="text-align:center;"><strong>B</strong></p>
+        </div>
+    </div>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 220 200" width="220" height="200">
+                <g>
+                    <line x1="110" y1="40" x2="60" y2="100"/>
+                    <line x1="110" y1="40" x2="160" y2="100"/>
+                </g>
+                <circle cx="110" cy="30" r="20"/>
+                <text x="110" y="36">15</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">9</text>
+                <circle cx="160" cy="110" r="20"/>
+                <text x="160" y="116">22</text>
+            </svg>
+            <p class="small" style="text-align:center;"><strong>C</strong></p>
+        </div>
+        <div>
+            <svg class="tree-svg" viewBox="0 0 220 200" width="220" height="200">
+                <g>
+                    <line x1="110" y1="40" x2="60" y2="100"/>
+                    <line x1="110" y1="40" x2="160" y2="100"/>
+                    <line x1="160" y1="120" x2="120" y2="170"/>
+                    <line x1="160" y1="120" x2="200" y2="170"/>
+                </g>
+                <circle cx="110" cy="30" r="20"/>
+                <text x="110" y="36">10</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">5</text>
+                <circle cx="160" cy="110" r="20"/>
+                <text x="160" y="116">15</text>
+                <circle cx="120" cy="180" r="20"/>
+                <text x="120" y="186">6</text>
+                <circle cx="200" cy="180" r="20"/>
+                <text x="200" y="186">20</text>
+            </svg>
+            <p class="small" style="text-align:center;"><strong>D</strong></p>
+        </div>
+    </div>
+    <p style="text-align:center; margin-top:0.4em;">Three minutes. Which are BSTs?</p>
+</section>
+
+<section>
+    <h2>The trap — local check is not enough</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 240 220" width="240" height="220">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="180" y1="120" x2="140" y2="180"/>
+                    <line x1="180" y1="120" x2="220" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">10</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">5</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">15</text>
+                <g class="bad">
+                    <circle cx="140" cy="190" r="20"/>
+                    <text x="140" y="196">6</text>
+                </g>
+                <circle cx="220" cy="190" r="20"/>
+                <text x="220" y="196">20</text>
+            </svg>
+        </div>
+        <div>
+            <p>Every parent–child pair is in order:</p>
+            <ul>
+                <li>5 &lt; 10 ✓</li>
+                <li>15 &gt; 10 ✓</li>
+                <li>6 &lt; 15 ✓</li>
+                <li>20 &gt; 15 ✓</li>
+            </ul>
+            <p>But <strong>6 sits in the right subtree of 10</strong>, and 6 &lt; 10. The BST property fails.</p>
+        </div>
+    </div>
+    <div class="warning-box">
+        Checking just parent–child doesn't catch this. The rule is <em>every descendant</em>, not "the immediate child."
+    </div>
+</section>
+
+<section>
+    <h2>Real data is dynamic</h2>
+    <p>A lot of the data we actually deal with is being added to all the time:</p>
+    <ul>
+        <li><strong>Instagram</strong> — new accounts to follow, new DMs every minute; you search for a friend by username.</li>
+        <li><strong>ChatGPT chats</strong> — every prompt starts a new chat; you scroll the sidebar to find that one explanation from last week.</li>
+        <li><strong>WhatsApp</strong> — new conversations float to the top; you scroll or search for an old one.</li>
+        <li><strong>Spotify liked songs</strong> — you keep liking new tracks; later you hunt for one specific song.</li>
+    </ul>
+    <p>In every one of these, four operations matter:</p>
+    <ul>
+        <li><strong>search</strong> — find an item.</li>
+        <li><strong>insert</strong> — add a new item.</li>
+        <li><strong>delete</strong> — remove an item.</li>
+        <li><strong>update</strong> — change an existing item.</li>
+    </ul>
+    <div class="key-point">
+        We want <strong>all four to be fast</strong>. A data structure that nails one and tanks the others isn't enough.
+    </div>
+</section>
+
+<section>
+    <h2>What everything we've learned costs</h2>
+    <table>
+        <tr><th>Structure</th><th>Search</th><th>Insert</th><th>Delete</th><th>Update</th></tr>
+        <tr>
+            <td>Unsorted array</td>
+            <td class="fragment" data-fragment-index="1">O(n)</td>
+            <td class="fragment" data-fragment-index="1">O(1) at end</td>
+            <td class="fragment" data-fragment-index="1">O(n)</td>
+            <td class="fragment" data-fragment-index="1">O(n)</td>
+        </tr>
+        <tr>
+            <td>Sorted array</td>
+            <td class="fragment" data-fragment-index="2">O(log n)</td>
+            <td class="fragment" data-fragment-index="2">O(n) shift</td>
+            <td class="fragment" data-fragment-index="2">O(n) shift</td>
+            <td class="fragment" data-fragment-index="2">O(log n)</td>
+        </tr>
+        <tr>
+            <td>Linked list</td>
+            <td class="fragment" data-fragment-index="3">O(n)</td>
+            <td class="fragment" data-fragment-index="3">O(1) at head</td>
+            <td class="fragment" data-fragment-index="3">O(n)</td>
+            <td class="fragment" data-fragment-index="3">O(n)</td>
+        </tr>
+        <tr>
+            <td>Stack</td>
+            <td class="fragment" data-fragment-index="4">O(n)</td>
+            <td class="fragment" data-fragment-index="4">O(1) push at top</td>
+            <td class="fragment" data-fragment-index="4">O(1) pop at top</td>
+            <td class="fragment" data-fragment-index="4">O(n)</td>
+        </tr>
+        <tr>
+            <td>Queue</td>
+            <td class="fragment" data-fragment-index="5">O(n)</td>
+            <td class="fragment" data-fragment-index="5">O(1) at back</td>
+            <td class="fragment" data-fragment-index="5">O(1) at front</td>
+            <td class="fragment" data-fragment-index="5">O(n)</td>
+        </tr>
+        <tr>
+            <td>Binary tree (Monday)</td>
+            <td class="fragment" data-fragment-index="6">O(n)</td>
+            <td class="fragment" data-fragment-index="6">O(height) walk to a leaf</td>
+            <td class="fragment" data-fragment-index="6">O(n)</td>
+            <td class="fragment" data-fragment-index="6">O(n)</td>
+        </tr>
+        <tr>
+            <td><strong>BST (today)</strong></td>
+            <td class="fragment" data-fragment-index="7"><strong>O(height)</strong></td>
+            <td class="fragment" data-fragment-index="7"><strong>O(height)</strong></td>
+            <td class="fragment" data-fragment-index="7"><strong>O(height)</strong></td>
+            <td class="fragment" data-fragment-index="7"><strong>O(height)</strong></td>
+        </tr>
+    </table>
+    <p class="small"><strong>insert(v)</strong> places v wherever the structure allows. Unsorted containers don't care (O(1) at end / head / top). Sorted and BST must place v at the position its value dictates. <strong>delete(v)</strong> and <strong>update(v)</strong> have to <em>find</em> v first — the search cost is baked in. That's why linked-list insert is O(1) but linked-list delete is O(n) — they do different work.</p>
+    <p class="small">Stacks and queues delete in O(1) only at their one allowed end. Anywhere else is O(n). They're designed for restricted access, not general search.</p>
+    <p>Every row above the BST has <em>at least one</em> O(n) cell. No existing structure we know gives all four operations cheaply.</p>
+    <div class="key-point">
+        A BST is the first structure where <strong>all four CRUD operations</strong> can be sub-linear — all <strong>O(height)</strong>. The only difference from Monday's binary tree is the ordering rule. That rule is what unlocks the entire row.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — SEARCH
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Searching</p>
+</section>
+
+<section>
+    <h2>The three-case recurrence</h2>
+    <p>At every node, compare the target to the node's value. Three outcomes:</p>
+    <ul>
+        <li><code>target = node.data</code> → <strong>found</strong>.</li>
+        <li><code>target &lt; node.data</code> → answer (if any) lies in the <strong>left subtree</strong>.</li>
+        <li><code>target &gt; node.data</code> → answer (if any) lies in the <strong>right subtree</strong>.</li>
+    </ul>
+    <p>If we hit <code>NULL</code> before finding the target, it isn't in the tree.</p>
+    <div class="key-point">
+        Each step throws away an entire subtree — exactly the behaviour of binary search on a sorted array.
+    </div>
+</section>
+
+<section>
+    <h2>Search — recursive</h2>
+    <pre><code class="nohighlight">search(node, target):
+    if node = NULL:           return FALSE
+    if target = node.data:    return TRUE
+    if target &lt; node.data:
+        return search(node.left,  target)
+    else:
+        return search(node.right, target)</code></pre>
+    <p>Three lines of logic. The <code>NULL</code> base case handles "not present" and the bottom of any path.</p>
+</section>
+
+<section>
+    <h2>Search — trace</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:300px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p><strong>Search 40 (present):</strong></p>
+            <ul>
+                <li class="fragment">at 50: 40 &lt; 50 → left</li>
+                <li class="fragment">at 30: 40 &gt; 30 → right</li>
+                <li class="fragment">at 40: found ✓</li>
+            </ul>
+            <p><strong>Search 25 (absent):</strong></p>
+            <ul>
+                <li class="fragment">at 50: 25 &lt; 50 → left</li>
+                <li class="fragment">at 30: 25 &lt; 30 → left</li>
+                <li class="fragment">at 20: 25 &gt; 20 → right</li>
+                <li class="fragment">NULL: not found ✗</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Search — iterative variant</h2>
+    <pre><code class="nohighlight">search(root, target):
+    node ← root
+    while node ≠ NULL:
+        if target = node.data: return TRUE
+        if target &lt; node.data:
+            node ← node.left
+        else:
+            node ← node.right
+    return FALSE</code></pre>
+    <p>Same logic, same path. No call stack — just one pointer walking down. Use either; the recursive version reads closer to the recurrence.</p>
+</section>
+
+<section>
+    <h2>Search — complexity</h2>
+    <p>Each step descends one level. Search touches <strong>at most one node per level</strong>.</p>
+    <div class="info-box">
+        Time = <strong>O(height)</strong>.
+    </div>
+    <ul>
+        <li>Balanced tree (every level roughly full): height ≈ log₂ n → search is O(log n).</li>
+        <li>Degenerate tree (a chain): height = n − 1 → search is O(n).</li>
+    </ul>
+    <p>The BST property keeps the recurrence valid. The <em>shape</em> of the tree decides how good it actually is.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — INSERT
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Inserting</p>
+</section>
+
+<section>
+    <h2>Where does a new value go?</h2>
+    <p>To insert <code>v</code>:</p>
+    <ol>
+        <li>Walk the tree exactly as if searching for <code>v</code>.</li>
+        <li>The search reaches a <code>NULL</code> child somewhere (because <code>v</code> isn't already in the tree).</li>
+        <li>Plant the new node there.</li>
+    </ol>
+    <div class="key-point">
+        Every insertion becomes a <strong>new leaf</strong>. We never replace a node, never split a node, never re-arrange existing nodes.
+    </div>
+</section>
+
+<section>
+    <h2>Insert — recursive</h2>
+    <pre><code class="nohighlight">insert(node, value):
+    if node = NULL:
+        return newNode(value)
+    if value &lt; node.data:
+        node.left  ← insert(node.left,  value)
+    else:
+        node.right ← insert(node.right, value)
+    return node</code></pre>
+    <p>The "return the subtree" pattern: each call returns its (possibly modified) subtree to its caller, which assigns it back into <code>left</code> or <code>right</code>.</p>
+    <div class="info-box">
+        First call from outside: <code>root ← insert(root, value)</code>. The same line handles both "tree was empty" and "tree had a root."
+    </div>
+</section>
+
+<section>
+    <h2>Build a tree from a sequence</h2>
+    <p>Insertion order: <code>50, 30, 70, 20, 40, 60, 80</code></p>
+    <div class="two-col">
+        <div>
+            <ol>
+                <li class="fragment" data-fragment-index="1"><strong>50</strong> — tree was empty; 50 becomes the root.</li>
+                <li class="fragment" data-fragment-index="2"><strong>30</strong> — 30 &lt; 50 → left of 50.</li>
+                <li class="fragment" data-fragment-index="3"><strong>70</strong> — 70 &gt; 50 → right of 50.</li>
+                <li class="fragment" data-fragment-index="4"><strong>20</strong> — 20 &lt; 50 → 20 &lt; 30 → left of 30.</li>
+                <li class="fragment" data-fragment-index="5"><strong>40</strong> — 40 &lt; 50 → 40 &gt; 30 → right of 30.</li>
+                <li class="fragment" data-fragment-index="6"><strong>60</strong> — 60 &gt; 50 → 60 &lt; 70 → left of 70.</li>
+                <li class="fragment" data-fragment-index="7"><strong>80</strong> — 80 &gt; 50 → 80 &gt; 70 → right of 70.</li>
+            </ol>
+        </div>
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:300px;">
+                <g class="fragment" data-fragment-index="1">
+                    <circle cx="200" cy="30" r="22"/>
+                    <text x="200" y="36">50</text>
+                </g>
+                <g class="fragment" data-fragment-index="2">
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <circle cx="110" cy="130" r="22"/>
+                    <text x="110" y="136">30</text>
+                </g>
+                <g class="fragment" data-fragment-index="3">
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <circle cx="290" cy="130" r="22"/>
+                    <text x="290" y="136">70</text>
+                </g>
+                <g class="fragment" data-fragment-index="4">
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <circle cx="50" cy="230" r="22"/>
+                    <text x="50" y="236">20</text>
+                </g>
+                <g class="fragment" data-fragment-index="5">
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <circle cx="170" cy="230" r="22"/>
+                    <text x="170" y="236">40</text>
+                </g>
+                <g class="fragment" data-fragment-index="6">
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <circle cx="230" cy="230" r="22"/>
+                    <text x="230" y="236">60</text>
+                </g>
+                <g class="fragment" data-fragment-index="7">
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                    <circle cx="350" cy="230" r="22"/>
+                    <text x="350" y="236">80</text>
+                </g>
+            </svg>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Same values, different order → different tree</h2>
+    <p>Insert <code>{2, 3, 5, 7, 8}</code> in three different orderings.</p>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;">Order: <code>5, 3, 8, 2, 7</code></p>
+            <div class="fragment">
+                <svg class="tree-svg" viewBox="0 0 220 240" width="200">
+                    <g>
+                        <line x1="110" y1="40" x2="60" y2="100"/>
+                        <line x1="110" y1="40" x2="160" y2="100"/>
+                        <line x1="60" y1="120" x2="30" y2="180"/>
+                        <line x1="160" y1="120" x2="130" y2="180"/>
+                    </g>
+                    <circle cx="110" cy="30" r="20"/>
+                    <text x="110" y="36">5</text>
+                    <circle cx="60" cy="110" r="20"/>
+                    <text x="60" y="116">3</text>
+                    <circle cx="160" cy="110" r="20"/>
+                    <text x="160" y="116">8</text>
+                    <circle cx="30" cy="190" r="20"/>
+                    <text x="30" y="196">2</text>
+                    <circle cx="130" cy="190" r="20"/>
+                    <text x="130" y="196">7</text>
+                </svg>
+                <p class="small" style="text-align:center;">height 2</p>
+            </div>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;">Order: <code>3, 8, 5, 2, 7</code></p>
+            <div class="fragment">
+                <svg class="tree-svg" viewBox="0 0 220 240" width="200">
+                    <g>
+                        <line x1="80" y1="45" x2="30" y2="70"/>
+                        <line x1="80" y1="45" x2="160" y2="70"/>
+                        <line x1="160" y1="110" x2="120" y2="135"/>
+                        <line x1="120" y1="175" x2="160" y2="200"/>
+                    </g>
+                    <circle cx="80" cy="25" r="20"/>
+                    <text x="80" y="31">3</text>
+                    <circle cx="30" cy="90" r="20"/>
+                    <text x="30" y="96">2</text>
+                    <circle cx="160" cy="90" r="20"/>
+                    <text x="160" y="96">8</text>
+                    <circle cx="120" cy="155" r="20"/>
+                    <text x="120" y="161">5</text>
+                    <circle cx="160" cy="220" r="14"/>
+                    <text x="160" y="224" font-size="12">7</text>
+                </svg>
+                <p class="small" style="text-align:center;">height 3</p>
+            </div>
+        </div>
+    </div>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;">Order: <code>2, 3, 5, 7, 8</code> (sorted)</p>
+            <div class="fragment">
+                <svg class="tree-svg" viewBox="0 0 240 260" width="200">
+                    <g>
+                        <line x1="40" y1="40" x2="80" y2="80"/>
+                        <line x1="80" y1="100" x2="120" y2="140"/>
+                        <line x1="120" y1="160" x2="160" y2="200"/>
+                        <line x1="160" y1="220" x2="200" y2="240"/>
+                    </g>
+                    <circle cx="40" cy="30" r="18"/>
+                    <text x="40" y="36">2</text>
+                    <circle cx="80" cy="90" r="18"/>
+                    <text x="80" y="96">3</text>
+                    <circle cx="120" cy="150" r="18"/>
+                    <text x="120" y="156">5</text>
+                    <circle cx="160" cy="210" r="18"/>
+                    <text x="160" y="216">7</text>
+                    <circle cx="200" cy="250" r="14"/>
+                    <text x="200" y="254" font-size="12">8</text>
+                </svg>
+                <p class="small" style="text-align:center;">height 4 — degenerate</p>
+            </div>
+        </div>
+        <div>
+            <div class="key-point">
+                <strong>The tree's shape is fixed by the insertion order, not by the values.</strong>
+            </div>
+            <p>Same five numbers, three different trees, three different worst-case search costs.</p>
+            <p>We'll return to that last one (sorted input → chain) in Part 5.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Insert — iterative variant</h2>
+    <pre><code class="nohighlight">insert(root, value):
+    if root = NULL: return newNode(value)
+    node ← root
+    while TRUE:
+        if value &lt; node.data:
+            if node.left = NULL:
+                node.left ← newNode(value); return root
+            node ← node.left
+        else:
+            if node.right = NULL:
+                node.right ← newNode(value); return root
+            node ← node.right</code></pre>
+    <p>One pointer walking. Compared to the recursive version it has more cases to spell out — we need to check the child <em>before</em> stepping in, otherwise we lose the place to attach the new leaf.</p>
+</section>
+
+<section>
+    <h2>Insert — complexity</h2>
+    <p>Insert(v) does two things:</p>
+    <ol>
+        <li><strong>Walk</strong> — search the tree for <code>v</code>. The walk ends at a NULL child (because <code>v</code> wasn't there).</li>
+        <li><strong>Plant</strong> — attach a new leaf at that NULL slot.</li>
+    </ol>
+    <p>Step 1 <em>is</em> a search: <strong>O(height)</strong>. Step 2 is one pointer assignment: <strong>O(1)</strong>.</p>
+    <div class="info-box">
+        Total: <strong>O(height)</strong>. Insert inherits search's complexity because insert <em>is</em> a search-walk plus a constant-time plant.
+    </div>
+    <ul>
+        <li>Balanced tree → O(log n) per insert.</li>
+        <li>Degenerate tree → O(n) per insert.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — MIN, MAX, INORDER
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Min, max, and the punchline</p>
+</section>
+
+<section>
+    <h2>Minimum — walk all the way left</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:300px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120" stroke="#27ae60" stroke-width="3"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220" stroke="#27ae60" stroke-width="3"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <g class="visited"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <g class="visited"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <g class="visited"><circle cx="50" cy="230" r="22"/><text x="50" y="236">20</text></g>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p>By the BST property, anything in the left subtree is smaller than the current node. So the smallest value sits at the <strong>leftmost</strong> node — the one whose <code>left</code> pointer is <code>NULL</code>.</p>
+            <p>Walk left until you can't. Done.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Maximum — walk all the way right</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:300px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120" stroke="#27ae60" stroke-width="3"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220" stroke="#27ae60" stroke-width="3"/>
+                </g>
+                <g class="visited"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <g class="visited"><circle cx="290" cy="130" r="22"/><text x="290" y="136">70</text></g>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <g class="visited"><circle cx="350" cy="230" r="22"/><text x="350" y="236">80</text></g>
+            </svg>
+        </div>
+        <div>
+            <p>Symmetric. The largest value sits at the <strong>rightmost</strong> node.</p>
+            <p>Walk right until you can't.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Min / max — code</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Recursive</h4>
+            <pre><code class="nohighlight">min(node):
+    if node.left = NULL:
+        return node.data
+    return min(node.left)</code></pre>
+        </div>
+        <div class="card">
+            <h4>Iterative</h4>
+            <pre><code class="nohighlight">min(node):
+    while node.left ≠ NULL:
+        node ← node.left
+    return node.data</code></pre>
+        </div>
+    </div>
+    <p>Both walk the leftmost path. Time = <strong>O(height)</strong>. Max is the same with <code>left</code> replaced by <code>right</code>.</p>
+</section>
+
+<section class="center-content">
+    <p class="big-q">What does an inorder traversal of a BST print?</p>
+</section>
+
+<section>
+    <h2>Inorder of a BST is sorted</h2>
+    <p>Inorder traversal visits left subtree, then root, then right subtree.</p>
+    <div class="key-point">
+        Claim: on a BST, inorder visits nodes in <strong>ascending sorted order</strong>.
+    </div>
+    <p>This is not extra work. The traversal is the same skeleton we wrote on Monday. The <em>BST property</em> is what makes the output come out sorted.</p>
+</section>
+
+<section>
+    <h2>Why it works</h2>
+    <div class="two-col">
+        <div>
+            <svg viewBox="0 0 320 220" width="100%" style="max-height:240px;">
+                <line x1="160" y1="52" x2="100" y2="100" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="160" y1="52" x2="220" y2="100" stroke="#95a5a6" stroke-width="2"/>
+                <polygon points="100,100 40,195 160,195" fill="#dae8fc" stroke="#2980b9" stroke-width="2"/>
+                <text x="100" y="170" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="18" font-weight="700" fill="#2c3e50">all &lt; N</text>
+                <polygon points="220,100 160,195 280,195" fill="#dae8fc" stroke="#2980b9" stroke-width="2"/>
+                <text x="220" y="170" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="18" font-weight="700" fill="#2c3e50">all &gt; N</text>
+                <circle cx="160" cy="30" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+                <text x="160" y="36" text-anchor="middle" font-family="Monaco, monospace" font-size="16" font-weight="700" fill="#2c3e50">N</text>
+            </svg>
+            <p class="small" style="text-align:center;">Two things are true at every node N.</p>
+        </div>
+        <div>
+            <p><strong>Inorder visits in this order:</strong></p>
+            <ol>
+                <li>everything in the <strong>left</strong> subtree,</li>
+                <li>the <strong>root</strong> N,</li>
+                <li>everything in the <strong>right</strong> subtree.</li>
+            </ol>
+            <p><strong>BST rule says:</strong></p>
+            <ul>
+                <li>left subtree = all values &lt; N,</li>
+                <li>right subtree = all values &gt; N.</li>
+            </ul>
+            <p>So inorder, at this level, produces: <em>smaller stuff → N → bigger stuff</em>. Sorted around N.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Same rule holds inside every subtree. So the "smaller stuff" piece comes out sorted, and so does the "bigger stuff" piece. Stitched together with N in the middle, the whole walk is sorted.
+    </div>
+</section>
+
+<section>
+    <h2>Demo on the tree we built</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:300px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p>Inorder walk:</p>
+            <ol>
+                <li>left of 50 → subtree at 30
+                    <ul>
+                        <li class="fragment">left of 30 → subtree at 20 → <strong>20</strong></li>
+                        <li class="fragment"><strong>30</strong></li>
+                        <li class="fragment">right of 30 → subtree at 40 → <strong>40</strong></li>
+                    </ul>
+                </li>
+                <li class="fragment"><strong>50</strong></li>
+                <li>right of 50 → subtree at 70
+                    <ul>
+                        <li class="fragment"><strong>60</strong></li>
+                        <li class="fragment"><strong>70</strong></li>
+                        <li class="fragment"><strong>80</strong></li>
+                    </ul>
+                </li>
+            </ol>
+            <p class="fragment">Output: <code>20, 30, 40, 50, 60, 70, 80</code></p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>kth smallest, almost for free</h2>
+
+    <p>Want the 5th smallest value in a tree with <strong>a million nodes</strong>? A scan visits a million. The BST visits about <strong>25</strong> — if the tree is roughly balanced.</p>
+
+    <p>Inorder visits values in sorted order, so the kth smallest is just the kth emission. Stop the walk as soon as you have it.</p>
+
+    <pre><code class="nohighlight">KTH-SMALLEST(node, k):
+    walk inorder from node
+    keep a counter of values emitted
+    return the kth value; stop the walk there</code></pre>
+
+    <p>Total: <code>O(h + k)</code>. For h ≈ 20 (the height of a balanced million-node tree) and k = 5, that's 25 visits — not a million.</p>
+
+    <p>The surprising part: the BST <strong>never sorted anything</strong>. It grew one insert at a time, each insert O(h). No "sort everything" step ever ran. The sorted order is <em>implicit in the tree's shape</em> — available on demand, as many values as you need, even while new ones keep arriving.</p>
+
+    <div class="key-point">
+        Sorted array gives O(1) kth lookup but every new value costs O(n) to insert. BST gives O(h + k) kth and O(h) insert. For data that keeps arriving, only the BST keeps up.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 5 — PRACTICE
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 5</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Practice</p>
+</section>
+
+<section>
+    <h2>Practice 1 — range query</h2>
+    <p>Given a BST and two values <code>lo</code>, <code>hi</code> with <code>lo ≤ hi</code>, print every value <code>v</code> in the tree with <code>lo ≤ v ≤ hi</code>, in sorted order.</p>
+    <p><strong>The straightforward way:</strong> inorder traversal, print only values in range. Always visits all <code>n</code> nodes.</p>
+    <p><strong>The sharper way:</strong> use the BST property to <em>skip</em> subtrees that cannot contain in-range values.</p>
+    <div class="info-box">
+        Try the sharper version on the tree below. 10 minutes.
+    </div>
+    <p style="text-align:center;">Tree to use: same <code>{20, 30, 40, 50, 60, 70, 80}</code>. Range: <code>[25, 65]</code>.</p>
+</section>
+
+<section>
+    <h2>Practice 1 — solution</h2>
+    <pre><code class="nohighlight">rangePrint(node, lo, hi):
+    if node = NULL: return
+    if node.data &gt; lo:
+        rangePrint(node.left, lo, hi)              // left may have in-range values
+    if lo ≤ node.data and node.data ≤ hi:
+        output node.data
+    if node.data &lt; hi:
+        rangePrint(node.right, lo, hi)             // right may have in-range values</code></pre>
+    <div class="two-col">
+        <div>
+            <p><strong>Pruning rules:</strong></p>
+            <ul>
+                <li>If <code>node.data ≤ lo</code>, everything in the left subtree is even smaller. Skip left.</li>
+                <li>If <code>node.data ≥ hi</code>, everything in the right subtree is even larger. Skip right.</li>
+            </ul>
+        </div>
+        <div>
+            <p><strong>For range [25, 65]:</strong></p>
+            <ul class="small">
+                <li>at 50 (in range): recurse left and right; print 50.</li>
+                <li>at 30 (in range): 30 &gt; 25 → recurse left; print 30; 30 &lt; 65 → recurse right.</li>
+                <li>at 20 (≤ lo): skip left; not in range; recurse right (NULL).</li>
+                <li>at 40: in range; print 40.</li>
+                <li>at 70 (≥ hi): recurse left; not in range; skip right.</li>
+                <li>at 60: in range; print 60.</li>
+            </ul>
+            <p class="small">Output: <code>30, 40, 50, 60</code> — already sorted.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Practice 2 — count comparisons</h2>
+    <p>On the canonical tree, how many node comparisons does <code>search(target)</code> make for each target below? Count one comparison per node visited; a failed search ends at <code>NULL</code>.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>target = 50 <span class="fragment">→ <strong>1</strong></span></li>
+                <li>target = 80 <span class="fragment">→ <strong>3</strong></span></li>
+                <li>target = 45 (not present) <span class="fragment">→ <strong>4</strong> (50, 30, 40, NULL)</span></li>
+                <li>target = 100 (not present) <span class="fragment">→ <strong>4</strong> (50, 70, 80, NULL)</span></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 6 — WHEN BSTs GO BAD
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 6</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">When BSTs go bad</p>
+</section>
+
+<section>
+    <h2>Sorted insertion → degenerate chain</h2>
+    <p>Insert <code>10, 20, 30, 40, 50</code> in that order. Each new value is larger than every previous value, so every insertion goes right.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 340 320" width="100%">
+                <g>
+                    <line x1="50" y1="40" x2="100" y2="80"/>
+                    <line x1="110" y1="100" x2="160" y2="140"/>
+                    <line x1="170" y1="160" x2="220" y2="200"/>
+                    <line x1="230" y1="220" x2="280" y2="260"/>
+                </g>
+                <circle cx="50" cy="30" r="20"/>
+                <text x="50" y="36">10</text>
+                <circle cx="110" cy="90" r="20"/>
+                <text x="110" y="96">20</text>
+                <circle cx="170" cy="150" r="20"/>
+                <text x="170" y="156">30</text>
+                <circle cx="230" cy="210" r="20"/>
+                <text x="230" y="216">40</text>
+                <circle cx="290" cy="270" r="20"/>
+                <text x="290" y="276">50</text>
+            </svg>
+        </div>
+        <div>
+            <p>The tree degenerates into a linked list. Height = n − 1.</p>
+            <p>Search on this tree is back to <strong>O(n)</strong>. All the advantage we built up is gone.</p>
+            <div class="warning-box">
+                A BST keeps the <em>property</em> after any insertion order — but not the <em>shape</em>.
+            </div>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Same values, two shapes</h2>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>Balanced</strong> — height 2</p>
+            <svg class="tree-svg" viewBox="0 0 320 240" width="100%">
+                <g>
+                    <line x1="160" y1="40" x2="80" y2="100"/>
+                    <line x1="160" y1="40" x2="240" y2="100"/>
+                    <line x1="80" y1="120" x2="40" y2="180"/>
+                    <line x1="80" y1="120" x2="120" y2="180"/>
+                    <line x1="240" y1="120" x2="200" y2="180"/>
+                    <line x1="240" y1="120" x2="280" y2="180"/>
+                </g>
+                <circle cx="160" cy="30" r="20"/>
+                <text x="160" y="36">40</text>
+                <circle cx="80" cy="110" r="20"/>
+                <text x="80" y="116">20</text>
+                <circle cx="240" cy="110" r="20"/>
+                <text x="240" y="116">60</text>
+                <circle cx="40" cy="190" r="20"/>
+                <text x="40" y="196">10</text>
+                <circle cx="120" cy="190" r="20"/>
+                <text x="120" y="196">30</text>
+                <circle cx="200" cy="190" r="20"/>
+                <text x="200" y="196">50</text>
+                <circle cx="280" cy="190" r="20"/>
+                <text x="280" y="196">70</text>
+            </svg>
+            <p class="small" style="text-align:center;">search ≤ 3 comparisons</p>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;"><strong>Degenerate</strong> — height 6</p>
+            <svg class="tree-svg" viewBox="0 0 280 380" width="100%">
+                <g>
+                    <line x1="40" y1="40" x2="80" y2="80"/>
+                    <line x1="90" y1="100" x2="130" y2="140"/>
+                    <line x1="140" y1="160" x2="180" y2="200"/>
+                    <line x1="190" y1="220" x2="150" y2="260"/>
+                    <line x1="140" y1="280" x2="100" y2="320"/>
+                    <line x1="90" y1="340" x2="50" y2="370"/>
+                </g>
+                <circle cx="40" cy="30" r="16"/>
+                <text x="40" y="36" font-size="13">10</text>
+                <circle cx="90" cy="90" r="16"/>
+                <text x="90" y="96" font-size="13">20</text>
+                <circle cx="140" cy="150" r="16"/>
+                <text x="140" y="156" font-size="13">30</text>
+                <circle cx="190" cy="210" r="16"/>
+                <text x="190" y="216" font-size="13">70</text>
+                <circle cx="140" cy="270" r="16"/>
+                <text x="140" y="276" font-size="13">60</text>
+                <circle cx="90" cy="330" r="16"/>
+                <text x="90" y="336" font-size="13">50</text>
+                <circle cx="40" cy="380" r="16"/>
+                <text x="40" y="386" font-size="13">40</text>
+            </svg>
+            <p class="small" style="text-align:center;">search up to 7 comparisons</p>
+        </div>
+    </div>
+    <p>Same seven values <code>{10, 20, 30, 40, 50, 60, 70}</code>, two completely different cost profiles.</p>
+</section>
+
+<section>
+    <h2>Balanced BSTs exist (we don't cover them)</h2>
+    <p>To guarantee <code>O(log n)</code> performance no matter the insertion order, the tree can be <strong>self-balancing</strong>: every insert and delete does a little extra work to keep the height around log n.</p>
+    <ul>
+        <li>AVL trees</li>
+        <li>Red-black trees</li>
+        <li>B-trees (databases)</li>
+    </ul>
+    <p>Not part of this course. Library containers — <code>std::map</code> (C++), <code>TreeMap</code> (Java), <code>sortedcontainers.SortedDict</code> (Python) — use these underneath.</p>
+    <div class="key-point">
+        Take-away: a plain BST gets you the right <em>pattern</em>. The worst case stays open until you balance.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h2>Coming up</h2>
+    <p>Friday — BSTs Part 2:</p>
+    <ul style="display:inline-block; text-align:left;">
+        <li>Deletion — the hardest operation, three cases.</li>
+        <li>Inorder successor and predecessor.</li>
+        <li>Validate BST — checking the property the right way.</li>
+        <li>Tree problems mixing today's and Monday's pieces.</li>
+    </ul>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>

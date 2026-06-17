@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binary Search Trees — Part 2</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.7em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 1em 1.4em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.5em; }
+        .reveal .card ul { margin: 0.4em 0; padding-left: 1.3em; font-size: 0.82em; }
+        .reveal .card li { margin: 0.4em 0; line-height: 1.5; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+        /* Tree drawing helpers (re-used from binary-search-trees.html) */
+        .tree-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .tree-svg text { font-family: 'Monaco', 'Menlo', monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .tree-svg line { stroke: #95a5a6; stroke-width: 2; fill: none; }
+        .tree-svg .bad circle { stroke: var(--warning-color); }
+        .tree-svg .bad text { fill: var(--warning-color); }
+        .tree-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+        .tree-svg .target circle { stroke: var(--warning-color); fill: #fef0e6; stroke-width: 3; }
+        .tree-svg .target text { fill: var(--warning-color); }
+        .tree-svg .ghost circle { fill: #fff; stroke: #d0d0d0; stroke-dasharray: 4 3; }
+        .tree-svg .ghost text { fill: #b0b0b0; }
+        .tree-svg .ghost line { stroke: #d0d0d0; stroke-dasharray: 4 3; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Binary Search Trees — Part 2</h1>
+    <h3 style="color:#7f8c8d;">Deletion, validation, and tree problems</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 15 &middot; 19 June 2026</p>
+</section>
+
+<!-- ─── Where we left off ─────────────────────────── -->
+<section>
+    <h2>Where we left off</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Wednesday — BST Part 1</h4>
+            <ul>
+                <li>BST property (left subtree &lt; node &lt; right subtree)</li>
+                <li>Search and insert in O(height)</li>
+                <li>Min, max, inorder = sorted</li>
+                <li>kth smallest in O(h + k)</li>
+                <li>Worst case: degenerate chain</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Today — Part 2</h4>
+            <ul>
+                <li>Inorder successor and predecessor</li>
+                <li>Delete (three cases, the hardest operation)</li>
+                <li>Validate BST</li>
+                <li>Tree problems: LCA, build from sorted array</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — SUCCESSOR & PREDECESSOR
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Inorder successor and predecessor</p>
+</section>
+
+<section>
+    <h2>What is the inorder successor?</h2>
+    <p>The <strong>inorder successor</strong> of a node N is the value that comes <em>right after</em> N in the inorder traversal.</p>
+    <p>Equivalently: the smallest value in the tree that is greater than N's value.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <g class="target"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <g class="visited"><circle cx="170" cy="230" r="22"/><text x="170" y="236">40</text></g>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p>Inorder of this tree: <code>20, 30, 40, 50, 60, 70, 80</code></p>
+            <p>So the successor of <strong>30</strong> is <strong>40</strong> (the next value emitted).</p>
+            <p>The predecessor of <strong>30</strong> is <strong>20</strong>.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why we care about these two</h2>
+    <p>Today's main use: <strong>delete</strong>.</p>
+    <p>When we delete a node with two children, we can't just promote one child — the other subtree would be orphaned. We need a <em>replacement value</em> for the deleted node that keeps the BST property intact at that position.</p>
+    <div class="key-point">
+        The only values that fit are the deleted node's <strong>inorder successor</strong> (the smallest value greater than it) or its <strong>predecessor</strong> (the largest value smaller than it). Either one slides in cleanly.
+    </div>
+    <p>Other places they show up:</p>
+    <ul>
+        <li>Walking values in sorted order, one at a time — used by BST iterators in standard libraries (C++ <code>std::map</code>, Java <code>TreeMap</code>).</li>
+        <li>"Find the smallest value greater than X" — search for X, then ask for its successor.</li>
+    </ul>
+</section>
+
+<section>
+    <h2>Finding the successor — two cases</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Case A — node has a right subtree</h4>
+            <p>The successor is the <strong>leftmost</strong> node in the right subtree.</p>
+            <p class="small">Example: successor of 30 is 40 — the leftmost node in 30's right subtree.</p>
+        </div>
+        <div class="card">
+            <h4>Case B — no right subtree</h4>
+            <p>Walk <strong>up</strong> until you find an ancestor that you came from on the <em>left</em>. That ancestor is the successor.</p>
+            <p class="small">Example: successor of 40 is 50. 40 has no right child; walking up, 40 is the right child of 30, then 30 is the left child of 50 — so 50 is the successor.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Case A is the common one and the one we'll use for deletion. Case B requires a parent pointer or a search-from-root.
+    </div>
+</section>
+
+<section>
+    <h2>Successor — pseudocode (Case A only)</h2>
+    <p>For deletion, the node we care about always has a right subtree — so we only need Case A.</p>
+    <pre><code class="nohighlight">SUCCESSOR-IN-RIGHT-SUBTREE(node):
+    // assumes node.right ≠ NULL
+    current ← node.right
+    while current.left ≠ NULL:
+        current ← current.left
+    return current</code></pre>
+    <p>Walk into the right subtree, then keep going left. The leftmost node there is the successor. Time: <code>O(h)</code>.</p>
+</section>
+
+<section>
+    <h2>Predecessor — mirror image</h2>
+    <p>Predecessor is the value that comes <em>right before</em> N in inorder. Or: the largest value less than N's value.</p>
+    <p>The two cases mirror successor:</p>
+    <ul>
+        <li>Node has a <strong>left</strong> subtree → predecessor is the <strong>rightmost</strong> node in the left subtree.</li>
+        <li>No left subtree → walk up to the first ancestor reached from the <em>right</em>.</li>
+    </ul>
+    <p class="small">In the canonical tree, predecessor of 50 is 40 — the rightmost node in 50's left subtree.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — DELETE
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Delete — the hardest BST operation</p>
+</section>
+
+<section>
+    <h2>Why delete is hard</h2>
+    <p>Search and insert each followed one path from root to leaf, doing one thing at the end.</p>
+    <p>Delete has to do more:</p>
+    <ol>
+        <li><strong>Find</strong> the node to delete.</li>
+        <li><strong>Remove</strong> it from the tree.</li>
+        <li><strong>Re-attach</strong> its children (and their subtrees) so the BST property still holds.</li>
+    </ol>
+    <p>Step 3 is where the difficulty lives. What we do depends on how many children the deleted node has.</p>
+    <div class="info-box">
+        Three cases, by child count: <strong>0 children</strong> (leaf), <strong>1 child</strong>, <strong>2 children</strong>.
+    </div>
+</section>
+
+<section>
+    <h2>Case 1 — the node is a leaf</h2>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>Before</strong></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">50</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">30</text>
+                <circle cx="180" cy="110" r="22"/>
+                <text x="180" y="116">70</text>
+                <g class="target"><circle cx="30" cy="190" r="22"/><text x="30" y="196">20</text></g>
+            </svg>
+            <p class="small" style="text-align:center;">Delete <strong>20</strong>.</p>
+        </div>
+        <div class="fragment">
+            <p class="small" style="text-align:center;"><strong>After</strong></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">50</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">30</text>
+                <circle cx="180" cy="110" r="22"/>
+                <text x="180" y="116">70</text>
+            </svg>
+            <p class="small" style="text-align:center;">Set 30's left pointer to NULL.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        The easy case. Nothing to re-attach — just set the parent's pointer to NULL.
+    </div>
+</section>
+
+<section>
+    <h2>Case 2 — the node has one child</h2>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>Before</strong></p>
+            <svg class="tree-svg" viewBox="0 0 240 280" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="180" y1="120" x2="220" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">50</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">30</text>
+                <g class="target"><circle cx="180" cy="110" r="22"/><text x="180" y="116">70</text></g>
+                <circle cx="220" cy="190" r="22"/>
+                <text x="220" y="196">80</text>
+            </svg>
+            <p class="small" style="text-align:center;">Delete <strong>70</strong>. It has only one child, <strong>80</strong>.</p>
+        </div>
+        <div class="fragment">
+            <p class="small" style="text-align:center;"><strong>After</strong></p>
+            <svg class="tree-svg" viewBox="0 0 240 280" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">50</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">30</text>
+                <circle cx="180" cy="110" r="22"/>
+                <text x="180" y="116">80</text>
+            </svg>
+            <p class="small" style="text-align:center;">80 takes 70's place. (Or: 50's right child becomes 80.)</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Replace the node with its only child. The child slides up into the deleted node's slot. BST property is preserved automatically.
+    </div>
+</section>
+
+<section>
+    <h2>Case 3 — the node has two children</h2>
+    <p>Now we can't just promote one child — that would orphan the other subtree.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <g class="target"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+            <p class="small" style="text-align:center;">Delete <strong>50</strong> (the root). It has both 30 and 70 as children.</p>
+        </div>
+        <div>
+            <p><strong>The trick:</strong></p>
+            <ol>
+                <li>Find the inorder successor of 50. Successor = leftmost of right subtree = <strong>60</strong>.</li>
+                <li>Copy 60's value into the node currently holding 50.</li>
+                <li>Now delete the original <strong>60</strong> from the right subtree. (60 was a leaf — falls into Case 1.)</li>
+            </ol>
+            <p>Result: 60 takes 50's spot at the root. The original 60 leaf is gone.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why the successor specifically?</h2>
+    <p>The replacement has to keep the BST property holding everywhere. The successor of 50 is — by definition — the <strong>smallest value greater than 50</strong>.</p>
+    <p>So when we put it at the root:</p>
+    <ul>
+        <li>It is still greater than every value in the (untouched) left subtree.</li>
+        <li>It is still smaller than every other value in the right subtree (since it was the smallest in there).</li>
+    </ul>
+    <p>The BST property is preserved — the tree stays sorted around the new root.</p>
+    <div class="info-box">
+        <strong>Predecessor works too.</strong> By symmetry, the largest value in the left subtree also fits. Convention: use successor.
+    </div>
+</section>
+
+<section>
+    <h2>Delete — pseudocode</h2>
+    <pre><code class="nohighlight">DELETE(node, value):
+    if node = NULL: return NULL
+
+    if value &lt; node.data:
+        node.left  ← DELETE(node.left, value)
+    else if value &gt; node.data:
+        node.right ← DELETE(node.right, value)
+    else:
+        // found the node to delete
+        if node.left  = NULL: return node.right       // Case 1 or 2
+        if node.right = NULL: return node.left        // Case 2
+        // Case 3: two children
+        succ ← leftmost(node.right)
+        node.data ← succ.data
+        node.right ← DELETE(node.right, succ.data)
+
+    return node</code></pre>
+    <p>Same return-the-subtree pattern as insert. The recursive call in Case 3 always lands in Case 1 or Case 2, so the recursion ends.</p>
+</section>
+
+<section>
+    <h2>Delete — complexity</h2>
+    <p>Each step costs at most <code>O(h)</code>:</p>
+    <ul>
+        <li>Finding the node — one path from root: <code>O(h)</code>.</li>
+        <li>Case 1 or 2 — constant work after finding.</li>
+        <li>Case 3 — find successor (<code>O(h)</code>) + one recursive delete (<code>O(h)</code>). The recursion does Case 1 or 2.</li>
+    </ul>
+    <div class="info-box">
+        Total: <strong>O(h)</strong>. Same shape as search and insert.
+    </div>
+    <p>All four BST operations — search, insert, delete, kth smallest — bottom out at the same cost: a walk down the tree.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — VALIDATE BST
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Validate BST</p>
+</section>
+
+<section>
+    <h2>The question</h2>
+    <p class="big-q">Given a binary tree, is it a BST?</p>
+    <p>You are handed a tree built by someone else. You need to decide: does it satisfy the BST property at every node?</p>
+</section>
+
+<section>
+    <h2>The naïve check — and why it fails</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="180" y1="120" x2="140" y2="180"/>
+                    <line x1="180" y1="120" x2="220" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">10</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">5</text>
+                <circle cx="180" cy="110" r="22"/>
+                <text x="180" y="116">15</text>
+                <g class="bad"><circle cx="140" cy="190" r="22"/><text x="140" y="196">6</text></g>
+                <circle cx="220" cy="190" r="22"/>
+                <text x="220" y="196">20</text>
+            </svg>
+        </div>
+        <div>
+            <p><strong>Naïve check:</strong> at every node, verify <code>left.data &lt; node.data &lt; right.data</code>.</p>
+            <p>This tree passes every parent-child comparison:</p>
+            <ul>
+                <li>5 &lt; 10 ✓</li>
+                <li>15 &gt; 10 ✓</li>
+                <li>6 &lt; 15 ✓</li>
+                <li>20 &gt; 15 ✓</li>
+            </ul>
+            <p class="fragment"><strong>But it's not a BST</strong> — 6 sits in the right subtree of 10, and 6 &lt; 10.</p>
+        </div>
+    </div>
+    <div class="warning-box fragment">
+        Parent–child checks miss <em>distant</em> violations. The property says "every descendant," not "the immediate child."
+    </div>
+</section>
+
+<section>
+    <h2>Approach 1 — inorder walk must be sorted</h2>
+    <p>We proved on Wednesday: inorder of a BST is sorted. So the converse check works: if inorder is strictly increasing, the tree is a BST.</p>
+    <pre><code class="nohighlight">prev ← &minus;∞
+VALIDATE(node):
+    if node = NULL: return TRUE
+    if not VALIDATE(node.left): return FALSE
+    if node.data ≤ prev: return FALSE
+    prev ← node.data
+    return VALIDATE(node.right)</code></pre>
+    <p>The variable <code>prev</code> tracks the last value emitted by the inorder walk. If the next value isn't strictly greater, the BST property is broken somewhere.</p>
+</section>
+
+<section>
+    <h2>Approach 2 — pass min/max bounds down</h2>
+    <p>Each node has a range it must live in. The root is unbounded; every child inherits a tighter range from its parent.</p>
+    <pre><code class="nohighlight">VALIDATE(node, lo, hi):
+    if node = NULL: return TRUE
+    if node.data ≤ lo or node.data ≥ hi: return FALSE
+    return VALIDATE(node.left,  lo,         node.data)
+       and VALIDATE(node.right, node.data,  hi)
+
+// initial call:
+VALIDATE(root, &minus;∞, +∞)</code></pre>
+    <p>The range encodes the BST property literally: "every descendant on the left must be less than me; on the right, greater than me."</p>
+</section>
+
+<section>
+    <h2>Both approaches compared</h2>
+    <table>
+        <tr><th>Approach</th><th>How</th><th>Time</th><th>Extra memory</th></tr>
+        <tr><td>Inorder + prev</td><td>uses the punchline (inorder = sorted)</td><td>O(n)</td><td>O(h) recursion stack + one variable</td></tr>
+        <tr><td>Min/max bounds</td><td>encodes the BST property directly</td><td>O(n)</td><td>O(h) recursion stack</td></tr>
+    </table>
+    <p>Both visit every node once. Both are correct. The bounds approach is more "literal"; the inorder approach is more "structural" and reuses Wednesday's lemma.</p>
+    <div class="key-point">
+        On Wednesday we proved <em>inorder of a BST is sorted</em>. Today we use the converse: <em>a tree whose inorder is sorted is a BST</em>. Same fact, used both ways.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — TREE PROBLEMS
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Tree problems</p>
+</section>
+
+<section>
+    <h2>Lowest common ancestor (LCA)</h2>
+    <p>Given a BST and two values <code>u</code> and <code>v</code> (both present in the tree), find their <strong>lowest common ancestor</strong> — the deepest node that has both in its subtree.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <g class="visited"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <g class="target"><circle cx="50" cy="230" r="22"/><text x="50" y="236">20</text></g>
+                <g class="target"><circle cx="170" cy="230" r="22"/><text x="170" y="236">40</text></g>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">60</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <p>LCA of <strong>20</strong> and <strong>40</strong>:</p>
+            <ul>
+                <li>At root 50 — both targets are smaller. Go left.</li>
+                <li>At 30 — 20 is smaller, 40 is larger. Targets split here. <strong>30 is the LCA.</strong></li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>LCA — three-case recurrence</h2>
+    <p>At each node, compare both targets to the node's value:</p>
+    <ul>
+        <li>Both targets <strong>smaller</strong> than node → LCA is in the left subtree.</li>
+        <li>Both targets <strong>larger</strong> than node → LCA is in the right subtree.</li>
+        <li><strong>Targets split</strong> (one ≤ node ≤ other) → this node <em>is</em> the LCA.</li>
+    </ul>
+    <pre><code class="nohighlight">LCA(node, u, v):
+    if u &lt; node.data and v &lt; node.data:
+        return LCA(node.left, u, v)
+    if u &gt; node.data and v &gt; node.data:
+        return LCA(node.right, u, v)
+    return node</code></pre>
+    <p>Time: <code>O(h)</code>. In a general (non-BST) binary tree, LCA is <code>O(n)</code> — you have to compare paths. The BST property turns this into a walk.</p>
+</section>
+
+<section>
+    <h2>Sorted array → balanced BST</h2>
+    <p>Given a sorted array, build a balanced BST containing the same values.</p>
+    <p><strong>Idea:</strong> pick the <em>middle</em> element as the root. Everything to its left in the array becomes the left subtree (built recursively); everything to its right becomes the right subtree.</p>
+    <pre><code class="nohighlight">BUILD-BST(arr, lo, hi):
+    if lo &gt; hi: return NULL
+    mid ← (lo + hi) / 2
+    node ← newNode(arr[mid])
+    node.left  ← BUILD-BST(arr, lo,    mid &minus; 1)
+    node.right ← BUILD-BST(arr, mid + 1, hi)
+    return node</code></pre>
+    <p>Each level of recursion halves the input. Result: a balanced tree with height ≤ ⌈log₂ n⌉. Total time: <code>O(n)</code>.</p>
+</section>
+
+<section>
+    <h2>Sorted array → balanced BST — example</h2>
+    <p>Input: <code>[1, 2, 3, 4, 5, 6, 7]</code>. Middle is 4 → root.</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 320 280" width="100%" style="max-height:260px;">
+                <g>
+                    <line x1="160" y1="40" x2="80" y2="100"/>
+                    <line x1="160" y1="40" x2="240" y2="100"/>
+                    <line x1="80" y1="120" x2="40" y2="180"/>
+                    <line x1="80" y1="120" x2="120" y2="180"/>
+                    <line x1="240" y1="120" x2="200" y2="180"/>
+                    <line x1="240" y1="120" x2="280" y2="180"/>
+                </g>
+                <circle cx="160" cy="30" r="22"/>
+                <text x="160" y="36">4</text>
+                <circle cx="80" cy="110" r="20"/>
+                <text x="80" y="116">2</text>
+                <circle cx="240" cy="110" r="20"/>
+                <text x="240" y="116">6</text>
+                <circle cx="40" cy="190" r="18"/>
+                <text x="40" y="196">1</text>
+                <circle cx="120" cy="190" r="18"/>
+                <text x="120" y="196">3</text>
+                <circle cx="200" cy="190" r="18"/>
+                <text x="200" y="196">5</text>
+                <circle cx="280" cy="190" r="18"/>
+                <text x="280" y="196">7</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>Left half <code>[1, 2, 3]</code> → middle 2 → root of left subtree.</li>
+                <li>Right half <code>[5, 6, 7]</code> → middle 6 → root of right subtree.</li>
+                <li>Same pattern continues until each piece is a single leaf.</li>
+            </ul>
+            <p>Height 2 on 7 nodes — perfectly balanced. Inorder of this tree: <code>1, 2, 3, 4, 5, 6, 7</code> — the original sorted input.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Recover BST — fixing a corrupted tree</h2>
+    <div class="two-col">
+        <div>
+            <p>Someone hands you a BST where <strong>two values were accidentally swapped</strong>. Restore the BST without rebuilding it from scratch.</p>
+            <p>The fix: a valid BST's inorder walk is strictly increasing. Two swapped values leave one or two <em>descending steps</em>.</p>
+            <ul>
+                <li>Swapped nodes <strong>adjacent</strong> in inorder → one descending pair. Swap those two values.</li>
+                <li>Swapped nodes <strong>apart</strong> → two descending pairs. Swap the <em>first</em> value of pair 1 with the <em>second</em> value of pair 2.</li>
+            </ul>
+        </div>
+        <div>
+            <svg class="tree-svg" viewBox="0 0 240 220" width="100%" style="max-height:210px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                    <line x1="60" y1="120" x2="100" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="22"/>
+                <text x="120" y="36">4</text>
+                <circle cx="60" cy="110" r="22"/>
+                <text x="60" y="116">2</text>
+                <g class="bad"><circle cx="180" cy="110" r="22"/><text x="180" y="116">1</text></g>
+                <g class="bad"><circle cx="30" cy="190" r="22"/><text x="30" y="196">6</text></g>
+                <circle cx="100" cy="190" r="22"/>
+                <text x="100" y="196">3</text>
+            </svg>
+            <p class="small" style="text-align:center;">Inorder of this tree: <code>6, 2, 3, 4, 1</code>. Descending pairs: <code>(6, 2)</code> and <code>(4, 1)</code>. Swap <strong>6 ↔ 1</strong>; inorder becomes <code>1, 2, 3, 4, 6</code>.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Recover BST — pseudocode</h2>
+    <pre><code class="nohighlight">first  ← NIL
+second ← NIL
+prev   ← NIL
+
+INORDER(node):
+    if node = NIL: return
+    INORDER(node.left)
+    if prev ≠ NIL and prev.data &gt; node.data:
+        if first = NIL: first ← prev     // first violation
+        second ← node                     // most recent violation
+    prev ← node
+    INORDER(node.right)
+
+RECOVER-BST(root):
+    INORDER(root)
+    swap(first.data, second.data)</code></pre>
+    <p>One inorder pass with a running <code>prev</code> finds the two values to swap. Time: <code>O(n)</code>. Space: <code>O(h)</code> recursion stack.</p>
+    <div class="key-point">
+        Wednesday's lemma — <em>inorder of a BST is sorted</em> — used as a <strong>diagnostic</strong>. Every place the inorder is broken is a place the BST is wrong, and inorder tells you exactly which two values to fix.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+
+<section>
+    <h2>What we built today</h2>
+    <ul>
+        <li>Inorder successor and predecessor — the "next" and "previous" values in sorted order.</li>
+        <li>Delete in three cases, with successor replacement for the two-children case.</li>
+        <li>Two ways to validate that a binary tree is a BST.</li>
+        <li>LCA in O(height) using the BST property.</li>
+        <li>Building a balanced BST from a sorted array.</li>
+        <li>Recovering a corrupted BST by reading its inorder for descending steps.</li>
+    </ul>
+    <div class="key-point">
+        All four CRUD operations are now O(height). And the inorder-equals-sorted lemma from Wednesday has earned its keep — validating BSTs, finding kth smallest, and now restoring broken ones.
+    </div>
+</section>
+
+<section class="center-content">
+    <h2>Coming up</h2>
+    <ul style="display:inline-block; text-align:left;">
+        <li><strong>Monday morning</strong> — Heaps: array-backed trees, parent/child indices, insert, delete root, heapify.</li>
+        <li><strong>Monday evening</strong> — Quiz 2 on binary trees and BSTs. (Monday morning's heap class is not on the quiz.)</li>
+    </ul>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>

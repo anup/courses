@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 14</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 14</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 14</p>
+      <h1>17 June 2026: Binary Search Trees (Part 1)</h1>
+      <p class="lead">Take Monday's binary tree and add one rule about how values are arranged. The rule pays off twice: search and insert both follow the same three-case recurrence as binary search, and inorder traversal produces sorted output for free.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="binary-search-trees.html">Binary Search Trees</a> — today's deck, both sessions</li>
+        <li><a href="../class-13/binary-trees.html">Day 13 deck</a> — the traversal skeleton this deck builds on</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — The property, search, insert</h2>
+          <p>Define the BST property (every value in the left subtree less than the node, every value in the right subtree greater) and watch class judge four small trees for it. Spend time on the local-vs-global trap — a tree can satisfy every parent–child comparison and still violate the property at a deeper descendant. Motivate the structure against an unsorted tree (O(n) search) and a sorted array (O(n) insert).</p>
+          <p>Then the three-case search recurrence (equal, less, greater) in recursive and iterative form, traced on the canonical tree. Insertion as "walk until NULL, plant a new leaf" — recursive return-the-subtree pattern as canonical, iterative version shown alongside. Trace building a tree from a sequence on the board; then show three different orderings of the same five values producing three different trees.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Min / max, inorder = sorted, practice, worst case</h2>
+          <p>Min and max as "walk all the way left / right" — recursive and iterative side by side. Then the headline result: <strong>inorder traversal of a BST visits values in sorted order</strong>. Inductive argument from the BST property, demo on the tree built in Session 1, and a one-slide preview of kth-smallest via inorder.</p>
+          <p>Two practice problems applying the day's tools: range query (print values in <code>[lo, hi]</code> using BST pruning), and counting comparisons on a search trace. Close with the worst-case discussion — sorted insertion degenerates the tree into a linked list, search collapses back to O(n), and balanced BSTs (AVL, red-black, not in our scope) exist to fix this.</p>
+          <p>One-line preview of Friday's class: deletion, validate BST, inorder successor/predecessor, and tree problems.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>Judge four small trees as BST or not — including the local-vs-global trap.</li>
+        <li>Trace <code>search(40)</code> and <code>search(25)</code> on the canonical 7-node tree.</li>
+        <li>Build a BST by inserting <code>50, 30, 70, 20, 40, 60, 80</code> one value at a time.</li>
+        <li>Try three different orderings of <code>{2, 3, 5, 7, 8}</code> and predict each resulting tree.</li>
+        <li>Write the range-query function with pruning, then trace it on <code>[25, 65]</code>.</li>
+        <li>Count comparisons made by <code>search(target)</code> for <code>50, 80, 45, 100</code>.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — BSTs (between now and Friday)</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/search-in-a-binary-search-tree/">700. Search in a Binary Search Tree</a> — the recurrence from class, three lines.</li>
+        <li><a href="https://leetcode.com/problems/insert-into-a-binary-search-tree/">701. Insert into a Binary Search Tree</a> — return-the-subtree pattern, exactly as in class.</li>
+        <li><a href="https://leetcode.com/problems/range-sum-of-bst/">938. Range Sum of BST</a> — Practice 1 from class, sum instead of print.</li>
+        <li><a href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">230. Kth Smallest Element in a BST</a> — inorder + early stop.</li>
+        <li><a href="https://leetcode.com/problems/increasing-order-search-tree/">897. Increasing Order Search Tree</a> — inorder collect, rebuilt as a right-leaning chain.</li>
+        <li><a href="https://leetcode.com/problems/minimum-distance-between-bst-nodes/">783. Minimum Distance Between BST Nodes</a> — inorder + adjacent difference.</li>
+        <li><a href="https://leetcode.com/problems/all-elements-in-two-binary-search-trees/">1305. All Elements in Two Binary Search Trees</a> — inorder both trees, merge the two sorted lists.</li>
+        <li><a href="https://leetcode.com/problems/two-sum-iv-input-is-a-bst/">653. Two Sum IV — Input is a BST</a> — inorder gives a sorted array; use the two-pointer pattern.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Friday 19 June:</strong> BSTs Part 2 — deletion, inorder successor and predecessor, validate BST, more tree problems.</li>
+        <li><strong>Monday 22 June (AM):</strong> Heaps — array layout, parent / child indices, insert, delete root, heapify.</li>
+        <li><strong>Monday 22 June (8:30 PM):</strong> Quiz 2 — binary trees and BSTs. Heaps not included.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
