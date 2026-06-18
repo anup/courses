@@ -486,25 +486,102 @@
 </section>
 
 <section>
+    <h2>Delete — the algorithm in two phases</h2>
+    <p>To delete value <code>v</code> from a BST rooted at <code>node</code>:</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>Phase 1 — find the target</h4>
+            <ul>
+                <li>If <code>v &lt; node.data</code> → descend left.</li>
+                <li>If <code>v &gt; node.data</code> → descend right.</li>
+                <li>If <code>v = node.data</code> → we've found the target. Hand off to Phase 2.</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Phase 2 — remove the target</h4>
+            <ul>
+                <li>Case 1 or 2 (0 or 1 child): replace the node with its (possibly NULL) only child.</li>
+                <li>Case 3 (2 children): copy the successor's value into this node, then recursively delete the successor from the right subtree.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-point">
+        Both phases are recursive. Phase 1 returns up the call chain. Phase 2's Case 3 calls back into Phase 1 to delete the successor — and that recursion always falls into Case 1 or 2, so it terminates.
+    </div>
+</section>
+
+<section>
     <h2>Delete — pseudocode</h2>
-    <pre><code class="nohighlight">DELETE(node, value):
-    if node = NULL: return NULL
+    <pre><code class="nohighlight">DELETE(node, v):
+    if node = NIL: return NIL
 
-    if value &lt; node.data:
-        node.left  ← DELETE(node.left, value)
-    else if value &gt; node.data:
-        node.right ← DELETE(node.right, value)
-    else:
-        // found the node to delete
-        if node.left  = NULL: return node.right       // Case 1 or 2
-        if node.right = NULL: return node.left        // Case 2
-        // Case 3: two children
-        succ ← leftmost(node.right)
-        node.data ← succ.data
-        node.right ← DELETE(node.right, succ.data)
+    // ─── Phase 1: walk down to find the target ───
+    if v &lt; node.data:
+        node.left  ← DELETE(node.left, v)
+        return node
+    if v &gt; node.data:
+        node.right ← DELETE(node.right, v)
+        return node
 
+    // ─── Phase 2: v = node.data; this is the target ───
+    // Case 1 (leaf) and Case 2 (one child) collapse to:
+    if node.left  = NIL: return node.right
+    if node.right = NIL: return node.left
+
+    // Case 3: two children. The successor trick.
+    succ ← LEFTMOST(node.right)
+    node.data ← succ.data                          // copy successor's value
+    node.right ← DELETE(node.right, succ.data)     // delete original successor
     return node</code></pre>
-    <p>Same return-the-subtree pattern as insert. The recursive call in Case 3 always lands in Case 1 or Case 2, so the recursion ends.</p>
+    <div class="info-box">
+        <strong>Why <code>return node</code>?</strong> Each call returns its (possibly modified) subtree to its caller. The caller's <code>node.left ← DELETE(...)</code> reattaches the child slot to whatever the recursion gave back.
+    </div>
+</section>
+
+<section>
+    <h2>Delete — trace on the canonical tree</h2>
+    <p>Call <code>DELETE(root, 50)</code> on the canonical tree. Watch the recursion:</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <g class="target"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">70</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">20</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">40</text>
+                <g class="visited"><circle cx="230" cy="230" r="22"/><text x="230" y="236">60</text></g>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">80</text>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.85em;">
+                <li class="fragment"><strong>At 50:</strong> v = node.data. Phase 2. Both children present → Case 3.</li>
+                <li class="fragment"><strong>Successor:</strong> <code>LEFTMOST(50.right)</code> = <code>LEFTMOST(70)</code> = 60.</li>
+                <li class="fragment"><strong>Copy:</strong> root.data ← 60. Tree now has 60 at root and 60 in the right subtree.</li>
+                <li class="fragment"><strong>Recurse</strong> on right subtree: <code>DELETE(70, 60)</code>.
+                    <ul>
+                        <li>At 70: 60 &lt; 70 → Phase 1 left. <code>70.left ← DELETE(60, 60)</code>.</li>
+                        <li>At 60: v = node.data. Phase 2. No children → return NIL.</li>
+                        <li>Back at 70: <code>70.left = NIL</code>. Return 70.</li>
+                    </ul>
+                </li>
+                <li class="fragment"><strong>Back at root:</strong> root.right ← 70. Return root.</li>
+            </ol>
+        </div>
+    </div>
 </section>
 
 <section>
