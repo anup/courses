@@ -854,16 +854,29 @@
 <section>
     <h2>kth smallest, almost for free</h2>
 
-    <p>Want the 5th smallest value in a tree with <strong>a million nodes</strong>? A scan visits a million. The BST visits about <strong>25</strong> — if the tree is roughly balanced.</p>
+    <p>Want the 5th smallest value in a tree with <strong>a million nodes</strong>? A scan visits a million. The BST visits about <strong>25</strong> — if it's roughly balanced.</p>
 
-    <p>Inorder visits values in sorted order, so the kth smallest is just the kth emission. Stop the walk as soon as you have it.</p>
+    <p><strong>Why so few?</strong> Inorder visits the smallest first, then the next, then the next. Walk inorder, count as you emit, stop the moment count hits k.</p>
 
-    <pre><code class="nohighlight">KTH-SMALLEST(node, k):
-    walk inorder from node
-    keep a counter of values emitted
-    return the kth value; stop the walk there</code></pre>
+    <p class="small">Why inorder hits the smallest first: it recurses <em>LEFT</em> before doing anything else — all the way to the leftmost node. That's the minimum. From there, the walk works its way back up and across, emitting values in increasing order.</p>
 
-    <p>Total: <code>O(h + k)</code>. For h ≈ 20 (the height of a balanced million-node tree) and k = 5, that's 25 visits — not a million.</p>
+    <pre><code class="nohighlight">count  ← 0
+answer ← NIL
+
+INORDER(node):
+    if node = NIL or answer ≠ NIL: return       // stop after the kth
+    INORDER(node.left)
+    count ← count + 1
+    if count = k:
+        answer ← node.data
+        return
+    INORDER(node.right)
+
+KTH-SMALLEST(root, k):
+    INORDER(root)
+    return answer</code></pre>
+
+    <p>Total: <code>O(h + k)</code> nodes visited. For h ≈ 20 (balanced million-node tree) and k = 5, that's 25 visits.</p>
 
     <p>The surprising part: the BST <strong>never sorted anything</strong>. It grew one insert at a time, each insert O(h). No "sort everything" step ever ran. The sorted order is <em>implicit in the tree's shape</em> — available on demand, as many values as you need, even while new ones keep arriving.</p>
 
@@ -894,35 +907,23 @@
 
 <section>
     <h2>Practice 1 — solution</h2>
+    <p>At every node, ask three questions:</p>
+    <ol>
+        <li><strong>Could the left subtree contain in-range values?</strong> Only if <code>node.data &gt; lo</code> — otherwise everything to the left is even smaller, all out of range.</li>
+        <li><strong>Is the current node itself in range?</strong> Yes if <code>lo ≤ node.data ≤ hi</code>.</li>
+        <li><strong>Could the right subtree contain in-range values?</strong> Only if <code>node.data &lt; hi</code> — otherwise everything to the right is even larger.</li>
+    </ol>
+    <p>The code is exactly those three questions, in order:</p>
     <pre><code class="nohighlight">rangePrint(node, lo, hi):
     if node = NULL: return
-    if node.data &gt; lo:
-        rangePrint(node.left, lo, hi)              // left may have in-range values
+    if node.data &gt; lo:   rangePrint(node.left,  lo, hi)     // Q1
     if lo ≤ node.data and node.data ≤ hi:
-        output node.data
-    if node.data &lt; hi:
-        rangePrint(node.right, lo, hi)             // right may have in-range values</code></pre>
-    <div class="two-col">
-        <div>
-            <p><strong>Pruning rules:</strong></p>
-            <ul>
-                <li>If <code>node.data ≤ lo</code>, everything in the left subtree is even smaller. Skip left.</li>
-                <li>If <code>node.data ≥ hi</code>, everything in the right subtree is even larger. Skip right.</li>
-            </ul>
-        </div>
-        <div>
-            <p><strong>For range [25, 65]:</strong></p>
-            <ul class="small">
-                <li>at 50 (in range): recurse left and right; print 50.</li>
-                <li>at 30 (in range): 30 &gt; 25 → recurse left; print 30; 30 &lt; 65 → recurse right.</li>
-                <li>at 20 (≤ lo): skip left; not in range; recurse right (NULL).</li>
-                <li>at 40: in range; print 40.</li>
-                <li>at 70 (≥ hi): recurse left; not in range; skip right.</li>
-                <li>at 60: in range; print 60.</li>
-            </ul>
-            <p class="small">Output: <code>30, 40, 50, 60</code> — already sorted.</p>
-        </div>
+        output node.data                                      // Q2
+    if node.data &lt; hi:   rangePrint(node.right, lo, hi)     // Q3</code></pre>
+    <div class="info-box">
+        Q1 and Q3 are where the savings live — they <strong>prune entire subtrees</strong> that can't possibly contain in-range values. Without them, this would be plain inorder + filter, visiting all n nodes.
     </div>
+    <p><strong>For range [25, 65]</strong> on the canonical tree, the output is <code>30, 40, 50, 60</code> — already in sorted order, because each recursive call respects the inorder pattern (left, self, right).</p>
 </section>
 
 <section>
