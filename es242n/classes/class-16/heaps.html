@@ -1,0 +1,1314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heaps</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 25px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.4em; }
+        .reveal h1 { font-size: 2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.45em; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.3em; }
+        .reveal h4 { font-size: 1.02em; margin-bottom: 0.25em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.5em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.5em 0; }
+        .reveal li { margin: 0.2em 0; line-height: 1.4; }
+        .reveal ol { margin: 0.5em 0; }
+        .reveal p { margin: 0.35em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.5em 0; }
+        .reveal .card { background: var(--light-bg); padding: 0.7em 1.1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.35em; }
+        .reveal .card ul { margin: 0.3em 0; padding-left: 1.3em; font-size: 0.82em; }
+        .reveal .card li { margin: 0.3em 0; line-height: 1.4; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+        .reveal .ref-code pre { font-size: 0.95em; max-height: none; }
+        .reveal .ref-code pre code { padding: 1.4em; max-height: none; }
+        /* Tree drawing helpers */
+        .tree-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .tree-svg text { font-family: 'Monaco', 'Menlo', monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .tree-svg line { stroke: #95a5a6; stroke-width: 2; fill: none; }
+        .tree-svg .bad circle { stroke: var(--warning-color); }
+        .tree-svg .bad text { fill: var(--warning-color); }
+        .tree-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+        .tree-svg .target circle { stroke: var(--warning-color); fill: #fef0e6; stroke-width: 3; }
+        .tree-svg .target text { fill: var(--warning-color); }
+        /* Array boxes */
+        .array-row { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; margin: 0.4em auto; max-width: 90%; font-family: 'Monaco', 'Menlo', monospace; }
+        .array-row .cell { background: #fff; border: 2px solid var(--accent-color); padding: 0.3em 0; text-align: center; font-weight: 700; color: var(--main-color); font-size: 0.85em; }
+        .array-row .idx { background: none; border: none; padding: 0.05em 0; color: #6c757d; font-size: 0.65em; font-weight: 600; }
+        .array-row .cell.hl { background: #fff3cd; border-color: #ffc107; }
+        .array-row .cell.hl2 { background: #eafaf1; border-color: var(--success-color); }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Heaps</h1>
+    <h3 style="color:#7f8c8d;">A binary tree with two extra rules — and an array layout for free</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 16 &middot; 22 June 2026</p>
+</section>
+
+<!-- ─── From queues to priority queues ─────────── -->
+<section>
+    <h2>From queues to priority queues</h2>
+    <p>Queues we've seen are <strong>FIFO</strong>. Many systems need <em>priority</em> instead — whoever ranks highest leaves next, regardless of arrival order:</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>Money cuts the line</h4>
+            <ul>
+                <li><strong>Airport boarding</strong> — ticket class</li>
+                <li><strong>Theme park fast-pass</strong> — paid lane</li>
+                <li><strong>Premium support</strong> — VIP tier</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Need cuts the line</h4>
+            <ul>
+                <li><strong>Hospital ER</strong> — severity of injury</li>
+                <li><strong>OS scheduler</strong> — system task &gt; background</li>
+                <li><strong>Network QoS</strong> — voice/video &gt; bulk</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-point">
+        Same waiting-line shape, different rule for who leaves next. This is a <strong>priority queue</strong>.
+    </div>
+</section>
+
+<!-- ─── Concrete CS example: OS ready queue ─────── -->
+<section>
+    <h2>A concrete case — the OS ready queue</h2>
+    <p>Dozens of processes want the CPU at once. The OS keeps a <strong>ready queue</strong>, ordered by priority, not by arrival.</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>What the priority looks like</h4>
+            <ul>
+                <li><strong>Real-time</strong> — interrupt handlers, audio codec, kernel threads</li>
+                <li><strong>Interactive</strong> — your typing, the foreground app</li>
+                <li><strong>Background</strong> — file indexer, software updates, GC threads</li>
+            </ul>
+        </div>
+        <div class="card">
+            <h4>Priority isn't fixed</h4>
+            <ul>
+                <li><strong>Aging:</strong> a process that has waited long is boosted up (prevents starvation)</li>
+                <li><strong>I/O boost:</strong> a process that just finished waiting on disk/network gets a short bump (keeps the UI feeling snappy)</li>
+                <li><strong>Demotion:</strong> a CPU hog gets moved down so others get a turn</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-point">
+        Every context switch the kernel does <code>extract_max()</code>. A new process becomes ready: <code>insert()</code>. The aging tick updates priorities. <em>This is a priority queue.</em> The I/O scheduler, packet scheduler, and several other kernel queues share the same shape.
+    </div>
+</section>
+
+<!-- ─── What does a priority queue need? ────────── -->
+<section>
+    <h2>What does the priority queue need?</h2>
+    <p>Three operations on the data structure:</p>
+    <pre><code class="nohighlight">insert(x)        // add an element with priority x
+peek_max()       // look at the highest-priority element
+extract_max()    // remove and return the highest-priority element</code></pre>
+</section>
+
+<!-- ─── How would we solve it with what we know? ── -->
+<section>
+    <h2>How would we solve it with what we already know?</h2>
+    <p>Before we invent anything new — with the structures we've already studied (arrays, sorted arrays, balanced BSTs), what costs do we get for each operation?</p>
+    <table>
+        <thead>
+            <tr><th>Structure</th><th>insert</th><th>peek_max</th><th>extract_max</th></tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>Unsorted array</td>
+                <td class="fragment" data-fragment-index="1">O(1)</td>
+                <td class="fragment" data-fragment-index="1">O(n)</td>
+                <td class="fragment" data-fragment-index="1">O(n)</td>
+            </tr>
+            <tr>
+                <td>Sorted array (ascending — max at end)</td>
+                <td class="fragment" data-fragment-index="2">O(n)</td>
+                <td class="fragment" data-fragment-index="2">O(1)</td>
+                <td class="fragment" data-fragment-index="2">O(1)</td>
+            </tr>
+            <tr>
+                <td>Balanced BST</td>
+                <td class="fragment" data-fragment-index="3">O(log n)</td>
+                <td class="fragment" data-fragment-index="3">O(log n)</td>
+                <td class="fragment" data-fragment-index="3">O(log n)</td>
+            </tr>
+        </tbody>
+    </table>
+    <p class="fragment" data-fragment-index="4">Unsorted: insert is free but every extract is a linear scan. Sorted: opposite trade-off. Neither is balanced across the three.</p>
+    <p class="fragment" data-fragment-index="5">Balanced BST gets all three to O(log n) — but at a steep cost. Rotations to keep it balanced, and a lot of capability we don't need here: search by key, inorder traversal, range queries, kth-smallest.</p>
+    <div class="info-box fragment" data-fragment-index="6">
+        <strong>The question:</strong> can we hit O(log n) on all three with a <em>simpler</em> structure — one designed only for the priority queue, with no extra machinery and no unused capability?
+    </div>
+</section>
+
+<!-- ─── What is a heap? (the answer) ────────────── -->
+<section>
+    <h2>What is a heap?</h2>
+    <div class="two-col">
+        <div>
+            <p>Yes — and the structure is called a <strong>heap</strong>.</p>
+            <p>A heap is a binary tree — same node concept as before (data and two children). It is <em>not</em> a BST. The BST imposed one ordering rule across the whole tree. A heap imposes a different pair of rules:</p>
+            <ol>
+                <li><strong>Shape rule:</strong> the tree is <em>complete</em> — every level except possibly the last is full, and the last level fills left to right.</li>
+                <li><strong>Order rule:</strong> every parent <em>dominates</em> both its children. In a <strong>max-heap</strong>, parent ≥ children. In a <strong>min-heap</strong>, parent ≤ children.</li>
+            </ol>
+            <p>Both rules must hold. That's the whole definition.</p>
+        </div>
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">40</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">10</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">20</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">35</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">25</text>
+            </svg>
+            <p class="small" style="text-align:center;">A max-heap. Shape: complete. Order: every parent ≥ both children.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Different rules from a BST → different operations get fast. We'll examine each rule, then see what they buy us.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — THE TWO RULES OF A HEAP
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">A closer look at each rule</p>
+</section>
+
+<section>
+    <h2>Rule 1 — the shape rule (complete binary tree)</h2>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">A</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">B</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">C</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">D</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">E</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">F</text>
+            </svg>
+            <p class="small" style="text-align:center;">A complete binary tree.</p>
+        </div>
+        <div>
+            <p>A binary tree is <strong>complete</strong> when:</p>
+            <ul>
+                <li>Every level except possibly the last is <strong>completely full</strong>.</li>
+                <li>The last level fills <strong>left to right</strong>, with no gaps.</li>
+            </ul>
+            <p>So in the tree to the left: A's level is full (just A). B/C's level is full. The last level — D, E, F — fills left to right, with the rightmost slot still empty.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Completeness is a <em>shape</em> constraint. It says nothing about values yet. We'll add the value rule next.
+    </div>
+</section>
+
+<section>
+    <h2>Which of these are complete?</h2>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>A</strong> <span class="fragment" data-fragment-index="1" style="color:var(--success-color); font-weight:700; font-size:1.3em;">✓</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">1</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">2</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">3</text>
+                <circle cx="30" cy="190" r="20"/>
+                <text x="30" y="196">4</text>
+            </svg>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;"><strong>B</strong> <span class="fragment" data-fragment-index="2" style="color:var(--warning-color); font-weight:700; font-size:1.3em;">✗</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="100" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">1</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">2</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">3</text>
+                <circle cx="100" cy="190" r="20"/>
+                <text x="100" y="196">4</text>
+            </svg>
+        </div>
+    </div>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>C</strong> <span class="fragment" data-fragment-index="3" style="color:var(--warning-color); font-weight:700; font-size:1.3em;">✗</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="180" y1="120" x2="210" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">1</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">2</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">3</text>
+                <circle cx="210" cy="190" r="20"/>
+                <text x="210" y="196">4</text>
+            </svg>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;"><strong>D</strong> <span class="fragment" data-fragment-index="4" style="color:var(--success-color); font-weight:700; font-size:1.3em;">✓</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                    <line x1="60" y1="120" x2="90" y2="180"/>
+                    <line x1="180" y1="120" x2="150" y2="180"/>
+                    <line x1="180" y1="120" x2="210" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">1</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">2</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">3</text>
+                <circle cx="30" cy="190" r="20"/>
+                <text x="30" y="196">4</text>
+                <circle cx="90" cy="190" r="20"/>
+                <text x="90" y="196">5</text>
+                <circle cx="150" cy="190" r="20"/>
+                <text x="150" y="196">6</text>
+                <circle cx="210" cy="190" r="20"/>
+                <text x="210" y="196">7</text>
+            </svg>
+        </div>
+    </div>
+    <p style="text-align:center; margin-top:0.4em;">Which satisfy the shape rule?</p>
+</section>
+
+<section>
+    <h2>Rule 2 — the order rule (parent dominates)</h2>
+    <p>The order rule for a <strong>max-heap</strong>:</p>
+    <div class="key-point">
+        Every parent's value is <strong>greater than or equal to</strong> both of its children's values.
+    </div>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:260px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">40</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">10</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">20</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">35</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">25</text>
+            </svg>
+            <p class="small" style="text-align:center;">Each parent ≥ its children: 50 ≥ 30, 40 · 30 ≥ 10, 20 · 40 ≥ 35, 25</p>
+        </div>
+        <div>
+            <p>What the rule does NOT say:</p>
+            <ul>
+                <li>Nothing about siblings. Left and right children can be in any order relative to each other.</li>
+                <li>Nothing across cousins. A node in the left subtree can be larger than a node in the right subtree.</li>
+            </ul>
+            <p>This is much weaker than the BST rule, which constrained relationships across the whole tree.</p>
+            <p>A <strong>min-heap</strong> is the same idea, flipped: every parent ≤ both children. Root is the smallest.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Which of these are max-heaps?</h2>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>A</strong> <span class="fragment" data-fragment-index="1" style="color:var(--success-color); font-weight:700; font-size:1.3em;">✓</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                    <line x1="60" y1="120" x2="90" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">90</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">60</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">80</text>
+                <circle cx="30" cy="190" r="20"/>
+                <text x="30" y="196">50</text>
+                <circle cx="90" cy="190" r="20"/>
+                <text x="90" y="196">40</text>
+            </svg>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;"><strong>B</strong> <span class="fragment" data-fragment-index="2" style="color:var(--warning-color); font-weight:700; font-size:1.3em;">✗</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                    <line x1="60" y1="120" x2="90" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">90</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">40</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">80</text>
+                <circle cx="30" cy="190" r="20"/>
+                <text x="30" y="196">50</text>
+                <circle cx="90" cy="190" r="20"/>
+                <text x="90" y="196">10</text>
+            </svg>
+        </div>
+    </div>
+    <div class="two-col">
+        <div>
+            <p class="small" style="text-align:center;"><strong>C</strong> <span class="fragment" data-fragment-index="3" style="color:var(--warning-color); font-weight:700; font-size:1.3em;">✗</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">50</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">90</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">30</text>
+            </svg>
+        </div>
+        <div>
+            <p class="small" style="text-align:center;"><strong>D</strong> <span class="fragment" data-fragment-index="4" style="color:var(--success-color); font-weight:700; font-size:1.3em;">✓</span></p>
+            <svg class="tree-svg" viewBox="0 0 240 240" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="120" y1="40" x2="60" y2="100"/>
+                    <line x1="120" y1="40" x2="180" y2="100"/>
+                    <line x1="60" y1="120" x2="30" y2="180"/>
+                </g>
+                <circle cx="120" cy="30" r="20"/>
+                <text x="120" y="36">90</text>
+                <circle cx="60" cy="110" r="20"/>
+                <text x="60" y="116">80</text>
+                <circle cx="180" cy="110" r="20"/>
+                <text x="180" y="116">70</text>
+                <circle cx="30" cy="190" r="20"/>
+                <text x="30" y="196">60</text>
+            </svg>
+        </div>
+    </div>
+    <p style="text-align:center; margin-top:0.4em;">Check both rules: shape and order.</p>
+</section>
+
+<section>
+    <h2>The two rules together</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Shape rule</h4>
+            <p>The tree is complete — full at every level except possibly the last, which fills left to right.</p>
+        </div>
+        <div class="card">
+            <h4>Order rule</h4>
+            <p>Every parent dominates its children — ≥ for max-heap, ≤ for min-heap.</p>
+        </div>
+    </div>
+    <p>Both rules must hold. A tree with the order rule but not the shape rule is not a heap. A complete tree with random values is not a heap.</p>
+    <div class="info-box">
+        <strong>Coming up:</strong> the shape rule isn't just a constraint — it's the reason we can store the entire tree in an array, without any pointers.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — ARRAY LAYOUT (CONSEQUENCE OF SHAPE)
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">The array trick (for free, from the shape rule)</p>
+</section>
+
+<section>
+    <h2>Number the nodes by level</h2>
+    <p>Take a complete binary tree. Number its nodes <strong>level by level, left to right</strong>, starting from 0:</p>
+    <div class="two-col">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 300" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <circle cx="200" cy="30" r="22"/>
+                <text x="200" y="36">50</text>
+                <circle cx="110" cy="130" r="22"/>
+                <text x="110" y="136">30</text>
+                <circle cx="290" cy="130" r="22"/>
+                <text x="290" y="136">40</text>
+                <circle cx="50" cy="230" r="22"/>
+                <text x="50" y="236">10</text>
+                <circle cx="170" cy="230" r="22"/>
+                <text x="170" y="236">20</text>
+                <circle cx="230" cy="230" r="22"/>
+                <text x="230" y="236">35</text>
+                <circle cx="350" cy="230" r="22"/>
+                <text x="350" y="236">25</text>
+                <!-- index labels -->
+                <text x="200" y="6" font-size="12" fill="#6c757d">0</text>
+                <text x="110" y="106" font-size="12" fill="#6c757d">1</text>
+                <text x="290" y="106" font-size="12" fill="#6c757d">2</text>
+                <text x="50" y="206" font-size="12" fill="#6c757d">3</text>
+                <text x="170" y="206" font-size="12" fill="#6c757d">4</text>
+                <text x="230" y="206" font-size="12" fill="#6c757d">5</text>
+                <text x="350" y="206" font-size="12" fill="#6c757d">6</text>
+            </svg>
+        </div>
+        <div>
+            <p>Reading the values off in number order:</p>
+            <div class="array-row">
+                <div class="cell">50</div>
+                <div class="cell">30</div>
+                <div class="cell">40</div>
+                <div class="cell">10</div>
+                <div class="cell">20</div>
+                <div class="cell">35</div>
+                <div class="cell">25</div>
+            </div>
+            <div class="array-row">
+                <div class="idx">0</div>
+                <div class="idx">1</div>
+                <div class="idx">2</div>
+                <div class="idx">3</div>
+                <div class="idx">4</div>
+                <div class="idx">5</div>
+                <div class="idx">6</div>
+            </div>
+            <p>That's just an array. The shape rule means we don't <em>need</em> pointers — index arithmetic finds parent and children for us. (We <em>could</em> still use pointer nodes — it's just a binary tree — but no library does.)</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Because the tree is complete, every index from 0 to n−1 corresponds to exactly one node — no gaps. The level-order numbering fits the array indices perfectly.
+    </div>
+</section>
+
+<section>
+    <h2>Where do parent and children sit?</h2>
+    <p>Take any node at index <code>i</code>. With completeness in our pocket, we can read its children's and parent's indices straight off the level structure.</p>
+    <p>The indices, level by level:</p>
+    <ul style="font-family: 'Monaco', 'Menlo', monospace; font-size:0.95em;">
+        <li>Level 0: 1 node &nbsp;→&nbsp; index <strong>0</strong></li>
+        <li>Level 1: 2 nodes &nbsp;→&nbsp; indices <strong>1, 2</strong></li>
+        <li>Level 2: 4 nodes &nbsp;→&nbsp; indices <strong>3, 4, 5, 6</strong></li>
+        <li>Level 3: 8 nodes &nbsp;→&nbsp; indices <strong>7, 8, 9, 10, 11, 12, 13, 14</strong></li>
+    </ul>
+    <p>Each level packs twice as many nodes as the one above. So node <code>i</code> on one level lands at a precise offset on the next.</p>
+    <p class="big-q">For the node at index 1, where are the children? For node at index 5? In general, for node <code>i</code>?</p>
+    <p class="fragment">Children of 1: <strong>3, 4</strong>. Children of 5: <strong>11, 12</strong>.</p>
+    <div class="two-col fragment">
+        <div class="card">
+            <h4>Going down</h4>
+            <p class="mono">left child   →  2*i + 1</p>
+            <p class="mono">right child  →  2*i + 2</p>
+        </div>
+        <div class="card">
+            <h4>Going up</h4>
+            <p class="mono">parent  →  (i − 1) / 2</p>
+            <p class="small">(integer division — invert the child formula)</p>
+        </div>
+    </div>
+    <p class="small fragment">Three pieces of arithmetic do the job of three pointer fields per node. We <em>could</em> still use pointer nodes — it's a binary tree — but with the shape rule guaranteeing no gaps, the array form is the natural choice.</p>
+</section>
+
+<section>
+    <h2>Callback — we've seen this before</h2>
+    <p>In the linked-list class on Day 5, we built a list inside an array:</p>
+    <pre><code class="nohighlight">data[i]  →  the value
+nxt[i]   →  the index of the next element</code></pre>
+    <p>Same theme today, sharper version:</p>
+    <pre><code class="nohighlight">data[i]  →  the value
+                                ← no next pointer needed
+                                ← left child is at  2*i + 1
+                                ← right child at    2*i + 2
+                                ← parent at         (i-1)/2</code></pre>
+    <div class="key-point">
+        A data structure can live in pointers or in arrays. Which one to use depends on what structure we're guaranteeing. The heap's <em>shape rule</em> is what lets the index arithmetic replace the pointers.
+    </div>
+</section>
+
+<section>
+    <h2>Practice — index arithmetic</h2>
+    <p>For the heap below, answer:</p>
+    <div class="two-col">
+        <div>
+            <div class="array-row">
+                <div class="cell">90</div>
+                <div class="cell">80</div>
+                <div class="cell">75</div>
+                <div class="cell">60</div>
+                <div class="cell">70</div>
+                <div class="cell">65</div>
+                <div class="cell">50</div>
+                <div class="cell">20</div>
+                <div class="cell">55</div>
+            </div>
+            <div class="array-row">
+                <div class="idx">0</div>
+                <div class="idx">1</div>
+                <div class="idx">2</div>
+                <div class="idx">3</div>
+                <div class="idx">4</div>
+                <div class="idx">5</div>
+                <div class="idx">6</div>
+                <div class="idx">7</div>
+                <div class="idx">8</div>
+            </div>
+        </div>
+        <div>
+            <ol>
+                <li>Index of the parent of node at index 7? <span class="fragment" style="color:var(--accent-color); font-weight:700;">→ 3</span></li>
+                <li>Indices of the children of node at index 2? <span class="fragment" style="color:var(--accent-color); font-weight:700;">→ 5 and 6</span></li>
+                <li>Value of the parent of value <strong>55</strong>? <span class="fragment" style="color:var(--accent-color); font-weight:700;">→ 60 (55 sits at index 8; parent at index 3)</span></li>
+                <li>Is the heap property (max) satisfied at every node? <span class="fragment" style="color:var(--accent-color); font-weight:700;">→ yes</span></li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — INSERT
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Insert</p>
+</section>
+
+<section>
+    <h2>Where does a new value go?</h2>
+    <p>To keep the <strong>shape rule</strong>, the only valid place for a new node is the <strong>next free slot</strong>: the last position on the last level, filling left to right.</p>
+    <p>In the array: that's just <code>arr[n]</code> — append at the end.</p>
+    <p>But the new value might <strong>break the order rule</strong>. If it ends up bigger than its parent (max-heap), we're not done.</p>
+    <div class="info-box">
+        Two-step pattern: <strong>place at the end</strong> (fixes shape), then <strong>swim up</strong> (fixes order).
+    </div>
+</section>
+
+<section>
+    <h2>Swim up — restoring the order rule</h2>
+    <p>The new node may be larger than its parent. If so, swap them. Then check the new parent. Keep going until either (a) the parent is larger, or (b) we reach the root.</p>
+    <p class="small">Only the path from the new node to the root can have violations — every other subtree is unchanged. So one walk up is enough to fix everything.</p>
+    <p>This is sometimes called <code>swim</code>, <code>sift-up</code>, <code>bubble-up</code>, or <code>heapify-up</code>. Same operation under different names.</p>
+</section>
+
+<section>
+    <h2>Insert — trace</h2>
+    <p>Start with the heap <code>[50, 30, 40, 10, 20, 35, 25]</code>. Insert <strong>45</strong>.</p>
+    <div class="two-col">
+        <div style="position:relative; min-height:300px;">
+            <!-- step 0: initial -->
+            <svg class="tree-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">30</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">10</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- step 1: append 45 at index 7 -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">30</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">10</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <g class="target"><circle cx="40" cy="285" r="22"/><text x="40" y="291">45</text></g>
+            </svg>
+            <!-- step 2: 45 swaps with 10 -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">30</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <g class="target"><circle cx="70" cy="200" r="22"/><text x="70" y="206">45</text></g>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <circle cx="40" cy="285" r="22"/><text x="40" y="291">10</text>
+            </svg>
+            <!-- step 3: 45 swaps with 30 -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <g class="target"><circle cx="130" cy="115" r="22"/><text x="130" y="121">45</text></g>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <circle cx="40" cy="285" r="22"/><text x="40" y="291">10</text>
+            </svg>
+            <!-- step 4: stop, final -->
+            <svg class="tree-svg fragment" data-fragment-index="4" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <g class="visited"><circle cx="130" cy="115" r="22"/><text x="130" y="121">45</text></g>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <circle cx="40" cy="285" r="22"/><text x="40" y="291">10</text>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.9em;">
+                <li class="fragment" data-fragment-index="1">Append 45 at index 7.<br><code>[50,30,40,10,20,35,25,<strong>45</strong>]</code></li>
+                <li class="fragment" data-fragment-index="2">Parent (i=3) is 10. 45 &gt; 10 → swap.<br><code>[50,30,40,<strong>45</strong>,20,35,25,10]</code></li>
+                <li class="fragment" data-fragment-index="3">Parent (i=1) is 30. 45 &gt; 30 → swap.<br><code>[50,<strong>45</strong>,40,30,20,35,25,10]</code></li>
+                <li class="fragment" data-fragment-index="4">Parent (i=0) is 50. 45 &lt; 50 → stop.</li>
+            </ol>
+            <p class="fragment small" data-fragment-index="4">Walked 3 levels — log₂(8). Done.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Insert — pseudocode</h2>
+    <pre><code class="nohighlight">INSERT(heap, value):
+    heap.append(value)                          // shape rule
+    SWIM(heap, length(heap) − 1)                // order rule
+
+SWIM(heap, i):
+    while i &gt; 0:
+        parent ← (i − 1) / 2
+        if heap[i] &gt; heap[parent]:
+            swap(heap[i], heap[parent])
+            i ← parent
+        else:
+            return                              // order rule satisfied</code></pre>
+    <p>Two phases, both small. The append fixes shape. The swim fixes order along one path to the root.</p>
+</section>
+
+<section>
+    <h2>Insert — complexity</h2>
+    <p class="big-q">What's the worst-case cost of insert?</p>
+    <p class="fragment">Swim walks up one level per swap. Worst case: from the bottom level all the way to the root.</p>
+    <div class="info-box fragment">
+        Number of levels = <strong>O(log n)</strong> — because the tree is complete, its height is exactly ⌊log₂ n⌋.
+    </div>
+    <p class="fragment">So insert is <strong>O(log n)</strong>. This is one of the heap's two main payoffs.</p>
+    <p class="small fragment">Compare BST: insert is O(height), which can be O(log n) <em>only if</em> the tree happens to stay balanced. Heap forces balance through the shape rule. There is no "degenerate heap."</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — EXTRACT MAX
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Extract max — remove the root</p>
+</section>
+
+<section>
+    <h2>Extract max — how it works</h2>
+    <p>The order rule puts the largest value at the root. So removing the max means removing the root. But the resulting tree still has to satisfy both rules.</p>
+    <p class="big-q">How?</p>
+    <p class="fragment">Three steps:</p>
+    <ol>
+        <li class="fragment"><strong>Save the root's value</strong> as the return value.</li>
+        <li class="fragment"><strong>Move the last element to the root, then shrink the array by one.</strong> Shape rule restored; order rule now broken at the root.</li>
+        <li class="fragment"><strong>Sink down.</strong> Swap with the <em>larger</em> of the two children. Then check the new position. Stop when both children are ≤ this node, or we reach a leaf.</li>
+    </ol>
+    <p class="small fragment">Same pattern as insert: a structural fix that breaks order, then walk in one direction to fix it.</p>
+</section>
+
+<section>
+    <h2>Sink down — restoring the order rule</h2>
+    <p>The node we just placed at the root may be smaller than its children. If so, swap it with the <strong>larger</strong> of the two children. Then check the new position. Keep going until either (a) both children are ≤ this node, or (b) we reach a leaf.</p>
+    <p class="small">Why the <em>larger</em> child? Swapping with the smaller one would put a small value above a bigger one on the other side — breaking the order rule there.</p>
+    <p class="small">Only the path the sinking node travels can have violations — every other subtree is unchanged. So one walk down is enough to fix everything.</p>
+    <p>This is sometimes called <code>sink</code>, <code>sift-down</code>, <code>bubble-down</code>, or <code>heapify-down</code>. Same operation under different names. It's the mirror of <code>swim</code> from insert: same idea, opposite direction.</p>
+</section>
+
+<section>
+    <h2>Extract max — trace</h2>
+    <p>Start with the heap <code>[50, 45, 40, 30, 20, 35, 25, 10]</code>. Extract the max.</p>
+    <div class="two-col">
+        <div style="position:relative; min-height:300px;">
+            <!-- state 0: initial -->
+            <svg class="tree-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">45</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <circle cx="40" cy="285" r="22"/><text x="40" y="291">10</text>
+            </svg>
+            <!-- state 1: 50 about to extract (highlight) -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                    <line x1="70" y1="215" x2="40" y2="270"/>
+                </g>
+                <g class="target"><circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text></g>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">45</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+                <circle cx="40" cy="285" r="22"/><text x="40" y="291">10</text>
+            </svg>
+            <!-- state 2: 10 moved to root, last leaf gone -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <g class="target"><circle cx="250" cy="35" r="22"/><text x="250" y="41">10</text></g>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">45</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 3: 10 swaps with 45 -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">45</text>
+                <g class="target"><circle cx="130" cy="115" r="22"/><text x="130" y="121">10</text></g>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 4: 10 swaps with 30 -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="4" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">45</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">30</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <g class="target"><circle cx="70" cy="200" r="22"/><text x="70" y="206">10</text></g>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 5: leaf, done -->
+            <svg class="tree-svg fragment" data-fragment-index="5" viewBox="0 0 500 320" style="position:absolute; top:0; left:0; width:100%; max-height:300px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">45</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">30</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">40</text>
+                <g class="visited"><circle cx="70" cy="200" r="22"/><text x="70" y="206">10</text></g>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.9em;">
+                <li class="fragment" data-fragment-index="1">Save the root → return <strong>50</strong>.</li>
+                <li class="fragment" data-fragment-index="2">Move last (10) to root, shrink.<br><code>[<strong>10</strong>,45,40,30,20,35,25]</code></li>
+                <li class="fragment" data-fragment-index="3">Children of i=0: 45, 40. Max = 45. 10 &lt; 45 → swap.<br><code>[45,<strong>10</strong>,40,30,20,35,25]</code></li>
+                <li class="fragment" data-fragment-index="4">Children of i=1: 30, 20. Max = 30. 10 &lt; 30 → swap.<br><code>[45,30,40,<strong>10</strong>,20,35,25]</code></li>
+                <li class="fragment" data-fragment-index="5">i=3 is a leaf (children at 7, 8 — out of bounds). Stop.</li>
+            </ol>
+            <p class="fragment small" data-fragment-index="5">Returned 50. Walked log₂(7) ≈ 3 levels.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Extract max — pseudocode</h2>
+    <pre><code class="nohighlight">EXTRACT-MAX(heap):
+    max ← heap[0]
+    heap[0] ← heap[length(heap) − 1]
+    heap.pop()                                   // shrink by one
+    SINK(heap, 0)
+    return max
+
+SINK(heap, i):
+    n ← length(heap)
+    while true:
+        left  ← 2*i + 1
+        right ← 2*i + 2
+        largest ← i
+        if left  &lt; n and heap[left]  &gt; heap[largest]: largest ← left
+        if right &lt; n and heap[right] &gt; heap[largest]: largest ← right
+        if largest = i: return                   // order rule satisfied
+        swap(heap[i], heap[largest])
+        i ← largest</code></pre>
+</section>
+
+<section>
+    <h2>Extract max — complexity</h2>
+    <p class="big-q">What's the worst-case cost of extract-max?</p>
+    <p class="fragment">Sink walks down one level per swap. Worst case: from the root all the way to a leaf.</p>
+    <div class="info-box fragment">
+        Number of levels = <strong>O(log n)</strong>, same reason as insert: completeness fixes the height.
+    </div>
+    <p class="fragment">So extract-max is <strong>O(log n)</strong>. With insert also O(log n), we have a structure where the two most useful operations on "the biggest value" cost a log walk.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 5 — HEAPIFY (BUILD HEAP)
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 5</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Heapify — building a heap from scratch</p>
+</section>
+
+<section>
+    <h2>The problem</h2>
+    <p>You're given an arbitrary array of <code>n</code> values. Turn it into a valid max-heap, in place.</p>
+    <p class="big-q">How fast can we do it?</p>
+    <p class="fragment"><strong>The obvious way:</strong> call INSERT n times, starting from an empty heap. Each insert is O(log n), so total is <code>O(n log n)</code>. Correct, but not the best we can do.</p>
+    <p class="fragment"><strong>The smarter way:</strong> sink each non-leaf node, starting from the bottom and working up. Total time: <code>O(n)</code>.</p>
+</section>
+
+<section>
+    <h2>Bottom-up heapify</h2>
+    <p>Key idea: <strong>leaves are already heaps of size 1.</strong> They trivially satisfy the order rule. The only nodes that might violate it are the internal (non-leaf) nodes.</p>
+    <p>Start from the <em>last</em> non-leaf node and walk backwards (down to index 0). At each one, SINK it.</p>
+    <p>By the time we sink a node, both its subtrees are already valid heaps — so a single sink restores the property for the whole subtree rooted here.</p>
+    <pre><code class="nohighlight">HEAPIFY(arr):
+    n ← length(arr)
+    for i from (n / 2) − 1 down to 0:
+        SINK(arr, i)</code></pre>
+    <p class="small"><code>n/2 − 1</code> is the index of the last non-leaf node. Anything beyond that is a leaf (children indices ≥ n).</p>
+</section>
+
+<section>
+    <h2>Heapify — trace</h2>
+    <p>Start with <code>[10, 20, 50, 30, 40, 35, 25]</code>. Last non-leaf is at index 2.</p>
+    <div class="two-col">
+        <div style="position:relative; min-height:280px;">
+            <!-- state 0: initial -->
+            <svg class="tree-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">10</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">20</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">50</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">40</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 1: i=2 (50), no swap. Highlight 50. -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">10</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">20</text>
+                <g class="visited"><circle cx="370" cy="115" r="22"/><text x="370" y="121">50</text></g>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">40</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 2: i=1 (20) swaps with 40. -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">10</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">40</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">50</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <g class="target"><circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text></g>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 3: i=0 (10) swaps with 50. -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">40</text>
+                <g class="target"><circle cx="370" cy="115" r="22"/><text x="370" y="121">10</text></g>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <circle cx="310" cy="200" r="22"/><text x="310" y="206">35</text>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 4: 10 continues sink — swaps with 35. -->
+            <svg class="tree-svg fragment fade-in-then-out" data-fragment-index="4" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">40</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">35</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <g class="target"><circle cx="310" cy="200" r="22"/><text x="310" y="206">10</text></g>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+            <!-- state 5: leaf, done -->
+            <svg class="tree-svg fragment" data-fragment-index="5" viewBox="0 0 500 260" style="position:absolute; top:0; left:0; width:100%; max-height:280px;">
+                <g>
+                    <line x1="250" y1="50" x2="130" y2="100"/>
+                    <line x1="250" y1="50" x2="370" y2="100"/>
+                    <line x1="130" y1="130" x2="70" y2="185"/>
+                    <line x1="130" y1="130" x2="190" y2="185"/>
+                    <line x1="370" y1="130" x2="310" y2="185"/>
+                    <line x1="370" y1="130" x2="430" y2="185"/>
+                </g>
+                <circle cx="250" cy="35" r="22"/><text x="250" y="41">50</text>
+                <circle cx="130" cy="115" r="22"/><text x="130" y="121">40</text>
+                <circle cx="370" cy="115" r="22"/><text x="370" y="121">35</text>
+                <circle cx="70" cy="200" r="22"/><text x="70" y="206">30</text>
+                <circle cx="190" cy="200" r="22"/><text x="190" y="206">20</text>
+                <g class="visited"><circle cx="310" cy="200" r="22"/><text x="310" y="206">10</text></g>
+                <circle cx="430" cy="200" r="22"/><text x="430" y="206">25</text>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.88em;">
+                <li class="fragment" data-fragment-index="1">i=2 (50). Children 35, 25. 50 is largest → no swap.</li>
+                <li class="fragment" data-fragment-index="2">i=1 (20). Children 30, 40. Max = 40. 20 &lt; 40 → swap.<br><code>[10,40,50,30,<strong>20</strong>,35,25]</code></li>
+                <li class="fragment" data-fragment-index="3">i=0 (10). Children 40, 50. Max = 50. 10 &lt; 50 → swap.<br><code>[50,40,<strong>10</strong>,30,20,35,25]</code></li>
+                <li class="fragment" data-fragment-index="4">Continue sinking 10. At i=2, children 35, 25. Max = 35. 10 &lt; 35 → swap.<br><code>[50,40,35,30,20,<strong>10</strong>,25]</code></li>
+                <li class="fragment" data-fragment-index="5">i=5 leaf. Done.</li>
+            </ol>
+            <p class="fragment small" data-fragment-index="5">Result: <code>[50,40,35,30,20,10,25]</code> — valid max-heap.</p>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Why heapify is O(n), not O(n log n)</h2>
+    <p>The naive bound: n/2 sinks, each up to O(log n) → O(n log n). But this is loose.</p>
+    <p>The cost of a sink depends on how deep <em>that node's subtree</em> goes — not the full tree's height. Most nodes have very shallow subtrees underneath them.</p>
+    <table>
+        <thead>
+            <tr><th>Level from bottom</th><th>Nodes</th><th>Max sink work each</th><th>Total work at this level</th></tr>
+        </thead>
+        <tbody>
+            <tr class="fragment" data-fragment-index="1"><td>Leaves (h=0)</td><td>≈ n/2</td><td>0</td><td>0</td></tr>
+            <tr class="fragment" data-fragment-index="2"><td>h = 1</td><td>≈ n/4</td><td>≤ 1</td><td>≈ n/4</td></tr>
+            <tr class="fragment" data-fragment-index="3"><td>h = 2</td><td>≈ n/8</td><td>≤ 2</td><td>≈ 2n/8 = n/4</td></tr>
+            <tr class="fragment" data-fragment-index="4"><td>h = 3</td><td>≈ n/16</td><td>≤ 3</td><td>≈ 3n/16</td></tr>
+            <tr class="fragment" data-fragment-index="5"><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+        </tbody>
+    </table>
+    <p class="fragment" data-fragment-index="6">Total = <code>n · ∑ h / 2<sup>h+1</sup></code> for h = 0, 1, 2, … &nbsp;&nbsp;The infinite sum <code>∑ h / 2<sup>h</sup></code> equals <strong>2</strong>, a constant. So total ≈ <strong>n</strong>. Heapify is <strong>O(n)</strong>.</p>
+    <div class="info-box fragment" data-fragment-index="7">
+        Intuition: inserting one at a time pays the worst-case log cost <em>n times</em>. Heapify shifts the work to where it's cheap — the bottom level has the most nodes but each one barely sinks.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 6 — WHERE HEAPS SHOW UP
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.8em;">Part 6</h1>
+    <p style="color:#7f8c8d; font-size:1.2em;">Where heaps show up</p>
+</section>
+
+<section>
+    <h2>Top-K problems</h2>
+    <p>"Given a stream of values, what are the top-K largest so far?"</p>
+    <p>Naive: keep them all sorted. Expensive on every insert.</p>
+    <p>Smart: maintain a <strong>min-heap of size K</strong>. For each new value:</p>
+    <ul>
+        <li>If the heap has fewer than K elements, insert it.</li>
+        <li>Else if the value is larger than the heap's min (the root), replace the root with this value and sink down.</li>
+        <li>Else ignore it — it's not in the top K.</li>
+    </ul>
+    <p>Each step is O(log K), independent of n. The heap stays at size K throughout.</p>
+</section>
+
+<section>
+    <h2>Heap sort</h2>
+    <p class="big-q">We have heapify in O(n) and extract-max in O(log n). Can we use them to sort an array? At what cost?</p>
+    <p class="fragment">A sorting algorithm built straight out of heap operations:</p>
+    <ol>
+        <li class="fragment">Heapify the input array — O(n).</li>
+        <li class="fragment">Repeatedly extract the max. Place each extracted value at the end of the array (the slot just vacated by the heap shrinking).</li>
+    </ol>
+    <p class="fragment">After n extracts, the array is sorted in ascending order. Total time: O(n) + n × O(log n) = <strong>O(n log n)</strong>, in place.</p>
+    <p class="small fragment">Same asymptotic as merge sort, in-place like quick sort — without quick sort's O(n²) worst case.</p>
+</section>
+
+<section>
+    <h2>STL priority queues — different defaults across languages</h2>
+    <p>C++ STL's <code>std::priority_queue</code> and Java's <code>PriorityQueue</code> are both heap-backed.</p>
+    <p class="big-q">Quick: max-heap or min-heap by default?</p>
+    <p class="fragment">Trick question. It depends on the language.</p>
+    <div class="two-col">
+        <div class="card fragment">
+            <h4>C++</h4>
+            <ul>
+                <li><code>priority_queue&lt;int&gt;</code> = <strong>max</strong>-heap by default.</li>
+                <li><code>top()</code> = the max.</li>
+                <li><code>push(x)</code> = insert; <code>pop()</code> = extract.</li>
+                <li>For a min-heap: pass <code>greater&lt;int&gt;</code> to flip the ordering.</li>
+            </ul>
+        </div>
+        <div class="card fragment">
+            <h4>Java</h4>
+            <ul>
+                <li><code>PriorityQueue&lt;Integer&gt;</code> = <strong>min</strong>-heap by default (the opposite of C++!).</li>
+                <li><code>peek()</code> = the min; <code>poll()</code> = extract.</li>
+                <li>For a max-heap: pass <code>Comparator.reverseOrder()</code> to flip the ordering.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-point fragment">
+        Same data structure, opposite defaults across languages. Read the docs before you reach for the root.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+
+<section>
+    <h2>What we built today</h2>
+    <ul>
+        <li>Heap = binary tree + two rules (shape: complete; order: parent dominates).</li>
+        <li>The shape rule lets us store the whole tree as an array, with index arithmetic instead of pointers.</li>
+        <li>Insert: append at end, swim up. O(log n).</li>
+        <li>Extract max: swap root with last, shrink, sink down. O(log n).</li>
+        <li>Heapify: bottom-up sinks. O(n).</li>
+        <li>Priority queues, top-K, heap sort — all built on top of these.</li>
+    </ul>
+    <div class="key-point">
+        Heaps and BSTs are both "binary tree + rules" — but the rules they pick are different. BST's ordering gives sorted traversal; heap's shape + ordering gives a fast priority queue.
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>

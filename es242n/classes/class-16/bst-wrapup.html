@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BST Wrap-up — DFS and BFS</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
+        .reveal .slides section.stack { overflow-y: visible !important; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h1 { font-size: 2.2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.7em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; max-height: 480px; overflow: auto; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul { margin: 0.7em 0; }
+        .reveal li { margin: 0.3em 0; line-height: 1.5; }
+        .reveal ol { margin: 0.7em 0; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 1em 1.4em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.5em; }
+        .reveal .card ul { margin: 0.4em 0; padding-left: 1.3em; font-size: 0.82em; }
+        .reveal .card li { margin: 0.4em 0; line-height: 1.5; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+        .reveal table { margin: 0.7em auto; border-collapse: collapse; font-size: 0.75em; width: 90%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.5em 0.8em; }
+        .reveal table td { padding: 0.4em 0.8em; border: 1px solid #dee2e6; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        /* tree diagram + interactive BFS */
+        .tree-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; transition: fill 0.25s, stroke 0.25s; }
+        .tree-svg text { font-family: 'Monaco','Menlo',monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .tree-svg line { stroke: #95a5a6; stroke-width: 2; }
+        .tree-svg g.node.queued circle { fill: #fff3cd; stroke: #e67e22; }
+        .tree-svg g.node.visited circle { fill: #d4edda; stroke: #27ae60; }
+        .tree-svg .band { opacity: 0.55; }
+        .tree-svg .band-label { font-size: 13px; fill: #7f8c8d; font-weight: 700; text-anchor: start; }
+        .bfs-controls { margin-bottom: 0.6em; }
+        .bfs-controls button { font-size: 0.7em; padding: 0.45em 1em; margin-right: 0.5em; border: none; border-radius: 6px; background: var(--accent-color); color: #fff; cursor: pointer; }
+        .bfs-controls button:hover { background: #2980b9; }
+        .chips { display: flex; flex-wrap: wrap; gap: 0.35em; min-height: 1.9em; align-content: flex-start; }
+        .chip { font-family: 'Monaco','Menlo',monospace; font-size: 0.78em; padding: 0.25em 0.6em; border-radius: 5px; border: 2px solid #bdc3c7; background: #fff; }
+        .chip.lv0 { background: #fdebd0; border-color: #e67e22; }
+        .chip.lv1 { background: #d4e6f1; border-color: #2980b9; }
+        .chip.lv2 { background: #d5f5e3; border-color: #27ae60; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- TITLE -->
+<section class="center-content">
+    <h1>Binary Search Trees — wrap-up</h1>
+    <h3 style="color:#7f8c8d;">DFS and BFS, before we start heaps</h3>
+    <p style="margin-top:2em; font-size:0.75em; color:#95a5a6;">ES 242(N) &middot; Class 16 &middot; 22 June 2026</p>
+</section>
+
+<!-- 1 — THE DFS REVEAL -->
+<section>
+    <h2>So what were we doing before?</h2>
+    <p>Every traversal so far followed one branch as deep as it goes, then backtracked and tried the next. That walk has a name: <strong>depth-first search</strong>.</p>
+    <table>
+        <tr><th>What we wrote</th><th>The walk</th><th>It was…</th></tr>
+        <tr><td>Preorder</td><td>visit, then recurse left, then right</td><td>DFS</td></tr>
+        <tr><td>Inorder</td><td>recurse left, visit, recurse right</td><td>DFS</td></tr>
+        <tr><td>Postorder</td><td>recurse left, right, then visit</td><td>DFS</td></tr>
+        <tr><td>Validate BST</td><td>inorder walk with a running <code>prev</code></td><td>DFS</td></tr>
+        <tr><td>LCA, delete, height</td><td>walk down, combine on the way back</td><td>DFS</td></tr>
+    </table>
+    <div class="key-point">
+        Preorder, inorder, postorder differ in exactly one thing: <strong>when</strong> you visit the node relative to recursing into the children. All three are DFS. You've been writing DFS all unit without the name.
+    </div>
+</section>
+
+<!-- 2 — BFS, INTERACTIVE -->
+<section>
+    <h2>Breadth-first: level by level</h2>
+    <p class="small">Hit <strong>Step</strong>: the front of the queue is dequeued (turns <span style="color:#27ae60;font-weight:700;">green</span>) and its children join the back (turn <span style="color:#e67e22;font-weight:700;">amber</span>). Watch the output come out one whole level at a time.</p>
+    <div class="two-col" style="grid-template-columns: 1.2fr 1fr; align-items: center;">
+        <div>
+            <svg class="tree-svg" viewBox="0 0 400 270" width="100%" style="max-height:300px;">
+                <!-- level bands -->
+                <rect class="band" x="0" y="3"   width="400" height="54" fill="#fdebd0"/>
+                <rect class="band" x="0" y="103" width="400" height="54" fill="#d4e6f1"/>
+                <rect class="band" x="0" y="203" width="400" height="54" fill="#d5f5e3"/>
+                <text class="band-label" x="6" y="16">L0</text>
+                <text class="band-label" x="6" y="116">L1</text>
+                <text class="band-label" x="6" y="216">L2</text>
+                <!-- edges -->
+                <g>
+                    <line x1="200" y1="40" x2="110" y2="120"/>
+                    <line x1="200" y1="40" x2="290" y2="120"/>
+                    <line x1="110" y1="140" x2="50" y2="220"/>
+                    <line x1="110" y1="140" x2="170" y2="220"/>
+                    <line x1="290" y1="140" x2="230" y2="220"/>
+                    <line x1="290" y1="140" x2="350" y2="220"/>
+                </g>
+                <!-- nodes -->
+                <g class="node" id="n50"><circle cx="200" cy="30" r="22"/><text x="200" y="36">50</text></g>
+                <g class="node" id="n30"><circle cx="110" cy="130" r="22"/><text x="110" y="136">30</text></g>
+                <g class="node" id="n70"><circle cx="290" cy="130" r="22"/><text x="290" y="136">70</text></g>
+                <g class="node" id="n20"><circle cx="50"  cy="230" r="22"/><text x="50"  y="236">20</text></g>
+                <g class="node" id="n40"><circle cx="170" cy="230" r="22"/><text x="170" y="236">40</text></g>
+                <g class="node" id="n60"><circle cx="230" cy="230" r="22"/><text x="230" y="236">60</text></g>
+                <g class="node" id="n80"><circle cx="350" cy="230" r="22"/><text x="350" y="236">80</text></g>
+            </svg>
+        </div>
+        <div>
+            <div class="bfs-controls">
+                <button id="bfsStep">▶ Step</button>
+                <button id="bfsReset">⟲ Reset</button>
+            </div>
+            <p class="small" style="margin:0.2em 0;">Queue&nbsp;&nbsp;(front → back)</p>
+            <div id="bfsQueue" class="chips"></div>
+            <p class="small" style="margin:0.7em 0 0.2em;">Output</p>
+            <div id="bfsOutput" class="chips"></div>
+        </div>
+    </div>
+    <div class="key-point">
+        The queue empties one level fully before the next begins, so the output is exactly level order: <strong>50 &nbsp;|&nbsp; 30 70 &nbsp;|&nbsp; 20 40 60 80</strong>. DFS dives before it spreads — it can't produce this.
+    </div>
+</section>
+
+<!-- 3 — STACK vs QUEUE -->
+<section>
+    <h2>DFS and BFS are the same code</h2>
+    <p>Write DFS without recursion, and the only difference from BFS is the container you pull from.</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>DFS — a stack (LIFO)</h4>
+            <pre><code class="nohighlight">PUSH(S, root)
+while S not empty:
+    node ← POP(S)
+    visit(node)
+    PUSH(S, node.right)
+    PUSH(S, node.left)</code></pre>
+            <p class="small">Push right first, so left comes off the top next — left-to-right preorder.</p>
+        </div>
+        <div class="card">
+            <h4>BFS — a queue (FIFO)</h4>
+            <pre><code class="nohighlight">ENQUEUE(Q, root)
+while Q not empty:
+    node ← DEQUEUE(Q)
+    visit(node)
+    ENQUEUE(Q, node.left)
+    ENQUEUE(Q, node.right)</code></pre>
+            <p class="small">Children join the back, so a level finishes before the next begins.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        Stack → go deep. Queue → go wide. Swap one container for the other and the whole behaviour flips. The recursion you've been writing is DFS borrowing the <em>call stack</em> for free.
+    </div>
+</section>
+
+<!-- 4 — BRIDGE TO GRAPHS -->
+<section>
+    <h2>One thing we never needed</h2>
+    <p>Look back at every walk: <strong>we never kept a "visited" set.</strong> We never worried about arriving at a node twice.</p>
+    <p>We could skip it because a tree has exactly <strong>one path</strong> from the root to any node. There's no way back to where you've already been.</p>
+    <div class="warning-box">
+        A <strong>graph</strong> can have cycles. Now you <em>can</em> arrive twice — and a plain DFS or BFS would loop forever. The fix is one addition: a <code>visited</code> set.
+    </div>
+    <div class="key-point">
+        You've already kept one — on the 2D grid, where you could step back onto a cell you'd seen. A grid is just a graph with cycles. Wednesday: graphs. Same two walks — DFS with a stack, BFS with a queue — the same code, plus one guard against going in circles.
+    </div>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+<script>
+(function () {
+    var children = { 50: [30, 70], 30: [20, 40], 70: [60, 80], 20: [], 40: [], 60: [], 80: [] };
+    var level    = { 50: 0, 30: 1, 70: 1, 20: 2, 40: 2, 60: 2, 80: 2 };
+    var allNodes = [50, 30, 70, 20, 40, 60, 80];
+    var queue, output;
+    var qEl = document.getElementById('bfsQueue');
+    var oEl = document.getElementById('bfsOutput');
+
+    function setNode(v, cls) {
+        var g = document.getElementById('n' + v);
+        if (g) g.setAttribute('class', 'node' + (cls ? ' ' + cls : ''));
+    }
+    function renderChips(el, arr) {
+        el.innerHTML = '';
+        arr.forEach(function (v) {
+            var s = document.createElement('span');
+            s.className = 'chip lv' + level[v];
+            s.textContent = v;
+            el.appendChild(s);
+        });
+    }
+    function render() {
+        allNodes.forEach(function (v) {
+            if (output.indexOf(v) !== -1) setNode(v, 'visited');
+            else if (queue.indexOf(v) !== -1) setNode(v, 'queued');
+            else setNode(v, '');
+        });
+        renderChips(qEl, queue);
+        renderChips(oEl, output);
+    }
+    function reset() { queue = [50]; output = []; render(); }
+    function step() {
+        if (!queue.length) return;
+        var v = queue.shift();
+        output.push(v);
+        children[v].forEach(function (c) { queue.push(c); });
+        render();
+    }
+    document.getElementById('bfsStep').addEventListener('click', step);
+    document.getElementById('bfsReset').addEventListener('click', reset);
+    reset();
+})();
+</script>
+</body>
+</html>

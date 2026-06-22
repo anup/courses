@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 16</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 16</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 16</p>
+      <h1>22 June 2026: Heaps</h1>
+      <p class="lead">A heap is a binary tree with two extra rules — the shape rule (complete) and the order rule (parent dominates children). The shape rule has a surprising consequence: the whole tree can be stored as an array, with index arithmetic in place of pointers. From there, insert and delete-root both cost a single walk up or down: O(log n).</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="bst-wrapup.html">BST wrap-up — DFS &amp; BFS</a> — the short conclusion to binary search trees, run before heaps</li>
+        <li><a href="heaps.html">Heaps</a> — today's deck, both sessions</li>
+        <li><a href="../class-13/binary-trees.html">Day 13 deck</a> — the binary tree we're adding rules to today</li>
+        <li><a href="../class-14/binary-search-trees.html">Day 14 deck</a> — BSTs: a different "binary tree + rule" structure, for contrast</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">Open</div>
+        <div>
+          <h2>Opening — concluding binary search trees</h2>
+          <p>Four slides to close the tree unit. The traversals already written — inorder, validate, LCA, delete — were all depth-first search; name it. Then its sibling, breadth-first search: level order with a queue, shown live on the canonical tree. The two are the same code with the container swapped — a stack for DFS, a queue for BFS. Close on the one thing trees let us skip, a visited set, because that is exactly what graphs add on Wednesday.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — The two rules and the array trick</h2>
+          <p>Recall the binary tree node from Day 13. Add the shape rule: complete binary tree, filled left to right at the last level. Then the order rule: every parent dominates both children (max-heap or min-heap). The two rules together are what we call a heap. Show "which of these are heaps?" trees to lock both rules in.</p>
+          <p>Then the consequence of the shape rule: because the tree is complete, we can number nodes level-order and store them in a contiguous array. The parent at <code>(i−1)/2</code>, children at <code>2i+1</code> and <code>2i+2</code>. No pointers, no <code>malloc</code> — just an array and three formulas. Callback to Day 5's <code>data[]/nxt[]</code> linked-list-in-an-array: same theme, sharper version.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Operations and what they're good for</h2>
+          <p>Insert: append at the end (fixes shape), then swim up to restore order. Worked trace inserting 45 into the canonical heap, then pseudocode and complexity. Extract max: save the root, move the last element to the root, shrink, then sink down to restore order. Worked trace, pseudocode, complexity. Both are O(log n) — because completeness fixes the height at log n. There is no "degenerate heap."</p>
+          <p>Build a heap from an arbitrary array — heapify. The naive insert-each gives O(n log n); the smarter bottom-up sink gives O(n). Short intuition for why the analysis collapses (most sinks are short because they're near the leaves). Close with where heaps actually live: priority queues, top-K with a size-K min-heap, heap sort, and the dhokha angle that <code>std::priority_queue</code> defaults to a max-heap in C++ but <code>PriorityQueue</code> defaults to a min-heap in Java.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>Judge four small trees against the shape rule alone.</li>
+        <li>Judge four small trees against both rules (shape + max-heap order).</li>
+        <li>Given the heap array <code>[90, 80, 75, 60, 70, 65, 50, 20, 55]</code>, answer four index-arithmetic questions.</li>
+        <li>Trace inserting 45 into <code>[50, 30, 40, 10, 20, 35, 25]</code> step by step.</li>
+        <li>Trace extracting the max from <code>[50, 45, 40, 30, 20, 35, 25, 10]</code> step by step.</li>
+        <li>Heapify <code>[10, 20, 50, 30, 40, 35, 25]</code> bottom-up and write the final array.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — heaps (for the weekend before the final)</h2>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element in an Array</a> — the canonical top-K with a size-K min-heap.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">703. Kth Largest Element in a Stream</a> — same idea, but on an arriving stream.</li>
+        <li><a href="https://leetcode.com/problems/last-stone-weight/">1046. Last Stone Weight</a> — extract-max twice per round, push the difference back. Cleanest priority-queue demo.</li>
+        <li><a href="https://leetcode.com/problems/top-k-frequent-elements/">347. Top K Frequent Elements</a> — frequency map + size-K heap by frequency.</li>
+        <li><a href="https://leetcode.com/problems/k-closest-points-to-origin/">973. K Closest Points to Origin</a> — size-K max-heap on squared distance.</li>
+        <li><a href="https://leetcode.com/problems/merge-k-sorted-lists/">23. Merge k Sorted Lists</a> — min-heap holds the current front of each list. O(n log k).</li>
+        <li><a href="https://leetcode.com/problems/find-median-from-data-stream/">295. Find Median from Data Stream</a> — two heaps (max-heap of the lower half, min-heap of the upper half) kept balanced.</li>
+        <li><a href="https://leetcode.com/problems/task-scheduler/">621. Task Scheduler</a> — priority queue on counts.</li>
+        <li><a href="https://leetcode.com/problems/sort-characters-by-frequency/">451. Sort Characters by Frequency</a> — frequency + heap.</li>
+        <li><a href="https://leetcode.com/problems/ipo/">502. IPO</a> — pick the most profitable affordable project each round. Min-heap on capital + max-heap on profit.</li>
+        <li><a href="https://leetcode.com/problems/single-threaded-cpu/">1834. Single-Threaded CPU</a> — schedule the next task by enqueue time, then by processing time. Direct cousin of the OS ready queue from class.</li>
+        <li><a href="https://leetcode.com/problems/meeting-rooms-ii/">253. Meeting Rooms II</a> — minimum number of rooms for a set of meetings. Sort by start; min-heap of end times. If the earliest-ending room frees up before the next meeting starts, reuse it; else add a room. Answer = heap size at the end.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Today, 8:30 PM</strong> — Quiz 2 on binary trees and BSTs. This morning's heaps material is not on the quiz.</li>
+        <li><strong>Wednesday 24 June</strong> — Graphs I: vocabulary, adjacency matrix, adjacency list, BFS.</li>
+        <li><strong>Friday 26 June</strong> — Graphs II: DFS, connected components, grid traversal.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
