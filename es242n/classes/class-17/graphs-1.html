@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphs I — Vocabulary, Interface, Traversal, Implementation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 25px; }
+        .reveal .slides section { height: 100%; overflow: hidden; padding: 0 1.2em; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.4em; }
+        .reveal h1 { font-size: 2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.45em; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.3em; }
+        .reveal h4 { font-size: 1.02em; margin-bottom: 0.25em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.5em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; overflow: hidden; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal ul { margin: 0.5em 0; }
+        .reveal li { margin: 0.2em 0; line-height: 1.4; }
+        .reveal ol { margin: 0.5em 0; }
+        .reveal p { margin: 0.35em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.5em 0; align-items: center; }
+        .reveal .card { background: var(--light-bg); padding: 0.7em 1.1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.35em; }
+        .reveal .card ul { margin: 0.3em 0; padding-left: 1.3em; font-size: 0.85em; }
+        .reveal .card li { margin: 0.3em 0; line-height: 1.4; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco','Menlo',monospace; }
+        .reveal table { margin: 0.5em auto; border-collapse: collapse; font-size: 0.7em; width: 92%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.4em 0.7em; }
+        .reveal table td { padding: 0.32em 0.7em; border: 1px solid #dee2e6; text-align: center; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.4em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.5em 0; line-height: 1.4; }
+        .huge-o { font-size: 3em; font-weight: 700; text-align: center; margin: 0.2em 0; }
+        /* Graph svg styling */
+        .graph-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .graph-svg text { font-family: 'Monaco','Menlo',monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .graph-svg line { stroke: #95a5a6; stroke-width: 2.5; fill: none; }
+        .graph-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+        .graph-svg .target circle { stroke: var(--warning-color); fill: #fef0e6; stroke-width: 3.5; }
+        .graph-svg .target text { fill: var(--warning-color); }
+        .graph-svg .current circle { stroke: var(--success-color); fill: #eafaf1; stroke-width: 5.5; }
+        .graph-svg .neighbor circle { stroke: var(--warning-color); stroke-dasharray: 5 3; stroke-width: 3.5; }
+        .graph-svg .visited.neighbor circle { fill: #eafaf1; stroke: var(--warning-color); stroke-dasharray: 5 3; stroke-width: 3.5; }
+        .graph-svg .start circle { stroke: var(--main-color); fill: #d6eaf8; stroke-width: 3.5; }
+        .graph-svg .cycle line { stroke: var(--warning-color); stroke-width: 4; }
+        .graph-svg .path line { stroke: var(--success-color); stroke-width: 4; }
+        .graph-svg .level-label { font-size: 12px; fill: #7f8c8d; font-weight: 700; text-anchor: start; }
+        /* Adjacency matrix styling */
+        .adj-matrix { border-collapse: collapse; margin: 0.3em auto; font-family: 'Monaco','Menlo',monospace; font-size: 0.65em; }
+        .adj-matrix th, .adj-matrix td { width: 28px; height: 28px; text-align: center; border: 1px solid #d0d0d0; padding: 0; }
+        .adj-matrix th { background: var(--light-bg); color: var(--main-color); font-weight: 700; }
+        .adj-matrix td.one { background: #d6eaf8; color: var(--accent-color); font-weight: 700; }
+        .adj-matrix td.diag { background: #f0f0f0; color: #95a5a6; }
+        /* Adjacency list styling */
+        .adj-list { font-family: 'Monaco','Menlo',monospace; font-size: 0.75em; line-height: 1.7; margin: 0.4em auto; }
+        .adj-list .v { color: var(--accent-color); font-weight: 700; }
+        .adj-list .arrow { color: #95a5a6; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Graphs I</h1>
+    <h3 style="color:#7f8c8d;">Vocabulary, interface, traversal, implementation</h3>
+    <p style="margin-top:1.4em; font-size:0.78em; color:#95a5a6;">ES 242(N) &middot; Class 17 &middot; 24 June 2026</p>
+</section>
+
+<!-- ─── WHY GRAPHS? ─────────────────────────────── -->
+<section>
+    <h2>Why graphs? Where they live in computer science</h2>
+    <p>A <strong>graph</strong> is a data structure for <em>relationships</em>. Vertices are things; edges are connections between them. Anywhere two items relate, you have a graph — and a question to ask about it.</p>
+    <table style="font-size:0.76em;">
+        <tr><th>Where</th><th>Vertices</th><th>Edges</th><th>A question this answers</th></tr>
+        <tr><td><strong>Social networks</strong><br><span style="color:#7f8c8d; font-size:0.88em;">Facebook, Twitter, LinkedIn</span></td><td>People</td><td>Friendships / follows</td><td>Friend of a friend? Who&rsquo;s in my community?</td></tr>
+        <tr><td><strong>Maps &amp; GPS</strong><br><span style="color:#7f8c8d; font-size:0.88em;">Google Maps, Uber, Ola</span></td><td>Intersections</td><td>Road segments</td><td>Fastest route from A to B? Avoid the closure.</td></tr>
+        <tr><td><strong>The web</strong><br><span style="color:#7f8c8d; font-size:0.88em;">Google search</span></td><td>Pages</td><td>Hyperlinks</td><td>Which pages matter most? (That&rsquo;s PageRank.)</td></tr>
+        <tr><td><strong>Subway / transit</strong><br><span style="color:#7f8c8d; font-size:0.88em;">Delhi Metro, Mumbai local</span></td><td>Stations</td><td>Lines</td><td>Fewest transfers? Reroute around a shutdown.</td></tr>
+        <tr><td><strong>Build systems</strong><br><span style="color:#7f8c8d; font-size:0.88em;">Make, npm, Bazel</span></td><td>Files / modules</td><td>Depends-on</td><td>What to compile first? Any circular dependencies?</td></tr>
+        <tr><td><strong>Course catalogs</strong><br><span style="color:#7f8c8d; font-size:0.88em;">any university</span></td><td>Courses</td><td>Prerequisites</td><td>What order can I take these in?</td></tr>
+    </table>
+    <div class="key-point">
+        Modern computing leans on graph algorithms — PageRank, GPS routing, recommendation engines, dependency resolution, network routing. Today we&rsquo;re building the foundation: <strong>how to store a graph, and how to walk one</strong>. Friday: how to use those tools to <em>decide</em> things about graphs (shortest path, cycles, components).
+    </div>
+</section>
+
+<!-- ─── HOOK ─────────────────────────────────────── -->
+<section>
+    <h2>Quick — fewest hops from A to H?</h2>
+    <div style="text-align:center;">
+        <svg class="graph-svg" viewBox="0 0 400 340" width="100%" style="max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+            <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+        </svg>
+    </div>
+    <p style="text-align:center;" class="small">Eight stations. Some direct connections (the lines). How many <strong>hops</strong> from A to H?</p>
+</section>
+
+<!-- ─── ANSWER REVEAL ────────────────────────────── -->
+<section>
+    <h2>Three hops — three shortest paths (longer paths exist too)</h2>
+    <div style="text-align:center; position:relative; min-height:300px;">
+        <svg class="graph-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+            <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+        </svg>
+        <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="path">
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g>
+            <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g>
+            <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            <text x="200" y="335" style="font-size:14px; fill:var(--success-color);">Path 1: A → B → E → H</text>
+        </svg>
+        <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="path">
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+            <g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <g class="visited"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            <text x="200" y="335" style="font-size:14px; fill:var(--success-color);">Path 2: A → C → F → H</text>
+        </svg>
+        <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="path">
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+            <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+            <g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+            <g class="visited"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            <text x="200" y="335" style="font-size:14px; fill:var(--success-color);">Path 3: A → D → G → H</text>
+        </svg>
+        <svg class="graph-svg fragment fade-in" data-fragment-index="4" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g style="stroke:var(--warning-color); stroke-width:4;">
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <g class="target"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g>
+            <g class="target"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <g class="target"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            <text x="200" y="335" style="font-size:14px; fill:var(--warning-color);">A longer path: A → B → C → F → H (4 hops). BFS would skip it — it picks the shortest.</text>
+        </svg>
+    </div>
+</section>
+
+<!-- ─── NAME IT — BFS ────────────────────────────── -->
+<section>
+    <h2>You just did BFS</h2>
+    <p>What you did to find &ldquo;fewest hops&rdquo;: you fanned out from A — first the neighbours, then the neighbours of those, then the next level out — until you hit H.</p>
+    <p>That algorithm has a name: <strong>Breadth-First Search</strong>. You've already met it on grids: explore outward from a starting cell, level by level, until you reach the target. Same idea, messier picture.</p>
+    <div class="info-box">
+        Three hops because H is at <strong>level 3</strong> from A. The three paths exist because the earlier levels have several vertices — any of them can carry you to the next level.
+    </div>
+</section>
+
+<!-- ─── THE LAYERED RIPPLE ──────────────────────── -->
+<section>
+    <h2>The levels, made explicit</h2>
+    <div style="text-align:center;">
+        <svg class="graph-svg" viewBox="0 0 460 340" width="100%" style="max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+            <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+            <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+            <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+            <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+            <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+            <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+            <g class="target"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            <text class="level-label" x="380" y="46">Level 0  · A</text>
+            <text class="level-label" x="380" y="126">Level 1  · B, C, D</text>
+            <text class="level-label" x="380" y="226">Level 2  · E, F, G</text>
+            <text class="level-label" x="380" y="306">Level 3  · H</text>
+        </svg>
+    </div>
+    <div class="key-point">
+        BFS visits the graph in <strong>levels</strong>: every vertex one hop away, then every vertex two hops away, then three. <em>The level of a vertex equals its shortest-path distance from the source.</em> That's why BFS finds the fewest hops — by construction.
+    </div>
+</section>
+
+<!-- ─── WHAT'S NEW AND WHAT ISN'T ────────────── -->
+<section>
+    <h2>What&rsquo;s new — and what isn&rsquo;t</h2>
+    <p>You&rsquo;ve already used BFS, DFS, and a visited set on grid problems. So what actually changes when we generalise to graphs?</p>
+    <div class="two-col" style="grid-template-columns: 1fr 1fr 1fr; gap:0.8em; align-items:start;">
+        <div class="card" style="text-align:center;">
+            <h4>Tree</h4>
+            <svg viewBox="0 0 120 110" width="100%" style="max-height:90px;">
+                <line x1="60" y1="20" x2="30" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="60" y1="20" x2="90" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="30" y1="55" x2="15" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="30" y1="55" x2="45" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="90" y1="55" x2="75" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <circle cx="60" cy="20" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="30" cy="55" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="90" cy="55" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="15" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="45" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="75" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+            </svg>
+            <p class="small">Neighbours via <strong>pointers</strong>.<br><strong>Acyclic</strong> — no visited set needed.</p>
+        </div>
+        <div class="card" style="text-align:center;">
+            <h4>Grid</h4>
+            <svg viewBox="0 0 120 110" width="100%" style="max-height:90px;">
+                <g fill="#fff" stroke="var(--accent-color)" stroke-width="2">
+                    <rect x="20" y="15" width="22" height="22"/>
+                    <rect x="49" y="15" width="22" height="22"/>
+                    <rect x="78" y="15" width="22" height="22"/>
+                    <rect x="20" y="44" width="22" height="22"/>
+                    <rect x="49" y="44" width="22" height="22" fill="#fef0e6" stroke="var(--warning-color)" stroke-width="3"/>
+                    <rect x="78" y="44" width="22" height="22"/>
+                    <rect x="20" y="73" width="22" height="22"/>
+                    <rect x="49" y="73" width="22" height="22"/>
+                    <rect x="78" y="73" width="22" height="22"/>
+                </g>
+            </svg>
+            <p class="small">Neighbours <strong>implicit</strong>: <code>(i±1, j±1)</code>.<br>Cycles exist → <strong>visited set needed</strong>.</p>
+        </div>
+        <div class="card" style="text-align:center; border-top-color:var(--warning-color);">
+            <h4>Graph</h4>
+            <svg viewBox="0 0 120 110" width="100%" style="max-height:90px;">
+                <line x1="60" y1="20" x2="25" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="60" y1="20" x2="60" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="60" y1="20" x2="95" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="25" y1="55" x2="60" y2="55" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="25" y1="55" x2="25" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="60" y1="55" x2="60" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="95" y1="55" x2="95" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <line x1="25" y1="90" x2="60" y2="90" stroke="#95a5a6" stroke-width="2"/>
+                <circle cx="60" cy="20" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="25" cy="55" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="60" cy="55" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="95" cy="55" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="25" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="60" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+                <circle cx="95" cy="90" r="10" fill="#fff" stroke="var(--accent-color)" stroke-width="2"/>
+            </svg>
+            <p class="small">Neighbours <strong>must be stored</strong>.<br>Cycles exist → visited set needed.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        <strong>The one new thing graphs add:</strong> the neighbours have to be <strong>written down</strong>. BFS, DFS, the visited bolt — same as grids. Today&rsquo;s only new work: <em>how to store the edges</em> so we can ask <code>neighbors(v)</code>.
+    </div>
+</section>
+
+<!-- ─── THE CYCLE TRAP, VISUALLY ──────────────── -->
+<section>
+    <h2>The cycle trap — A, B, C, A, B, C, …</h2>
+    <div class="two-col">
+        <div>
+            <svg class="graph-svg" viewBox="0 0 400 340" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="200" y1="40" x2="100" y2="120"/>
+                    <line x1="200" y1="40" x2="200" y2="120"/>
+                    <line x1="200" y1="40" x2="300" y2="120"/>
+                    <line x1="100" y1="120" x2="100" y2="220"/>
+                    <line x1="200" y1="120" x2="200" y2="220"/>
+                    <line x1="300" y1="120" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="220"/>
+                    <line x1="200" y1="220" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="300"/>
+                    <line x1="200" y1="220" x2="200" y2="300"/>
+                    <line x1="300" y1="220" x2="200" y2="300"/>
+                </g>
+                <g class="cycle">
+                    <line x1="200" y1="40" x2="100" y2="120"/>
+                    <line x1="100" y1="120" x2="200" y2="120"/>
+                    <line x1="200" y1="120" x2="200" y2="40"/>
+                </g>
+                <g class="start"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+                <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+                <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+                <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+                <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+        </div>
+        <div>
+            <p>Pretend you didn&rsquo;t track visited nodes. Start at A and follow edges:</p>
+            <pre><code class="nohighlight">A → B → C → A → B → C → A → …</code></pre>
+            <p>The three edges of the triangle form a <strong>cycle</strong>. Any cycle, no matter how big, has this property: you can leave a node and come back to it.</p>
+            <div class="warning-box">
+                <strong>Same fix as grids:</strong> mark each vertex visited the moment you enqueue it, and never enqueue a visited vertex again. Trees didn&rsquo;t need this (no cycles); grids and graphs both do.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — VOCABULARY + INTERFACE
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Vocabulary, and the interface BFS / DFS will use</p>
+</section>
+
+<!-- ─── VOCAB 1 — VERTEX, EDGE, NEIGHBOUR ──── -->
+<section>
+    <h2>Vertices, edges, neighbours</h2>
+    <div class="two-col">
+        <div>
+            <svg class="graph-svg" viewBox="0 0 400 340" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="200" y1="40" x2="100" y2="120"/>
+                    <line x1="200" y1="40" x2="200" y2="120"/>
+                    <line x1="200" y1="40" x2="300" y2="120"/>
+                    <line x1="100" y1="120" x2="200" y2="120"/>
+                    <line x1="100" y1="120" x2="100" y2="220"/>
+                    <line x1="200" y1="120" x2="200" y2="220"/>
+                    <line x1="300" y1="120" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="220"/>
+                    <line x1="200" y1="220" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="300"/>
+                    <line x1="200" y1="220" x2="200" y2="300"/>
+                    <line x1="300" y1="220" x2="200" y2="300"/>
+                </g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="target"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g>
+                <g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g>
+                <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g>
+                <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+                <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li><strong>Vertex</strong> (or <em>node</em>) — a circle. The graph above has <strong>8 vertices</strong>: A, B, C, D, E, F, G, H.</li>
+                <li><strong>Edge</strong> — a line connecting two vertices. The graph has <strong>12 edges</strong>.</li>
+                <li><strong>Neighbours</strong> — two vertices joined by an edge. <span style="color:var(--warning-color); font-weight:700;">B</span>&rsquo;s neighbours (green): A, C, E. So <span style="color:var(--warning-color); font-weight:700;">B</span> has <strong>three</strong> of them.</li>
+                <li><strong>Degree</strong> — how many neighbours a vertex has. <code>degree(B) = 3</code>.</li>
+            </ul>
+            <p class="small">Notation: a graph is <code>G = (V, E)</code>, a set of vertices and a set of edges. Today <code>|V| = 8</code>, <code>|E| = 12</code>.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── VOCAB 2 — PATH, CYCLE, CONNECTED ───── -->
+<section>
+    <h2>Path, cycle, connected</h2>
+    <ul>
+        <li><strong>Path</strong> — a sequence of vertices where each consecutive pair shares an edge. <code>A → C → F → H</code> is a path of length 3. <em>Length</em> = number of edges.</li>
+        <li><strong>Cycle</strong> — a path that starts and ends at the same vertex (using at least one edge, never repeating one). <code>A → B → C → A</code> is a cycle of length 3.</li>
+        <li><strong>Connected</strong> — for every pair of vertices, there is a path between them. Our graph is connected: from any node you can reach any other.</li>
+    </ul>
+    <div class="key-point">
+        A <strong>tree</strong> from last week, in graph language: a graph that is <strong>connected and acyclic</strong> — no cycles, every vertex reachable. Friday we&rsquo;ll spot trees inside graphs by checking these two properties.
+    </div>
+</section>
+
+<!-- ─── VOCAB 3 — DIRECTED / WEIGHTED ─────── -->
+<section>
+    <h2>Two knobs every graph has</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Directed vs undirected</h4>
+            <p>If edges have a direction (one-way streets, follower-on-Twitter, web links), the graph is <strong>directed</strong>. Drawn with arrowheads.</p>
+            <p>Our graph today is <strong>undirected</strong>: every edge works both ways. If A connects to B, then B connects to A.</p>
+        </div>
+        <div class="card">
+            <h4>Weighted vs unweighted</h4>
+            <p>If each edge carries a number (distance, time, cost), the graph is <strong>weighted</strong>. Otherwise every edge is &ldquo;one hop.&rdquo;</p>
+            <p>Today: <strong>unweighted</strong>. We&rsquo;ll add weights on Friday when we get to Dijkstra.</p>
+        </div>
+    </div>
+    <p class="small" style="text-align:center;">Four combinations: undirected / unweighted (today), directed / unweighted, undirected / weighted, directed / weighted. Same vocabulary; different algorithms cope with different combinations.</p>
+</section>
+
+<!-- ─── THE INTERFACE ──────────────────────────── -->
+<section>
+    <h2>The graph, as an abstract type</h2>
+    <p>Same trick we played with queues and stacks: <em>before</em> deciding how to store a graph, decide what we need to <strong>ask</strong> of one. BFS and DFS will work on this — and nothing more:</p>
+    <pre><code class="nohighlight">class Graph:
+    vertices()                // an iterable of all vertices
+    neighbors(v)              // an iterable of v's neighbours
+    has_edge(u, v)            // True if u and v are connected directly</code></pre>
+    <p>That&rsquo;s the entire interface. Three things you can ask of a graph.</p>
+    <div class="info-box">
+        <strong>BFS and DFS only ever call <code>neighbors(v)</code>.</strong> They never look inside how the graph is stored. Write BFS against this interface today, and any implementation underneath gives the same answer — different cost, identical result.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — USE THE INTERFACE: BFS AND DFS
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Use the interface — BFS and DFS, with the visited bolt</p>
+</section>
+
+<!-- ─── BFS — THE QUEUE IDEA ─────────────── -->
+<section>
+    <h2>BFS — what you did, written down</h2>
+    <p>When you found &ldquo;A to H in 3 hops,&rdquo; you had two unconscious lists going:</p>
+    <ul>
+        <li>A list of <strong>nodes to explore next</strong> — first A&rsquo;s neighbours (B, C, D), then theirs.</li>
+        <li>A list of <strong>nodes already seen</strong>, so you didn&rsquo;t revisit B from C.</li>
+    </ul>
+    <p>Make those two lists explicit and you have BFS:</p>
+    <div class="two-col">
+        <div class="card">
+            <h4>To explore: a <strong>queue</strong></h4>
+            <p>First-in-first-out, so we drain a whole level before starting the next. <em>That&rsquo;s what makes BFS layered.</em></p>
+        </div>
+        <div class="card">
+            <h4>Already seen: a <strong>visited set</strong></h4>
+            <p>Mark a vertex visited the moment you enqueue it. Never enqueue a visited vertex again.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── BFS — PSEUDOCODE ───────────────────── -->
+<section>
+    <h2>BFS — pseudocode</h2>
+    <pre><code class="nohighlight">BFS(graph, source):
+    visited &larr; empty set
+    Q &larr; empty queue
+
+    visited.add(source)                        // mark BEFORE enqueueing
+    Q.enqueue(source)
+
+    while Q not empty:
+        u &larr; Q.dequeue()
+        visit u                                // print, count, whatever you came for
+
+        for each v in graph.neighbors(u):      // ← only call into the graph
+            if v not in visited:
+                visited.add(v)
+                Q.enqueue(v)</code></pre>
+    <div class="info-box">
+        <strong>The only line that talks to the graph is <code>graph.neighbors(u)</code>.</strong> The rest is just a queue, a set, and a loop. BFS doesn&rsquo;t know — or care — how the graph is stored.
+    </div>
+</section>
+
+<!-- ─── BFS — TRACE ─────────────────────────── -->
+<section>
+    <h2>BFS from A — the visited set, step by step</h2>
+    <p class="small" style="text-align:center; color:#7f8c8d;"><span style="color:var(--success-color);">●</span> green fill = in the visited set &nbsp;·&nbsp; <span style="color:var(--success-color);">⬤</span> thick green border = currently being processed &nbsp;·&nbsp; <span style="color:var(--warning-color);">⬭</span> dashed orange border = a neighbour of the current vertex (inspected this step)</p>
+    <div class="two-col" style="grid-template-columns: 1.2fr 1fr;">
+        <div style="position:relative; min-height:260px;">
+            <!-- Step 0: initial; A in visited (just enqueued source) -->
+            <svg class="graph-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 1: after dequeue A; A=current, B,C,D=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited current"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited neighbor"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 2: after dequeue B; B=current, A,C,E=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited current"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 3: after dequeue C; C=current, A,B,F=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited current"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 4: after dequeue D; D=current, A,G=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="4" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited current"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 5: after dequeue E; E=current, B,F,H=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="5" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited current"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 6: after dequeue F; F=current, C,E,G,H=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="6" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited current"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 7: after dequeue G; G=current, D,F,H=visited neighbour -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="7" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited neighbor"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited current"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 8: after dequeue H; H=current, E,F,G=visited neighbour — done -->
+            <svg class="graph-svg fragment fade-in" data-fragment-index="8" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited current"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+        </div>
+        <div style="position:relative; min-height:240px;">
+            <div class="fragment fade-out" data-fragment-index="1" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p><strong>Initial</strong> — source enqueued.</p>
+                <p>Queue: <code>[A]</code></p>
+                <p>Visited: <code>{A}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="1" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>A</strong>. Neighbours <strong>B, C, D</strong> — all unvisited, enqueue.</p>
+                <p>Queue: <code>[B, C, D]</code></p>
+                <p>Visited: <code>{A, B, C, D}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="2" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>B</strong>. Neighbours A, C, <strong>E</strong>. A, C already visited; enqueue E.</p>
+                <p>Queue: <code>[C, D, E]</code></p>
+                <p>Visited: <code>{A, B, C, D, E}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="3" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>C</strong>. Neighbours A, B, <strong>F</strong>. A, B visited; enqueue F.</p>
+                <p>Queue: <code>[D, E, F]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="4" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>D</strong>. Neighbours A, <strong>G</strong>. A visited; enqueue G.</p>
+                <p>Queue: <code>[E, F, G]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F, G}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="5" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>E</strong>. Neighbours B, F, <strong>H</strong>. B and F already visited (F via C); enqueue H.</p>
+                <p>Queue: <code>[F, G, H]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F, G, H}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="6" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>F</strong>. Neighbours C, E, G, H — <em>all already visited</em>. Nothing to enqueue.</p>
+                <p>Queue: <code>[G, H]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F, G, H}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="7" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>G</strong>. Neighbours D, F, H — all visited. Nothing to enqueue.</p>
+                <p>Queue: <code>[H]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F, G, H}</code></p>
+            </div>
+            <div class="fragment fade-in" data-fragment-index="8" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Dequeue <strong>H</strong>. Neighbours E, F, G — all visited. Queue empty. <strong>Done.</strong></p>
+                <p>Queue: <code>[ ]</code></p>
+                <p>Visited: <code>{A, B, C, D, E, F, G, H}</code></p>
+            </div>
+        </div>
+    </div>
+    <div class="key-point fragment" data-fragment-index="9" style="margin-top:0.4em;">
+        <strong>Why <code>O(V + E)</code>?</strong> Each vertex is enqueued at most once (the visited check forbids a second entry) — so the queue does at most <code>V</code> dequeues. For each dequeued vertex, we scan its neighbour list. The total length of all neighbour lists is <code>2|E|</code> (each undirected edge contributes to two lists). So total work = <code>V</code> dequeues + <code>2E</code> neighbour visits = <strong><code>O(V + E)</code></strong>.
+    </div>
+</section>
+</section>
+
+<!-- ─── BFS — WITHOUT VISITED ─────────────── -->
+<section>
+    <h2>Drop the visited set — what happens?</h2>
+    <p>Start BFS from A, but skip the <code>if v not in visited</code> check. Just enqueue every neighbour, every time.</p>
+    <pre><code class="nohighlight">Dequeue order: A, B, C, D,  C, B, E,  B, A, F,  A, G,
+               A, C, E,  H, …  (and it keeps going — A and B
+               and C will keep landing back in the queue forever)</code></pre>
+    <div class="warning-box">
+        <strong>The triangle does this:</strong> A enqueues B, C, D. B enqueues A again (because the edge B–A exists and we didn&rsquo;t check). C enqueues A and B again. Round and round.
+    </div>
+    <p>The visited set isn&rsquo;t a polish on BFS — it&rsquo;s <strong>load-bearing</strong>. Without it, a graph with even one cycle never terminates.</p>
+</section>
+
+<!-- ─── DFS — THE IDEA ─────────────────────── -->
+<section>
+    <h2>DFS — same algorithm, swap the container</h2>
+    <p>BFS used a queue, so it drained level by level. <strong>DFS uses a stack</strong> — or, equivalently, the call stack of recursion. So instead of finishing a level before moving on, it dives all the way down one path, then backtracks.</p>
+    <div class="info-box">
+        BFS and DFS visit the <em>same vertices</em>. They differ in the <strong>order</strong>. BFS goes by distance from source; DFS goes by &ldquo;keep following one path until you can&rsquo;t.&rdquo;
+    </div>
+    <p>Both still need the visited set. The cycle trap doesn&rsquo;t care which container you use.</p>
+</section>
+
+<!-- ─── DFS — PSEUDOCODE ─────────────────── -->
+<section>
+    <h2>DFS — pseudocode (recursive)</h2>
+    <pre><code class="nohighlight">DFS(graph, source):
+    visited &larr; empty set
+    DFS-VISIT(graph, source, visited)
+
+DFS-VISIT(graph, u, visited):
+    visited.add(u)
+    visit u
+
+    for each v in graph.neighbors(u):          // ← only call into the graph
+        if v not in visited:
+            DFS-VISIT(graph, v, visited)</code></pre>
+    <p class="small">The recursion <em>is</em> the stack. Each recursive call pushes a frame; each return pops one. If you wrote this iteratively, you&rsquo;d replace the queue in BFS with an explicit stack — and only that.</p>
+    <p>Same single point of contact with the graph: <code>graph.neighbors(u)</code>.</p>
+</section>
+
+<!-- ─── DFS — TRACE ────────────────────────── -->
+<section>
+    <h2>DFS from A — the visited set, step by step</h2>
+    <p class="small" style="text-align:center; color:#7f8c8d;"><span style="color:var(--success-color);">●</span> green fill = in the visited set &nbsp;·&nbsp; <span style="color:var(--success-color);">⬤</span> thick green border = currently being processed (deepest active recursion) &nbsp;·&nbsp; <span style="color:var(--warning-color);">⬭</span> dashed orange border = a neighbour of the current vertex (inspected this step)</p>
+    <div class="two-col" style="grid-template-columns: 1.2fr 1fr;">
+        <div style="position:relative; min-height:260px;">
+            <!-- Step 0: initial, nothing visited -->
+            <svg class="graph-svg fragment fade-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 1: visit A; A=current, B/C/D=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="1" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited current"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="neighbor"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 2: visit B; B=current, A=visited neighbour, C/E=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="2" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited current"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <g class="neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 3: visit C; C=current, A/B=visited neighbour, F=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="3" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited current"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text><g class="neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+            <!-- Step 4: visit F; F=current, C=visited neighbour, E/G/H=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="4" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited neighbor"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <g class="neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited current"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 5: visit E; E=current, B/F=visited neighbour, H=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="5" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited neighbor"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <g class="visited current"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <g class="neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 6: visit H; H=current, E/F=visited neighbour, G=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="6" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <g class="visited neighbor"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited current"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 7: visit G; G=current, F/H=visited neighbour, D=neighbour (unvisited) -->
+            <svg class="graph-svg fragment fade-in-then-out" data-fragment-index="7" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="neighbor"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited neighbor"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited current"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited neighbor"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+            <!-- Step 8: visit D; D=current, A/G=visited neighbour (both already visited) -->
+            <svg class="graph-svg fragment fade-in" data-fragment-index="8" viewBox="0 0 400 340" width="100%" style="position:absolute; top:0; left:0; max-height:240px;">
+                <g><line x1="200" y1="40" x2="100" y2="120"/><line x1="200" y1="40" x2="200" y2="120"/><line x1="200" y1="40" x2="300" y2="120"/><line x1="100" y1="120" x2="200" y2="120"/><line x1="100" y1="120" x2="100" y2="220"/><line x1="200" y1="120" x2="200" y2="220"/><line x1="300" y1="120" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="220"/><line x1="200" y1="220" x2="300" y2="220"/><line x1="100" y1="220" x2="200" y2="300"/><line x1="200" y1="220" x2="200" y2="300"/><line x1="300" y1="220" x2="200" y2="300"/></g>
+                <g class="visited neighbor"><circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text></g>
+                <g class="visited"><circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text></g><g class="visited"><circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text></g><g class="visited current"><circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text></g>
+                <g class="visited"><circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text></g><g class="visited"><circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text></g><g class="visited neighbor"><circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text></g>
+                <g class="visited"><circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text></g>
+            </svg>
+        </div>
+        <div style="position:relative; min-height:240px;">
+            <div class="fragment fade-out" data-fragment-index="1" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p><strong>Initial</strong> — call <code>DFS(A)</code>.</p>
+                <p>Call stack: <code>[ ]</code></p>
+                <p>Visited: <code>{ }</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="1" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>A</strong>. Recurse into first unvisited neighbour <strong>B</strong>.</p>
+                <p>Call stack: <code>[A]</code></p>
+                <p>Visited: <code>{A}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="2" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>B</strong>. A visited; recurse into next unvisited neighbour <strong>C</strong>.</p>
+                <p>Call stack: <code>[A, B]</code></p>
+                <p>Visited: <code>{A, B}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="3" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>C</strong>. A, B visited; recurse into <strong>F</strong>.</p>
+                <p>Call stack: <code>[A, B, C]</code></p>
+                <p>Visited: <code>{A, B, C}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="4" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>F</strong>. C visited; recurse into <strong>E</strong>.</p>
+                <p>Call stack: <code>[A, B, C, F]</code></p>
+                <p>Visited: <code>{A, B, C, F}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="5" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>E</strong>. B, F visited; recurse into <strong>H</strong>.</p>
+                <p>Call stack: <code>[A, B, C, F, E]</code></p>
+                <p>Visited: <code>{A, B, C, F, E}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="6" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>H</strong>. E, F visited; recurse into <strong>G</strong>.</p>
+                <p>Call stack: <code>[A, B, C, F, E, H]</code></p>
+                <p>Visited: <code>{A, B, C, F, E, H}</code></p>
+            </div>
+            <div class="fragment fade-in-then-out" data-fragment-index="7" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>G</strong>. F, H visited; recurse into <strong>D</strong>.</p>
+                <p>Call stack: <code>[A, B, C, F, E, H, G]</code></p>
+                <p>Visited: <code>{A, B, C, F, E, H, G}</code></p>
+            </div>
+            <div class="fragment fade-in" data-fragment-index="8" style="position:absolute; top:0; left:0; font-size:0.85em;">
+                <p>Visit <strong>D</strong>. A, G visited — nowhere to recurse. <strong>Return</strong>, unwinding the stack all the way back to A. <strong>Done.</strong></p>
+                <p>Visit order: <code>A → B → C → F → E → H → G → D</code></p>
+                <p>Visited: <code>{A, B, C, F, E, H, G, D}</code></p>
+            </div>
+        </div>
+    </div>
+    <div class="key-point fragment" data-fragment-index="9" style="margin-top:0.4em;">
+        <strong>Same <code>O(V + E)</code> reasoning as BFS:</strong> each vertex is visited exactly once (the visited check forbids re-entry), and for each vertex DFS scans its neighbour list. Total work = <code>V</code> visits + <code>2E</code> neighbour scans = <code>O(V + E)</code>. Same complexity as BFS — just a different visit order.
+    </div>
+</section>
+
+<!-- ─── BFS vs DFS ───────────────────────── -->
+<section>
+    <h2>BFS vs DFS — when do you pick which?</h2>
+    <table>
+        <tr><th></th><th>BFS</th><th>DFS</th></tr>
+        <tr><td>Container</td><td>queue (FIFO)</td><td>stack (or recursion)</td></tr>
+        <tr><td>Visit order</td><td>level by level</td><td>one path deep, then back</td></tr>
+        <tr><td>Finds shortest path (unweighted)?</td><td>Yes — level = distance</td><td>No</td></tr>
+        <tr><td>Memory</td><td><code>O(V)</code> (queue can hold a full level)</td><td><code>O(V)</code> (call stack as deep as the graph)</td></tr>
+        <tr><td>Time</td><td><code>O(V + E)</code></td><td><code>O(V + E)</code></td></tr>
+        <tr><td>Natural for</td><td>shortest path, &ldquo;ring&rdquo; problems, level info</td><td>cycles, components, &ldquo;explore everything&rdquo;</td></tr>
+    </table>
+    <p style="text-align:center;" class="small">Both visit every vertex once and every edge twice (undirected) — that&rsquo;s the <code>O(V + E)</code>. Both call <code>graph.neighbors(u)</code> and nothing else. The difference is purely in <em>order</em>.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — IMPLEMENT THE INTERFACE
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Now implement the interface — two ways</p>
+</section>
+
+<!-- ─── THE STORAGE QUESTION ─────────────── -->
+<section>
+    <h2>How does <code>neighbors(v)</code> actually work?</h2>
+    <p>BFS and DFS asked the graph for <code>neighbors(v)</code> and never cared how the answer was produced. Now we owe an answer. Two standard ways to store a graph — both common, both worth knowing:</p>
+    <div class="two-col">
+        <div class="card" style="border-top-color:var(--accent-color);">
+            <h4>Adjacency matrix</h4>
+            <p>A 2-D array <code>M</code>. <code>M[u][v] = 1</code> if there&rsquo;s an edge from <code>u</code> to <code>v</code>, else <code>0</code>.</p>
+        </div>
+        <div class="card" style="border-top-color:var(--success-color);">
+            <h4>Adjacency list</h4>
+            <p>An array of lists. <code>adj[u]</code> is the list of <code>u</code>&rsquo;s neighbours.</p>
+        </div>
+    </div>
+    <p>Same interface — both can answer <code>neighbors(v)</code> — different storage, different costs. Let&rsquo;s build both on our running graph.</p>
+</section>
+
+<!-- ─── ADJACENCY MATRIX ──────────────────────── -->
+<section>
+    <h2>Adjacency matrix</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 400 340" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="200" y1="40" x2="100" y2="120"/>
+                    <line x1="200" y1="40" x2="200" y2="120"/>
+                    <line x1="200" y1="40" x2="300" y2="120"/>
+                    <line x1="100" y1="120" x2="200" y2="120"/>
+                    <line x1="100" y1="120" x2="100" y2="220"/>
+                    <line x1="200" y1="120" x2="200" y2="220"/>
+                    <line x1="300" y1="120" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="220"/>
+                    <line x1="200" y1="220" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="300"/>
+                    <line x1="200" y1="220" x2="200" y2="300"/>
+                    <line x1="300" y1="220" x2="200" y2="300"/>
+                </g>
+                <circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+                <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+                <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+                <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+                <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+        </div>
+        <div>
+            <table class="adj-matrix">
+                <tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th><th>G</th><th>H</th></tr>
+                <tr><th>A</th><td class="diag">·</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><th>B</th><td class="one">1</td><td class="diag">·</td><td class="one">1</td><td>0</td><td class="one">1</td><td>0</td><td>0</td><td>0</td></tr>
+                <tr><th>C</th><td class="one">1</td><td class="one">1</td><td class="diag">·</td><td>0</td><td>0</td><td class="one">1</td><td>0</td><td>0</td></tr>
+                <tr><th>D</th><td class="one">1</td><td>0</td><td>0</td><td class="diag">·</td><td>0</td><td>0</td><td class="one">1</td><td>0</td></tr>
+                <tr><th>E</th><td>0</td><td class="one">1</td><td>0</td><td>0</td><td class="diag">·</td><td class="one">1</td><td>0</td><td class="one">1</td></tr>
+                <tr><th>F</th><td>0</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td class="diag">·</td><td class="one">1</td><td class="one">1</td></tr>
+                <tr><th>G</th><td>0</td><td>0</td><td>0</td><td class="one">1</td><td>0</td><td class="one">1</td><td class="diag">·</td><td class="one">1</td></tr>
+                <tr><th>H</th><td>0</td><td>0</td><td>0</td><td>0</td><td class="one">1</td><td class="one">1</td><td class="one">1</td><td class="diag">·</td></tr>
+            </table>
+            <p class="small" style="text-align:center;">Symmetric across the diagonal because the graph is undirected. The 24 ones = 12 edges, counted from each end.</p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── ADJACENCY MATRIX — TRADE-OFFS ─── -->
+<section>
+    <h2>What the matrix is good (and bad) at</h2>
+    <ul>
+        <li><code>has_edge(u, v)</code> — look at <code>M[u][v]</code>. <strong>O(1).</strong></li>
+        <li><code>neighbors(u)</code> — scan its whole row of length <code>V</code>. <strong>O(V)</strong> even if <code>u</code> has only 2 neighbours.</li>
+        <li>Space — <strong><code>O(V²)</code></strong>. For a graph with 1 million vertices, that&rsquo;s a trillion cells. Often wasteful, since most are <code>0</code>.</li>
+    </ul>
+    <div class="key-point">
+        Adjacency matrix is great when the graph is <strong>dense</strong> (most pairs are connected) and you need fast &ldquo;is there an edge?&rdquo; checks. For traversal — where BFS/DFS keep calling <code>neighbors(u)</code> — the matrix is wasteful.
+    </div>
+</section>
+
+<!-- ─── ADJACENCY LIST ──────────────────────── -->
+<section>
+    <h2>Adjacency list</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 400 340" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="200" y1="40" x2="100" y2="120"/>
+                    <line x1="200" y1="40" x2="200" y2="120"/>
+                    <line x1="200" y1="40" x2="300" y2="120"/>
+                    <line x1="100" y1="120" x2="200" y2="120"/>
+                    <line x1="100" y1="120" x2="100" y2="220"/>
+                    <line x1="200" y1="120" x2="200" y2="220"/>
+                    <line x1="300" y1="120" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="220"/>
+                    <line x1="200" y1="220" x2="300" y2="220"/>
+                    <line x1="100" y1="220" x2="200" y2="300"/>
+                    <line x1="200" y1="220" x2="200" y2="300"/>
+                    <line x1="300" y1="220" x2="200" y2="300"/>
+                </g>
+                <circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+                <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+                <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+                <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+                <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </svg>
+        </div>
+        <div>
+            <div class="adj-list">
+                <div><span class="v">A</span> <span class="arrow">→</span> [B, C, D]</div>
+                <div><span class="v">B</span> <span class="arrow">→</span> [A, C, E]</div>
+                <div><span class="v">C</span> <span class="arrow">→</span> [A, B, F]</div>
+                <div><span class="v">D</span> <span class="arrow">→</span> [A, G]</div>
+                <div><span class="v">E</span> <span class="arrow">→</span> [B, F, H]</div>
+                <div><span class="v">F</span> <span class="arrow">→</span> [C, E, G, H]</div>
+                <div><span class="v">G</span> <span class="arrow">→</span> [D, F, H]</div>
+                <div><span class="v">H</span> <span class="arrow">→</span> [E, F, G]</div>
+            </div>
+            <p class="small" style="text-align:center;">An array of lists. Total list entries = 2 × |E| = 24 (each edge appears in two lists, once for each endpoint).</p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── ADJACENCY LIST — TRADE-OFFS ─── -->
+<section>
+    <h2>What the list is good (and bad) at</h2>
+    <ul>
+        <li><code>neighbors(u)</code> — return <code>adj[u]</code> directly. <strong>O(degree(u)).</strong> <em>Tight — only the actual neighbours.</em></li>
+        <li><code>has_edge(u, v)</code> — scan <code>adj[u]</code> for <code>v</code>. <strong>O(degree(u))</strong>, slower than the matrix.</li>
+        <li>Space — <strong><code>O(V + E)</code></strong>. Beautiful for sparse graphs (most real graphs).</li>
+    </ul>
+    <div class="key-point">
+        Adjacency list is great for <strong>sparse</strong> graphs and <strong>traversal</strong> — BFS/DFS enumerate neighbours of every vertex they visit, and the list answers <code>neighbors</code> in exactly the time the answer needs. That&rsquo;s why most graph algorithms use lists.
+    </div>
+</section>
+
+<!-- ─── TRADE-OFFS TABLE ────────────────────── -->
+<section>
+    <h2>Matrix vs list — when to pick which</h2>
+    <table>
+        <tr><th></th><th>Adjacency matrix</th><th>Adjacency list</th></tr>
+        <tr><td>Space</td><td><code>O(V²)</code></td><td><code>O(V + E)</code></td></tr>
+        <tr><td><code>has_edge(u, v)</code></td><td><code>O(1)</code></td><td><code>O(degree(u))</code></td></tr>
+        <tr><td><code>neighbors(u)</code></td><td><code>O(V)</code></td><td><code>O(degree(u))</code></td></tr>
+        <tr><td><code>add_edge(u, v)</code></td><td><code>O(1)</code></td><td><code>O(1)</code></td></tr>
+        <tr><td>Best for</td><td>dense graphs, edge queries</td><td>sparse graphs, traversal</td></tr>
+    </table>
+    <div class="info-box">
+        <strong>The punchline:</strong> the BFS and DFS we wrote in Part 2 work without change for both storages. Swap matrix for list — BFS keeps running, just with different cost on each <code>neighbors</code> call. <em>That&rsquo;s what an interface buys you.</em>
+    </div>
+</section>
+
+<!-- ─── CODING EXERCISE — THE INTERFACE ───── -->
+<section>
+    <h2>Coding exercise — the <code>Graph</code> interface in C</h2>
+    <p>A <code>Graph</code> is an <strong>opaque type</strong> — you pass <code>Graph *</code> around without ever seeing inside. BFS and DFS call <strong>only three functions</strong> on it.</p>
+    <div class="two-col" style="grid-template-columns: 1.15fr 1fr; gap: 1em;">
+        <div>
+            <h4 style="color:var(--accent-color); text-align:left;">Mandatory — what BFS / DFS will call</h4>
+            <pre><code class="nohighlight">// graph.h
+
+typedef struct Graph Graph;        // opaque
+
+int  graph_vertex_count(const Graph *g);
+//   → returns n. BFS / DFS need it
+//     to allocate visited[n].
+
+int  graph_neighbors(const Graph *g, int v,
+                     int *out, int max);
+//   → fills out[0..count-1] with v's
+//     neighbours; returns count.
+
+bool graph_has_edge(const Graph *g,
+                    int u, int v);
+//   → true if u and v share an edge.</code></pre>
+        </div>
+        <div>
+            <h4 style="color:var(--success-color); text-align:left;">Helpers — design these yourself</h4>
+            <p class="small">Not part of the interface. They&rsquo;re scaffolding so your code can construct, populate, and clean up. Names and signatures are your call.</p>
+            <ul style="font-size:0.88em;">
+                <li>Constructor(s) — one per backing, or one with a flag</li>
+                <li><code>add_edge</code> / load-from-file</li>
+                <li>Destroy / free</li>
+                <li>Anything else you need (<code>degree</code>, <code>print</code>, …)</li>
+            </ul>
+            <div class="info-box">
+                Mandatory functions are the <strong>contract</strong> BFS and DFS depend on — change them and every algorithm breaks. Helpers are scaffolding; they can vary freely.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CODING EXERCISE — TWO BACKINGS ────── -->
+<section>
+    <h2>Two backings — <em>same interface, different storage</em></h2>
+    <div class="two-col" style="grid-template-columns: 1fr 1fr; gap: 1em;">
+        <div>
+            <h4 style="color:var(--accent-color); text-align:left;">Backing 1 — adjacency matrix</h4>
+            <pre><code class="nohighlight">struct Graph {
+    int  n;
+    int *matrix;   // flat n*n array
+                   // matrix[u*n + v] = 1 or 0
+};</code></pre>
+            <ul style="font-size:0.85em;">
+                <li><code>has_edge(u, v)</code> → <code>matrix[u*n + v]</code>. <strong>O(1).</strong></li>
+                <li><code>neighbors(v, out, max)</code> → scan row of length <code>n</code>. <strong>O(n).</strong></li>
+                <li>Space: <strong>O(n²)</strong>.</li>
+            </ul>
+        </div>
+        <div>
+            <h4 style="color:var(--success-color); text-align:left;">Backing 2 — adjacency list</h4>
+            <pre><code class="nohighlight">struct Graph {
+    int   n;
+    int **list;        // list[v] = array of v's
+                       //   neighbours
+    int  *list_count;  // list_count[v] = deg(v)
+};</code></pre>
+            <ul style="font-size:0.85em;">
+                <li><code>has_edge(u, v)</code> → scan <code>list[u]</code>. <strong>O(deg(u)).</strong></li>
+                <li><code>neighbors(v, out, max)</code> → copy <code>list[v]</code>. <strong>O(deg(v)).</strong></li>
+                <li>Space: <strong>O(V + E)</strong>.</li>
+            </ul>
+        </div>
+    </div>
+    <div class="key-point">
+        The three mandatory functions sit on top — identical signatures, identical contract. The struct underneath changes. <em>BFS and DFS, written against the interface, don&rsquo;t notice the swap.</em>
+    </div>
+</section>
+
+<!-- ─── CODING EXERCISE — BFS IN C ────────── -->
+<section>
+    <h2>BFS in C — talks only to the interface</h2>
+    <pre><code class="nohighlight">void bfs(const Graph *g, int source) {
+    int   n       = graph_vertex_count(g);
+    bool *visited = calloc(n, sizeof(bool));
+    int  *queue   = malloc(n * sizeof(int));
+    int   head    = 0, tail = 0;
+
+    visited[source] = true;
+    queue[tail++]   = source;
+
+    int neigh[n];                                       // scratch buffer
+
+    while (head &lt; tail) {
+        int u = queue[head++];
+        printf("%d\n", u);                              // "visit" u
+
+        int count = graph_neighbors(g, u, neigh, n);    // ← only call into the graph
+        for (int i = 0; i &lt; count; i++) {
+            int v = neigh[i];
+            if (!visited[v]) {
+                visited[v] = true;
+                queue[tail++] = v;
+            }
+        }
+    }
+    free(visited); free(queue);
+}</code></pre>
+    <div class="info-box">
+        <code>bfs</code> uses <strong>only</strong> <code>graph_vertex_count</code> and <code>graph_neighbors</code>. Link it with the matrix backing — it runs. Link it with the list backing — same code, same answer, <em>different cost</em>.
+    </div>
+</section>
+
+<!-- ─── CODING EXERCISE — GO BUILD ────────── -->
+<section>
+    <h2>Build it — and feel sparse vs dense in your runtime</h2>
+    <ol>
+        <li>Write the <strong>matrix backing</strong> — the three mandatory functions plus whatever helpers you need (constructor, <code>add_edge</code>, destroy).</li>
+        <li>Write the <strong>list backing</strong> — same three mandatory functions, different storage.</li>
+        <li>Write <code>bfs</code> as above. (DFS too if you finish early — recursive, same pattern.)</li>
+        <li>Build the small graph from class (8 vertices, 12 edges) on both backings. Verify BFS prints the same sequence either way.</li>
+    </ol>
+    <div class="success-box">
+        <strong>Bonus — time them:</strong> a sparse graph (V = 1000, E ≈ 2000) versus a dense one (V = 1000, E ≈ 100&nbsp;000). Which backing wins on which? <em>That&rsquo;s &ldquo;sparse vs dense&rdquo; in your runtime, not just in the slides.</em>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+
+<section>
+    <h2>What we built today</h2>
+    <ul>
+        <li><strong>The frame:</strong> graph = traversal you already know + 2 bolts (representation, visited).</li>
+        <li><strong>Vocabulary:</strong> vertex, edge, neighbour, degree, path, cycle, connected; directed/undirected; weighted/unweighted.</li>
+        <li><strong>The interface:</strong> <code>vertices()</code>, <code>neighbors(v)</code>, <code>has_edge(u, v)</code>. BFS and DFS use only <code>neighbors</code>.</li>
+        <li><strong>BFS:</strong> queue + visited. Layer by layer. Finds shortest paths in unweighted graphs.</li>
+        <li><strong>DFS:</strong> recursion (or stack) + visited. Same vertices, different order. Natural for cycle and component problems.</li>
+        <li><strong>Implementation:</strong> adjacency matrix (dense, fast edge-query) vs adjacency list (sparse, fast neighbour-listing). Same interface, two different storages.</li>
+    </ul>
+    <div class="key-point">
+        BFS and DFS are the only two traversal algorithms we&rsquo;ll need. <em>Everything Friday is one of these two, with one more line of bookkeeping bolted on.</em>
+    </div>
+</section>
+
+<section class="center-content">
+    <h2>Coming Friday — Graphs II</h2>
+    <ul style="display:inline-block; text-align:left;">
+        <li>Connected components — DFS in a loop over unvisited vertices.</li>
+        <li>Cycle detection (undirected) — DFS + visited + parent.</li>
+        <li>Is this graph a tree? — the consolidation problem: connected ∧ acyclic ∧ n−1 edges.</li>
+        <li>Islands / flood fill — BFS or DFS on a grid.</li>
+        <li>BFS shortest path — distance via levels.</li>
+        <li>Dijkstra — BFS with a priority queue. Monday&rsquo;s heap finally cashes in.</li>
+    </ul>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>

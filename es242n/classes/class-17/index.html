@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 17</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 17</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 17</p>
+      <h1>24 June 2026: Graphs I — vocabulary, representation, traversal</h1>
+      <p class="lead">A graph is the traversal you already know — plus two bolts: how to store the edges, and how not to walk in circles. Today the students discover BFS on a small running graph, name the two pillars themselves (representation and the visited set), and build adjacency matrix and adjacency list together. Session 2 runs BFS and DFS with visited tracking; Friday returns to apply them to cycle detection, connected components, and shortest paths.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="graphs-1.html">Graphs I — vocabulary, representation, traversal</a> — today's deck, both sessions</li>
+        <li><a href="../class-16/heaps-with-pointers.html">Heaps with pointers</a> — the 15-min supplementary warm-up (NODE-AT only)</li>
+        <li><a href="../class-16/heaps.html">Day 16 deck</a> — Monday's heaps, for cross-reference</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">Open</div>
+        <div>
+          <h2>Warm-up (≤15 min) — heaps with pointers</h2>
+          <p>One focused insight from the supplementary deck: walk to position <code>k</code> in a binary heap by reading <code>k</code>&rsquo;s binary representation. Drop the leading <code>1</code>; the remaining bits spell the route (<code>0</code> = left, <code>1</code> = right). Trace position 6 = <code>110</code> → R, L, two steps. Skip insert and extract — those are wrappers around NODE-AT. Hard 15-minute cap; not on any quiz; a closer to Monday&rsquo;s heap thread, not a graph prelude.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — The two pillars, then how to store a graph</h2>
+          <p>Open with a small graph on the board (A through H, ten edges) and ask the class for the fewest hops from A to H. They fan out in rings — that&rsquo;s BFS, and they already own it from grids. Use the moment to name the two pillars the unit hangs off: <strong>representation</strong> (we have to write down who connects to whom — a grid&rsquo;s neighbours are implicit; a graph&rsquo;s are not) and <strong>the visited set</strong> (the A–B–C triangle loops forever without one). Frame the unit: <em>graph = traversal + two bolts</em>.</p>
+          <p>Then build the two representations together on the running graph: adjacency matrix (8×8 of 0/1) and adjacency list (eight rows of neighbour pointers). Trade-off table: space <code>O(V²)</code> vs <code>O(V+E)</code>; edge query <code>O(1)</code> vs <code>O(deg)</code>. Close with a quick vocabulary pass — vertex, edge, neighbour, degree, path, cycle, connected.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — BFS and DFS, with the visited bolt</h2>
+          <p>Animate BFS on the running graph layer by layer (the rings the students just discovered, formalised with a queue). Then run it without the visited set on the A–B–C triangle and watch it loop — earning the bolt the hard way. Pseudocode that handles both queue ordering and visited tracking.</p>
+          <p>Then DFS — same algorithm with the container swapped (queue → stack, or just recursion). Both visit every vertex once; both are <code>O(V+E)</code>. The difference is the visiting order, not the algorithm itself. End on the question Friday answers: what can BFS and DFS <em>decide</em> about a graph — connectivity, cycle, shape?</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>For the running graph from class, write the adjacency matrix and the adjacency list by hand. Compare which is faster to answer "is A adjacent to D?" vs "list all of B&rsquo;s neighbours."</li>
+        <li>Trace BFS from A. Write the dequeue order and which vertex first discovers each new one.</li>
+        <li>Trace DFS from A (recursive form). Compare its visiting order with BFS — same vertices, different order?</li>
+        <li>Run BFS without a visited set on the A–B–C triangle. How many times is A revisited in the first 10 dequeues? Where do you stop?</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Friday 26 June</strong> — Graphs II: connected components (the building block), cycle detection (undirected), is-it-a-tree (the consolidation problem), then a shortest-path arc culminating in Dijkstra — which is BFS with a priority queue, and finally cashes in Monday&rsquo;s heap.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

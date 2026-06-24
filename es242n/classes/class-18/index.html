@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 18</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 18</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 18</p>
+      <h1>26 June 2026: Graphs II — deciding things about graphs, and Dijkstra</h1>
+      <p class="lead">Wednesday gave us BFS, DFS, and a <code>Graph</code> interface we can pass around. Today we use those tools to <em>decide</em> things about a graph: how many separate pieces it has, whether it has a cycle, whether it&rsquo;s a tree. Then we climb the difficulty: BFS gives shortest paths on unweighted graphs, and Dijkstra extends that to weighted ones — which is the moment Monday&rsquo;s heap finally cashes in.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="graphs-2.html">Graphs II — components, cycles, is-it-a-tree, shortest paths, Dijkstra</a> — today&rsquo;s deck, both sessions</li>
+        <li><a href="../class-17/graphs-1.html">Day 17 deck</a> — Wednesday&rsquo;s vocabulary / interface / BFS / DFS</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 — Deciding things about a graph</h2>
+          <p>Three questions, all answered by BFS or DFS plus one line of bookkeeping. <strong>Connected components</strong>: DFS in a loop over unvisited vertices, count the loop iterations. <strong>Cycle detection (undirected)</strong>: DFS that carries the parent vertex; a visited neighbour that isn&rsquo;t your parent is a back edge — a cycle. <strong>Is-it-a-tree</strong>: the consolidation problem — connected ∧ acyclic ∧ n−1 edges. Three independent checks that combine into one answer; students see all of this morning&rsquo;s tools land at once.</p>
+          <p>Close with islands / flood fill on a 2-D grid — same DFS, the implicit grid edges are the only thing that changes. The grid is just a graph in disguise.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 — Shortest path, and Dijkstra</h2>
+          <p>Start where BFS left off: the level a vertex sits at <em>is</em> its shortest-path distance from the source. Wire that into a small change — BFS with a <code>dist</code> array — and you have an unweighted shortest-path algorithm. Trace it on the running graph from Wednesday.</p>
+          <p>Then add edge weights. Why does plain BFS break? Because the next vertex to finalise is the one with the smallest total distance — not necessarily the next one in line. Swap the queue for a <strong>priority queue</strong> and you have Dijkstra. The min-heap from Monday is doing the work that makes this run in <code>O((V + E) log V)</code> rather than <code>O(V²)</code>. End of unit; the heap unit and the graph unit shake hands.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class exercises</h2>
+      <ul class="compact-list">
+        <li>Extend yesterday&rsquo;s <code>Graph</code> code: add <code>components(g)</code> that returns the number of connected components, and <code>has_cycle(g)</code> that returns true if there&rsquo;s any cycle.</li>
+        <li>Combine both into <code>is_tree(g)</code>. (Bonus: also check <code>edges == n − 1</code>, and reason about whether that&rsquo;s redundant.)</li>
+        <li>Write <code>bfs_distances(g, src)</code> that returns a <code>dist[]</code> array — the shortest hop-count from <code>src</code> to every reachable vertex.</li>
+        <li>Code Dijkstra against a weighted variant of the <code>Graph</code> interface (each edge carries an <code>int weight</code>). Use a min-heap as the priority queue — yours from Monday, or the language standard library.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up</h2>
+      <ul class="compact-list">
+        <li><strong>Monday 29 June</strong> — TBD: revision / quick recap before the second half of the term. Followed by the larger algorithms not covered in this course (MST, topological sort, Bellman–Ford, Floyd–Warshall, union–find) in DSA II.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

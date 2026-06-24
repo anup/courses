@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graphs II — Components, Cycles, Shortest Paths, Dijkstra</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 25px; }
+        .reveal .slides section { height: 100%; overflow: hidden; padding: 0 1.2em; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.4em; }
+        .reveal h1 { font-size: 2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.45em; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.3em; }
+        .reveal h4 { font-size: 1.02em; margin-bottom: 0.25em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.5em auto; box-shadow: 0 5px 15px rgba(0,0,0,0.15); border-radius: 8px; font-size: 0.55em; line-height: 1.4; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 1em; border-radius: 8px; overflow: hidden; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal ul { margin: 0.5em 0; }
+        .reveal li { margin: 0.2em 0; line-height: 1.4; }
+        .reveal ol { margin: 0.5em 0; }
+        .reveal p { margin: 0.35em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.5em 0; align-items: center; }
+        .reveal .card { background: var(--light-bg); padding: 0.7em 1.1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.35em; }
+        .reveal .card ul { margin: 0.3em 0; padding-left: 1.3em; font-size: 0.85em; }
+        .reveal .card li { margin: 0.3em 0; line-height: 1.4; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal table { margin: 0.5em auto; border-collapse: collapse; font-size: 0.7em; width: 92%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.4em 0.7em; }
+        .reveal table td { padding: 0.32em 0.7em; border: 1px solid #dee2e6; text-align: center; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        .big-q { font-size: 1.4em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.5em 0; line-height: 1.4; }
+        .huge-o { font-size: 3em; font-weight: 700; text-align: center; margin: 0.2em 0; }
+        /* Graph svg styling — same palette as Day 17 */
+        .graph-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .graph-svg text { font-family: 'Monaco','Menlo',monospace; font-size: 16px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .graph-svg line { stroke: #95a5a6; stroke-width: 2.5; fill: none; }
+        .graph-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+        .graph-svg .target circle { stroke: var(--warning-color); fill: #fef0e6; stroke-width: 3.5; }
+        .graph-svg .target text { fill: var(--warning-color); }
+        .graph-svg .current circle { stroke: var(--success-color); fill: #eafaf1; stroke-width: 5.5; }
+        .graph-svg .neighbor circle { stroke: var(--warning-color); stroke-dasharray: 5 3; stroke-width: 3.5; }
+        .graph-svg .visited.neighbor circle { fill: #eafaf1; stroke: var(--warning-color); stroke-dasharray: 5 3; stroke-width: 3.5; }
+        .graph-svg .cycle line { stroke: var(--warning-color); stroke-width: 4; }
+        .graph-svg .back-edge line { stroke: var(--warning-color); stroke-width: 4; stroke-dasharray: 6 3; }
+        .graph-svg .tree-edge line { stroke: var(--success-color); stroke-width: 4; }
+        .graph-svg .comp-1 circle { stroke: var(--accent-color); fill: #d6eaf8; }
+        .graph-svg .comp-2 circle { stroke: var(--warning-color); fill: #fef0e6; }
+        .graph-svg .comp-3 circle { stroke: var(--success-color); fill: #eafaf1; }
+        .graph-svg .edge-weight { font-family: 'Monaco','Menlo',monospace; font-size: 13px; fill: var(--main-color); font-weight: 600; }
+        .dist-label { font-family: 'Monaco','Menlo',monospace; font-size: 11px; fill: var(--accent-color); font-weight: 700; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>Graphs II</h1>
+    <h3 style="color:#7f8c8d;">Decide things about a graph &middot; and Dijkstra</h3>
+    <p style="margin-top:1.4em; font-size:0.78em; color:#95a5a6;">ES 242(N) &middot; Class 18 &middot; 26 June 2026</p>
+</section>
+
+<!-- ─── WHERE WE LEFT OFF ─────────────────────── -->
+<section>
+    <h2>Where we left off</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Wednesday — Graphs I</h4>
+            <ul>
+                <li>Vocabulary: vertex, edge, neighbour, degree, path, cycle, connected.</li>
+                <li>The <strong>three-function interface</strong>: <code>vertex_count</code>, <code>neighbors</code>, <code>has_edge</code>.</li>
+                <li>Two backings: adjacency matrix (dense, fast edge query) and adjacency list (sparse, fast neighbour scan).</li>
+                <li>BFS and DFS — both <code>O(V + E)</code>, both use only <code>neighbors(v)</code>.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top-color:var(--warning-color);">
+            <h4>Today — Graphs II</h4>
+            <ul>
+                <li>Use BFS and DFS to <strong>decide</strong> things: how many pieces, any cycles, is it a tree?</li>
+                <li>BFS extended: every vertex&rsquo;s level <em>is</em> its shortest-hop distance.</li>
+                <li>Add edge weights → BFS breaks. Use a <strong>priority queue</strong> instead of FIFO: <strong>Dijkstra</strong>.</li>
+                <li>Monday&rsquo;s heap finally pays off.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TODAY'S QUESTIONS ──────────────────────── -->
+<section>
+    <h2>Four questions, one algorithm</h2>
+    <p>Every problem below is one of two things in disguise — BFS or DFS with one extra line of bookkeeping. The pattern is the same; only what you remember changes.</p>
+    <table style="font-size:0.85em;">
+        <tr><th>Question</th><th>Tool</th><th>Extra bookkeeping</th></tr>
+        <tr><td>How many connected components?</td><td>DFS in a loop</td><td>count loop iterations over unvisited</td></tr>
+        <tr><td>Does this graph have a cycle?</td><td>DFS</td><td>carry the parent vertex; flag any back edge</td></tr>
+        <tr><td>Is this graph a tree?</td><td>both of the above</td><td>connected ∧ acyclic</td></tr>
+        <tr><td>Shortest path on an unweighted graph?</td><td>BFS</td><td>record level per vertex</td></tr>
+        <tr><td>Shortest path on a <strong>weighted</strong> graph?</td><td>BFS-with-priority-queue</td><td><strong>Dijkstra</strong></td></tr>
+    </table>
+    <div class="key-point">
+        The first four are bookkeeping on top of yesterday&rsquo;s traversal. The last is the same algorithm with one container swap — the queue becomes a <strong>min-heap</strong>.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 1 — CONNECTED COMPONENTS
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 1</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Connected components — how many separate pieces?</p>
+</section>
+
+<!-- ─── COMPONENTS — THE QUESTION ──────────── -->
+<section>
+    <h2>How many separate pieces?</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 460 320" width="100%" style="max-height:260px;">
+                <g>
+                    <!-- Component 1: A-B-C-D -->
+                    <line x1="60" y1="50" x2="120" y2="120"/>
+                    <line x1="60" y1="50" x2="60" y2="160"/>
+                    <line x1="120" y1="120" x2="120" y2="220"/>
+                    <line x1="60" y1="160" x2="120" y2="220"/>
+                    <!-- Component 2: E-F-G -->
+                    <line x1="230" y1="60" x2="200" y2="150"/>
+                    <line x1="230" y1="60" x2="260" y2="150"/>
+                    <line x1="200" y1="150" x2="260" y2="150"/>
+                    <!-- Component 3: H-I -->
+                    <line x1="380" y1="80" x2="400" y2="200"/>
+                </g>
+                <g class="comp-1">
+                    <circle cx="60" cy="50" r="20"/><text x="60" y="56">A</text>
+                    <circle cx="120" cy="120" r="20"/><text x="120" y="126">B</text>
+                    <circle cx="60" cy="160" r="20"/><text x="60" y="166">C</text>
+                    <circle cx="120" cy="220" r="20"/><text x="120" y="226">D</text>
+                </g>
+                <g class="comp-2">
+                    <circle cx="230" cy="60" r="20"/><text x="230" y="66">E</text>
+                    <circle cx="200" cy="150" r="20"/><text x="200" y="156">F</text>
+                    <circle cx="260" cy="150" r="20"/><text x="260" y="156">G</text>
+                </g>
+                <g class="comp-3">
+                    <circle cx="380" cy="80" r="20"/><text x="380" y="86">H</text>
+                    <circle cx="400" cy="200" r="20"/><text x="400" y="206">I</text>
+                </g>
+            </svg>
+            <p class="small" style="text-align:center;">Three connected components: {A,B,C,D}, {E,F,G}, {H,I}.</p>
+        </div>
+        <div>
+            <p>A <strong>connected component</strong> is a maximal set of vertices that are all reachable from each other.</p>
+            <p>The graph above has three components. Picking any vertex and doing DFS/BFS from there gives you <em>one</em> component. To get all of them: <strong>DFS in a loop over every unvisited vertex</strong>.</p>
+            <div class="info-box">
+                Real-world: social-network islands, road-network connected regions, components of a circuit, equivalence classes — anywhere &ldquo;reachable from&rdquo; defines a partition.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── COMPONENTS — ALGORITHM ────────────── -->
+<section>
+    <h2>The algorithm — DFS in a loop</h2>
+    <pre><code class="nohighlight">int count_components(const Graph *g) {
+    int n = graph_vertex_count(g);
+    bool *visited = calloc(n, sizeof(bool));
+    int components = 0;
+
+    for (int v = 0; v &lt; n; v++) {
+        if (!visited[v]) {
+            dfs(g, v, visited);     // marks v and everything reachable from it
+            components++;           //   as visited — that&rsquo;s one whole component
+        }
+    }
+
+    free(visited);
+    return components;
+}</code></pre>
+    <div class="info-box">
+        Each DFS visit walks an entire component and marks every vertex visited. The outer loop just counts how many times we had to start fresh.
+    </div>
+    <p class="small" style="text-align:center;">Cost: each vertex is visited exactly once across all DFS calls (visited check). Each edge is inspected twice. <strong>O(V + E)</strong> total — the loop adds no extra asymptotic cost.</p>
+</section>
+
+<!-- ─── COMPONENTS — TRACE ────────────────── -->
+<section>
+    <h2>Trace — three components</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 460 320" width="100%" style="max-height:240px;">
+                <g>
+                    <line x1="60" y1="50" x2="120" y2="120"/>
+                    <line x1="60" y1="50" x2="60" y2="160"/>
+                    <line x1="120" y1="120" x2="120" y2="220"/>
+                    <line x1="60" y1="160" x2="120" y2="220"/>
+                    <line x1="230" y1="60" x2="200" y2="150"/>
+                    <line x1="230" y1="60" x2="260" y2="150"/>
+                    <line x1="200" y1="150" x2="260" y2="150"/>
+                    <line x1="380" y1="80" x2="400" y2="200"/>
+                </g>
+                <g class="comp-1">
+                    <circle cx="60" cy="50" r="20"/><text x="60" y="56">A</text>
+                    <circle cx="120" cy="120" r="20"/><text x="120" y="126">B</text>
+                    <circle cx="60" cy="160" r="20"/><text x="60" y="166">C</text>
+                    <circle cx="120" cy="220" r="20"/><text x="120" y="226">D</text>
+                </g>
+                <g class="comp-2">
+                    <circle cx="230" cy="60" r="20"/><text x="230" y="66">E</text>
+                    <circle cx="200" cy="150" r="20"/><text x="200" y="156">F</text>
+                    <circle cx="260" cy="150" r="20"/><text x="260" y="156">G</text>
+                </g>
+                <g class="comp-3">
+                    <circle cx="380" cy="80" r="20"/><text x="380" y="86">H</text>
+                    <circle cx="400" cy="200" r="20"/><text x="400" y="206">I</text>
+                </g>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.9em;">
+                <li><strong>v = A.</strong> Not visited → DFS from A. Walks A, B, C, D — marks all four visited. <code>components = 1</code>.</li>
+                <li>v = B, C, D → all visited, skip.</li>
+                <li><strong>v = E.</strong> Not visited → DFS from E. Walks E, F, G. <code>components = 2</code>.</li>
+                <li>v = F, G → visited, skip.</li>
+                <li><strong>v = H.</strong> Not visited → DFS from H. Walks H, I. <code>components = 3</code>.</li>
+                <li>v = I → visited, skip. Loop ends.</li>
+            </ol>
+            <div class="success-box">
+                Final answer: <strong>3 components</strong>. The outer loop fired exactly three times.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 2 — CYCLE DETECTION
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 2</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Cycle detection — does this graph have a loop?</p>
+</section>
+
+<!-- ─── CYCLE — THE INSIGHT ────────────────── -->
+<section>
+    <h2>What does DFS &ldquo;see&rdquo; when it finds a cycle?</h2>
+    <p>Run DFS from any vertex on a graph with a cycle. At some point during the walk, you&rsquo;ll try to recurse into a neighbour and find it <strong>already visited</strong>. That&rsquo;s a <em>back edge</em> — and a back edge means you&rsquo;ve found a cycle.</p>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 320 280" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="160" y1="40" x2="80" y2="130"/>
+                    <line x1="160" y1="40" x2="240" y2="130"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="160" y1="40" x2="80" y2="130"/>
+                    <line x1="80" y1="130" x2="160" y2="230"/>
+                    <line x1="160" y1="230" x2="240" y2="130"/>
+                </g>
+                <g class="back-edge">
+                    <line x1="240" y1="130" x2="160" y2="40"/>
+                </g>
+                <g class="visited">
+                    <circle cx="160" cy="40" r="20"/><text x="160" y="46">A</text>
+                    <circle cx="80" cy="130" r="20"/><text x="80" y="136">B</text>
+                    <circle cx="240" cy="130" r="20"/><text x="240" y="136">C</text>
+                    <circle cx="160" cy="230" r="20"/><text x="160" y="236">D</text>
+                </g>
+            </svg>
+            <p class="small" style="text-align:center;"><span style="color:var(--success-color);">●</span> Green = DFS tree edges &nbsp;·&nbsp; <span style="color:var(--warning-color);">┄</span> Dashed orange = back edge (closes a cycle)</p>
+        </div>
+        <div>
+            <p>DFS from A walks A → B → D → C. From C, we try to recurse into A — already visited.</p>
+            <p>That visit is a <strong>back edge</strong> from C to A. The cycle is <strong>A → B → D → C → A</strong>.</p>
+            <div class="key-point">
+                <strong>The rule:</strong> if DFS ever finds a neighbour <em>already</em> in the visited set, you have a cycle. <em>Almost.</em> There&rsquo;s a catch.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CYCLE — THE PARENT TRAP ───────────── -->
+<section>
+    <h2>The catch — undirected edges look like cycles to themselves</h2>
+    <p>You walk into B from A. From B, A is a neighbour and is visited. Is that a cycle?</p>
+    <p><strong>No.</strong> It&rsquo;s the same edge you just walked. In an undirected graph, every edge looks like a back edge if you ignore which direction you came from.</p>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 260 180" width="100%" style="max-height:140px;">
+                <g class="tree-edge">
+                    <line x1="60" y1="90" x2="200" y2="90"/>
+                </g>
+                <g class="visited">
+                    <circle cx="60" cy="90" r="22"/><text x="60" y="96">A</text>
+                    <circle cx="200" cy="90" r="22"/><text x="200" y="96">B</text>
+                </g>
+                <text x="130" y="40" style="font-family:monospace; font-size:14px; fill:var(--main-color);">DFS(A) calls DFS(B).</text>
+                <text x="130" y="160" style="font-family:monospace; font-size:14px; fill:var(--warning-color); text-anchor:middle;">B&rsquo;s neighbour A is visited — but A is B&rsquo;s parent, not a cycle.</text>
+            </svg>
+        </div>
+        <div>
+            <p>The fix is one extra parameter: carry the <strong>parent</strong> vertex into the recursive call. When you find a visited neighbour, only flag a cycle if that neighbour isn&rsquo;t your parent.</p>
+            <div class="info-box">
+                <strong>The rule, corrected:</strong> a visited neighbour that <em>isn&rsquo;t your parent</em> is a back edge — and that&rsquo;s a cycle.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── CYCLE — PSEUDOCODE ─────────────────── -->
+<section>
+    <h2>DFS + visited + parent — pseudocode</h2>
+    <pre><code class="nohighlight">bool dfs_cycle(const Graph *g, int u, int parent, bool *visited) {
+    visited[u] = true;
+
+    int neigh[g-&gt;n];
+    int count = graph_neighbors(g, u, neigh, g-&gt;n);
+
+    for (int i = 0; i &lt; count; i++) {
+        int v = neigh[i];
+        if (!visited[v]) {
+            if (dfs_cycle(g, v, u, visited)) return true;   // cycle found downstream
+        } else if (v != parent) {
+            return true;                                    // ← back edge: a cycle!
+        }
+    }
+    return false;
+}
+
+bool has_cycle(const Graph *g) {
+    int n = graph_vertex_count(g);
+    bool *visited = calloc(n, sizeof(bool));
+    for (int v = 0; v &lt; n; v++)
+        if (!visited[v])
+            if (dfs_cycle(g, v, -1, visited)) { free(visited); return true; }
+    free(visited);
+    return false;
+}</code></pre>
+    <p class="small" style="text-align:center;">The outer loop handles disconnected graphs — a cycle in any component is a cycle for the whole graph. Pass <code>parent = -1</code> at the root because the source has no parent.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 3 — IS-IT-A-TREE
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 3</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Is this graph a tree? — the consolidation problem</p>
+</section>
+
+<!-- ─── IS-IT-A-TREE — CHARACTERIZATION ─── -->
+<section>
+    <h2>What makes a graph a tree?</h2>
+    <p>Three equivalent characterizations — any two of these imply the third for a graph with <code>n</code> vertices:</p>
+    <div class="two-col" style="grid-template-columns: 1fr 1fr 1fr;">
+        <div class="card" style="text-align:center;">
+            <h4>Connected</h4>
+            <p class="small">From any vertex, you can reach any other — exactly one component.</p>
+        </div>
+        <div class="card" style="text-align:center; border-top-color:var(--warning-color);">
+            <h4>Acyclic</h4>
+            <p class="small">No back edges anywhere — DFS from any vertex never sees a visited non-parent neighbour.</p>
+        </div>
+        <div class="card" style="text-align:center; border-top-color:var(--success-color);">
+            <h4>Exactly <code>n − 1</code> edges</h4>
+            <p class="small">Just enough to wire the tree together. One fewer and it&rsquo;s disconnected; one more and there&rsquo;s a cycle.</p>
+        </div>
+    </div>
+    <div class="key-point">
+        <strong>Picking your two:</strong> the cleanest pairing is <em>connected</em> + <em>acyclic</em> — both directly tested by DFS with one bool flag. The edge-count check is a faster sanity test if you only have <code>|E|</code> handy.
+    </div>
+</section>
+
+<!-- ─── IS-IT-A-TREE — PSEUDOCODE ────────── -->
+<section>
+    <h2>The consolidation — <code>is_tree</code></h2>
+    <pre><code class="nohighlight">bool is_tree(const Graph *g) {
+    if (count_components(g) != 1) return false;   // must be one piece
+    if (has_cycle(g))             return false;   // must be acyclic
+    return true;
+}
+
+// or equivalently, in one walk:
+
+bool is_tree_one_pass(const Graph *g) {
+    int n = graph_vertex_count(g);
+    bool *visited = calloc(n, sizeof(bool));
+
+    // start from vertex 0; if any cycle, fail
+    if (dfs_cycle(g, 0, -1, visited)) { free(visited); return false; }
+
+    // if any vertex remained unvisited, the graph is disconnected
+    for (int v = 0; v &lt; n; v++)
+        if (!visited[v]) { free(visited); return false; }
+
+    free(visited);
+    return true;
+}</code></pre>
+    <div class="info-box">
+        One DFS from any starting vertex does both jobs at once: it finds cycles (back-edge check) <em>and</em> tells you which vertices are reachable (visited array). If both pass — no cycle, all visited — the graph is a tree.
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 4 — SHORTEST PATH (BFS)
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 4</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Shortest path on an unweighted graph — BFS, but remember the distance</p>
+</section>
+
+<!-- ─── BFS DIST — THE OBSERVATION ────────── -->
+<section>
+    <h2>BFS levels <em>are</em> distances</h2>
+    <p>You saw it on Wednesday: BFS visits vertices in layers, and a vertex&rsquo;s layer index equals its shortest-hop distance from the source.</p>
+    <p>Wire that into the algorithm and you have a shortest-path computer:</p>
+    <pre><code class="nohighlight">int *bfs_distances(const Graph *g, int source) {
+    int n = graph_vertex_count(g);
+    int *dist = malloc(n * sizeof(int));
+    for (int i = 0; i &lt; n; i++) dist[i] = -1;   // unreachable
+
+    int *queue = malloc(n * sizeof(int));
+    int head = 0, tail = 0;
+
+    dist[source] = 0;                             // ← only line that's new
+    queue[tail++] = source;
+
+    int neigh[n];
+    while (head &lt; tail) {
+        int u = queue[head++];
+        int count = graph_neighbors(g, u, neigh, n);
+        for (int i = 0; i &lt; count; i++) {
+            int v = neigh[i];
+            if (dist[v] == -1) {                  // ← &ldquo;unvisited&rdquo; check via dist
+                dist[v] = dist[u] + 1;            // ← one hop further than u
+                queue[tail++] = v;
+            }
+        }
+    }
+    free(queue);
+    return dist;
+}</code></pre>
+    <p class="small" style="text-align:center;">The <code>dist</code> array doubles as the visited set: <code>-1</code> means &ldquo;not yet seen.&rdquo;</p>
+</section>
+
+<!-- ─── BFS DIST — TRACE ─────────────────── -->
+<section>
+    <h2>BFS distance from A — final distances</h2>
+    <div style="text-align:center;">
+        <svg class="graph-svg" viewBox="0 0 440 340" width="100%" style="max-height:280px;">
+            <g>
+                <line x1="200" y1="40" x2="100" y2="120"/>
+                <line x1="200" y1="40" x2="200" y2="120"/>
+                <line x1="200" y1="40" x2="300" y2="120"/>
+                <line x1="100" y1="120" x2="200" y2="120"/>
+                <line x1="100" y1="120" x2="100" y2="220"/>
+                <line x1="200" y1="120" x2="200" y2="220"/>
+                <line x1="300" y1="120" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="220"/>
+                <line x1="200" y1="220" x2="300" y2="220"/>
+                <line x1="100" y1="220" x2="200" y2="300"/>
+                <line x1="200" y1="220" x2="200" y2="300"/>
+                <line x1="300" y1="220" x2="200" y2="300"/>
+            </g>
+            <g class="visited">
+                <circle cx="200" cy="40" r="20"/><text x="200" y="46">A</text>
+                <circle cx="100" cy="120" r="20"/><text x="100" y="126">B</text>
+                <circle cx="200" cy="120" r="20"/><text x="200" y="126">C</text>
+                <circle cx="300" cy="120" r="20"/><text x="300" y="126">D</text>
+                <circle cx="100" cy="220" r="20"/><text x="100" y="226">E</text>
+                <circle cx="200" cy="220" r="20"/><text x="200" y="226">F</text>
+                <circle cx="300" cy="220" r="20"/><text x="300" y="226">G</text>
+                <circle cx="200" cy="300" r="20"/><text x="200" y="306">H</text>
+            </g>
+            <text class="dist-label" x="200" y="20">dist = 0</text>
+            <text class="dist-label" x="100" y="100">dist = 1</text>
+            <text class="dist-label" x="200" y="100">dist = 1</text>
+            <text class="dist-label" x="300" y="100">dist = 1</text>
+            <text class="dist-label" x="100" y="200">dist = 2</text>
+            <text class="dist-label" x="200" y="200">dist = 2</text>
+            <text class="dist-label" x="300" y="200">dist = 2</text>
+            <text class="dist-label" x="200" y="328">dist = 3</text>
+        </svg>
+    </div>
+    <div class="success-box">
+        Every vertex labelled with its <strong>shortest hop-count</strong> from A. H is 3 hops away — which we already knew from Wednesday&rsquo;s opener, but now the algorithm <em>tells us</em> instead of us seeing it by eye.
+    </div>
+</section>
+
+<!-- ─── BFS DIST — SETUP FOR DIJKSTRA ───── -->
+<section>
+    <h2>What if edges have weights?</h2>
+    <p>Now imagine each edge carries a number: a distance, a cost, a time. The &ldquo;shortest path&rdquo; isn&rsquo;t fewest hops anymore — it&rsquo;s the smallest total weight.</p>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 320 260" width="100%" style="max-height:200px;">
+                <g>
+                    <line x1="60" y1="60" x2="200" y2="60"/>
+                    <line x1="60" y1="60" x2="60" y2="200"/>
+                    <line x1="200" y1="60" x2="60" y2="200"/>
+                    <line x1="200" y1="60" x2="280" y2="130"/>
+                    <line x1="60" y1="200" x2="280" y2="130"/>
+                </g>
+                <text class="edge-weight" x="130" y="50">2</text>
+                <text class="edge-weight" x="40" y="135">5</text>
+                <text class="edge-weight" x="118" y="135">8</text>
+                <text class="edge-weight" x="248" y="85">3</text>
+                <text class="edge-weight" x="180" y="180">1</text>
+                <circle cx="60" cy="60" r="20"/><text x="60" y="66">A</text>
+                <circle cx="200" cy="60" r="20"/><text x="200" y="66">B</text>
+                <circle cx="60" cy="200" r="20"/><text x="60" y="206">C</text>
+                <circle cx="280" cy="130" r="20"/><text x="280" y="136">D</text>
+            </svg>
+        </div>
+        <div>
+            <p>Shortest path from <strong>A to D</strong>?</p>
+            <ul style="font-size:0.9em;">
+                <li>A → B → D = 2 + 3 = <strong>5</strong></li>
+                <li>A → C → D = 5 + 1 = <strong>6</strong></li>
+                <li>A → B → C → D = 2 + 8 + 1 = 11</li>
+            </ul>
+            <div class="warning-box">
+                <strong>BFS picks A → B → D (5).</strong> But that&rsquo;s 2 hops vs A → C → D&rsquo;s 2 hops. <em>BFS can&rsquo;t distinguish — it would settle for either.</em> Worse, on a graph where the cheap path takes <em>more</em> hops, BFS picks the wrong one.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     PART 5 — DIJKSTRA
+════════════════════════════════════════════════════ -->
+
+<section class="center-content">
+    <h1 style="font-size:2.6em;">Part 5</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Dijkstra — BFS with a priority queue</p>
+</section>
+
+<!-- ─── DIJKSTRA — THE INSIGHT ───────────── -->
+<section>
+    <h2>BFS&rsquo;s queue assumes &ldquo;one hop = one unit&rdquo;</h2>
+    <p>BFS drains the queue in FIFO order. That works because every dequeue moves the &ldquo;frontier&rdquo; forward by exactly one hop — so the first time you dequeue a vertex, you&rsquo;ve found the shortest path to it.</p>
+    <p>With weighted edges, FIFO doesn&rsquo;t know that. The next vertex to <em>finalise</em> is the one with the smallest total distance, which might be three hops away through cheap edges or one hop away through a single expensive one.</p>
+    <div class="key-point">
+        <strong>The fix:</strong> swap the queue for a <strong>min-heap</strong> keyed on tentative distance. Always pop the vertex with the smallest distance — that&rsquo;s the next one to finalise.
+    </div>
+    <p style="text-align:center;"><em>Same algorithm. One container swap. The min-heap from Monday is doing real work now.</em></p>
+</section>
+
+<!-- ─── DIJKSTRA — ALGORITHM ──────────────── -->
+<section>
+    <h2>Dijkstra — the steps</h2>
+    <ol>
+        <li>Start with <code>dist[source] = 0</code>, all others <code>= ∞</code>.</li>
+        <li>Put <code>(0, source)</code> into a min-heap, keyed on distance.</li>
+        <li>While the heap isn&rsquo;t empty:
+            <ul>
+                <li>Pop the vertex <code>u</code> with the <strong>smallest distance</strong>.</li>
+                <li>If <code>u</code> is already finalised, skip.</li>
+                <li>Otherwise, mark it finalised. For each neighbour <code>v</code> of <code>u</code>:
+                    <ul>
+                        <li>If <code>dist[u] + weight(u, v) &lt; dist[v]</code>, update <code>dist[v]</code> and push <code>(dist[v], v)</code> onto the heap.</li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+    </ol>
+    <div class="info-box">
+        <strong>The relaxation step</strong> — <code>if (dist[u] + w &lt; dist[v]) dist[v] = dist[u] + w</code> — is the heart of Dijkstra. Each relaxation tightens our upper bound on the shortest distance to <code>v</code>. Finalising = no more relaxation is possible.
+    </div>
+</section>
+
+<!-- ─── DIJKSTRA — PSEUDOCODE ───────────── -->
+<section>
+    <h2>Dijkstra — pseudocode</h2>
+    <pre><code class="nohighlight">int *dijkstra(const WGraph *g, int source) {
+    int n = wgraph_vertex_count(g);
+    int *dist = malloc(n * sizeof(int));
+    bool *done = calloc(n, sizeof(bool));
+    for (int i = 0; i &lt; n; i++) dist[i] = INT_MAX;
+
+    MinHeap *pq = heap_create();
+    dist[source] = 0;
+    heap_push(pq, 0, source);                 // (priority, vertex)
+
+    while (!heap_empty(pq)) {
+        int u = heap_pop(pq);                 // smallest tentative distance
+        if (done[u]) continue;
+        done[u] = true;
+
+        WEdge neigh[n];
+        int count = wgraph_neighbors(g, u, neigh, n);
+        for (int i = 0; i &lt; count; i++) {
+            int v = neigh[i].to;
+            int w = neigh[i].weight;
+            if (dist[u] + w &lt; dist[v]) {       // ← relaxation
+                dist[v] = dist[u] + w;
+                heap_push(pq, dist[v], v);
+            }
+        }
+    }
+    heap_destroy(pq);  free(done);
+    return dist;
+}</code></pre>
+    <p class="small" style="text-align:center;">A vertex may be pushed onto the heap more than once (each relaxation queues a new entry). The <code>done</code> check on pop discards stale entries — the first time we pop a vertex, its distance is final.</p>
+</section>
+
+<!-- ─── DIJKSTRA — TRACE ───────────────────── -->
+<section>
+    <h2>Dijkstra — trace</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 360 280" width="100%" style="max-height:220px;">
+                <g>
+                    <line x1="60" y1="60" x2="220" y2="60"/>
+                    <line x1="60" y1="60" x2="60" y2="220"/>
+                    <line x1="220" y1="60" x2="60" y2="220"/>
+                    <line x1="220" y1="60" x2="320" y2="140"/>
+                    <line x1="60" y1="220" x2="320" y2="140"/>
+                </g>
+                <text class="edge-weight" x="140" y="50">2</text>
+                <text class="edge-weight" x="40" y="145">5</text>
+                <text class="edge-weight" x="130" y="145">8</text>
+                <text class="edge-weight" x="285" y="95">3</text>
+                <text class="edge-weight" x="200" y="195">1</text>
+                <circle cx="60" cy="60" r="20"/><text x="60" y="66">A</text>
+                <circle cx="220" cy="60" r="20"/><text x="220" y="66">B</text>
+                <circle cx="60" cy="220" r="20"/><text x="60" y="226">C</text>
+                <circle cx="320" cy="140" r="20"/><text x="320" y="146">D</text>
+                <text class="dist-label" x="60" y="38">dist = 0</text>
+                <text class="dist-label" x="220" y="38">dist = 2</text>
+                <text class="dist-label" x="60" y="252">dist = 5</text>
+                <text class="dist-label" x="320" y="172">dist = 5</text>
+            </svg>
+        </div>
+        <div>
+            <ol style="font-size:0.82em;">
+                <li>Pop <strong>A</strong> (dist 0). Relax B → 2, C → 5. Heap: <code>[(2,B), (5,C)]</code>.</li>
+                <li>Pop <strong>B</strong> (dist 2). Relax C? <code>2+8=10</code>, worse — skip. Relax D → 5. Heap: <code>[(5,C), (5,D)]</code>.</li>
+                <li>Pop <strong>C</strong> (dist 5). Relax D? <code>5+1=6</code>, worse than 5 — skip. Heap: <code>[(5,D)]</code>.</li>
+                <li>Pop <strong>D</strong> (dist 5). No new improvements. Heap empty. <strong>Done.</strong></li>
+            </ol>
+            <div class="success-box">
+                Final: <code>dist[A]=0, dist[B]=2, dist[C]=5, dist[D]=5</code>. Note: A→B→D and A→C→D both reach D at total 5 — Dijkstra picks the first one it finalises, and both are correct.
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ─── DIJKSTRA — COMPLEXITY ─────────────── -->
+<section>
+    <h2>Why <code>O((V + E) log V)</code>?</h2>
+    <ul>
+        <li>Each vertex is finalised <strong>at most once</strong> (the <code>done</code> check). So at most <code>V</code> pops.</li>
+        <li>Each edge can trigger at most one relaxation — and each relaxation pushes once onto the heap. So at most <code>E</code> pushes.</li>
+        <li>Every heap push and pop costs <code>O(log V)</code>.</li>
+        <li>Total: <code>(V + E) × O(log V) = O((V + E) log V)</code>.</li>
+    </ul>
+    <div class="key-point">
+        <strong>This is where Monday&rsquo;s heap pays off.</strong> Without a heap, you&rsquo;d scan the whole &ldquo;unfinalised&rdquo; list each time looking for the minimum — that&rsquo;s <code>O(V²)</code>. For sparse graphs (most real-world ones), the heap version wins by a lot.
+    </div>
+    <p class="small" style="text-align:center;">Why the unit ends here: Dijkstra is BFS + heap + relaxation. Three things you already own, composed into the most-used shortest-path algorithm in the world. GPS, routing protocols, anything with weighted reachability — Dijkstra under the hood.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+
+<section>
+    <h2>What we built today</h2>
+    <ul>
+        <li><strong>Connected components</strong> — DFS in a loop over unvisited vertices.</li>
+        <li><strong>Cycle detection</strong> — DFS that carries a parent; visited non-parent = back edge = cycle.</li>
+        <li><strong>Is-it-a-tree</strong> — the consolidation: connected ∧ acyclic. One DFS does both.</li>
+        <li><strong>BFS distance</strong> — BFS levels are shortest-path hops. One <code>dist[]</code> array and you have a shortest-path algorithm for unweighted graphs.</li>
+        <li><strong>Dijkstra</strong> — BFS with a min-heap, relaxing along the way. The next vertex to finalise is the one with the smallest tentative distance. <code>O((V + E) log V)</code> — the heap pays for itself.</li>
+    </ul>
+    <div class="key-point">
+        Every problem this unit: BFS or DFS, plus one extra line of bookkeeping. The container changed for Dijkstra; the algorithm structure didn&rsquo;t.
+    </div>
+</section>
+
+<section class="center-content">
+    <h2>What lives in DSA II</h2>
+    <ul style="display:inline-block; text-align:left;">
+        <li><strong>Topological sort</strong> — order a DAG by dependencies.</li>
+        <li><strong>Minimum spanning tree</strong> — Kruskal, Prim.</li>
+        <li><strong>Bellman–Ford</strong> — shortest paths with negative-weight edges (which Dijkstra can&rsquo;t handle).</li>
+        <li><strong>Floyd–Warshall</strong> — all-pairs shortest paths.</li>
+        <li><strong>Strongly connected components</strong> — Tarjan, Kosaraju.</li>
+        <li><strong>Union–find</strong> — equivalence classes with near-constant time.</li>
+    </ul>
+    <p class="small" style="margin-top:1.2em;">All of them are BFS/DFS with smarter bookkeeping or a smarter container. The pattern from this unit doesn&rsquo;t go away.</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>
