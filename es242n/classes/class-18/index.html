@@ -25,8 +25,8 @@
 
     <section class="hero">
       <p class="eyebrow">day 18</p>
-      <h1>26 June 2026: Graphs II — deciding things about graphs, and Dijkstra</h1>
-      <p class="lead">Wednesday gave us BFS, DFS, and a <code>Graph</code> interface we can pass around. Today we use those tools to <em>decide</em> things about a graph: how many separate pieces it has, whether it has a cycle, whether it&rsquo;s a tree. Then we climb the difficulty: BFS gives shortest paths on unweighted graphs, and Dijkstra extends that to weighted ones — which is the moment Monday&rsquo;s heap finally cashes in.</p>
+      <h1>26 June 2026: Graphs II — adjacency list, the graph zoo, and Dijkstra</h1>
+      <p class="lead">Open by closing the loop on the adjacency-list code from last class (the part that bit a lot of people): it&rsquo;s an array of linked lists — the same linked list from week 1. Then a proper graph vocabulary — directed, weighted, complete, disconnected, self-loop — with the math each one drags along. Session 2 turns BFS and DFS into decision tools (components, cycles, is-it-a-tree), then climbs to shortest paths — BFS for unweighted, Dijkstra for weighted, where Monday&rsquo;s heap finally cashes in. Closes with a one-slide preview of minimum spanning trees.</p>
     </section>
 
     <section class="slide-band">
@@ -41,35 +41,79 @@
       <article class="agenda-item">
         <div class="marker">S1</div>
         <div>
-          <h2>Session 1 — Deciding things about a graph</h2>
-          <p>Three questions, all answered by BFS or DFS plus one line of bookkeeping. <strong>Connected components</strong>: DFS in a loop over unvisited vertices, count the loop iterations. <strong>Cycle detection (undirected)</strong>: DFS that carries the parent vertex; a visited neighbour that isn&rsquo;t your parent is a back edge — a cycle. <strong>Is-it-a-tree</strong>: the consolidation problem — connected ∧ acyclic ∧ n−1 edges. Three independent checks that combine into one answer; students see all of this morning&rsquo;s tools land at once.</p>
-          <p>Close with islands / flood fill on a 2-D grid — same DFS, the implicit grid edges are the only thing that changes. The grid is just a graph in disguise.</p>
+          <h2>Session 1 — Adjacency list, properly built; then the graph zoo</h2>
+          <p>Open with the adjacency-list code that ran short last class. The picture: <em>an array of linked lists</em>, where each chain is the same linked list students wrote in week 1 — same <code>Node</code> struct, same head-insert in three lines. Walk through <code>add_edge</code>, <code>has_edge</code>, <code>neighbors</code> in C. Tabulate cost vs the matrix: matrix wins edge query; list wins neighbour scan and space on sparse graphs.</p>
+          <p>Then a real graph vocabulary, visually: <strong>directed vs undirected</strong>, <strong>weighted</strong>, <strong>complete</strong> (with n(n−1)/2 edges), <strong>disconnected</strong> (islands / components), <strong>self-loop</strong>, <strong>parallel edges / multigraph</strong>. Close with three pieces of math: handshake lemma (∑deg = 2|E|), max edges, and the n−1 lower bound for connectivity — which previews trees.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">S2</div>
         <div>
-          <h2>Session 2 — Shortest path, and Dijkstra</h2>
-          <p>Start where BFS left off: the level a vertex sits at <em>is</em> its shortest-path distance from the source. Wire that into a small change — BFS with a <code>dist</code> array — and you have an unweighted shortest-path algorithm. Trace it on the running graph from Wednesday.</p>
-          <p>Then add edge weights. Why does plain BFS break? Because the next vertex to finalise is the one with the smallest total distance — not necessarily the next one in line. Swap the queue for a <strong>priority queue</strong> and you have Dijkstra. The min-heap from Monday is doing the work that makes this run in <code>O((V + E) log V)</code> rather than <code>O(V²)</code>. End of unit; the heap unit and the graph unit shake hands.</p>
+          <h2>Session 2 — BFS / DFS as decision tools, then Dijkstra</h2>
+          <p>Three questions, all answered by BFS or DFS plus one line of bookkeeping. <strong>Connected components</strong>: DFS in a loop over unvisited vertices, count the loop iterations. <strong>Cycle detection (undirected)</strong>: DFS that carries the parent vertex; a visited neighbour that isn&rsquo;t your parent is a back edge — a cycle. <strong>Is-it-a-tree</strong>: the consolidation problem — connected ∧ acyclic.</p>
+          <p>Then climb to shortest paths. BFS levels <em>are</em> shortest-hop distances on an unweighted graph — one <code>dist[]</code> array and you have an algorithm. Add edge weights: plain BFS breaks, because the next vertex to finalise is the one with the smallest <em>total</em> distance, not the next one in line. Swap the queue for a min-heap — that&rsquo;s <strong>Dijkstra</strong>, in <code>O((V+E) log V)</code>. Monday&rsquo;s heap unit and the graph unit shake hands. Close with a one-slide preview of <strong>minimum spanning trees</strong> — the definition; the algorithms (Kruskal, Prim) live in DSA II.</p>
         </div>
       </article>
     </section>
 
     <section class="slide-band">
-      <h2>In-class exercises</h2>
+      <h2>In-class — three things to code</h2>
       <ul class="compact-list">
-        <li>Extend yesterday&rsquo;s <code>Graph</code> code: add <code>components(g)</code> that returns the number of connected components, and <code>has_cycle(g)</code> that returns true if there&rsquo;s any cycle.</li>
-        <li>Combine both into <code>is_tree(g)</code>. (Bonus: also check <code>edges == n − 1</code>, and reason about whether that&rsquo;s redundant.)</li>
-        <li>Write <code>bfs_distances(g, src)</code> that returns a <code>dist[]</code> array — the shortest hop-count from <code>src</code> to every reachable vertex.</li>
-        <li>Code Dijkstra against a weighted variant of the <code>Graph</code> interface (each edge carries an <code>int weight</code>). Use a min-heap as the priority queue — yours from Monday, or the language standard library.</li>
+        <li><strong>Adjacency list</strong> — the <code>ListGraph</code> struct, <code>list_graph_create</code>, <code>list_add_edge</code> (one direction; call it twice for undirected), <code>list_has_edge</code>, <code>list_neighbors</code>. Re-use the head-insert pattern from week 1&rsquo;s linked list.</li>
+        <li><strong>BFS on your adjacency list</strong> — then add the three highlighted lines that turn it into <code>bfs_distances</code>: allocate <code>dist[]</code>, set <code>dist[source] = 0</code>, and write <code>dist[v] = dist[u] + 1</code> when you discover <code>v</code>.</li>
+        <li><strong>Dijkstra</strong> — extend BFS by swapping the FIFO queue for the min-heap from Monday (flip <code>extract_max</code> &rarr; <code>extract_min</code>). Add the relaxation: <code>if (dist[u] + w &lt; dist[v]) dist[v] = dist[u] + w; insert(&amp;h, dist[v], v)</code>. Skip popped vertices that are already finalised.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice — LeetCode</h2>
+      <p class="small">Between Friday and the second half of the term. Pick a few from each group.</p>
+
+      <h3 style="margin-top:0.8em;">Decision tools — components, cycle, tree, bipartite</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/graph-valid-tree/">261. Graph Valid Tree</a> — exactly the is-it-a-tree consolidation: connected ∧ acyclic ∧ n − 1 edges.</li>
+        <li><a href="https://leetcode.com/problems/number-of-provinces/">547. Number of Provinces</a> — connected components on an adjacency matrix.</li>
+        <li><a href="https://leetcode.com/problems/course-schedule/">207. Course Schedule</a> — cycle detection on a directed graph (is it a DAG?).</li>
+        <li><a href="https://leetcode.com/problems/is-graph-bipartite/">785. Is Graph Bipartite?</a> — the 2-colour BFS test, exactly as in class.</li>
+        <li><a href="https://leetcode.com/problems/possible-bipartition/">886. Possible Bipartition</a> — same test, friend/enemy framing.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">BFS as a shortest-path computer</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/shortest-path-in-binary-matrix/">1091. Shortest Path in Binary Matrix</a> — BFS on a grid; this is bfs_distances written for cells.</li>
+        <li><a href="https://leetcode.com/problems/rotting-oranges/">994. Rotting Oranges</a> — multi-source BFS; start with every rotten cell at distance 0.</li>
+        <li><a href="https://leetcode.com/problems/01-matrix/">542. 01 Matrix</a> — multi-source BFS for distance to the nearest 0.</li>
+        <li><a href="https://leetcode.com/problems/word-ladder/">127. Word Ladder</a> — BFS shortest path on an implicit graph where the words are vertices.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">Dijkstra — weighted shortest path</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/network-delay-time/">743. Network Delay Time</a> — the canonical Dijkstra problem.</li>
+        <li><a href="https://leetcode.com/problems/path-with-minimum-effort/">1631. Path With Minimum Effort</a> — Dijkstra on a grid; cost is the max edge on the path (modified relaxation).</li>
+        <li><a href="https://leetcode.com/problems/cheapest-flights-within-k-stops/">787. Cheapest Flights Within K Stops</a> — Dijkstra-flavoured, with a hop budget. Stretches the algorithm.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">BST refresher</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/search-in-a-binary-search-tree/">700. Search in a Binary Search Tree</a> — the warm-up.</li>
+        <li><a href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">230. Kth Smallest Element in a BST</a> — inorder traversal pays off.</li>
+        <li><a href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/">235. Lowest Common Ancestor of a BST</a> — uses the BST property directly.</li>
+        <li><a href="https://leetcode.com/problems/validate-binary-search-tree/">98. Validate BST</a> — covered in class; do it on LeetCode for the muscle memory.</li>
+        <li><a href="https://leetcode.com/problems/delete-node-in-a-bst/">450. Delete Node in a BST</a> — the three-case deletion from Saturday.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">Heap / priority queue (Monday&rsquo;s heap)</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element in an Array</a> — top-K with a min-heap of size K.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">703. Kth Largest in a Stream</a> — the same trick, applied online.</li>
       </ul>
     </section>
 
     <section class="slide-band">
       <h2>Coming up</h2>
       <ul class="compact-list">
-        <li><strong>Monday 29 June</strong> — TBD: revision / quick recap before the second half of the term. Followed by the larger algorithms not covered in this course (MST, topological sort, Bellman–Ford, Floyd–Warshall, union–find) in DSA II.</li>
+        <li><strong>Monday 29 June</strong> — finish Dijkstra if it slipped, brief MST definition, then <strong>hashing</strong>: build a hash set / map in C, walk through collisions and chaining, code Two Sum.</li>
+        <li><strong>DSA II</strong> — topological sort, MST (Kruskal, Prim), Bellman–Ford, Floyd–Warshall, strongly connected components, union–find.</li>
       </ul>
     </section>
   </main>
