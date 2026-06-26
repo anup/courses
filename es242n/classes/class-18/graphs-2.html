@@ -945,6 +945,30 @@ bool has_cycle(const Graph *g) {
     </div>
 </section>
 
+<!-- ─── WEIGHTED ADJ LIST — ONE FIELD ───────── -->
+<section>
+    <h2>Storing the weights — one field in the node</h2>
+    <pre><code class="nohighlight" data-noescape>typedef struct AdjNode {
+    int dest;
+<span style="background:#fff3cd;">    int weight;                        // NEW — edge weight</span>
+    struct AdjNode *next;
+} AdjNode;
+
+void list_add_edge(ListGraph *g, int from, int to<span style="background:#fff3cd;">, int weight</span>) {
+    AdjNode *node = malloc(sizeof(AdjNode));
+    node-&gt;dest = to;
+<span style="background:#fff3cd;">    node-&gt;weight = weight;             // NEW</span>
+    node-&gt;next = g-&gt;head[from];
+    g-&gt;head[from] = node;
+}
+
+int graph_weight(const Graph *g, int u, int v) {
+    for (AdjNode *p = g-&gt;head[u]; p != NULL; p = p-&gt;next)
+        if (p-&gt;dest == v) return p-&gt;weight;
+    return INT_MAX;                    // edge not present
+}</code></pre>
+</section>
+
 <!-- ═══════════════════════════════════════════════════
      PART 5 — DIJKSTRA
 ════════════════════════════════════════════════════ -->
