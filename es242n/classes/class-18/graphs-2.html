@@ -27,9 +27,9 @@
         .reveal h4 { font-size: 1.02em; margin-bottom: 0.25em; }
         .reveal section { text-align: left; height: 100%; }
         .reveal .center-content { text-align: center; }
-        .reveal pre { margin: 0.3em auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; font-size: 0.48em; line-height: 1.35; }
+        .reveal pre { margin: 0.4em auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; font-size: 0.6em; line-height: 1.4; }
         .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
-        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 0.7em 1em; border-radius: 6px; overflow: visible; max-height: none; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 0.85em 1em; border-radius: 6px; overflow: visible; max-height: none; }
         .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
         .reveal .warning-box { background: #ffe5e5; border-left: 4px solid var(--warning-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
         .reveal .success-box { background: #d4edda; border-left: 4px solid var(--success-color); padding: 0.55em 1em; margin: 0.5em 0; border-radius: 4px; font-size: 0.85em; }
@@ -188,8 +188,11 @@
     <h2>The struct, in C</h2>
     <pre><code class="nohighlight">typedef struct AdjNode {
     int dest;
+    int weight;                     // 0 if unweighted
     struct AdjNode *next;
 } AdjNode;
+
+typedef struct { int dest; int weight; } Edge;   // what neighbors() returns
 
 typedef struct {
     int n;
@@ -207,21 +210,23 @@ ListGraph *list_graph_create(int n) {
 <!-- ─── ADJ LIST — ADD_EDGE ────────────────── -->
 <section>
     <h2><code>add_edge</code> — one direction at a time</h2>
-    <pre><code class="nohighlight">void list_add_edge(ListGraph *g, int from, int to) {
-    // head-insert `to` into from's chain
+    <pre><code class="nohighlight">void list_add_edge(ListGraph *g, int from, int to, int weight) {
+    // head-insert (to, weight) into from's chain
     AdjNode *node = malloc(sizeof(AdjNode));
-    node-&gt;dest = to;
-    node-&gt;next = g-&gt;head[from];
+    node-&gt;dest   = to;
+    node-&gt;weight = weight;
+    node-&gt;next   = g-&gt;head[from];
     g-&gt;head[from] = node;
 }
 
 // Undirected? Call it twice:
-//   list_add_edge(g, u, v);
-//   list_add_edge(g, v, u);</code></pre>
+//   list_add_edge(g, u, v, w);
+//   list_add_edge(g, v, u, w);
+// Unweighted? Pass 0 (or 1) for weight.</code></pre>
     <ul>
         <li class="fragment">One call → one direction.</li>
         <li class="fragment">Undirected edge = two calls, args swapped.</li>
-        <li class="fragment">Directed graphs: skip the second call.</li>
+        <li class="fragment">Weight lives in the node — no separate lookup later.</li>
     </ul>
 </section>
 
@@ -243,16 +248,16 @@ ListGraph *list_graph_create(int n) {
         </div>
         <div style="font-family:monospace; font-size:0.82em;">
             <div class="fragment">
-                <p><strong>Edge A–B</strong></p>
-                <p style="margin-left:1em;">add_edge(g, 0, 1) → A: B → ∅<br>add_edge(g, 1, 0) → B: A → ∅</p>
+                <p><strong>Edge A–B (weight 1)</strong></p>
+                <p style="margin-left:1em;">add_edge(g, 0, 1, 1) → A: B → ∅<br>add_edge(g, 1, 0, 1) → B: A → ∅</p>
             </div>
             <div class="fragment">
-                <p><strong>Edge A–C</strong></p>
-                <p style="margin-left:1em;">add_edge(g, 0, 2) → A: <span style="color:var(--warning-color);">C</span> → B → ∅<br>add_edge(g, 2, 0) → C: A → ∅</p>
+                <p><strong>Edge A–C (weight 1)</strong></p>
+                <p style="margin-left:1em;">add_edge(g, 0, 2, 1) → A: <span style="color:var(--warning-color);">C</span> → B → ∅<br>add_edge(g, 2, 0, 1) → C: A → ∅</p>
             </div>
             <div class="fragment">
-                <p><strong>Edge B–D</strong></p>
-                <p style="margin-left:1em;">add_edge(g, 1, 3) → B: <span style="color:var(--warning-color);">D</span> → A → ∅<br>add_edge(g, 3, 1) → D: B → ∅</p>
+                <p><strong>Edge B–D (weight 1)</strong></p>
+                <p style="margin-left:1em;">add_edge(g, 1, 3, 1) → B: <span style="color:var(--warning-color);">D</span> → A → ∅<br>add_edge(g, 3, 1, 1) → D: B → ∅</p>
             </div>
         </div>
     </div>
@@ -271,10 +276,13 @@ ListGraph *list_graph_create(int n) {
     return false;
 }
 
-int list_neighbors(const ListGraph *g, int u, int *out, int cap) {
+int list_neighbors(const ListGraph *g, int u, Edge *out, int cap) {
     int k = 0;
-    for (AdjNode *p = g-&gt;head[u]; p != NULL && k &lt; cap; p = p-&gt;next)
-        out[k++] = p-&gt;dest;
+    for (AdjNode *p = g-&gt;head[u]; p != NULL && k &lt; cap; p = p-&gt;next) {
+        out[k].dest   = p-&gt;dest;
+        out[k].weight = p-&gt;weight;
+        k++;
+    }
     return k;
 }</code></pre>
     <div class="two-col">
@@ -311,13 +319,13 @@ int list_neighbors(const ListGraph *g, int u, int *out, int cap) {
     visited[source] = true;
     queue[tail++] = source;
 
-    int neigh[n];
+    Edge neigh[n];
     while (head &lt; tail) {
         int u = queue[head++];
         // ... do work at u ...
         int count = graph_neighbors(g, u, neigh, n);
         for (int i = 0; i &lt; count; i++) {
-            int v = neigh[i];
+            int v = neigh[i].dest;        // BFS ignores weight
             if (!visited[v]) {
                 visited[v] = true;
                 queue[tail++] = v;
@@ -841,12 +849,12 @@ bool has_cycle(const Graph *g) {
 <span style="background:#fff3cd;">    dist[source] = 0;                                          // NEW</span>
     queue[tail++] = source;
 
-    int neigh[n];
+    Edge neigh[n];
     while (head &lt; tail) {
         int u = queue[head++];
         int count = graph_neighbors(g, u, neigh, n);
         for (int i = 0; i &lt; count; i++) {
-            int v = neigh[i];
+            int v = neigh[i].dest;
             if (!visited[v]) {
                 visited[v] = true;
 <span style="background:#fff3cd;">                dist[v] = dist[u] + 1;                         // NEW — one hop further</span>
@@ -943,30 +951,6 @@ bool has_cycle(const Graph *g) {
             </ul>
         </div>
     </div>
-</section>
-
-<!-- ─── WEIGHTED ADJ LIST — ONE FIELD ───────── -->
-<section>
-    <h2>Storing the weights — one field in the node</h2>
-    <pre><code class="nohighlight" data-noescape>typedef struct AdjNode {
-    int dest;
-<span style="background:#fff3cd;">    int weight;                        // NEW — edge weight</span>
-    struct AdjNode *next;
-} AdjNode;
-
-void list_add_edge(ListGraph *g, int from, int to<span style="background:#fff3cd;">, int weight</span>) {
-    AdjNode *node = malloc(sizeof(AdjNode));
-    node-&gt;dest = to;
-<span style="background:#fff3cd;">    node-&gt;weight = weight;             // NEW</span>
-    node-&gt;next = g-&gt;head[from];
-    g-&gt;head[from] = node;
-}
-
-int graph_weight(const Graph *g, int u, int v) {
-    for (AdjNode *p = g-&gt;head[u]; p != NULL; p = p-&gt;next)
-        if (p-&gt;dest == v) return p-&gt;weight;
-    return INT_MAX;                    // edge not present
-}</code></pre>
 </section>
 
 <!-- ═══════════════════════════════════════════════════
@@ -1077,18 +1061,18 @@ int extract_min(MinHeap *h) {
     bool *done = calloc(n, sizeof(bool));
     for (int i = 0; i &lt; n; i++) dist[i] = INT_MAX;
     MinHeap h;
-    heap_init(&amp;h, n * n);                     // safe upper bound on heap entries
+    heap_init(&amp;h, n * n);
     dist[source] = 0;
     insert(&amp;h, 0, source);                    // (priority, vertex)
-    int neigh[n];
+    Edge neigh[n];
     while (!is_empty(&amp;h)) {
         int u = extract_min(&amp;h);
         if (done[u]) continue;
         done[u] = true;
         int count = graph_neighbors(g, u, neigh, n);
         for (int i = 0; i &lt; count; i++) {
-            int v = neigh[i];
-            int w = graph_weight(g, u, v);    // edge weight u→v
+            int v = neigh[i].dest;
+            int w = neigh[i].weight;          // weight came with the neighbour
             if (dist[u] + w &lt; dist[v]) {       // ← relaxation
                 dist[v] = dist[u] + w;
                 insert(&amp;h, dist[v], v);
