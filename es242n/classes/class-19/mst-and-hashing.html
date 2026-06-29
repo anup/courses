@@ -1,0 +1,1541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MST, Sets &amp; Maps, Hashing</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/monokai.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --code-bg: #282c34;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow: hidden; padding: 0 1.2em; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.4em; }
+        .reveal h1 { font-size: 2em; line-height: 1.2; }
+        .reveal h2 { font-size: 1.45em; }
+        .reveal h3 { font-size: 1.2em; margin-bottom: 0.3em; }
+        .reveal h4 { font-size: 1.02em; margin-bottom: 0.25em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal pre { margin: 0.4em auto; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: 6px; font-size: 0.65em; line-height: 1.45; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal pre code { background: var(--code-bg); color: #abb2bf; padding: 0.85em 1em; border-radius: 6px; overflow: visible; max-height: none; }
+        .reveal ul { margin: 0.5em 0; }
+        .reveal li { margin: 0.2em 0; line-height: 1.4; }
+        .reveal ol { margin: 0.5em 0; }
+        .reveal p { margin: 0.35em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2em; margin: 0.5em 0; align-items: center; }
+        .reveal .card { background: var(--light-bg); padding: 0.7em 1.1em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.35em; }
+        .reveal .card ul { margin: 0.3em 0; padding-left: 1.3em; font-size: 0.85em; }
+        .reveal .card li { margin: 0.3em 0; line-height: 1.4; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal table { margin: 0.5em auto; border-collapse: collapse; font-size: 0.8em; width: 92%; }
+        .reveal table th { background: var(--main-color); color: white; padding: 0.4em 0.7em; }
+        .reveal table td { padding: 0.32em 0.7em; border: 1px solid #dee2e6; text-align: center; }
+        .reveal table tr:nth-child(even) { background: var(--light-bg); }
+        /* Graph svg styling */
+        .graph-svg circle { fill: #fff; stroke: var(--accent-color); stroke-width: 2.5; }
+        .graph-svg text { font-family: 'Monaco','Menlo',monospace; font-size: 18px; fill: var(--main-color); font-weight: 700; text-anchor: middle; }
+        .graph-svg line { stroke: #95a5a6; stroke-width: 2.5; fill: none; }
+        .graph-svg .tree-edge line { stroke: var(--success-color); stroke-width: 4; }
+        .graph-svg .edge-weight { font-family: 'Monaco','Menlo',monospace; font-size: 16px; fill: var(--main-color); font-weight: 600; }
+        .graph-svg .visited circle { stroke: var(--success-color); fill: #eafaf1; }
+        .graph-svg .current circle { stroke: var(--warning-color); fill: #fef0e6; stroke-width: 4; }
+        /* Hash table slot styling */
+        .slot { fill: #fff; stroke: var(--main-color); stroke-width: 2; }
+        .slot-filled { fill: #d6eaf8; stroke: var(--accent-color); stroke-width: 2; }
+        .slot-collision { fill: #fef0e6; stroke: var(--warning-color); stroke-width: 2; }
+        .slot-tombstone { fill: #fde8e8; stroke: #c0392b; stroke-width: 2; stroke-dasharray: 4 3; }
+        .slot-text { font-family: 'Monaco','Menlo',monospace; font-size: 17px; fill: var(--main-color); text-anchor: middle; font-weight: 700; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════════════════════════════════════════════
+     TITLE
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1>MST · Sets &amp; Maps · Hashing</h1>
+    <h3 style="color:#7f8c8d;">Last graph algorithm, then a brand-new data structure</h3>
+    <p style="margin-top:1.4em; font-size:0.78em; color:#95a5a6;">ES 242(N) &middot; Class 19 &middot; 29 June 2026</p>
+</section>
+
+<!-- ─── WHERE WE LEFT OFF ─────────────────────── -->
+<section>
+    <h2>Last class &mdash; two threads to close</h2>
+    <div class="two-col">
+        <div class="card">
+            <h4>Thread 1: finish graphs</h4>
+            <ul>
+                <li>Last graph algorithm: <strong>MST</strong> (Kruskal &amp; Prim).</li>
+                <li>The data structure Kruskal needs: <strong>Union&ndash;Find</strong>.</li>
+                <li>That closes everything from <em>linked list &rarr; graph &rarr; MST</em>.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top-color:var(--warning-color);">
+            <h4>Thread 2: the last data structure family</h4>
+            <ul>
+                <li>Last new data structures: <strong>Set</strong> and <strong>Map</strong>.</li>
+                <li>Last new technique: <strong>hashing</strong> &mdash; gives O(1) average lookup.</li>
+                <li>Code today: hash set, hash map, Two Sum.</li>
+            </ul>
+        </div>
+    </div>
+    <p class="small" style="text-align:center; margin-top:0.5em;">Friday recap: adjacency list with weights &middot; components &middot; cycles &middot; BFS distance &middot; Dijkstra.</p>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     MST
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Minimum Spanning Tree</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Connect every vertex &mdash; for the smallest total weight.</p>
+</section>
+
+<!-- ─── MST — THE QUESTION ───────────────────── -->
+<section>
+    <h2>The question &mdash; find the MST</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 440 340" width="100%" style="max-height:290px;">
+                <g>
+                    <line x1="70" y1="90" x2="220" y2="90"/>
+                    <line x1="220" y1="90" x2="370" y2="90"/>
+                    <line x1="70" y1="90" x2="70" y2="270"/>
+                    <line x1="220" y1="90" x2="220" y2="270"/>
+                    <line x1="370" y1="90" x2="370" y2="270"/>
+                    <line x1="70" y1="270" x2="220" y2="270"/>
+                    <line x1="220" y1="270" x2="370" y2="270"/>
+                    <line x1="70" y1="90" x2="220" y2="270"/>
+                </g>
+                <text class="edge-weight" x="145" y="80">2</text>
+                <text class="edge-weight" x="295" y="80">5</text>
+                <text class="edge-weight" x="55" y="180">6</text>
+                <text class="edge-weight" x="235" y="180">3</text>
+                <text class="edge-weight" x="385" y="180">4</text>
+                <text class="edge-weight" x="145" y="290">7</text>
+                <text class="edge-weight" x="295" y="290">1</text>
+                <text class="edge-weight" x="110" y="200">8</text>
+                <circle cx="70" cy="90" r="20"/><text x="70" y="96">A</text>
+                <circle cx="220" cy="90" r="20"/><text x="220" y="96">B</text>
+                <circle cx="370" cy="90" r="20"/><text x="370" y="96">C</text>
+                <circle cx="70" cy="270" r="20"/><text x="70" y="276">D</text>
+                <circle cx="220" cy="270" r="20"/><text x="220" y="276">E</text>
+                <circle cx="370" cy="270" r="20"/><text x="370" y="276">F</text>
+            </svg>
+        </div>
+        <div>
+            <h4>The rules</h4>
+            <ul>
+                <li>Pick exactly <strong>n &minus; 1</strong> edges &mdash; here, 5.</li>
+                <li>Every vertex stays reachable.</li>
+                <li>No cycles.</li>
+                <li>Smallest <strong>total weight</strong>.</li>
+            </ul>
+            <p class="small">Real use: connect everything cheapest.</p>
+            <p class="fragment" style="margin-top:0.5em; font-size:1.1em; color:var(--warning-color); text-align:center;"><strong>Which 5 edges minimize the total?</strong></p>
+        </div>
+    </div>
+</section>
+
+<!-- ─── MST — THE ANSWER ─────────────────────── -->
+<section>
+    <h2>The MST</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 440 340" width="100%" style="max-height:290px;">
+                <g>
+                    <line x1="220" y1="90" x2="370" y2="90"/>
+                    <line x1="70" y1="270" x2="220" y2="270"/>
+                    <line x1="70" y1="90" x2="220" y2="270"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="70" y1="90" x2="220" y2="90"/>
+                    <line x1="70" y1="90" x2="70" y2="270"/>
+                    <line x1="220" y1="90" x2="220" y2="270"/>
+                    <line x1="370" y1="90" x2="370" y2="270"/>
+                    <line x1="220" y1="270" x2="370" y2="270"/>
+                </g>
+                <text class="edge-weight" x="145" y="80">2</text>
+                <text class="edge-weight" x="295" y="80">5</text>
+                <text class="edge-weight" x="55" y="180">6</text>
+                <text class="edge-weight" x="235" y="180">3</text>
+                <text class="edge-weight" x="385" y="180">4</text>
+                <text class="edge-weight" x="145" y="290">7</text>
+                <text class="edge-weight" x="295" y="290">1</text>
+                <text class="edge-weight" x="110" y="200">8</text>
+                <circle cx="70" cy="90" r="20"/><text x="70" y="96">A</text>
+                <circle cx="220" cy="90" r="20"/><text x="220" y="96">B</text>
+                <circle cx="370" cy="90" r="20"/><text x="370" y="96">C</text>
+                <circle cx="70" cy="270" r="20"/><text x="70" y="276">D</text>
+                <circle cx="220" cy="270" r="20"/><text x="220" y="276">E</text>
+                <circle cx="370" cy="270" r="20"/><text x="370" y="276">F</text>
+            </svg>
+            <p class="small"><span style="color:var(--success-color);">&#9679;</span> A&ndash;B(2), A&ndash;D(6), B&ndash;E(3), C&ndash;F(4), E&ndash;F(1). Total = <strong>16</strong>.</p>
+        </div>
+        <div>
+            <ul>
+                <li class="fragment">Cheapest edges first &mdash; if they don't make a cycle.</li>
+                <li class="fragment"><strong>B&ndash;C (5)</strong> skipped: B and C already linked via B&ndash;E&ndash;F&ndash;C.</li>
+                <li class="fragment"><strong>A&ndash;E (8)</strong> skipped: same reason &mdash; cycle through B.</li>
+                <li class="fragment"><strong>D&ndash;E (7)</strong> skipped: D already linked via D&ndash;A&ndash;B&ndash;E.</li>
+                <li class="fragment">Two systematic ways to pick those 5 edges &mdash; next.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── KRUSKAL — ALGORITHM ─────────────────── -->
+<section>
+    <h2>Kruskal &mdash; sort and pick</h2>
+    <ol>
+        <li>Sort all edges by weight, ascending.</li>
+        <li>Walk the sorted list:
+            <ul>
+                <li>If adding the edge would form a cycle &rarr; skip.</li>
+                <li>Otherwise &rarr; add it to the MST.</li>
+            </ul>
+        </li>
+        <li>Stop after <code>n &minus; 1</code> edges added.</li>
+    </ol>
+    <ul>
+        <li>The cycle check is what <strong>union&ndash;find</strong> exists for &mdash; we'll build it after we see Prim.</li>
+        <li>Cost:
+            <ul>
+                <li>Sort edges: <code>O(E log E)</code>.</li>
+                <li><code>E</code> cycle checks, each almost <code>O(1)</code> with Union&ndash;Find.</li>
+                <li>Total: <code>O(E log E)</code>, dominated by the sort.</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<!-- ─── KRUSKAL — TRACE ─────────────────────── -->
+<section>
+    <h2>Kruskal trace</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 440 340" width="100%" style="max-height:280px;">
+                <g>
+                    <line x1="220" y1="90" x2="370" y2="90"/>
+                    <line x1="70" y1="270" x2="220" y2="270"/>
+                    <line x1="70" y1="90" x2="220" y2="270"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="70" y1="90" x2="220" y2="90"/>
+                    <line x1="70" y1="90" x2="70" y2="270"/>
+                    <line x1="220" y1="90" x2="220" y2="270"/>
+                    <line x1="370" y1="90" x2="370" y2="270"/>
+                    <line x1="220" y1="270" x2="370" y2="270"/>
+                </g>
+                <text class="edge-weight" x="145" y="80">2</text>
+                <text class="edge-weight" x="295" y="80">5</text>
+                <text class="edge-weight" x="55" y="180">6</text>
+                <text class="edge-weight" x="235" y="180">3</text>
+                <text class="edge-weight" x="385" y="180">4</text>
+                <text class="edge-weight" x="145" y="290">7</text>
+                <text class="edge-weight" x="295" y="290">1</text>
+                <text class="edge-weight" x="110" y="200">8</text>
+                <circle cx="70" cy="90" r="20"/><text x="70" y="96">A</text>
+                <circle cx="220" cy="90" r="20"/><text x="220" y="96">B</text>
+                <circle cx="370" cy="90" r="20"/><text x="370" y="96">C</text>
+                <circle cx="70" cy="270" r="20"/><text x="70" y="276">D</text>
+                <circle cx="220" cy="270" r="20"/><text x="220" y="276">E</text>
+                <circle cx="370" cy="270" r="20"/><text x="370" y="276">F</text>
+            </svg>
+        </div>
+        <div>
+            <p class="small">Sorted edges:<br><code>E&ndash;F(1), A&ndash;B(2), B&ndash;E(3), C&ndash;F(4), B&ndash;C(5), A&ndash;D(6), D&ndash;E(7), A&ndash;E(8)</code></p>
+            <ol style="font-size:0.82em;">
+                <li class="fragment"><strong>E&ndash;F (1)</strong>. Add.</li>
+                <li class="fragment"><strong>A&ndash;B (2)</strong>. Add.</li>
+                <li class="fragment"><strong>B&ndash;E (3)</strong>. Add &mdash; joins {A,B} with {E,F}.</li>
+                <li class="fragment"><strong>C&ndash;F (4)</strong>. Add &mdash; C joins via F.</li>
+                <li class="fragment"><strong>B&ndash;C (5)</strong>. Skip &mdash; cycle.</li>
+                <li class="fragment"><strong>A&ndash;D (6)</strong>. Add &mdash; D joins.</li>
+                <li class="fragment">5 edges = n &minus; 1. <strong>Done.</strong> Total = 16.</li>
+            </ol>
+        </div>
+    </div>
+</section>
+
+<!-- ─── PRIM — ALGORITHM ─────────────────────── -->
+<section>
+    <h2>Prim &mdash; grow from a seed</h2>
+    <div class="two-col">
+        <div>
+            <h4>The algorithm</h4>
+            <ol>
+                <li>Pick any starting vertex &rarr; <em>visited set</em>.</li>
+                <li>Repeat <code>n &minus; 1</code> times:
+                    <ul>
+                        <li>Find the cheapest edge with one end in visited, one outside.</li>
+                        <li>Add that edge. Mark the new vertex visited.</li>
+                    </ul>
+                </li>
+            </ol>
+        </div>
+        <div>
+            <h4>How &mdash; min-heap of candidate edges</h4>
+            <ul>
+                <li>Heap stores <code>(weight, far end)</code>.</li>
+                <li><strong>Visit u:</strong> push every edge from u.</li>
+                <li><strong>Pop smallest.</strong> If far end visited &rarr; stale, skip. Else &rarr; add to MST.</li>
+                <li>Cost: <code>O((V + E) log V)</code>. The Monday heap, third use.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── PRIM — VISUAL WALKTHROUGH ───────────── -->
+<section>
+    <h2>Prim min-heap &mdash; tiny example</h2>
+    <p style="font-size:0.9em;">Start at A. Heap stores <code>(weight, far end)</code>.</p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:0.8em; margin-top:0.4em;">
+        <!-- Step 1: visit A -->
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 240 200" width="100%" style="max-height:200px;">
+                <g>
+                    <line x1="60" y1="50" x2="180" y2="50"/>
+                    <line x1="60" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="180" y2="150"/>
+                    <line x1="60" y1="150" x2="180" y2="150"/>
+                </g>
+                <text class="edge-weight" x="120" y="42">2</text>
+                <text class="edge-weight" x="42" y="105">5</text>
+                <text class="edge-weight" x="105" y="105">3</text>
+                <text class="edge-weight" x="195" y="105">7</text>
+                <text class="edge-weight" x="120" y="170">4</text>
+                <g class="visited"><circle cx="60" cy="50" r="18"/></g>
+                <text x="60" y="56">A</text>
+                <circle cx="180" cy="50" r="18"/><text x="180" y="56">B</text>
+                <circle cx="60" cy="150" r="18"/><text x="60" y="156">C</text>
+                <circle cx="180" cy="150" r="18"/><text x="180" y="156">D</text>
+            </svg>
+            <p style="font-size:0.72em;"><strong>1. Visit A.</strong><br>Push (2,B), (5,C).<br>Heap: <code>B:2, C:5</code></p>
+        </div>
+        <!-- Step 2: pop (2,B), add A-B -->
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 240 200" width="100%" style="max-height:200px;">
+                <g>
+                    <line x1="60" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="180" y2="150"/>
+                    <line x1="60" y1="150" x2="180" y2="150"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="60" y1="50" x2="180" y2="50"/>
+                </g>
+                <text class="edge-weight" x="120" y="42">2</text>
+                <text class="edge-weight" x="42" y="105">5</text>
+                <text class="edge-weight" x="105" y="105">3</text>
+                <text class="edge-weight" x="195" y="105">7</text>
+                <text class="edge-weight" x="120" y="170">4</text>
+                <g class="visited">
+                    <circle cx="60" cy="50" r="18"/>
+                    <circle cx="180" cy="50" r="18"/>
+                </g>
+                <text x="60" y="56">A</text>
+                <text x="180" y="56">B</text>
+                <circle cx="60" cy="150" r="18"/><text x="60" y="156">C</text>
+                <circle cx="180" cy="150" r="18"/><text x="180" y="156">D</text>
+            </svg>
+            <p style="font-size:0.72em;"><strong>2. Pop (2,B).</strong> Add A&ndash;B.<br>Push (3,C), (7,D).<br>Heap: <code>C:3, C:5, D:7</code></p>
+        </div>
+        <!-- Step 3: pop (3,C), add B-C -->
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 240 200" width="100%" style="max-height:200px;">
+                <g>
+                    <line x1="60" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="180" y2="150"/>
+                    <line x1="60" y1="150" x2="180" y2="150"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="60" y1="50" x2="180" y2="50"/>
+                    <line x1="180" y1="50" x2="60" y2="150"/>
+                </g>
+                <text class="edge-weight" x="120" y="42">2</text>
+                <text class="edge-weight" x="42" y="105">5</text>
+                <text class="edge-weight" x="105" y="105">3</text>
+                <text class="edge-weight" x="195" y="105">7</text>
+                <text class="edge-weight" x="120" y="170">4</text>
+                <g class="visited">
+                    <circle cx="60" cy="50" r="18"/>
+                    <circle cx="180" cy="50" r="18"/>
+                    <circle cx="60" cy="150" r="18"/>
+                </g>
+                <text x="60" y="56">A</text>
+                <text x="180" y="56">B</text>
+                <text x="60" y="156">C</text>
+                <circle cx="180" cy="150" r="18"/><text x="180" y="156">D</text>
+            </svg>
+            <p style="font-size:0.72em;"><strong>3. Pop (3,C).</strong> Add B&ndash;C.<br>Push (4,D), (5,A).<br>Heap: <code>D:4, A:5, C:5, D:7</code></p>
+        </div>
+        <!-- Step 4: pop (4,D), add C-D, done -->
+        <div style="text-align:center;">
+            <svg class="graph-svg" viewBox="0 0 240 200" width="100%" style="max-height:200px;">
+                <g>
+                    <line x1="60" y1="50" x2="60" y2="150"/>
+                    <line x1="180" y1="50" x2="180" y2="150"/>
+                </g>
+                <g class="tree-edge">
+                    <line x1="60" y1="50" x2="180" y2="50"/>
+                    <line x1="180" y1="50" x2="60" y2="150"/>
+                    <line x1="60" y1="150" x2="180" y2="150"/>
+                </g>
+                <text class="edge-weight" x="120" y="42">2</text>
+                <text class="edge-weight" x="42" y="105">5</text>
+                <text class="edge-weight" x="105" y="105">3</text>
+                <text class="edge-weight" x="195" y="105">7</text>
+                <text class="edge-weight" x="120" y="170">4</text>
+                <g class="visited">
+                    <circle cx="60" cy="50" r="18"/>
+                    <circle cx="180" cy="50" r="18"/>
+                    <circle cx="60" cy="150" r="18"/>
+                    <circle cx="180" cy="150" r="18"/>
+                </g>
+                <text x="60" y="56">A</text>
+                <text x="180" y="56">B</text>
+                <text x="60" y="156">C</text>
+                <text x="180" y="156">D</text>
+            </svg>
+            <p style="font-size:0.72em;"><strong>4. Pop (4,D).</strong> Add C&ndash;D.<br><strong>MST done.</strong> Total = 9.<br>(Other heap entries stale.)</p>
+        </div>
+    </div>
+    <p style="font-size:0.82em; margin-top:0.4em; text-align:center;">Pops like <code>(5,A)</code> and <code>(5,C)</code> would now find both ends visited &rarr; <em>stale, skip.</em></p>
+</section>
+
+<!-- ─── PRIM AS DIJKSTRA-SHAPED ──────────────── -->
+<section>
+    <h2>Prim is Dijkstra-shaped</h2>
+    <table>
+        <tr><th></th><th>Dijkstra</th><th>Prim</th></tr>
+        <tr><td><strong>Container</strong></td><td>min-heap</td><td>min-heap</td></tr>
+        <tr><td><strong>Pop returns</strong></td><td>vertex with smallest dist from source</td><td>vertex with cheapest edge into visited</td></tr>
+        <tr><td><strong>Key on push</strong></td><td><code>dist[u] + w(u,v)</code></td><td><code>w(u,v)</code></td></tr>
+        <tr><td><strong>What we keep</strong></td><td>shortest path to every vertex</td><td>edges of the MST</td></tr>
+    </table>
+    <ul>
+        <li>If you can write Dijkstra, Prim is a two-line edit. We won't code it today.</li>
+        <li>Both MST algorithms done. Next: <strong>Union&ndash;Find</strong>, the cycle-check Kruskal had us defer.</li>
+    </ul>
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════
+     UNION-FIND
+════════════════════════════════════════════════════ -->
+
+<!-- ─── UF — THE PROBLEM ────────────────────── -->
+<section>
+    <h2>Kruskal asks: does this edge form a cycle?</h2>
+    <ul>
+        <li>For every sorted edge <code>(u, v)</code> &mdash; would adding it close a cycle?</li>
+        <li><strong>Naive:</strong> DFS from u through the partial tree. If you reach v, it's a cycle. <code>O(V)</code> per edge.</li>
+        <li>Over E edges &rarr; <code>O(V&middot;E)</code>. Too slow.</li>
+        <li><strong>Better idea:</strong> don't search. Track which <em>group</em> each vertex belongs to.</li>
+        <li>Same group &rArr; cycle. Different groups &rArr; safe, and merge the two groups.</li>
+        <li>The data structure that does this: <strong>Union&ndash;Find</strong>.</li>
+    </ul>
+</section>
+
+<!-- ─── UF — THE STRUCTURE ──────────────────── -->
+<section>
+    <h2>The data structure</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 520 180" width="100%" style="max-height:230px;">
+                <!-- Row 1: indices i -->
+                <g style="font-family:monospace; font-size:18px;">
+                    <text x="10" y="45" style="font-size:14px; fill:#7f8c8d;" text-anchor="start">i &nbsp; =</text>
+                    <rect x="100" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="130" y="46" text-anchor="middle">A</text>
+                    <rect x="160" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="190" y="46" text-anchor="middle">B</text>
+                    <rect x="220" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="250" y="46" text-anchor="middle">C</text>
+                    <rect x="280" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="310" y="46" text-anchor="middle">D</text>
+                    <rect x="340" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="370" y="46" text-anchor="middle">E</text>
+                    <rect x="400" y="20" width="60" height="40" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/>
+                    <text x="430" y="46" text-anchor="middle">F</text>
+                </g>
+                <!-- Row 2: parent[i] -->
+                <g style="font-family:monospace; font-size:18px;">
+                    <text x="10" y="105" style="font-size:14px; fill:#7f8c8d;" text-anchor="start">parent[i] =</text>
+                    <rect x="100" y="80" width="60" height="40" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/>
+                    <text x="130" y="106" text-anchor="middle">B</text>
+                    <rect x="160" y="80" width="60" height="40" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+                    <text x="190" y="106" text-anchor="middle">B</text>
+                    <rect x="220" y="80" width="60" height="40" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/>
+                    <text x="250" y="106" text-anchor="middle">D</text>
+                    <rect x="280" y="80" width="60" height="40" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+                    <text x="310" y="106" text-anchor="middle">D</text>
+                    <rect x="340" y="80" width="60" height="40" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+                    <text x="370" y="106" text-anchor="middle">E</text>
+                    <rect x="400" y="80" width="60" height="40" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/>
+                    <text x="430" y="106" text-anchor="middle">F</text>
+                </g>
+                <text x="260" y="150" style="font-size:13px; fill:var(--success-color); font-weight:600;" text-anchor="middle">Green cells = roots (point to themselves).</text>
+                <text x="260" y="168" style="font-size:13px; fill:#7f8c8d;" text-anchor="middle">A points to B; C points to D. Groups: &#123;A,B&#125;, &#123;C,D&#125;, &#123;E&#125;, &#123;F&#125;.</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>One integer array &mdash; <code>parent[i]</code>.</li>
+                <li><strong>Top row</strong>: the index <code>i</code> (which element).</li>
+                <li><strong>Bottom row</strong>: <code>parent[i]</code> (who <code>i</code> points to).</li>
+                <li>A <strong>root</strong> points to itself: <code>parent[i] == i</code>.</li>
+                <li>Same root &rArr; same group.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── UF — WHAT find AND union DO ─────────── -->
+<section>
+    <h2>The two operations &mdash; what they <em>do</em></h2>
+    <div class="two-col">
+        <div class="card">
+            <h4><code>find(x)</code> &mdash; "which group?"</h4>
+            <ul>
+                <li>Start at <code>x</code>. Walk up the parent chain.</li>
+                <li>Stop when you hit a node that points to itself &mdash; the <strong>root</strong>.</li>
+                <li>Return the root.</li>
+                <li>The root is the group's identity: <strong>same root ⇒ same group</strong>.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top-color:var(--success-color);">
+            <h4><code>union(x, y)</code> &mdash; "merge two groups"</h4>
+            <ul>
+                <li>Find <code>x</code>'s root <code>rx</code>, and <code>y</code>'s root <code>ry</code>.</li>
+                <li>Same root? Already in the same group &mdash; nothing to do.</li>
+                <li>Otherwise: point one root at the other (<code>parent[rx] = ry</code>). Two groups become one.</li>
+            </ul>
+        </div>
+    </div>
+    <h4 style="margin-top:0.5em;">How this helps Kruskal</h4>
+    <ul>
+        <li>For each edge <code>(u, v)</code> in sorted order:
+            <ul>
+                <li>If <code>find(u) == find(v)</code> &rarr; same group already &rarr; adding this edge would form a cycle. <strong>Skip.</strong></li>
+                <li>Else &rarr; add the edge to the MST and call <code>union(u, v)</code>.</li>
+            </ul>
+        </li>
+    </ul>
+</section>
+
+<!-- ─── UF — VISUAL TRACE (TREES) ─────────────── -->
+<section>
+    <h2>Trace &mdash; watch the trees grow</h2>
+    <p style="font-size:0.88em;">Each group is a tree. Roots in <span style="color:var(--success-color);">green</span> point to themselves. Other nodes point at their parent.</p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap:0.8em; margin-top:0.3em;">
+        <!-- Snapshot 1: Initial -->
+        <div style="text-align:center;">
+            <svg viewBox="0 0 240 90" width="100%" style="max-height:130px;">
+                <defs>
+                    <marker id="ufarr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#2c3e50"/>
+                    </marker>
+                </defs>
+                <g style="font-family:monospace; font-size:14px; font-weight:700; fill:#2c3e50;">
+                    <circle cx="25" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="25" y="50" text-anchor="middle">A</text>
+                    <circle cx="65" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="65" y="50" text-anchor="middle">B</text>
+                    <circle cx="105" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="105" y="50" text-anchor="middle">C</text>
+                    <circle cx="145" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="145" y="50" text-anchor="middle">D</text>
+                    <circle cx="185" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="185" y="50" text-anchor="middle">E</text>
+                    <circle cx="225" cy="45" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="225" y="50" text-anchor="middle">F</text>
+                </g>
+            </svg>
+            <p style="font-size:0.74em;"><strong>Initial</strong><br><code>parent = [A,B,C,D,E,F]</code><br>Each its own root. 6 groups.</p>
+        </div>
+        <!-- Snapshot 2: union(A,B) -->
+        <div style="text-align:center;">
+            <svg viewBox="0 0 240 90" width="100%" style="max-height:130px;">
+                <line x1="30" y1="60" x2="30" y2="32" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <g style="font-family:monospace; font-size:14px; font-weight:700; fill:#2c3e50;">
+                    <circle cx="30" cy="20" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="30" y="25" text-anchor="middle">B</text>
+                    <circle cx="30" cy="70" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="30" y="75" text-anchor="middle">A</text>
+                    <circle cx="95" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="95" y="60" text-anchor="middle">C</text>
+                    <circle cx="135" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="135" y="60" text-anchor="middle">D</text>
+                    <circle cx="175" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="175" y="60" text-anchor="middle">E</text>
+                    <circle cx="215" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="215" y="60" text-anchor="middle">F</text>
+                </g>
+            </svg>
+            <p style="font-size:0.74em;"><strong>union(A, B)</strong><br><code>parent[A] = B</code><br>Groups: &#123;A,B&#125;, &#123;C&#125;, &#123;D&#125;, &#123;E&#125;, &#123;F&#125;.</p>
+        </div>
+        <!-- Snapshot 3: union(C,D) -->
+        <div style="text-align:center;">
+            <svg viewBox="0 0 240 90" width="100%" style="max-height:130px;">
+                <line x1="30" y1="60" x2="30" y2="32" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <line x1="115" y1="60" x2="115" y2="32" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <g style="font-family:monospace; font-size:14px; font-weight:700; fill:#2c3e50;">
+                    <circle cx="30" cy="20" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="30" y="25" text-anchor="middle">B</text>
+                    <circle cx="30" cy="70" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="30" y="75" text-anchor="middle">A</text>
+                    <circle cx="115" cy="20" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="115" y="25" text-anchor="middle">D</text>
+                    <circle cx="115" cy="70" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="115" y="75" text-anchor="middle">C</text>
+                    <circle cx="180" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="180" y="60" text-anchor="middle">E</text>
+                    <circle cx="218" cy="55" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="218" y="60" text-anchor="middle">F</text>
+                </g>
+            </svg>
+            <p style="font-size:0.74em;"><strong>union(C, D)</strong><br><code>parent[C] = D</code><br>Groups: &#123;A,B&#125;, &#123;C,D&#125;, &#123;E&#125;, &#123;F&#125;.</p>
+        </div>
+        <!-- Snapshot 4: union(B,C) -->
+        <div style="text-align:center;">
+            <svg viewBox="0 0 240 130" width="100%" style="max-height:130px;">
+                <line x1="74" y1="50" x2="60" y2="32" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <line x1="110" y1="50" x2="124" y2="32" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <line x1="60" y1="100" x2="60" y2="72" stroke="#2c3e50" stroke-width="2" marker-end="url(#ufarr)"/>
+                <g style="font-family:monospace; font-size:14px; font-weight:700; fill:#2c3e50;">
+                    <circle cx="92" cy="20" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="92" y="25" text-anchor="middle">D</text>
+                    <circle cx="60" cy="60" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="60" y="65" text-anchor="middle">B</text>
+                    <circle cx="124" cy="60" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="124" y="65" text-anchor="middle">C</text>
+                    <circle cx="60" cy="110" r="16" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="60" y="115" text-anchor="middle">A</text>
+                    <circle cx="180" cy="80" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="180" y="85" text-anchor="middle">E</text>
+                    <circle cx="218" cy="80" r="16" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="218" y="85" text-anchor="middle">F</text>
+                </g>
+            </svg>
+            <p style="font-size:0.74em;"><strong>union(B, C)</strong><br><code>find(B)=B, find(C)=D</code><br><code>parent[B] = D</code><br>Groups: &#123;A,B,C,D&#125;, &#123;E&#125;, &#123;F&#125;.</p>
+        </div>
+    </div>
+    <p style="font-size:0.85em; margin-top:0.4em; text-align:center;"><code>same_group(A, D)</code>? &nbsp; <code>find(A) = A&rarr;B&rarr;D = D</code>. &nbsp; <code>find(D) = D</code>. &nbsp; Same root &rArr; <strong>true</strong>. &nbsp; (find(A) walked 2 hops &mdash; that's the cost we'll worry about next.)</p>
+</section>
+
+<!-- ─── UF — find AND union (CODE) ──────────── -->
+<section>
+    <h2><code>find</code> and <code>union</code> &mdash; the code</h2>
+    <p style="font-size:0.88em;">The algorithm we just saw, in C. Walk-up for <code>find</code>; link roots for <code>union</code>.</p>
+    <pre><code class="nohighlight">int parent[N];
+
+void init() {
+    for (int i = 0; i &lt; N; i++) parent[i] = i;   // everyone is their own root
+}
+
+int find(int x) {
+    while (parent[x] != x) x = parent[x];        // walk up to the root
+    return x;
+}
+
+void uf_union(int x, int y) {
+    int rx = find(x);
+    int ry = find(y);
+    if (rx != ry) parent[rx] = ry;               // link one root under the other
+}
+
+bool same_group(int x, int y) {
+    return find(x) == find(y);
+}</code></pre>
+</section>
+
+<!-- ─── UF — NAIVE FIND IS SLOW ─────────────── -->
+<section>
+    <h2>Naive find can get slow</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 460 140" width="100%" style="max-height:200px;">
+                <defs>
+                    <marker id="chainarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#2c3e50"/>
+                    </marker>
+                </defs>
+                <line x1="67" y1="60" x2="115" y2="60" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#chainarrow)"/>
+                <line x1="137" y1="60" x2="185" y2="60" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#chainarrow)"/>
+                <line x1="207" y1="60" x2="255" y2="60" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#chainarrow)"/>
+                <line x1="277" y1="60" x2="325" y2="60" stroke="#2c3e50" stroke-width="2.5" marker-end="url(#chainarrow)"/>
+                <g style="font-family:'Monaco','Menlo',monospace; font-size:16px; font-weight:700;">
+                    <circle cx="45" cy="60" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+                    <text x="45" y="66" text-anchor="middle">A</text>
+                    <circle cx="115" cy="60" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+                    <text x="115" y="66" text-anchor="middle">B</text>
+                    <circle cx="185" cy="60" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+                    <text x="185" y="66" text-anchor="middle">C</text>
+                    <circle cx="255" cy="60" r="22" fill="#fff" stroke="#3498db" stroke-width="2.5"/>
+                    <text x="255" y="66" text-anchor="middle">D</text>
+                    <circle cx="345" cy="60" r="22" fill="#eafaf1" stroke="#27ae60" stroke-width="2.5"/>
+                    <text x="345" y="66" text-anchor="middle">E</text>
+                </g>
+                <text x="345" y="115" style="font-size:13px; fill:#27ae60;" text-anchor="middle">root</text>
+                <text x="195" y="115" style="font-size:13px; fill:#7f8c8d;" text-anchor="middle">find(A) walks 4 hops</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>After many unions, the tree can grow tall.</li>
+                <li>Worst case: a long chain.</li>
+                <li><code>find</code> walks the chain &mdash; <code>O(n)</code> hops.</li>
+                <li>Per Kruskal edge, <code>O(n)</code> just for the cycle check. Too slow.</li>
+                <li>We need to keep the tree shallow.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── UF — PATH COMPRESSION ────────────────── -->
+<section>
+    <h2>Path compression &mdash; flatten as you go</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 460 360" width="100%" style="max-height:380px;">
+                <defs>
+                    <marker id="pcarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#2c3e50"/>
+                    </marker>
+                    <marker id="pcgrnarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#27ae60"/>
+                    </marker>
+                    <marker id="pcorgarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#e67e22"/>
+                    </marker>
+                </defs>
+
+                <!-- BEFORE: tall chain -->
+                <text x="230" y="18" style="font-size:14px; fill:#7f8c8d;" text-anchor="middle">Before find(A) &mdash; 4 hops</text>
+                <line x1="67" y1="55" x2="115" y2="55" stroke="#2c3e50" stroke-width="2" marker-end="url(#pcarrow)"/>
+                <line x1="137" y1="55" x2="185" y2="55" stroke="#2c3e50" stroke-width="2" marker-end="url(#pcarrow)"/>
+                <line x1="207" y1="55" x2="255" y2="55" stroke="#2c3e50" stroke-width="2" marker-end="url(#pcarrow)"/>
+                <line x1="277" y1="55" x2="325" y2="55" stroke="#2c3e50" stroke-width="2" marker-end="url(#pcarrow)"/>
+                <g style="font-family:'Monaco','Menlo',monospace; font-size:15px; font-weight:700;">
+                    <circle cx="45" cy="55" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="45" y="61" text-anchor="middle">A</text>
+                    <circle cx="115" cy="55" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="115" y="61" text-anchor="middle">B</text>
+                    <circle cx="185" cy="55" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="185" y="61" text-anchor="middle">C</text>
+                    <circle cx="255" cy="55" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="255" y="61" text-anchor="middle">D</text>
+                    <circle cx="345" cy="55" r="20" fill="#eafaf1" stroke="#27ae60" stroke-width="2"/>
+                    <text x="345" y="61" text-anchor="middle">E</text>
+                </g>
+
+                <!-- arrow indicating rewiring -->
+                <line x1="230" y1="100" x2="230" y2="170" stroke="#e67e22" stroke-width="3" marker-end="url(#pcorgarrow)"/>
+                <text x="250" y="140" style="font-size:14px; fill:#e67e22; font-weight:700;">find(A) rewires the path</text>
+
+                <!-- AFTER: flat fan-out to E -->
+                <text x="230" y="200" style="font-size:14px; fill:#7f8c8d;" text-anchor="middle">After find(A) &mdash; everyone now points at E</text>
+                <!-- E in the middle -->
+                <circle cx="230" cy="310" r="24" fill="#eafaf1" stroke="#27ae60" stroke-width="3"/>
+                <text x="230" y="316" text-anchor="middle" style="font-family:'Monaco','Menlo',monospace; font-size:16px; font-weight:700;">E</text>
+                <!-- A, B, C, D pointing to E -->
+                <line x1="65" y1="250" x2="207" y2="298" stroke="#27ae60" stroke-width="2.5" marker-end="url(#pcgrnarrow)"/>
+                <line x1="145" y1="250" x2="213" y2="296" stroke="#27ae60" stroke-width="2.5" marker-end="url(#pcgrnarrow)"/>
+                <line x1="295" y1="250" x2="248" y2="298" stroke="#27ae60" stroke-width="2.5" marker-end="url(#pcgrnarrow)"/>
+                <line x1="395" y1="250" x2="252" y2="296" stroke="#27ae60" stroke-width="2.5" marker-end="url(#pcgrnarrow)"/>
+                <g style="font-family:'Monaco','Menlo',monospace; font-size:15px; font-weight:700;">
+                    <circle cx="50" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="50" y="241" text-anchor="middle">A</text>
+                    <circle cx="130" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="130" y="241" text-anchor="middle">B</text>
+                    <circle cx="310" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="310" y="241" text-anchor="middle">C</text>
+                    <circle cx="410" cy="235" r="20" fill="#fff" stroke="#3498db" stroke-width="2"/>
+                    <text x="410" y="241" text-anchor="middle">D</text>
+                </g>
+                <text x="230" y="352" style="font-size:13px; fill:#7f8c8d;" text-anchor="middle">Next find(A), find(B), find(C), find(D) &rarr; 1 hop each</text>
+            </svg>
+        </div>
+        <div>
+            <pre><code class="nohighlight">int find(int x) {
+    if (parent[x] != x)
+        parent[x] = find(parent[x]);
+                       // ↑ rewire on return
+    return parent[x];
+}</code></pre>
+            <ul>
+                <li>Walk up to the root (normal find).</li>
+                <li>On the way back, point every visited node <em>directly</em> at the root.</li>
+                <li>Future finds on those nodes: <strong>1 hop</strong>.</li>
+                <li>Average cost over a long sequence of operations: almost <code>O(1)</code>.</li>
+                <li>This is what makes Kruskal's cycle-check fast.</li>
+                <li><strong>That's MST + Union&ndash;Find done.</strong> Next: a new data-structure family.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TRANSITION — DATA STRUCTURE LANDSCAPE ─ -->
+<section>
+    <h2>The data structures we've used (so we don't confuse them)</h2>
+    <table style="margin-top:0.4em; font-size:0.85em;">
+        <tr><th>Name</th><th>Question it answers</th><th>Where</th></tr>
+        <tr><td><strong>Min-heap</strong> (priority queue)</td><td>Give me the smallest.</td><td>Monday, Dijkstra Fri, Prim today</td></tr>
+        <tr><td><strong>Union&ndash;Find</strong> (disjoint sets)</td><td>Which group is x in?</td><td>Kruskal today</td></tr>
+        <tr><td><strong>Set</strong> (next)</td><td>Is x here? (membership)</td><td>Coming up</td></tr>
+        <tr><td><strong>Map</strong> (next)</td><td>What's stored at key k?</td><td>Coming up</td></tr>
+    </table>
+    <ul>
+        <li>Min-heap is <em>not</em> a Set &mdash; it has duplicates, weak ordering, and no fast "is x here?".</li>
+        <li>Union&ndash;Find <em>is</em> a kind of set ("disjoint sets" / partitions), but it answers a different question than Set/Map.</li>
+        <li>Different data structures &rArr; different operations &rArr; different implementations.</li>
+        <li>Next: Set and Map, then <strong>hashing</strong> as the implementation.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     SETS AND MAPS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Sets and Maps</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">"Is x here?" and "what's at key k?" &mdash; what we want before deciding <em>how</em> to build it.</p>
+</section>
+
+<!-- ─── SET — ADT ───────────────────────────── -->
+<section>
+    <h2>Set &mdash; what we want</h2>
+    <div class="two-col">
+        <div>
+            <h4>Operations</h4>
+            <ul style="font-size:0.9em;">
+                <li><code>insert(s, x)</code> &mdash; add an element</li>
+                <li><code>contains(s, x)</code> &mdash; is x here?</li>
+                <li><code>remove(s, x)</code> &mdash; drop x</li>
+                <li><code>size(s)</code></li>
+            </ul>
+        </div>
+        <div>
+            <h4>What it gives you</h4>
+            <ul style="font-size:0.9em;">
+                <li>No duplicates</li>
+                <li>Order doesn't matter</li>
+                <li>Membership test is the whole point</li>
+            </ul>
+        </div>
+    </div>
+    <ul style="font-size:0.88em;">
+        <li>Where you've seen it already: the <strong>visited set</strong> in BFS / DFS.</li>
+        <li>Real uses: dedupe a stream, "have I seen this email before?", spell-check dictionary.</li>
+    </ul>
+</section>
+
+<!-- ─── MAP — ADT ───────────────────────────── -->
+<section>
+    <h2>Map &mdash; what we want</h2>
+    <div class="two-col">
+        <div>
+            <h4>Operations</h4>
+            <ul style="font-size:0.9em;">
+                <li><code>put(m, k, v)</code> &mdash; store v under key k</li>
+                <li><code>get(m, k)</code> &mdash; look up by key</li>
+                <li><code>remove(m, k)</code></li>
+                <li><code>contains_key(m, k)</code></li>
+            </ul>
+        </div>
+        <div>
+            <h4>What it gives you</h4>
+            <ul style="font-size:0.9em;">
+                <li>Each key maps to exactly one value</li>
+                <li>Keys are unique; values can repeat</li>
+                <li>"Indexed lookup, but the index is any type"</li>
+            </ul>
+        </div>
+    </div>
+    <ul style="font-size:0.88em;">
+        <li>Real uses: frequency counts, caching, "username &rarr; user record", config.</li>
+        <li>Same shape as Python <code>dict</code>, Java <code>HashMap</code>, C++ <code>unordered_map</code>.</li>
+    </ul>
+</section>
+
+<!-- ─── SET / MAP — IMPLEMENTATION QUESTION ─── -->
+<section>
+    <h2>How do we build one? &mdash; what's the cost?</h2>
+    <ul>
+        <li>First decide <strong>what the operations should do</strong> (the contract). Then decide <strong>how to build it</strong>.</li>
+        <li>Several known options. Cost of <code>insert</code> and <code>contains</code> on each?</li>
+    </ul>
+    <table style="margin-top:0.6em;">
+        <tr><th>Implementation</th><th><code>insert</code> / <code>contains</code></th></tr>
+        <tr><td>Unsorted array</td><td class="fragment">O(1) / O(n)</td></tr>
+        <tr><td>Sorted array</td><td class="fragment">O(n) / O(log n)</td></tr>
+        <tr><td>BST (balanced)</td><td class="fragment">O(log n) / O(log n)</td></tr>
+        <tr><td><strong>Hash table</strong></td><td class="fragment"><strong>O(1) average</strong></td></tr>
+    </table>
+    <ul>
+        <li class="fragment">Today: hash tables. The one that beats log n.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     HASHING
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Hashing</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">The implementation that gets us O(1) Set and Map. Use the key as an index &mdash; almost.</p>
+</section>
+
+<!-- ─── ARRAY IS THE SIMPLEST MAP ──────────── -->
+<section>
+    <h2>An array is the simplest Map</h2>
+    <ul>
+        <li>If keys are integers in <code>[0, m)</code>, you don't need anything new.</li>
+        <li>The array <em>is</em> the Map. <code>arr[key]</code> stores the value. <code>O(1)</code> put, <code>O(1)</code> get.</li>
+        <li>This trick has a name: <strong>direct addressing</strong>. The "hash function" is just identity, <code>h(k) = k</code>.</li>
+    </ul>
+    <div style="text-align:center; margin-top:0.4em;">
+        <svg viewBox="0 0 360 120" width="100%" style="max-height:140px;">
+            <g class="slot-text">
+                <rect class="slot" x="20" y="40" width="40" height="40"/><text x="40" y="64">0</text>
+                <rect class="slot-filled" x="60" y="40" width="40" height="40"/><text x="80" y="64">v&#8321;</text>
+                <rect class="slot" x="100" y="40" width="40" height="40"/><text x="120" y="64">0</text>
+                <rect class="slot-filled" x="140" y="40" width="40" height="40"/><text x="160" y="64">v&#8322;</text>
+                <rect class="slot-filled" x="180" y="40" width="40" height="40"/><text x="200" y="64">v&#8323;</text>
+                <rect class="slot" x="220" y="40" width="40" height="40"/><text x="240" y="64">0</text>
+                <rect class="slot" x="260" y="40" width="40" height="40"/><text x="280" y="64">0</text>
+                <rect class="slot-filled" x="300" y="40" width="40" height="40"/><text x="320" y="64">v&#8324;</text>
+            </g>
+            <g style="font-family:monospace; font-size:11px; fill:#7f8c8d;">
+                <text x="40" y="28" text-anchor="middle">0</text>
+                <text x="80" y="28" text-anchor="middle">1</text>
+                <text x="120" y="28" text-anchor="middle">2</text>
+                <text x="160" y="28" text-anchor="middle">3</text>
+                <text x="200" y="28" text-anchor="middle">4</text>
+                <text x="240" y="28" text-anchor="middle">5</text>
+                <text x="280" y="28" text-anchor="middle">6</text>
+                <text x="320" y="28" text-anchor="middle">7</text>
+            </g>
+            <text x="180" y="105" style="font-size:13px; fill:#7f8c8d;" text-anchor="middle">Each key has its own slot. No collisions, no hashing needed.</text>
+        </svg>
+    </div>
+    <ul style="font-size:0.88em;">
+        <li class="fragment"><strong>The catch:</strong> array size = size of the key space.</li>
+        <li class="fragment">Keys are 32-bit ints? Array of 4 billion. Strings? Impossible.</li>
+        <li class="fragment"><strong>Hashing</strong> generalizes this &mdash; squeeze any key into a small index range.</li>
+    </ul>
+</section>
+
+<!-- ─── HASH FUNCTION ───────────────────────── -->
+<section>
+    <h2>The fix &mdash; squeeze the key</h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 320 200" width="100%" style="max-height:200px;">
+                <rect x="20" y="40" width="100" height="40" fill="#eafaf1" stroke="#27ae60" stroke-width="2" rx="6"/>
+                <text x="70" y="65" style="font-family:monospace; font-size:14px;" text-anchor="middle">"hello"</text>
+                <rect x="140" y="40" width="60" height="40" fill="#fef9e7" stroke="#f39c12" stroke-width="2" rx="6"/>
+                <text x="170" y="65" style="font-family:monospace; font-size:14px;" text-anchor="middle">h(k)</text>
+                <line x1="120" y1="60" x2="138" y2="60" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrh)"/>
+                <line x1="200" y1="60" x2="218" y2="60" stroke="#2c3e50" stroke-width="2" marker-end="url(#arrh)"/>
+                <rect x="220" y="40" width="80" height="40" fill="#d6eaf8" stroke="#3498db" stroke-width="2" rx="6"/>
+                <text x="260" y="65" style="font-family:monospace; font-size:14px;" text-anchor="middle">5</text>
+                <text x="260" y="105" style="font-size:11px; fill:#7f8c8d;" text-anchor="middle">index in [0, m)</text>
+                <defs>
+                    <marker id="arrh" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#2c3e50"/>
+                    </marker>
+                </defs>
+                <text x="70" y="30" style="font-size:11px; fill:#7f8c8d;" text-anchor="middle">any key</text>
+                <text x="170" y="30" style="font-size:11px; fill:#7f8c8d;" text-anchor="middle">hash function</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>Pick a fixed table size <code>m</code>.</li>
+                <li>Define <code>h(key) &rarr; [0, m)</code>.</li>
+                <li>Look up at <code>arr[h(key)]</code>.</li>
+                <li>Any universe of keys, fixed table size.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── HASH FUNCTION — PROPERTIES ──────────── -->
+<section>
+    <h2>What makes a good hash function</h2>
+    <div class="two-col" style="grid-template-columns:1fr 1fr 1fr;">
+        <div class="card">
+            <h4>Deterministic</h4>
+            <ul>
+                <li>Same key &rarr; same index, always.</li>
+                <li>No randomness once you've picked the function.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top-color:var(--warning-color);">
+            <h4>Uniform</h4>
+            <ul>
+                <li>Spreads keys evenly across the table.</li>
+                <li>No "popular" slots.</li>
+            </ul>
+        </div>
+        <div class="card" style="border-top-color:var(--success-color);">
+            <h4>Fast</h4>
+            <ul>
+                <li>O(1) per call.</li>
+                <li>If hashing is slow, you've lost the whole point.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── HASH FUNCTION — EXAMPLES ────────────── -->
+<section>
+    <h2>Two simple hash functions</h2>
+    <pre><code class="nohighlight">// integers — just modulo
+int hash_int(int key, int m) {
+    return (unsigned)key % m;
+}
+
+// strings — polynomial rolling hash
+int hash_str(const char *s, int m) {
+    unsigned h = 0;
+    while (*s) {
+        h = h * 31 + (unsigned)*s;     // 31 is a small odd prime
+        s++;
+    }
+    return h % m;
+}</code></pre>
+    <ul style="font-size:0.88em;">
+        <li><strong>Why <code>m</code> matters:</strong> real keys often come in patterns &mdash; multiples of 2, of 10, page sizes, byte boundaries.</li>
+        <li>If <code>m</code> shares a factor with the pattern, those keys clump on a small subset of slots and the rest stay empty.</li>
+        <li><strong>Example:</strong> <code>m = 10</code>, keys = 10, 20, 30, &hellip; &rarr; <em>all hash to slot 0</em>. 9 of 10 slots dead.</li>
+        <li><strong>Fix:</strong> pick <code>m</code> as a <strong>prime</strong>. With <code>m = 11</code>, the same keys cycle through all 11 slots evenly.</li>
+        <li>The <code>31</code> in the string hash is the same idea &mdash; a small prime that breaks up patterns.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     COLLISIONS
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Collisions</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Two keys, same slot. Now what?</p>
+</section>
+
+<!-- ─── COLLISIONS — CHAINING ───────────────── -->
+<section>
+    <h2>Chaining &mdash; each slot is a linked list <span style="font-size:0.55em; color:var(--success-color); font-weight:normal;">(this is what we'll code)</span></h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 360 220" width="100%" style="max-height:220px;">
+                <g style="font-family:monospace; font-size:12px;">
+                    <rect class="slot" x="20" y="20" width="40" height="30"/>
+                    <text class="slot-text" x="40" y="40">0</text>
+                    <rect class="slot" x="20" y="50" width="40" height="30"/>
+                    <text class="slot-text" x="40" y="70">1</text>
+                    <rect class="slot" x="20" y="80" width="40" height="30"/>
+                    <text class="slot-text" x="40" y="100">2</text>
+                    <rect class="slot" x="20" y="110" width="40" height="30"/>
+                    <text class="slot-text" x="40" y="130">3</text>
+                    <rect class="slot" x="20" y="140" width="40" height="30"/>
+                    <text class="slot-text" x="40" y="160">4</text>
+                </g>
+                <g style="font-family:monospace; font-size:12px;">
+                    <line x1="60" y1="35" x2="80" y2="35" stroke="#3498db" stroke-width="2"/>
+                    <rect x="80" y="22" width="50" height="26" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+                    <text x="105" y="40" text-anchor="middle">"cat"</text>
+                    <line x1="130" y1="35" x2="148" y2="35" stroke="#7f8c8d" stroke-width="1.5"/>
+                    <text x="158" y="40" text-anchor="middle" fill="#7f8c8d">&empty;</text>
+
+                    <line x1="60" y1="95" x2="80" y2="95" stroke="#3498db" stroke-width="2"/>
+                    <rect x="80" y="82" width="50" height="26" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+                    <text x="105" y="100" text-anchor="middle">"dog"</text>
+                    <line x1="130" y1="95" x2="150" y2="95" stroke="#3498db" stroke-width="2"/>
+                    <rect x="150" y="82" width="50" height="26" fill="#fef0e6" stroke="#e67e22" stroke-width="2"/>
+                    <text x="175" y="100" text-anchor="middle">"fish"</text>
+                    <line x1="200" y1="95" x2="218" y2="95" stroke="#7f8c8d" stroke-width="1.5"/>
+                    <text x="228" y="100" text-anchor="middle" fill="#7f8c8d">&empty;</text>
+
+                    <line x1="60" y1="155" x2="80" y2="155" stroke="#3498db" stroke-width="2"/>
+                    <rect x="80" y="142" width="50" height="26" fill="#d6eaf8" stroke="#3498db" stroke-width="2"/>
+                    <text x="105" y="160" text-anchor="middle">"owl"</text>
+                    <line x1="130" y1="155" x2="148" y2="155" stroke="#7f8c8d" stroke-width="1.5"/>
+                    <text x="158" y="160" text-anchor="middle" fill="#7f8c8d">&empty;</text>
+                </g>
+                <text x="180" y="205" style="font-size:11px; fill:#7f8c8d;" text-anchor="middle">h("dog") = h("fish") = 2 &mdash; both live on slot 2&rsquo;s chain</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>Slot holds the head of a chain.</li>
+                <li>Collision? Head-insert. (Same pattern as week 1.)</li>
+                <li>Lookup: hash &rarr; walk the chain.</li>
+            </ul>
+            <h4 style="margin-top:0.5em;">Cost per operation</h4>
+            <ul>
+                <li>Hash the key: <code>O(1)</code>.</li>
+                <li>Walk the chain: average length = <code>n / m</code> &mdash; the <strong>load factor &alpha;</strong>.</li>
+                <li>(<code>n</code> keys spread across <code>m</code> slots &rArr; each slot has <code>n/m</code> keys on average.)</li>
+                <li>Total: <code>O(1 + &alpha;)</code>. Keep <code>&alpha;</code> small &rArr; effectively <code>O(1)</code>.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── COLLISIONS — OPEN ADDRESSING ─────────── -->
+<section>
+    <h2>Open addressing &mdash; everyone lives in the array <span style="font-size:0.55em; color:#7f8c8d; font-weight:normal;">(alternative strategy &mdash; not coded today)</span></h2>
+    <div class="two-col">
+        <div style="text-align:center;">
+            <svg viewBox="0 0 360 130" width="100%" style="max-height:160px;">
+                <g class="slot-text">
+                    <rect class="slot" x="20" y="40" width="40" height="40"/><text x="40" y="64">&empty;</text>
+                    <rect class="slot-filled" x="60" y="40" width="40" height="40"/><text x="80" y="64">cat</text>
+                    <rect class="slot-filled" x="100" y="40" width="40" height="40"/><text x="120" y="64">dog</text>
+                    <rect class="slot-collision" x="140" y="40" width="40" height="40"/><text x="160" y="64">fish</text>
+                    <rect class="slot" x="180" y="40" width="40" height="40"/><text x="200" y="64">&empty;</text>
+                    <rect class="slot" x="220" y="40" width="40" height="40"/><text x="240" y="64">&empty;</text>
+                    <rect class="slot" x="260" y="40" width="40" height="40"/><text x="280" y="64">&empty;</text>
+                    <rect class="slot" x="300" y="40" width="40" height="40"/><text x="320" y="64">&empty;</text>
+                </g>
+                <text x="180" y="105" style="font-size:13px; fill:#7f8c8d;" text-anchor="middle">h("fish") = 2 (taken) &rarr; probe 3 &rarr; empty, place it</text>
+            </svg>
+        </div>
+        <div>
+            <ul>
+                <li>No chains. Every key lives directly in the array.</li>
+                <li>Slot taken? <strong>Probe</strong> the next slot, then the next.</li>
+                <li><em>Linear probing</em>: try <code>h, h+1, h+2, &hellip;</code></li>
+                <li>Lookup: probe in the same order until you find the key or hit an empty slot.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── OPEN ADDRESSING — TOMBSTONES (DEMO) ─── -->
+<section>
+    <h2>Open addressing &mdash; why deletion needs a trick</h2>
+    <p style="font-size:0.9em;">Setup: <code>h(cat)=1</code>, <code>h(dog)=h(fish)=2</code>. Inserted in order cat, dog, fish &mdash; so fish was displaced to slot 3.</p>
+    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:1em; margin-top:0.4em;">
+        <!-- State 1: after inserts -->
+        <div style="text-align:center;">
+            <h4>1. After inserts</h4>
+            <svg viewBox="0 0 240 100" width="100%" style="max-height:120px;">
+                <g class="slot-text">
+                    <rect class="slot" x="10" y="20" width="40" height="40"/><text x="30" y="48">&empty;</text>
+                    <rect class="slot-filled" x="50" y="20" width="40" height="40"/><text x="70" y="48">cat</text>
+                    <rect class="slot-filled" x="90" y="20" width="40" height="40"/><text x="110" y="48">dog</text>
+                    <rect class="slot-collision" x="130" y="20" width="40" height="40"/><text x="150" y="48">fish</text>
+                    <rect class="slot" x="170" y="20" width="40" height="40"/><text x="190" y="48">&empty;</text>
+                </g>
+                <g style="font-family:monospace; font-size:11px; fill:#7f8c8d;">
+                    <text x="30" y="80" text-anchor="middle">0</text>
+                    <text x="70" y="80" text-anchor="middle">1</text>
+                    <text x="110" y="80" text-anchor="middle">2</text>
+                    <text x="150" y="80" text-anchor="middle">3</text>
+                    <text x="190" y="80" text-anchor="middle">4</text>
+                </g>
+            </svg>
+            <p style="font-size:0.8em;">All three keys in. fish at slot 3 because slot 2 was taken.</p>
+        </div>
+        <!-- State 2: delete dog, NO tombstone -->
+        <div style="text-align:center;">
+            <h4 style="color:#c0392b;">2. Delete dog &mdash; without tombstone</h4>
+            <svg viewBox="0 0 240 130" width="100%" style="max-height:150px;">
+                <defs>
+                    <marker id="redarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#e74c3c"/>
+                    </marker>
+                </defs>
+                <g class="slot-text">
+                    <rect class="slot" x="10" y="20" width="40" height="40"/><text x="30" y="48">&empty;</text>
+                    <rect class="slot-filled" x="50" y="20" width="40" height="40"/><text x="70" y="48">cat</text>
+                    <rect class="slot" x="90" y="20" width="40" height="40"/><text x="110" y="48">&empty;</text>
+                    <rect class="slot-collision" x="130" y="20" width="40" height="40"/><text x="150" y="48">fish</text>
+                    <rect class="slot" x="170" y="20" width="40" height="40"/><text x="190" y="48">&empty;</text>
+                </g>
+                <g style="font-family:monospace; font-size:11px; fill:#7f8c8d;">
+                    <text x="30" y="80" text-anchor="middle">0</text>
+                    <text x="70" y="80" text-anchor="middle">1</text>
+                    <text x="110" y="80" text-anchor="middle">2</text>
+                    <text x="150" y="80" text-anchor="middle">3</text>
+                    <text x="190" y="80" text-anchor="middle">4</text>
+                </g>
+                <line x1="110" y1="92" x2="110" y2="115" stroke="#e74c3c" stroke-width="2" marker-end="url(#redarrow)"/>
+                <text x="110" y="128" text-anchor="middle" style="font-size:12px; fill:#e74c3c; font-weight:700;">lookup(fish)</text>
+            </svg>
+            <p style="font-size:0.8em; color:#c0392b;">Probe slot 2 &rarr; empty &rarr; <strong>"not found" &mdash; wrong</strong>, fish is at slot 3.</p>
+        </div>
+        <!-- State 3: delete dog, WITH tombstone -->
+        <div style="text-align:center;">
+            <h4 style="color:var(--success-color);">3. Delete dog &mdash; with tombstone</h4>
+            <svg viewBox="0 0 240 130" width="100%" style="max-height:150px;">
+                <defs>
+                    <marker id="grnarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#27ae60"/>
+                    </marker>
+                </defs>
+                <g class="slot-text">
+                    <rect class="slot" x="10" y="20" width="40" height="40"/><text x="30" y="48">&empty;</text>
+                    <rect class="slot-filled" x="50" y="20" width="40" height="40"/><text x="70" y="48">cat</text>
+                    <rect class="slot-tombstone" x="90" y="20" width="40" height="40"/><text x="110" y="48" style="fill:#c0392b;">&times;</text>
+                    <rect class="slot-collision" x="130" y="20" width="40" height="40"/><text x="150" y="48">fish</text>
+                    <rect class="slot" x="170" y="20" width="40" height="40"/><text x="190" y="48">&empty;</text>
+                </g>
+                <g style="font-family:monospace; font-size:11px; fill:#7f8c8d;">
+                    <text x="30" y="80" text-anchor="middle">0</text>
+                    <text x="70" y="80" text-anchor="middle">1</text>
+                    <text x="110" y="80" text-anchor="middle">2</text>
+                    <text x="150" y="80" text-anchor="middle">3</text>
+                    <text x="190" y="80" text-anchor="middle">4</text>
+                </g>
+                <path d="M 110 92 L 110 108 L 150 108 L 150 92" stroke="#27ae60" stroke-width="2" fill="none" marker-end="url(#grnarrow)"/>
+                <text x="130" y="128" text-anchor="middle" style="font-size:12px; fill:#27ae60; font-weight:700;">lookup(fish)</text>
+            </svg>
+            <p style="font-size:0.8em; color:var(--success-color);">Probe slot 2 &rarr; tombstone &rarr; keep going &rarr; <strong>find fish at slot 3 ✓</strong>.</p>
+        </div>
+    </div>
+    <ul style="font-size:0.88em; margin-top:0.4em;">
+        <li><strong>Tombstone</strong> = "was occupied, then deleted." Third slot state alongside empty / occupied.</li>
+        <li>Lookup walks past tombstones (treat as occupied). Insert reuses them (treat as empty).</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CODE IT
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Code it</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">All the pieces in hand &mdash; hash function, chains, collisions. Now build it: hash set &rarr; hash map &rarr; Two Sum.</p>
+</section>
+
+<!-- ─── HASH SET — STRUCT ──────────────────── -->
+<section>
+    <h2>Hash set &mdash; the struct</h2>
+    <pre><code class="nohighlight">#define M 1031                  // prime; pick whatever size you want
+
+typedef struct Node {
+    int key;
+    struct Node *next;
+} Node;
+
+typedef struct {
+    Node *table[M];             // M head pointers, one chain per slot
+    int size;
+} HashSet;
+
+void set_init(HashSet *s) {
+    for (int i = 0; i &lt; M; i++) s-&gt;table[i] = NULL;
+    s-&gt;size = 0;
+}
+
+int hash_key(int key) { return (unsigned)key % M; }</code></pre>
+</section>
+
+<!-- ─── HASH SET — INSERT + CONTAINS ────────── -->
+<section>
+    <h2>Hash set &mdash; <code>insert</code> and <code>contains</code></h2>
+    <pre><code class="nohighlight">bool set_contains(HashSet *s, int key) {
+    int h = hash_key(key);
+    for (Node *p = s-&gt;table[h]; p != NULL; p = p-&gt;next)
+        if (p-&gt;key == key) return true;
+    return false;
+}
+
+void set_insert(HashSet *s, int key) {
+    if (set_contains(s, key)) return;        // sets have no duplicates
+    int h = hash_key(key);
+    Node *node = malloc(sizeof(Node));
+    node-&gt;key = key;
+    node-&gt;next = s-&gt;table[h];                // head-insert (week 1 again)
+    s-&gt;table[h] = node;
+    s-&gt;size++;
+}</code></pre>
+</section>
+
+<!-- ─── HASH SET — REMOVE ─────────────────── -->
+<section>
+    <h2>Hash set &mdash; <code>remove</code></h2>
+    <pre><code class="nohighlight">bool set_remove(HashSet *s, int key) {
+    int h = hash_key(key);
+    Node **link = &amp;s-&gt;table[h];              // pointer to the link to update
+    while (*link != NULL) {
+        if ((*link)-&gt;key == key) {
+            Node *gone = *link;
+            *link = gone-&gt;next;              // unlink
+            free(gone);
+            s-&gt;size--;
+            return true;
+        }
+        link = &amp;(*link)-&gt;next;
+    }
+    return false;
+}</code></pre>
+</section>
+
+<!-- ─── HASH MAP — DELTA ──────────────────── -->
+<section>
+    <h2>Hash map &mdash; add a value field</h2>
+    <pre><code class="nohighlight">typedef struct MapNode {
+    int key;
+    int value;                  // ← only delta from the set
+    struct MapNode *next;
+} MapNode;
+
+void map_put(HashMap *m, int key, int value) {
+    int h = (unsigned)key % M;
+    for (MapNode *p = m-&gt;table[h]; p != NULL; p = p-&gt;next)
+        if (p-&gt;key == key) { p-&gt;value = value; return; }   // update
+    MapNode *node = malloc(sizeof(MapNode));
+    node-&gt;key = key;  node-&gt;value = value;
+    node-&gt;next = m-&gt;table[h];
+    m-&gt;table[h] = node;
+}
+
+bool map_get(HashMap *m, int key, int *out) {
+    int h = (unsigned)key % M;
+    for (MapNode *p = m-&gt;table[h]; p != NULL; p = p-&gt;next)
+        if (p-&gt;key == key) { *out = p-&gt;value; return true; }
+    return false;
+}</code></pre>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     APPLY
+════════════════════════════════════════════════════ -->
+<section class="center-content">
+    <h1 style="font-size:2.2em;">Apply it</h1>
+    <p style="color:#7f8c8d; font-size:1.15em;">Two problems &mdash; one set, one map.</p>
+</section>
+
+<!-- ─── CONTAINS DUPLICATE ──────────────────── -->
+<section>
+    <h2>Contains Duplicate</h2>
+    <p style="font-size:0.9em;"><strong>Problem:</strong> given an array of integers, return <code>true</code> if any value appears more than once. Else <code>false</code>.</p>
+    <div class="two-col">
+        <div>
+            <h4>Walkthrough &mdash; <code>nums = [1, 2, 3, 1]</code></h4>
+            <table style="font-size:0.78em;">
+                <tr><th>i</th><th>nums[i]</th><th>Set before</th><th>Action</th></tr>
+                <tr><td>0</td><td>1</td><td><code>{}</code></td><td>not in set. Add 1.</td></tr>
+                <tr><td>1</td><td>2</td><td><code>{1}</code></td><td>not in set. Add 2.</td></tr>
+                <tr><td>2</td><td>3</td><td><code>{1, 2}</code></td><td>not in set. Add 3.</td></tr>
+                <tr><td>3</td><td>1</td><td><code>{1, 2, 3}</code></td><td><strong>1 IS in set!</strong> Return <code>true</code>.</td></tr>
+            </table>
+            <p style="font-size:0.82em; margin-top:0.4em;"><strong>The key idea:</strong> as we walk, the set answers "have I seen this before?" in O(1).</p>
+            <ul style="font-size:0.82em;">
+                <li><strong>Brute force:</strong> for each i, check all other j &mdash; <code>O(n&sup2;)</code> comparisons.</li>
+                <li><strong>Hash set:</strong> one pass, n elements, each O(1) check &rarr; <code>O(n)</code>.</li>
+            </ul>
+        </div>
+        <div>
+            <pre><code class="nohighlight">bool contains_duplicate(int *nums, int n) {
+    HashSet s;
+    set_init(&amp;s);
+    for (int i = 0; i &lt; n; i++) {
+        if (set_contains(&amp;s, nums[i]))
+            return true;
+        set_insert(&amp;s, nums[i]);
+    }
+    return false;
+}</code></pre>
+        </div>
+    </div>
+</section>
+
+<!-- ─── TWO SUM ─────────────────────────────── -->
+<section>
+    <h2>Two Sum</h2>
+    <p style="font-size:0.9em;"><strong>Problem:</strong> given <code>nums[]</code> and <code>target</code>, find indices <code>i, j</code> such that <code>nums[i] + nums[j] = target</code>. (Exactly one solution exists.)</p>
+    <div class="two-col">
+        <div>
+            <h4>Walkthrough &mdash; <code>nums = [2, 7, 11, 15]</code>, target = 9</h4>
+            <table style="font-size:0.78em;">
+                <tr><th>i</th><th>nums[i]</th><th>need = target − nums[i]</th><th>Map before</th><th>Action</th></tr>
+                <tr><td>0</td><td>2</td><td>7</td><td><code>{}</code></td><td>7 not in map. Add <code>2 → 0</code>.</td></tr>
+                <tr><td>1</td><td>7</td><td>2</td><td><code>{2 → 0}</code></td><td><strong>2 IS in map!</strong> Return <code>[0, 1]</code>.</td></tr>
+            </table>
+            <p style="font-size:0.82em; margin-top:0.4em;"><strong>The key idea:</strong> for each <code>nums[i]</code>, the map answers "have I already seen its partner?" in O(1).</p>
+            <ul style="font-size:0.82em;">
+                <li><strong>Brute force:</strong> for each i, check all other j &mdash; <code>n &times; n = O(n&sup2;)</code>.</li>
+                <li><strong>Hash map:</strong> n iterations, each O(1) lookup &rarr; <code>O(n)</code>. The map replaces the inner loop.</li>
+            </ul>
+        </div>
+        <div>
+            <pre><code class="nohighlight">int *two_sum(int *nums, int n, int target) {
+    HashMap m;
+    map_init(&amp;m);          // key &rarr; index
+    for (int i = 0; i &lt; n; i++) {
+        int need = target - nums[i];
+        int j;
+        if (map_get(&amp;m, need, &amp;j)) {
+            int *r = malloc(2 * sizeof(int));
+            r[0] = j;  r[1] = i;
+            return r;
+        }
+        map_put(&amp;m, nums[i], i);
+    }
+    return NULL;
+}</code></pre>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     BONUS — COUNT SORT CONNECTION
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>Bonus &mdash; meet count sort (we never covered it)</h2>
+    <div class="two-col">
+        <div>
+            <h4>What count sort does</h4>
+            <ul>
+                <li>Sorts integers in a known range <code>[0, k)</code>.</li>
+                <li>Make a <code>count[]</code> array of size <code>k</code>, all zeros.</li>
+                <li>Scan the input: for each value <code>x</code>, do <code>count[x]++</code>.</li>
+                <li>Walk <code>count[]</code> left to right: write <code>count[i]</code> copies of <code>i</code> to the output.</li>
+                <li>Cost: <code>O(n + k)</code>.</li>
+            </ul>
+            <svg viewBox="0 0 380 290" width="100%" style="max-height:330px; margin-top:0.4em;">
+                <defs>
+                    <marker id="csarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto">
+                        <path d="M0,0 L10,5 L0,10 Z" fill="#2c3e50"/>
+                    </marker>
+                </defs>
+                <!-- Input row -->
+                <text x="10" y="30" style="font-size:13px; fill:#7f8c8d;">Input:</text>
+                <g style="font-family:monospace; font-size:14px; font-weight:700;">
+                    <rect x="65" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="81" y="35" text-anchor="middle">3</text>
+                    <rect x="97" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="113" y="35" text-anchor="middle">1</text>
+                    <rect x="129" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="145" y="35" text-anchor="middle">4</text>
+                    <rect x="161" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="177" y="35" text-anchor="middle">1</text>
+                    <rect x="193" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="209" y="35" text-anchor="middle">5</text>
+                    <rect x="225" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="241" y="35" text-anchor="middle">2</text>
+                    <rect x="257" y="15" width="32" height="28" fill="#d6eaf8" stroke="#3498db" stroke-width="1.5"/><text x="273" y="35" text-anchor="middle">3</text>
+                </g>
+                <!-- Arrow 1 -->
+                <line x1="170" y1="52" x2="170" y2="88" stroke="#2c3e50" stroke-width="2" marker-end="url(#csarrow)"/>
+                <text x="180" y="74" style="font-size:12px; fill:#7f8c8d;">scan input: <tspan font-family="monospace">count[x]++</tspan></text>
+                <!-- Count array -->
+                <text x="10" y="118" style="font-size:13px; fill:#7f8c8d;">index:</text>
+                <text x="10" y="148" style="font-size:13px; fill:#7f8c8d;">count:</text>
+                <g style="font-family:monospace; font-size:14px; font-weight:700;">
+                    <rect x="65" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="87" y="119" text-anchor="middle">0</text>
+                    <rect x="110" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="132" y="119" text-anchor="middle">1</text>
+                    <rect x="155" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="177" y="119" text-anchor="middle">2</text>
+                    <rect x="200" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="222" y="119" text-anchor="middle">3</text>
+                    <rect x="245" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="267" y="119" text-anchor="middle">4</text>
+                    <rect x="290" y="100" width="45" height="26" fill="#f8f9fa" stroke="#2c3e50" stroke-width="1.5"/><text x="312" y="119" text-anchor="middle">5</text>
+                    <rect x="65" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="87" y="149" text-anchor="middle">0</text>
+                    <rect x="110" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="132" y="149" text-anchor="middle">2</text>
+                    <rect x="155" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="177" y="149" text-anchor="middle">1</text>
+                    <rect x="200" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="222" y="149" text-anchor="middle">2</text>
+                    <rect x="245" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="267" y="149" text-anchor="middle">1</text>
+                    <rect x="290" y="130" width="45" height="26" fill="#fef9e7" stroke="#f39c12" stroke-width="1.5"/><text x="312" y="149" text-anchor="middle">1</text>
+                </g>
+                <!-- Arrow 2 -->
+                <line x1="170" y1="165" x2="170" y2="200" stroke="#2c3e50" stroke-width="2" marker-end="url(#csarrow)"/>
+                <text x="180" y="187" style="font-size:12px; fill:#7f8c8d;">walk count[]: emit count[i] copies of i</text>
+                <!-- Output row -->
+                <text x="10" y="230" style="font-size:13px; fill:#7f8c8d;">Output:</text>
+                <g style="font-family:monospace; font-size:14px; font-weight:700;">
+                    <rect x="65" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="81" y="235" text-anchor="middle">1</text>
+                    <rect x="97" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="113" y="235" text-anchor="middle">1</text>
+                    <rect x="129" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="145" y="235" text-anchor="middle">2</text>
+                    <rect x="161" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="177" y="235" text-anchor="middle">3</text>
+                    <rect x="193" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="209" y="235" text-anchor="middle">3</text>
+                    <rect x="225" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="241" y="235" text-anchor="middle">4</text>
+                    <rect x="257" y="215" width="32" height="28" fill="#eafaf1" stroke="#27ae60" stroke-width="1.5"/><text x="273" y="235" text-anchor="middle">5</text>
+                </g>
+                <text x="170" y="275" style="font-size:11px; fill:#7f8c8d;" text-anchor="middle">"1" appears twice (count[1]=2) &rarr; emit 1, 1 &middot; "2" once &rarr; emit 2 &middot; "3" twice &rarr; emit 3, 3 &middot; etc.</text>
+            </svg>
+        </div>
+        <div>
+            <h4>Cost and limits</h4>
+            <ul>
+                <li>Scan input to fill <code>count[]</code>: <code>O(n)</code>.</li>
+                <li>Walk <code>count[]</code> to emit output: <code>O(k)</code>.</li>
+                <li>Total: <strong><code>O(n + k)</code></strong>. No comparisons!</li>
+            </ul>
+            <h4 style="margin-top:0.5em;">When it breaks</h4>
+            <ul>
+                <li>If <code>k</code> is huge (sorting 32-bit ints &rArr; 4-billion-cell <code>count[]</code>), this is unusable.</li>
+                <li>Fix: process the value <strong>one digit at a time</strong>. Each digit only has range 0&ndash;9. That's <strong>radix sort</strong> &mdash; next slide.</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<!-- ─── RADIX SORT ──────────────────────────── -->
+<section>
+    <h2>Radix sort &mdash; count sort, one digit at a time <span style="font-size:0.55em; color:#7f8c8d; font-weight:normal;">(optional &mdash; skip if short on time)</span></h2>
+    <p style="font-size:0.9em;">Sort by the <strong>least significant digit</strong> first, then the next, then the next. Each pass is a count sort on a single digit (range 0&ndash;9).</p>
+    <div style="text-align:center; margin-top:0.4em;">
+        <table style="font-family:monospace; font-size:0.95em; margin:0 auto;">
+            <tr><td style="text-align:right; color:#7f8c8d; padding-right:1em;">Input:</td><td>170, 45, 75, 90, 802, 2, 24, 66</td></tr>
+            <tr><td style="text-align:right; color:#7f8c8d; padding-right:1em;">Pass 1 &mdash; sort by 1s digit:</td><td>1<strong style="color:var(--accent-color);">7</strong>0, 9<strong style="color:var(--accent-color);">0</strong>, 80<strong style="color:var(--accent-color);">2</strong>, <strong style="color:var(--accent-color);">2</strong>, 2<strong style="color:var(--accent-color);">4</strong>, 4<strong style="color:var(--accent-color);">5</strong>, 6<strong style="color:var(--accent-color);">6</strong>, 7<strong style="color:var(--accent-color);">5</strong></td></tr>
+            <tr><td style="text-align:right; color:#7f8c8d; padding-right:1em;">Pass 2 &mdash; sort by 10s digit:</td><td><strong style="color:var(--warning-color);">8</strong>02, <strong style="color:var(--warning-color);">0</strong>2, <strong style="color:var(--warning-color);">2</strong>4, <strong style="color:var(--warning-color);">4</strong>5, <strong style="color:var(--warning-color);">6</strong>6, 1<strong style="color:var(--warning-color);">7</strong>0, <strong style="color:var(--warning-color);">7</strong>5, <strong style="color:var(--warning-color);">9</strong>0</td></tr>
+            <tr><td style="text-align:right; color:#7f8c8d; padding-right:1em;">Pass 3 &mdash; sort by 100s digit:</td><td><strong style="color:var(--success-color);">2</strong>, <strong style="color:var(--success-color);">2</strong>4, <strong style="color:var(--success-color);">4</strong>5, <strong style="color:var(--success-color);">6</strong>6, <strong style="color:var(--success-color);">7</strong>5, <strong style="color:var(--success-color);">9</strong>0, <strong style="color:var(--success-color);">1</strong>70, <strong style="color:var(--success-color);">8</strong>02</td></tr>
+            <tr><td style="text-align:right; color:var(--success-color); padding-right:1em; font-weight:700;">Sorted:</td><td style="color:var(--success-color); font-weight:700;">2, 24, 45, 66, 75, 90, 170, 802 ✓</td></tr>
+        </table>
+    </div>
+    <ul style="font-size:0.88em; margin-top:0.5em;">
+        <li>Each pass uses count sort on ONE digit &mdash; that's why <code>k = 10</code>, not <code>k = max value</code>.</li>
+        <li>Each pass must be <strong>stable</strong> (keep earlier ordering for equal digits) so prior passes' work survives.</li>
+        <li>Cost: <code>O(d &middot; (n + k))</code> where <code>d</code> = number of digits, <code>k = 10</code> for decimal. For practical inputs, effectively <strong>O(n)</strong>.</li>
+    </ul>
+</section>
+
+<!-- ═══════════════════════════════════════════════════
+     CLOSING
+════════════════════════════════════════════════════ -->
+<section>
+    <h2>What we built today</h2>
+    <ul>
+        <li><strong>MST</strong> &mdash; Kruskal (sort + skip cycles), Prim (Dijkstra-shaped).</li>
+        <li><strong>Union&ndash;Find</strong> &mdash; parent array, <code>find</code> + <code>union</code>, path compression.</li>
+        <li><strong>Set</strong> and <strong>Map</strong> &mdash; the operations we want, separately from how we build them.</li>
+        <li><strong>Hashing</strong> &mdash; hash function, chaining, open addressing.</li>
+        <li>Code: hash set, hash map, Contains Duplicate, Two Sum.</li>
+        <li>Connection: count sort and direct addressing are the same trick.</li>
+    </ul>
+</section>
+
+<section class="center-content">
+    <h1 style="font-size:2.4em; margin-top:0.6em;">Thank you!</h1>
+    <p style="font-size:1.2em; color:#7f8c8d; margin-top:0.8em;">All the best for what comes next.</p>
+    <p style="font-size:1em; color:var(--accent-color); margin-top:1.2em;">&mdash; Great class.</p>
+</section>
+
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/plugin/highlight/highlight.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: 'c/t',
+        width: 1600,
+        height: 900,
+        plugins: [RevealHighlight]
+    });
+</script>
+</body>
+</html>

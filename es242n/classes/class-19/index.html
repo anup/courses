@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242(N) Day 19</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">ES242(N)</a>
+      <nav class="nav" aria-label="Day navigation">
+        <a href="../../../">All Courses</a>
+        <a href="../../">Course Home</a>
+        <a href="./" aria-current="page">Day 19</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">day 19 &middot; last class</p>
+      <h1>29 June 2026: MST, Union&ndash;Find, Sets &amp; Maps, Hashing</h1>
+      <p class="lead">Two threads close today. Thread 1 finishes graphs &mdash; MST as the last graph algorithm (Kruskal + Prim, no coding), plus Union&ndash;Find as the data structure Kruskal needs. Thread 2 opens the final data-structure family &mdash; Set and Map, implemented with <strong>hashing</strong>. Students code the hash set in class. Closes with bonus slides on count sort and (optional) radix sort &mdash; the sorting cousins of direct addressing.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Slides</h2>
+      <ul class="compact-list">
+        <li><a href="mst-and-hashing.html">MST &middot; Sets &amp; Maps &middot; Hashing</a> &mdash; today&rsquo;s deck, both sessions</li>
+        <li><a href="../class-18/graphs-2.html">Day 18 deck</a> &mdash; Friday&rsquo;s adjacency list / Dijkstra (for cross-reference)</li>
+        <li><a href="../class-16/heaps.html">Day 16 deck</a> &mdash; heaps (Prim uses the min-heap from here)</li>
+      </ul>
+    </section>
+
+    <section class="agenda" aria-label="Session plan">
+      <article class="agenda-item">
+        <div class="marker">S1</div>
+        <div>
+          <h2>Session 1 &mdash; MST and Union&ndash;Find</h2>
+          <p>Open with the MST question on a 6-vertex weighted graph: <em>which 5 edges minimise the total?</em> After students try by eye, walk through <strong>Kruskal</strong> (sort edges, take next-cheapest that doesn&rsquo;t form a cycle) with a full trace, then <strong>Prim</strong> (grow from a seed, cheapest edge leaving the visited set &mdash; uses the min-heap from Monday). A 4-step heap walkthrough makes the &ldquo;stale entries&rdquo; mechanic concrete. Skip coding the MST algorithms.</p>
+          <p>Then <strong>Union&ndash;Find</strong> as the data structure Kruskal&rsquo;s cycle check needs. Start with the cycle-check problem (naive O(V&middot;E)), then the parent-array structure, then what <code>find</code> and <code>union</code> do conceptually, then a visual trace where the trees grow step by step. Code <code>find</code>/<code>union</code> in C only after the data structure is grounded in pictures. Close with path compression &mdash; before/after visual showing find(A) rewiring a chain into a fan-out.</p>
+        </div>
+      </article>
+      <article class="agenda-item">
+        <div class="marker">S2</div>
+        <div>
+          <h2>Session 2 &mdash; Sets &amp; Maps, Hashing, code the hash set</h2>
+          <p>Bridge slide names the data-structure landscape (min-heap, Union&ndash;Find, Set, Map) so students don&rsquo;t conflate them. Then Set and Map as &ldquo;what we want&rdquo; &mdash; operations and uses, separate from implementation. Show options for implementing them (cost table: unsorted array, sorted array, BST, hash table) &mdash; only hash table is O(1).</p>
+          <p>Hashing: start with the simplest map &mdash; <strong>an array, when keys are small integers</strong> (direct addressing, hash function = identity). Then the squeeze: <code>h(key) &rarr; [0, m)</code> for any key. Hash function properties (deterministic, uniform, fast). Two simple hash functions in C: integer modulo and polynomial string hash, with an explanation of why <code>m</code> should be prime (concrete example: <code>m=10</code>, keys 10, 20, 30, &hellip; all hit slot 0).</p>
+          <p>Collisions: <strong>chaining</strong> (this is what students code) &mdash; each slot is a linked list, head-insert from week 1, cost <code>O(1 + &alpha;)</code>. Open addressing is shown as the alternative strategy with a 3-state tombstone demo (lookup fails without tombstones, succeeds with), but <em>not coded</em>.</p>
+          <p><strong>Code the hash set in C</strong> &mdash; struct + hash function, <code>insert</code> / <code>contains</code> (head-insert + chain walk), <code>remove</code> (unlink). Hash map is shown as a one-slide delta (add a value field). Apply: <strong>Contains Duplicate</strong> (one-pass hash set) and <strong>Two Sum</strong> (canonical hash map problem) &mdash; with walkthroughs showing why brute force is O(n&sup2;) and the hashed version is O(n).</p>
+          <p>Close with a bonus on <strong>count sort</strong> (visual: input boxes &rarr; count cells &rarr; sorted output boxes) and an optional slide on <strong>radix sort</strong> for students to read on their own.</p>
+        </div>
+      </article>
+    </section>
+
+    <section class="slide-band">
+      <h2>In-class &mdash; code the hash set</h2>
+      <ul class="compact-list">
+        <li><strong>Struct</strong> &mdash; an array of <code>Node*</code> (one chain per slot), plus a size counter. Pick a prime <code>M</code> (e.g., 1031).</li>
+        <li><strong><code>hash_key(int key)</code></strong> &mdash; return <code>(unsigned)key % M</code>.</li>
+        <li><strong><code>set_insert(s, key)</code></strong> &mdash; check <code>set_contains</code> first; if absent, head-insert a new node into the chain at <code>hash_key(key)</code>.</li>
+        <li><strong><code>set_contains(s, key)</code></strong> &mdash; walk the chain at <code>hash_key(key)</code>; return true if found.</li>
+        <li><strong><code>set_remove(s, key)</code></strong> &mdash; walk the chain with a <code>Node **link</code> pointer; on match, unlink and free.</li>
+        <li><strong>Apply: Contains Duplicate</strong> &mdash; walk the array; for each element, check the set, return true on hit, otherwise insert.</li>
+        <li><strong>(Stretch) Hash map &amp; Two Sum</strong> &mdash; add a <code>value</code> field to the node; for each <code>nums[i]</code>, ask the map for <code>target - nums[i]</code>; if found, return that index and <code>i</code>; otherwise store <code>nums[i] &rarr; i</code>.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Practice &mdash; LeetCode</h2>
+      <p class="small">After today. Pick a few from each group.</p>
+
+      <h3 style="margin-top:0.8em;">Hash set / hash map &mdash; warmup</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/two-sum/">1. Two Sum</a> &mdash; the canonical hash-map problem (what we coded in class).</li>
+        <li><a href="https://leetcode.com/problems/contains-duplicate/">217. Contains Duplicate</a> &mdash; the canonical hash-set problem (what we coded in class).</li>
+        <li><a href="https://leetcode.com/problems/valid-anagram/">242. Valid Anagram</a> &mdash; count chars with a hash map (or array of size 26).</li>
+        <li><a href="https://leetcode.com/problems/first-unique-character-in-a-string/">387. First Unique Character in a String</a> &mdash; two-pass with a hash map.</li>
+        <li><a href="https://leetcode.com/problems/intersection-of-two-arrays-ii/">350. Intersection of Two Arrays II</a> &mdash; count one side with a hash map, decrement on the other.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">Hash map &mdash; medium</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/group-anagrams/">49. Group Anagrams</a> &mdash; map "sorted string" &rarr; list of strings.</li>
+        <li><a href="https://leetcode.com/problems/subarray-sum-equals-k/">560. Subarray Sum Equals K</a> &mdash; prefix sums + hash map. Slick.</li>
+        <li><a href="https://leetcode.com/problems/longest-consecutive-sequence/">128. Longest Consecutive Sequence</a> &mdash; O(n) via hash set, only "start" elements expand a run.</li>
+        <li><a href="https://leetcode.com/problems/top-k-frequent-elements/">347. Top K Frequent Elements</a> &mdash; hash map for counts, then heap or bucket sort.</li>
+        <li><a href="https://leetcode.com/problems/happy-number/">202. Happy Number</a> &mdash; hash set to detect cycles in the digit-square sequence.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">Union&ndash;Find</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/number-of-provinces/">547. Number of Provinces</a> &mdash; UF or DFS; count groups.</li>
+        <li><a href="https://leetcode.com/problems/graph-valid-tree/">261. Graph Valid Tree</a> &mdash; connected &and; acyclic. UF detects the cycle.</li>
+        <li><a href="https://leetcode.com/problems/redundant-connection/">684. Redundant Connection</a> &mdash; first edge that creates a cycle &rarr; the redundant one.</li>
+        <li><a href="https://leetcode.com/problems/satisfiability-of-equality-equations/">990. Satisfiability of Equality Equations</a> &mdash; process <code>==</code> first, then check <code>!=</code>.</li>
+        <li><a href="https://leetcode.com/problems/accounts-merge/">721. Accounts Merge</a> &mdash; emails as nodes; merge accounts sharing an email.</li>
+      </ul>
+
+      <h3 style="margin-top:0.8em;">MST</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/min-cost-to-connect-all-points/">1584. Min Cost to Connect All Points</a> &mdash; literally Kruskal or Prim on a complete graph.</li>
+        <li><a href="https://leetcode.com/problems/optimize-water-distribution-in-a-village/">1168. Optimize Water Distribution in a Village</a> &mdash; MST with a virtual source. Pretty trick.</li>
+      </ul>
+    </section>
+
+    <section class="slide-band">
+      <h2>Coming up &mdash; DSA II</h2>
+      <ul class="compact-list">
+        <li>Balanced BSTs (AVL, red&ndash;black, B-trees).</li>
+        <li>Union&ndash;Find with union-by-rank + path compression analysis (inverse Ackermann).</li>
+        <li>Universal and perfect hashing.</li>
+        <li>Topological sort, Bellman&ndash;Ford, Floyd&ndash;Warshall, strongly connected components.</li>
+        <li>Count sort, radix sort, bucket sort &mdash; the linear-time sorting family.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
