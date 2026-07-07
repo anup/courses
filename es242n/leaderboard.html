@@ -127,7 +127,7 @@
       padding: 0;
       text-align: center;
       font-weight: 600;
-      font-size: 0.82em;
+      font-size: 0.72em;
       user-select: none;
       border-bottom: 2px solid var(--line);
       white-space: normal;
@@ -140,12 +140,16 @@
       outline-offset: -2px;
     }
     .table-block th .th-button {
-      display: grid;
-      grid-template-rows: 2.9em 1em;
-      width: 100%;
-      min-height: 72px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
       align-items: center;
-      padding: 10px 8px;
+      gap: 5px;
+      width: 100%;
+      max-width: 104px;
+      min-height: 72px;
+      margin: 0 auto;
+      padding: 10px 6px;
       border: 0;
       background: transparent;
       color: inherit;
@@ -164,11 +168,9 @@
       color: var(--muted);
       margin: 0;
       line-height: 1;
-      align-self: end;
     }
     .table-block th .th-label {
       display: block;
-      align-self: end;
     }
     .table-block th[aria-sort] .arrow { color: var(--ink); }
     .table-block td {
@@ -505,10 +507,12 @@
     var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming"];
     var HIDDEN_COLUMNS = {
       leaderboard: {
-        "final total": true
+        "final total": true,
+        "penalty": true
       },
       grades: {
-        "final total": true
+        "final total": true,
+        "penalty": true
       },
       performance: {},
       leetcode: {},
@@ -864,11 +868,11 @@
             a.href = cell.href;
             a.target = "_blank";
             a.rel = "noopener";
-            a.textContent = cell.text == null ? cell.href : cell.text;
+            a.textContent = cell.text == null ? cell.href : fmtCell(cell.text);
             td.appendChild(a);
             td.className = "text-cell";
           } else {
-            td.textContent = cell;
+            td.textContent = fmtCell(cell);
             if (i === langCol) td.className = "lang-cell";
             else if (textCols[i]) td.className = "text-cell";
             if (i === rankCol) {
@@ -924,6 +928,16 @@
       var d = document.createElement("div");
       d.textContent = (s == null ? "" : s);
       return d.innerHTML;
+    }
+
+    // Round numeric cells to at most 2 decimals for display; trailing zeros
+    // are dropped (94 stays "94", 95.41499… becomes "95.41"). Non-numbers
+    // pass through unchanged. Sorting still uses the raw cached values.
+    function fmtCell(v) {
+      if (typeof v === "number" && isFinite(v)) {
+        return String(Math.round(v * 100) / 100);
+      }
+      return v;
     }
   </script>
 </body>
