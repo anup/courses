@@ -205,6 +205,15 @@
 
     .rank-1, .rank-2, .rank-3 { color: var(--accent-ink); }
 
+    /* Attendance bonus is a side-bonus (not folded into Total) — set it apart. */
+    .table-block td.bonus-col { background: rgba(217, 164, 6, 0.12); }
+    .table-block th.bonus-col {
+      background: linear-gradient(rgba(217, 164, 6, 0.16), rgba(217, 164, 6, 0.16)), var(--panel);
+    }
+    .table-block th.bonus-col, .table-block td.bonus-col {
+      border-left: 2px solid var(--accent);
+    }
+
     .loading, .error-msg {
       padding: 32px 16px;
       text-align: center;
@@ -830,6 +839,7 @@
           '<span class="arrow" aria-hidden="true">&#9650;</span>' +
           '</button>' + tipHtml;
         th.querySelector(".th-button").addEventListener("click", function () { sortTable(view, i); });
+        if ((h || "").toLowerCase() === "attendance bonus (+3)") th.classList.add("bonus-col");
         head.appendChild(th);
       });
       fillBody(bodyId, headers, rows, view);
@@ -841,6 +851,7 @@
       var textCols = {};
       var langCol = -1;
       var rankCol = -1;
+      var bonusCol = -1;
       if (!rows || rows.length === 0) {
         var emptyTr = document.createElement("tr");
         var emptyTd = document.createElement("td");
@@ -855,6 +866,7 @@
         var hl = (h || "").toLowerCase();
         if (hl === "rank") rankCol = i;
         if (hl === "languages") langCol = i;
+        if (hl === "attendance bonus (+3)") bonusCol = i;
         if (["code", "name", "platform", "languages", "c req met", "roll no", "contest"].indexOf(hl) !== -1) {
           textCols[i] = true;
         }
@@ -882,6 +894,7 @@
               else if (cell === 3) td.classList.add("rank-3");
             }
           }
+          if (i === bonusCol) td.classList.add("bonus-col");
           tr.appendChild(td);
         });
         body.appendChild(tr);
