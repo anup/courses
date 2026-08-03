@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES 242 Course Plan</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../">ES 242</a>
+        <a href="./" aria-current="page">Course Plan</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Semester I, 2026-27</p>
+      <h1>Course Plan</h1>
+      <p class="lead">ES 242: Data Structures and Algorithms I.</p>
+    </section>
+    <section class="grid stack" aria-label="Course plan details">
+      <div class="tile">
+        <strong>Schedule</strong>
+        <span>Lectures: G1, G2 in 10/103. Lab: I1 in 10/104, 10/105, 10/203, and 10/204.</span>
+      </div>
+      <div class="tile">
+        <strong>Staff</strong>
+        <span>Manoj D Gupta leads the course. Anup Kalbalia handles labs.</span>
+      </div>
+      <div class="tile">
+        <strong>Topics</strong>
+        <span>Big O; C arrays; insertion sort; merge sort; quick sort; heap sort; C pointers and structures; linked lists; stacks and queues; augmenting data structures and hash tables; graphs.</span>
+      </div>
+      <div class="tile">
+        <strong>Tentative Grading</strong>
+        <span>Labs: 50%, counting best N - 3 labs. Mid-semester exam: 20%. End-semester exam: 20%. CodeChef Starters: 10%, counting best 10 contests. This policy is subject to minor updates.</span>
+      </div>
+      <div class="tile">
+        <strong>Programming Contests</strong>
+        <span>Wednesday CodeChef Starters will be used for the contest component. The per-contest scoring scale will follow the previous ES 242 setup.</span>
+      </div>
+    </section>
+  </main>
+  <script src="../../assets/course-theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES 242 Leaderboard</title>
+  <link rel="stylesheet" href="../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="./">ES 242</a>
+        <a href="leaderboard.html" aria-current="page">Leaderboard</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Coming soon</p>
+      <h1>Leaderboard</h1>
+      <p class="lead">The ES 242 leaderboard will be published after the IITGN-owned tracker spreadsheet and Apps Script web app are created.</p>
+    </section>
+  </main>
+  <script src="../assets/course-theme.js"></script>
+</body>
+</html>
