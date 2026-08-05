@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 01: Setup + First AI-Assisted Game</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 01</a>
+        <a href="../../github/">Setup Form</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Week 1 Student Handout</p>
+      <h1>Setup + First AI-Assisted Game</h1>
+      <p class="lead">Set up the course infrastructure, create a private GitHub repository, and build a tiny browser game with an AI coding assistant.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Today's Goals</h2>
+      <ol>
+        <li>Set up GitHub, GitHub Education, Copilot, and your private course repository.</li>
+        <li>Build a tiny browser game using an AI coding assistant, then inspect and improve what it produces.</li>
+      </ol>
+      <p>This course is not about blindly accepting AI-generated code. You are responsible for understanding, testing, debugging, and explaining the code you submit.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Fill The Course Form</h2>
+      <p>Open the setup form in a browser where you can log in with your IITGN Google account.</p>
+      <p><a class="action-link" href="../../github/">Open CS437 Setup Form</a></p>
+      <p>You will be asked for your GitHub username, private course repository URL, GitHub Education status, Copilot status, short self-ratings, and collaboration notes. The form auto-detects your IITGN email. Do not share passwords, tokens, SSH keys, or personal credentials in the form.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. GitHub Education And Copilot</h2>
+      <p>Use the same GitHub account for GitHub Education, Copilot Student, your private course repository, and VS Code Copilot sign-in.</p>
+      <p><a class="action-link" href="https://github.com/settings/education/benefits">Apply For GitHub Education</a></p>
+      <ol>
+        <li>Log into GitHub.</li>
+        <li>Add and verify your IITGN email address.</li>
+        <li>Make sure your GitHub profile or billing name matches your institute document.</li>
+        <li>Apply for GitHub Education Student benefits.</li>
+        <li>If approved, activate GitHub Copilot Student from the Education benefits page.</li>
+      </ol>
+      <p>If your application is still pending today, continue with the rest of the lab. Pending status is okay for Week 1.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. VS Code And Copilot Setup</h2>
+      <ol>
+        <li>Open Visual Studio Code.</li>
+        <li>Click the Accounts icon in the bottom-left corner.</li>
+        <li>Sign in with the GitHub account used for GitHub Education.</li>
+        <li>Click the Copilot icon in VS Code.</li>
+        <li>Enable or sign in to Copilot if asked.</li>
+        <li>Open Copilot Chat and check whether it responds.</li>
+      </ol>
+      <p>If Copilot says subscription not found, check whether GitHub Education is approved, Copilot Student is activated, VS Code is signed into the correct GitHub account, and browser authorization did not happen with a different GitHub account.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Optional Tool: Antigravity</h2>
+      <p>Antigravity is optional for this course. If you have access, sign in with your Google/IITGN account and use it for comparison with Copilot. All graded work must still be committed to your GitHub repository.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Create Your Private Course Repository</h2>
+      <p>Create a private GitHub repository named:</p>
+      <pre class="code-block"><code>ai-assisted-software-development-lab</code></pre>
+      <p>Add the instructors as collaborators: <code>anup</code> and <code>arjunarul-iitgn</code>. After creating the repository, submit its URL in the setup form.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Repository Structure</h2>
+      <pre class="code-block"><code>ai-assisted-software-development-lab/
+  README.md
+  lab-notes/
+    week-01.md
+  games/
+    week-01/
+      index.html
+      style.css
+      game.js</code></pre>
+      <p>In <code>lab-notes/week-01.md</code>, paste this template:</p>
+      <pre class="code-block"><code># Week 01 AI Log
+
+## Tool used
+
+## Prompt given
+
+## What AI produced
+
+## What I changed manually
+
+## How I verified it
+
+## What I still do not understand</code></pre>
+      <p>You must maintain an AI log for every lab.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>7. First AI-Assisted Coding Task: Bug Dodger</h2>
+      <p>Create a simple browser game using HTML, CSS, and JavaScript. Use this prompt with Copilot Chat, Antigravity, Gemini, or another AI coding assistant:</p>
+      <pre class="code-block"><code>Create a simple browser game called Bug Dodger using only HTML, CSS, and JavaScript.
+
+Rules:
+- The player controls a square at the bottom of the screen.
+- Bugs fall from the top.
+- The player moves left and right using arrow keys.
+- If a bug hits the player, the game ends.
+- The score increases over time.
+- Add a restart button.
+- Keep the files as index.html, style.css, and game.js.
+- Explain how to run it locally.</code></pre>
+      <p>Put the files in <code>games/week-01/</code>. Run the game by opening <code>games/week-01/index.html</code> in a browser.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>8. Review The AI Output</h2>
+      <p>After the first version works or partially works, ask the AI:</p>
+      <pre class="code-block"><code>Review this game code. Find at least five possible bugs, missing edge cases, or design problems. Do not rewrite yet.</code></pre>
+      <p>Then ask:</p>
+      <pre class="code-block"><code>Fix the top three issues while keeping the code simple enough for a beginner to understand.</code></pre>
+      <p>Do not accept changes blindly. Read the code and run the game again.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>9. Update Your AI Log</h2>
+      <p>In <code>lab-notes/week-01.md</code>, record which tool you used, your original prompt, what files the AI created, what worked, what broke or was unclear, what you changed manually, how you verified the game, and one thing you still do not understand.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>10. Commit And Push</h2>
+      <pre class="code-block"><code>git add .
+git commit -m "week 01 setup and bug dodger game"
+git push</code></pre>
+      <p>If Git is not set up yet, ask for help during the lab. Do not wait until after class.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>11. End-Of-Class Checklist</h2>
+      <ul>
+        <li>Setup form submitted.</li>
+        <li>GitHub Education application submitted or approved.</li>
+        <li>VS Code signed into the correct GitHub account.</li>
+        <li>Copilot setup attempted.</li>
+        <li>Private course repo created.</li>
+        <li>Anup and Arjun added as collaborators.</li>
+        <li><code>lab-notes/week-01.md</code> created.</li>
+        <li>Bug Dodger game files created.</li>
+        <li>First commit pushed, if Git setup is working.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>12. Course Rule</h2>
+      <p>The repository is your lab notebook. The commits show what changed. The AI log shows how you thought. Both matter.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
