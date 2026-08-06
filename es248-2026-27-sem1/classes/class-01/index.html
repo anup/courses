@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES248 Class 01: Course Intro + System Setup</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES248</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 01</a>
+        <a href="../../handles/">Handles</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Lab 1 &middot; Thursday 6 August 2026 &middot; 10/203</p>
+      <h1>Course Intro + System Setup</h1>
+      <p class="lead">What this course is, how it will be graded, and getting a working C toolchain on your laptop.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Today's Goals</h2>
+      <ol>
+        <li>Understand what this course covers and where it sits between Computing (Python) and DSA&nbsp;1 (C/C++).</li>
+        <li>Discuss the tentative grading policy.</li>
+        <li>Submit your competitive programming handles.</li>
+        <li>Install Ubuntu on your laptop &mdash; Ubuntu is the primary operating system for this course.</li>
+        <li>Leave with a working C compiler: write, compile, and run your first C program.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Course Intro</h2>
+      <p>This course is a bridge: you know Python; here you learn C and the basic data structures underneath it. Memory allocation, pointers, and how arrays, lists, stacks, and queues actually work.</p>
+      <p>Full details &mdash; topics, resources, learning outcomes &mdash; are on the <a class="action-link" href="../../course-plan/">course plan</a>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Grading Policy Discussion</h2>
+      <p>The tentative scheme:</p>
+      <ul>
+        <li>Practice contests across platforms: 20 marks</li>
+        <li>Proctored CodeChef contests: 20 marks</li>
+        <li>Quizzes: 60 marks</li>
+      </ul>
+      <p>No mid-semester or end-semester exam. This is tentative &mdash; we will finalize it in discussion with you today and in the coming classes. Bring your objections now, not at the end of the semester.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Submit Your Handles</h2>
+      <p>Create accounts on CodeChef, Codeforces, AtCoder, and LeetCode if you don't have them, then submit all four handles:</p>
+      <p><a class="action-link" href="../../handles/">Open the Handle Collection Form</a></p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. System Setup: Ubuntu + C Compiler</h2>
+      <p>Ubuntu is the primary operating system for this course. Get it working on your laptop today &mdash; ask for help in the lab if anything fails.</p>
+      <h3>Windows</h3>
+      <p>Install WSL (Windows Subsystem for Linux), which gives you Ubuntu inside Windows. Open PowerShell as Administrator and run:</p>
+      <pre class="code-block"><code>wsl --install</code></pre>
+      <p>Restart when asked, open the Ubuntu app, create a username and password, then follow the Ubuntu instructions below inside the Ubuntu terminal.</p>
+      <h3>Ubuntu / other Linux</h3>
+      <pre class="code-block"><code>sudo apt update
+sudo apt install build-essential</code></pre>
+      <h3>macOS</h3>
+      <pre class="code-block"><code>xcode-select --install</code></pre>
+      <p>On macOS the <code>gcc</code> command runs Apple's Clang compiler. That is fine for this course.</p>
+      <h3>Verify</h3>
+      <pre class="code-block"><code>gcc --version</code></pre>
+      <p>If this prints a version number, you are done.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Terminal Warm-Up</h2>
+      <p>You will live in the terminal this semester. Try these now:</p>
+      <pre class="code-block"><code>pwd            # where am I?
+ls             # what is here?
+mkdir es248    # make a course folder
+cd es248       # go into it</code></pre>
+    </section>
+
+    <section class="content-section">
+      <h2>6. First C Program</h2>
+      <p>Create a file named <code>hello.c</code> in your <code>es248</code> folder, using any editor (VS Code recommended):</p>
+      <pre class="code-block"><code>#include &lt;stdio.h&gt;
+
+int main(void) {
+    printf("Hello, ES248!\n");
+    return 0;
+}</code></pre>
+      <p>Compile and run it:</p>
+      <pre class="code-block"><code>gcc hello.c -o hello
+./hello</code></pre>
+      <p>Unlike Python, there are two steps: <code>gcc</code> translates your source file into an executable, then you run the executable. We will spend real time on what happens in between.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>End-of-Class Checklist</h2>
+      <ul>
+        <li>All four handles submitted in the form.</li>
+        <li><code>gcc --version</code> prints a version number on your laptop.</li>
+        <li><code>hello.c</code> compiled and ran.</li>
+        <li>You know the tentative grading scheme and said your piece about it.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

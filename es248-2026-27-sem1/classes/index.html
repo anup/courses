@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES248 Classes</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../">ES248</a>
+        <a href="../course-plan/">Course Plan</a>
+        <a href="./" aria-current="page">Classes</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Semester I, 2026-27</p>
+      <h1>Classes</h1>
+      <p class="lead">Class handouts and lab instructions for ES248.</p>
+    </section>
+    <section class="grid stack" aria-label="Class handouts">
+      <a class="tile tile-feature" href="class-01/">
+        <strong>Class 01: Course Intro + System Setup</strong>
+        <span>Course overview, grading policy discussion, handle collection, and a working C toolchain.</span>
+      </a>
+    </section>
+  </main>
+  <script src="../../assets/course-theme.js"></script>
+</body>
+</html>

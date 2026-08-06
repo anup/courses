@@ -251,6 +251,17 @@ h1 {
   overflow-wrap: anywhere;
 }
 
+.email-link {
+  color: var(--accent-ink);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.email-link:hover {
+  color: var(--accent);
+}
+
 .action-link {
   display: inline-flex;
   align-items: center;
