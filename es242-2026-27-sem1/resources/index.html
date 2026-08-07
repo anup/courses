@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Resources</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../">ES242</a>
+        <a href="../course-plan/">Course Plan</a>
+        <a href="../classes/">Classes</a>
+        <a href="../materials/">Materials</a>
+        <a href="./" aria-current="page">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Study and practice</p>
+      <h1>Resources</h1>
+      <p class="lead">External material for learning C and practising problems alongside the course.</p>
+    </section>
+    <section class="grid" aria-label="Resources">
+      <a class="tile" href="https://www.youtube.com/playlist?list=PL2_aWCzGMAwLSqGsERZGXGkA5AfMhcknE">
+        <strong>Learn C &mdash; MyCodeSchool</strong>
+        <span>"Introduction to Programming through C" video playlist. A good place to start for learning C.</span>
+      </a>
+      <a class="tile" href="https://www.hackerrank.com/es242-lecture1">
+        <strong>HackerRank &mdash; es242-lecture1</strong>
+        <span>The HackerRank practice set used in class.</span>
+      </a>
+      <a class="tile" href="../../es242n/curriculum.html">
+        <strong>LeetCode Practice Problems</strong>
+        <span>Curated C, arrays, pointers, strings, and linked-list problems from the previous ES242 offering.</span>
+      </a>
+    </section>
+  </main>
+  <script src="../../assets/course-theme.js"></script>
+</body>
+</html>

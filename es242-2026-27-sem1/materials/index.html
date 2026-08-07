@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Materials</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../">ES242</a>
+        <a href="../course-plan/">Course Plan</a>
+        <a href="../classes/">Classes</a>
+        <a href="./" aria-current="page">Materials</a>
+        <a href="../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Course materials</p>
+      <h1>Materials</h1>
+      <p class="lead">Lecture slides shared by Manoj D Gupta. New material will be added here as classes happen.</p>
+    </section>
+    <section class="grid" aria-label="Lecture slides">
+      <a class="tile" href="slides/big-o-notation.pptx">
+        <strong>Big-O Notation</strong>
+        <span>Running time and Big-O notation. Class 01 slides (PowerPoint).</span>
+      </a>
+      <a class="tile" href="slides/c-programming.pptx">
+        <strong>C Programming</strong>
+        <span>Introduction to C. Class 02 slides (PowerPoint).</span>
+      </a>
+    </section>
+  </main>
+  <script src="../../assets/course-theme.js"></script>
+</body>
+</html>
