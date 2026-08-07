@@ -192,9 +192,31 @@
     }
     .table-block tr:last-child td { border-bottom: none; }
     .table-block tr:hover td { background: var(--code-bg); }
-    #up-table td, #up-table th .th-button { padding: 10px 18px; }
+    #up-table td, #up-table th .th-button { padding: 10px 14px; }
     #up-table th { padding: 0; }
     #up-table td:first-child, #up-table th:first-child .th-button { padding-left: 20px; }
+    /* Upcoming table fits its container — no horizontal scroll. */
+    #up-table table { width: 100%; min-width: 0; table-layout: fixed; }
+    #up-table th:nth-child(1), #up-table td:nth-child(1) { width: 112px; }
+    #up-table th:nth-child(3), #up-table td:nth-child(3) { width: 168px; }
+    #up-table th:nth-child(4), #up-table td:nth-child(4) { display: none; } /* hide Ends */
+    #up-table td { word-break: break-word; }
+    .up-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 4px 0 14px;
+      font-size: 0.9em;
+      color: var(--muted);
+    }
+    .up-filter select {
+      padding: 7px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      background: var(--panel);
+      color: var(--ink);
+      font: inherit;
+    }
 
     .table-block td.empty-row {
       padding: 18px 14px;
@@ -452,6 +474,16 @@
 
     <section id="upcoming-view" class="hide" role="tabpanel" aria-labelledby="tab-upcoming">
       <p class="lead-note">Every upcoming contest in the course window (LeetCode, CodeChef, AtCoder, Codeforces). Times are IST. Click a contest to open its page.</p>
+      <div class="up-filter">
+        <label for="up-platform">Platform</label>
+        <select id="up-platform">
+          <option value="">All platforms</option>
+          <option value="LeetCode">LeetCode</option>
+          <option value="CodeChef">CodeChef</option>
+          <option value="AtCoder">AtCoder</option>
+          <option value="Codeforces">Codeforces</option>
+        </select>
+      </div>
       <div class="loading hide" id="up-loading" aria-live="polite">
         <div class="spinner" aria-hidden="true"></div><br>Loading upcoming contests…
       </div>
@@ -505,6 +537,7 @@
       : "";
     var cache = {};
     var currentView = "leaderboard";
+    var upcomingAllRows = [];
     var sortState = {
       leaderboard:  { col: 0, asc: true },
       grades:       { col: -1, asc: true },
@@ -799,6 +832,15 @@
             setupScrollArrows(prefix);
           });
 
+          if (cache.upcoming) {
+            upcomingAllRows = (cache.upcoming.rows || []).slice();
+            var upSel = document.getElementById("up-platform");
+            if (upSel && !upSel._wired) {
+              upSel._wired = true;
+              upSel.addEventListener("change", applyUpcomingFilter);
+            }
+          }
+
           if (allData.leetcode) {
             var foundationsTotal = allData.leetcode.foundationsTotal || 0;
             var summary = document.getElementById("lc-summary");
@@ -820,6 +862,17 @@
         .catch(function (err) {
           showError("Failed to load data. " + (err.message || ""));
         });
+    }
+
+    function applyUpcomingFilter() {
+      if (!cache.upcoming) return;
+      var sel = document.getElementById("up-platform");
+      var val = sel ? sel.value : "";
+      var rows = val
+        ? upcomingAllRows.filter(function (r) { return String(r[0]).toLowerCase() === val.toLowerCase(); })
+        : upcomingAllRows.slice();
+      cache.upcoming.rows = rows;
+      renderTable("up-head", "up-body", cache.upcoming.headers, rows, "upcoming");
     }
 
     function renderTable(headId, bodyId, headers, rows, view) {
