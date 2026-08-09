@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 First Graded Exam: Instructions</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">First Graded Exam</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Exam &middot; Monday 10 August 2026</p>
+      <h1>First Graded Exam: Instructions</h1>
+      <p class="lead">C programming on the lab's Ubuntu systems, submitted through DOMjudge. Read the workflow below before you come.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Before the Exam</h2>
+      <p><strong>DOMjudge does not have an online code editor.</strong> You must write, save, compile, and test your C program locally before uploading the <code>main.c</code> source file.</p>
+      <p>Use the practice contest to complete this full workflow at least once before the exam.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Write and Test Your Program</h2>
+      <ol>
+        <li>Create a folder for your work, for example <code>Documents/ES242</code>.</li>
+        <li>Open VS Code or Sublime Text and save your C program in that folder as <code>main.c</code>.</li>
+        <li>Open Terminal, move to the folder, and compile the saved file.</li>
+      </ol>
+      <pre class="code-block"><code>cd ~/Documents/ES242
+
+gcc -std=c11 main.c -o main</code></pre>
+      <ol start="4">
+        <li>Run the compiled program and test it with the sample input from the problem.</li>
+      </ol>
+      <pre class="code-block"><code>./main
+
+# Or, if you saved sample input in input.txt:
+./main &lt; input.txt</code></pre>
+      <p>Fix any compilation errors or incorrect output locally before submitting.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Submit to DOMjudge</h2>
+      <ol>
+        <li>Log in to DOMjudge using the credentials provided for the exam.</li>
+        <li>Open the correct problem and choose <strong>Submit</strong>.</li>
+        <li>Select the correct problem and choose C as the language.</li>
+        <li>Upload your saved source file: <code>main.c</code>.</li>
+        <li>Check the verdict. If it is not accepted, correct your local source file, compile and test again, then resubmit.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>Important</h2>
+      <ul>
+        <li>DOMjudge does not provide an online editor. Write and save your program locally first.</li>
+        <li>Upload the C source file (<code>.c</code>), not the compiled <code>main</code> binary.</li>
+        <li>Save your work frequently and submit well before the contest closes.</li>
+        <li>Use only your assigned machine and your own DOMjudge account.</li>
+        <li>Ask a proctor if the machine, editor, compiler, or DOMjudge page is not working.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
