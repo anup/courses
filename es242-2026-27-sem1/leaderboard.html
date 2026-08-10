@@ -418,10 +418,10 @@
     </section>
 
     <div class="tabs" role="tablist" aria-label="View selection">
-      <button class="tab" role="tab" aria-selected="true" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
-      <button class="tab" role="tab" aria-selected="false" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
+      <button class="tab" role="tab" aria-selected="true" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="upcoming-view" id="tab-upcoming" data-view="upcoming">Upcoming Contests</button>
     </div>
 
@@ -430,7 +430,7 @@
       <input type="text" id="search" placeholder="Your anonymous code…" aria-label="Search by anonymous code">
     </div>
 
-    <section id="leaderboard-view" role="tabpanel" aria-labelledby="tab-leaderboard">
+    <section id="leaderboard-view" class="hide" role="tabpanel" aria-labelledby="tab-leaderboard">
       <div class="loading" id="lb-loading" aria-live="polite">
         <div class="spinner" aria-hidden="true"></div><br>Loading leaderboard…
       </div>
@@ -497,7 +497,7 @@
       </div>
     </section>
 
-    <section id="leetcode-view" class="hide" role="tabpanel" aria-labelledby="tab-leetcode">
+    <section id="leetcode-view" role="tabpanel" aria-labelledby="tab-leetcode">
       <p class="lead-note" id="lc-summary"></p>
       <div class="loading hide" id="lc-loading" aria-live="polite">
         <div class="spinner" aria-hidden="true"></div><br>Loading LeetCode…
@@ -536,7 +536,7 @@
       ? ES242_LEADERBOARD_CONFIG.API_BASE
       : "";
     var cache = {};
-    var currentView = "leaderboard";
+    var currentView = "leetcode";
     var upcomingAllRows = [];
     var sortState = {
       leaderboard:  { col: 0, asc: true },
