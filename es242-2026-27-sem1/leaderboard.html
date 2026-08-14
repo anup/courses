@@ -424,6 +424,7 @@
       <button class="tab" role="tab" aria-selected="false" aria-controls="leaderboard-view" id="tab-leaderboard" data-view="leaderboard">Leaderboard</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="contests-view" id="tab-contests" data-view="contests">Contest Scores</button>
       <button class="tab" role="tab" aria-selected="true" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="upcoming-view" id="tab-upcoming" data-view="upcoming">Upcoming Contests</button>
     </div>
@@ -471,6 +472,25 @@
         <button class="scroll-arrow scroll-arrow-right" id="pf-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
         <div class="table-block" id="pf-table" tabindex="0" aria-label="Performance table, scrollable">
           <table aria-label="Contest Performance"><thead><tr id="pf-head"></tr></thead><tbody id="pf-body"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="contests-view" class="hide" role="tabpanel" aria-labelledby="tab-contests">
+      <p class="lead-note">Pick a contest to see everyone's solve count by anonymous code &mdash; both the in-lab DOMjudge contests and the CodeChef contests. Search your code above to find your row.</p>
+      <div class="up-filter">
+        <label for="cs-contest">Contest</label>
+        <select id="cs-contest"></select>
+      </div>
+      <div class="loading hide" id="cs-loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div><br>Loading contests&hellip;
+      </div>
+      <div class="error-msg hide" id="cs-error" role="alert"></div>
+      <div class="scroll-wrap hide" id="cs-scroll-wrap">
+        <button class="scroll-arrow scroll-arrow-left" id="cs-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+        <button class="scroll-arrow scroll-arrow-right" id="cs-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+        <div class="table-block" id="cs-table" tabindex="0" aria-label="Contest scores table, scrollable">
+          <table aria-label="Contest Scores"><thead><tr id="cs-head"></tr></thead><tbody id="cs-body"></tbody></table>
         </div>
       </div>
     </section>
@@ -546,10 +566,11 @@
       grades:       { col: -1, asc: true },
       performance:  { col: -1, asc: true },
       leetcode:     { col: 1, asc: false },
-      upcoming:     { col: 2, asc: true }
+      upcoming:     { col: 2, asc: true },
+      contests:     { col: 1, asc: false }
     };
-    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc", upcoming: "up" };
-    var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming"];
+    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc", upcoming: "up", contests: "cs" };
+    var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming", "contests"];
     var HIDDEN_COLUMNS = {
       leaderboard: {
         "final total": true,
@@ -658,7 +679,7 @@
     }
 
     function showError(message) {
-      ["lb", "gr", "pf", "lc", "up"].forEach(function (prefix) {
+      ["lb", "gr", "pf", "lc", "up", "cs"].forEach(function (prefix) {
         document.getElementById(prefix + "-loading").classList.add("hide");
         var err = document.getElementById(prefix + "-error");
         err.textContent = message;
@@ -710,6 +731,7 @@
         leaderboard:  "Showing leaderboard",
         grades:       "Showing detailed grades",
         performance:  "Showing contest performance",
+        contests:     "Showing contest scores",
         leetcode:     "Showing LeetCode practice",
         upcoming:     "Showing upcoming contests"
       };
@@ -860,6 +882,8 @@
             }
           }
 
+          setupContests(allData);
+
           if (allData.leetcode) {
             var foundationsTotal = allData.leetcode.foundationsTotal || 0;
             var summary = document.getElementById("lc-summary");
@@ -892,6 +916,73 @@
         : upcomingAllRows.slice();
       cache.upcoming.rows = rows;
       renderTable("up-head", "up-body", cache.upcoming.headers, rows, "upcoming");
+    }
+
+    // ---- Contest Scores tab: per-contest solve counts, DOMjudge + CodeChef ----
+    var contestList = [];
+
+    function setupContests(allData) {
+      var csLoading = document.getElementById("cs-loading");
+      if (csLoading) csLoading.classList.remove("hide");
+
+      // CodeChef course contests (START*) from the live performance feed
+      var ccByCode = {};
+      var perf = allData.performance;
+      if (perf && perf.headers) {
+        var H = perf.headers.map(function (h) { return String(h || "").toLowerCase(); });
+        var ci = H.indexOf("code"), pi = H.indexOf("platform"),
+            cci = H.indexOf("contest code"), si = H.indexOf("problems solved");
+        (perf.rows || []).forEach(function (r) {
+          if (String(r[pi]) !== "CodeChef") return;
+          var contest = String(r[cci] || "").trim();
+          if (!/^START/i.test(contest)) return;
+          if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
+          ccByCode[contest].scores[r[ci]] = Number(r[si]) || 0;
+        });
+      }
+
+      fetch("domjudge-scores.json", { cache: "no-store" })
+        .then(function (r) { return r.ok ? r.json() : { contests: [] }; })
+        .catch(function () { return { contests: [] }; })
+        .then(function (dj) {
+          var list = [];
+          (dj.contests || []).forEach(function (c) {
+            list.push({ label: c.name + " (DOMjudge, /" + c.total + ")", platform: c.platform, total: c.total, scores: c.scores || {} });
+          });
+          Object.keys(ccByCode).sort().forEach(function (k) { list.push(ccByCode[k]); });
+          contestList = list;
+
+          var sel = document.getElementById("cs-contest");
+          sel.innerHTML = "";
+          list.forEach(function (c, i) {
+            var opt = document.createElement("option");
+            opt.value = String(i);
+            opt.textContent = c.label;
+            sel.appendChild(opt);
+          });
+          if (!sel._wired) { sel._wired = true; sel.addEventListener("change", renderContest); }
+          if (csLoading) csLoading.classList.add("hide");
+          if (list.length) { sel.value = "0"; renderContest(); }
+          else {
+            var err = document.getElementById("cs-error");
+            err.textContent = "No contest results available yet.";
+            err.classList.remove("hide");
+          }
+        });
+    }
+
+    function renderContest() {
+      var sel = document.getElementById("cs-contest");
+      var c = contestList[Number(sel.value)];
+      if (!c) return;
+      var headers = ["Code", c.total ? "Solved (/" + c.total + ")" : "Problems Solved"];
+      var rows = Object.keys(c.scores).map(function (code) { return [code, c.scores[code]]; });
+      rows.sort(function (a, b) { return b[1] - a[1]; });
+      cache.contests = { headers: headers, rows: rows };
+      renderTable("cs-head", "cs-body", headers, rows, "contests");
+      document.getElementById("cs-scroll-wrap").classList.remove("hide");
+      setupScrollArrows("cs");
+      applySearch();
     }
 
     function renderTable(headId, bodyId, headers, rows, view) {
