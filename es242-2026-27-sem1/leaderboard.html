@@ -593,7 +593,7 @@
       TOOLTIP_PATTERNS = [
         { re: /^assignment/,             tip: "Best " + bestOf + " assignment scores, " + maxPer + " marks each" },
         { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " C contests." },
-        { re: /^total/,                  tip: "Sum across assignment, practice, Exam I, post-midsem quizzes, and diagnostic components" },
+        { re: /^total/,                  tip: "Labs (50) + Midsem (20) + Endsem (20) + CodeChef Starters (10), out of 100" },
         { re: /assign.*c solved/,        tip: "Problems solved in C in this assignment contest" },
         { re: /assign.*marks/,           tip: "Marks per the assignment scale" },
         { re: /best.*assignment/,        tip: "Sum of top " + bestOf + " assignment scores (max " + (bestOf * maxPer) + ")" },
@@ -619,12 +619,28 @@
       return h.replace(/\(\/([^)]+)\)/g, "($1)");
     }
 
+    // For a view listed here, show exactly these columns, in this order.
+    // Anything not listed is dropped (e.g. the non-graded practice-contest
+    // columns), so the Detailed Grades view mirrors the ES242 grading policy:
+    // Labs 50 + Midsem 20 + Endsem 20 + CodeChef Starters 10 = 100.
+    var VIEW_ORDER = {
+      grades: ["Code", "Labs (/50)", "Midsem (/20)", "Endsem (/20)", "CodeChef Starters (/10)", "Total (/100)"]
+    };
+
     function visibleDataForView(view, data) {
       var hidden = HIDDEN_COLUMNS[view] || {};
       var keep = [];
-      data.headers.forEach(function (header, i) {
-        if (!hidden[String(header || "").toLowerCase()]) keep.push(i);
-      });
+      var order = VIEW_ORDER[view];
+      if (order) {
+        order.forEach(function (name) {
+          var idx = data.headers.indexOf(name);
+          if (idx >= 0 && !hidden[String(name).toLowerCase()]) keep.push(idx);
+        });
+      } else {
+        data.headers.forEach(function (header, i) {
+          if (!hidden[String(header || "").toLowerCase()]) keep.push(i);
+        });
+      }
       return {
         headers: keep.map(function (i) { return data.headers[i]; }),
         rows: (data.rows || []).map(function (row) {
