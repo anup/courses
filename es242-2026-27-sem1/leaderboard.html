@@ -201,6 +201,11 @@
     #up-table th:nth-child(3), #up-table td:nth-child(3) { width: 168px; }
     #up-table th:nth-child(4), #up-table td:nth-child(4) { display: none; } /* hide Ends */
     #up-table td { word-break: break-word; }
+    /* Contest Scores: a compact 3-column table, not stretched full width. */
+    #cs-table table { min-width: 0; max-width: 460px; }
+    #cs-table th:nth-child(1), #cs-table td:nth-child(1) { width: 70px; text-align: center; }
+    #cs-table th:nth-child(1) .th-button { justify-content: center; }
+    #cs-table th:nth-child(3), #cs-table td:nth-child(3) { width: 130px; }
     .up-filter {
       display: flex;
       align-items: center;
@@ -935,7 +940,8 @@
         (perf.rows || []).forEach(function (r) {
           if (String(r[pi]) !== "CodeChef") return;
           var contest = String(r[cci] || "").trim();
-          if (!/^START/i.test(contest)) return;
+          var m = contest.match(/^START(\d+)/i);
+          if (!m || Number(m[1]) < 251) return; // course contests only (START251 onward)
           if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
           ccByCode[contest].scores[r[ci]] = Number(r[si]) || 0;
         });
@@ -975,9 +981,14 @@
       var sel = document.getElementById("cs-contest");
       var c = contestList[Number(sel.value)];
       if (!c) return;
-      var headers = ["Code", c.total ? "Solved (/" + c.total + ")" : "Problems Solved"];
-      var rows = Object.keys(c.scores).map(function (code) { return [code, c.scores[code]]; });
-      rows.sort(function (a, b) { return b[1] - a[1]; });
+      var headers = ["Rank", "Code", c.total ? "Solved (/" + c.total + ")" : "Solved"];
+      var pairs = Object.keys(c.scores).map(function (code) { return [code, c.scores[code]]; });
+      pairs.sort(function (a, b) { return b[1] - a[1]; });
+      var rows = [], rank = 0, prev = null;
+      pairs.forEach(function (p, i) {
+        if (prev === null || p[1] !== prev) { rank = i + 1; prev = p[1]; }
+        rows.push([rank, p[0], p[1]]);
+      });
       cache.contests = { headers: headers, rows: rows };
       renderTable("cs-head", "cs-body", headers, rows, "contests");
       document.getElementById("cs-scroll-wrap").classList.remove("hide");
