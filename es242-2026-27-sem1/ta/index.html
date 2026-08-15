@@ -31,7 +31,7 @@
     <section class="hero">
       <p class="eyebrow">Internal &middot; not public</p>
       <h1>ES242 TA Leaderboard</h1>
-      <p class="lead">Public-contest standing for the ES242 teaching assistants.</p>
+      <p class="lead">Problems solved on each platform since the course began (4 August 2026).</p>
       <div class="last-updated" id="updated"></div>
     </section>
 
@@ -54,10 +54,10 @@
     function rowsFor(key){
       var rows = (DATA.tas||[]).map(function(t){ return { name:t.name, p:t[key] }; })
         .filter(function(x){ return x.p && x.p.handle; });
-      // sort: by rating desc (nulls last), then name
+      // sort: by problems solved desc (nulls/zeros last), then name
       rows.sort(function(a,b){
-        var ra=(a.p.rating==null?-1:a.p.rating), rb=(b.p.rating==null?-1:b.p.rating);
-        if(rb!==ra) return rb-ra;
+        var sa=(a.p.solved==null?-1:a.p.solved), sb=(b.p.solved==null?-1:b.p.solved);
+        if(sb!==sa) return sb-sa;
         return a.name.localeCompare(b.name);
       });
       return rows;
@@ -73,21 +73,20 @@
 
       var link = function(h,txt){ return '<a href="'+plat.url(h)+'" target="_blank" rel="noopener">'+txt+'</a>'; };
       var html = '<table><thead><tr><th></th><th>TA</th><th>Handle</th>'+
-                 (isCC ? '' : '<th class="num">Rating</th><th class="num">Contests</th>')+
+                 (isCC ? '' : '<th class="num">Problems solved</th>')+
                  '</tr></thead><tbody>';
-      if(!rows.length){ html += '<tr><td colspan="5" class="muted">No handles submitted yet.</td></tr>'; }
+      if(!rows.length){ html += '<tr><td colspan="4" class="muted">No handles submitted yet.</td></tr>'; }
 
       rows.forEach(function(r,i){
-        var rating = r.p.rating;
-        // Medal only for the genuine top 3 (rated) on the ranked platforms — celebrate the top, don't number the rest.
-        var medal = (!isCC && rating!=null && rating>0 && i<3) ? MEDALS[i] : "";
+        var solved = r.p.solved;
+        // Medal only for the genuine top 3 (solved > 0) — celebrate the top, don't number the rest.
+        var medal = (!isCC && solved!=null && solved>0 && i<3) ? MEDALS[i] : "";
         html += '<tr><td class="medal">'+medal+'</td>'+
                 '<td>'+esc(r.name)+'</td>'+
                 '<td>'+link(r.p.handle, esc(r.p.handle))+'</td>';
         if(!isCC){
-          var rc = (rating!=null && rating>0) ? rating : '<span class="muted">getting started</span>';
-          html += '<td class="num">'+rc+'</td>'+
-                  '<td class="num">'+(r.p.contests ? r.p.contests : '<span class="muted">&ndash;</span>')+'</td>';
+          var sc = (solved!=null && solved>0) ? solved : '<span class="muted">getting started</span>';
+          html += '<td class="num">'+sc+'</td>';
         }
         html += '</tr>';
       });
