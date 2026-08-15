@@ -83,9 +83,13 @@
         var rc = rank===1?'rk1':rank===2?'rk2':rank===3?'rk3':'';
         var ratedRows = rating!=null;
         var rankCell = ratedRows ? ('<span class="'+rc+'">'+rank+'</span>') : '<span class="muted">&ndash;</span>';
+        var ratingCell;
+        if (rating != null) ratingCell = rating;
+        else if (isCC) ratingCell = '<a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener" class="muted">view profile &rarr;</a>';
+        else ratingCell = '<span class="muted">&ndash;</span>';
         html += '<tr><td>'+rankCell+'</td><td>'+esc(r.name)+'</td>'+
                 '<td><a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener">'+esc(r.p.handle)+'</a></td>'+
-                '<td class="num">'+(rating!=null?rating:(isCC?'<span class="muted">view&nbsp;&rarr;</span>':'<span class="muted">&ndash;</span>'))+'</td>';
+                '<td class="num">'+ratingCell+'</td>';
         if(!isCC){ html += '<td class="num">'+(r.p.contests!=null?r.p.contests:'&ndash;')+'</td>'; }
         html += '</tr>';
       });
