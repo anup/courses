@@ -67,28 +67,19 @@
 
     function render(){
       var plat = PLATFORMS.filter(function(p){return p.key===current;})[0];
-      var isCC = current==="codechef";
       var rows = rowsFor(current);
-      if(isCC){ rows = rows.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }); } // CodeChef: no ranking, A→Z
-
       var link = function(h,txt){ return '<a href="'+plat.url(h)+'" target="_blank" rel="noopener">'+txt+'</a>'; };
-      var html = '<table><thead><tr><th></th><th>TA</th><th>Handle</th>'+
-                 (isCC ? '' : '<th class="num">Problems solved</th>')+
-                 '</tr></thead><tbody>';
+      var html = '<table><thead><tr><th></th><th>TA</th><th>Handle</th><th class="num">Problems solved</th></tr></thead><tbody>';
       if(!rows.length){ html += '<tr><td colspan="4" class="muted">No handles submitted yet.</td></tr>'; }
-
       rows.forEach(function(r,i){
         var solved = r.p.solved;
         // Medal only for the genuine top 3 (solved > 0) — celebrate the top, don't number the rest.
-        var medal = (!isCC && solved!=null && solved>0 && i<3) ? MEDALS[i] : "";
+        var medal = (solved!=null && solved>0 && i<3) ? MEDALS[i] : "";
+        var sc = (solved!=null && solved>0) ? solved : '<span class="muted">getting started</span>';
         html += '<tr><td class="medal">'+medal+'</td>'+
                 '<td>'+esc(r.name)+'</td>'+
-                '<td>'+link(r.p.handle, esc(r.p.handle))+'</td>';
-        if(!isCC){
-          var sc = (solved!=null && solved>0) ? solved : '<span class="muted">getting started</span>';
-          html += '<td class="num">'+sc+'</td>';
-        }
-        html += '</tr>';
+                '<td>'+link(r.p.handle, esc(r.p.handle))+'</td>'+
+                '<td class="num">'+sc+'</td></tr>';
       });
       html += '</tbody></table>';
       document.getElementById("panel").innerHTML = html;
