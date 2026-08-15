@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>ES242 TA Leaderboard (internal)</title>
+  <link rel="stylesheet" href="../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .ta-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:18px 0 6px; border-bottom:1px solid var(--line,#ddd); }
+    .ta-tab { background:none; border:none; padding:8px 14px; font:inherit; cursor:pointer; color:var(--muted,#666); border-bottom:2px solid transparent; }
+    .ta-tab[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--ink); font-weight:600; }
+    .ta-panel { margin-top:14px; }
+    .ta-panel table { width:100%; max-width:680px; border-collapse:collapse; }
+    .ta-panel th, .ta-panel td { padding:9px 12px; border-bottom:1px solid var(--line,#eee); text-align:left; }
+    .ta-panel th:first-child, .ta-panel td:first-child { text-align:center; width:64px; }
+    .ta-panel td.num, .ta-panel th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    .ta-panel tr:hover td { background: var(--code-bg,#f6f6f6); }
+    .rk1{font-weight:700;color:#b8860b;} .rk2{font-weight:700;color:#888;} .rk3{font-weight:700;color:#a0522d;}
+    .muted { color:var(--muted,#777); }
+    .note { font-size:.9em; color:var(--muted,#777); margin:6px 0 0; }
+  </style>
+</head>
+<body>
+  <main class="shell" id="main-content">
+    <section class="hero">
+      <p class="eyebrow">Internal &middot; not public</p>
+      <h1>ES242 TA Leaderboard</h1>
+      <p class="lead">Public-contest standing for the ES242 teaching assistants. This page is unlisted (not linked or indexed).</p>
+      <div class="last-updated" id="updated"></div>
+    </section>
+
+    <div class="ta-tabs" role="tablist" id="tabs"></div>
+    <div class="ta-panel" id="panel"><p id="status" class="note">Loading&hellip;</p></div>
+
+    <p class="note" id="cc-note" style="display:none">
+      CodeChef ratings can&rsquo;t be fetched automatically (Cloudflare), so CodeChef shows each TA&rsquo;s handle &mdash; click to view their profile and rating.
+    </p>
+  </main>
+
+  <script src="../../assets/course-theme.js"></script>
+  <script>
+    var PLATFORMS = [
+      { key:"codeforces", label:"Codeforces", url:function(h){return "https://codeforces.com/profile/"+encodeURIComponent(h);} },
+      { key:"leetcode",   label:"LeetCode",   url:function(h){return "https://leetcode.com/u/"+encodeURIComponent(h)+"/";} },
+      { key:"atcoder",    label:"AtCoder",    url:function(h){return "https://atcoder.jp/users/"+encodeURIComponent(h);} },
+      { key:"codechef",   label:"CodeChef",   url:function(h){return "https://www.codechef.com/users/"+encodeURIComponent(h);} }
+    ];
+    var DATA = null, current = "codeforces";
+
+    function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
+
+    function rowsFor(key){
+      var rows = (DATA.tas||[]).map(function(t){ return { name:t.name, p:t[key] }; })
+        .filter(function(x){ return x.p && x.p.handle; });
+      // sort: by rating desc (nulls last), then name
+      rows.sort(function(a,b){
+        var ra=(a.p.rating==null?-1:a.p.rating), rb=(b.p.rating==null?-1:b.p.rating);
+        if(rb!==ra) return rb-ra;
+        return a.name.localeCompare(b.name);
+      });
+      return rows;
+    }
+
+    function render(){
+      var plat = PLATFORMS.filter(function(p){return p.key===current;})[0];
+      var rows = rowsFor(current);
+      var isCC = current==="codechef";
+      var html = '<table><thead><tr><th>Rank</th><th>TA</th><th>Handle</th>'+
+                 (isCC ? '<th class="num">Rating</th>' : '<th class="num">Rating</th><th class="num">Contests</th>')+
+                 '</tr></thead><tbody>';
+      if(!rows.length){ html += '<tr><td colspan="5" class="muted">No handles submitted yet.</td></tr>'; }
+      var rank=0, prev=null;
+      rows.forEach(function(r,i){
+        var rating = r.p.rating;
+        var rateKey = (rating==null?-1:rating);
+        if(prev===null || rateKey!==prev){ rank=i+1; prev=rateKey; }
+        var rc = rank===1?'rk1':rank===2?'rk2':rank===3?'rk3':'';
+        var ratedRows = rating!=null;
+        var rankCell = ratedRows ? ('<span class="'+rc+'">'+rank+'</span>') : '<span class="muted">&ndash;</span>';
+        html += '<tr><td>'+rankCell+'</td><td>'+esc(r.name)+'</td>'+
+                '<td><a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener">'+esc(r.p.handle)+'</a></td>'+
+                '<td class="num">'+(rating!=null?rating:(isCC?'<span class="muted">view&nbsp;&rarr;</span>':'<span class="muted">&ndash;</span>'))+'</td>';
+        if(!isCC){ html += '<td class="num">'+(r.p.contests!=null?r.p.contests:'&ndash;')+'</td>'; }
+        html += '</tr>';
+      });
+      html += '</tbody></table>';
+      document.getElementById("panel").innerHTML = html;
+      document.getElementById("cc-note").style.display = isCC ? "" : "none";
+    }
+
+    function buildTabs(){
+      var t = document.getElementById("tabs");
+      t.innerHTML = "";
+      PLATFORMS.forEach(function(p){
+        var n = rowsFor(p.key).length;
+        var b = document.createElement("button");
+        b.className = "ta-tab"; b.setAttribute("role","tab");
+        b.setAttribute("aria-selected", p.key===current ? "true":"false");
+        b.textContent = p.label + " (" + n + ")";
+        b.addEventListener("click", function(){ current=p.key; buildTabs(); render(); });
+        t.appendChild(b);
+      });
+    }
+
+    fetch("ta-leaderboard.json?cb="+Date.now())
+      .then(function(r){ return r.json(); })
+      .then(function(d){
+        DATA = d;
+        document.getElementById("updated").textContent = d.generated ? ("Last updated: " + d.generated) : "";
+        buildTabs(); render();
+      })
+      .catch(function(e){ document.getElementById("status").textContent = "Failed to load data."; });
+  </script>
+</body>
+</html>
