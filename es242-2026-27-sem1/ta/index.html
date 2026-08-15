@@ -99,14 +99,23 @@
       });
     }
 
-    fetch("ta-leaderboard.json?cb="+Date.now())
+    // Live nightly data comes from the TA-tracker web app; fall back to the committed snapshot.
+    var TA_API = "https://script.google.com/macros/s/AKfycbynrz1waU2yxT8W-JxK-2-VAodOJEvQ0uBlwwgGB0nWoPXvQ7ifmo6UI3A9cKhoFIgh/exec";
+    function init(d){
+      DATA = d;
+      document.getElementById("updated").textContent = d.generated ? ("Last updated: " + d.generated) : "";
+      buildTabs(); render();
+    }
+    function loadStatic(){
+      fetch("ta-leaderboard.json?cb="+Date.now())
+        .then(function(r){ return r.json(); })
+        .then(init)
+        .catch(function(){ document.getElementById("status").textContent = "Failed to load data."; });
+    }
+    fetch(TA_API)
       .then(function(r){ return r.json(); })
-      .then(function(d){
-        DATA = d;
-        document.getElementById("updated").textContent = d.generated ? ("Last updated: " + d.generated) : "";
-        buildTabs(); render();
-      })
-      .catch(function(e){ document.getElementById("status").textContent = "Failed to load data."; });
+      .then(function(d){ if (d && d.tas && d.tas.length) init(d); else loadStatic(); })
+      .catch(loadStatic);
   </script>
 </body>
 </html>
