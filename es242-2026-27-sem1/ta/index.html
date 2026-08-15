@@ -31,16 +31,12 @@
     <section class="hero">
       <p class="eyebrow">Internal &middot; not public</p>
       <h1>ES242 TA Leaderboard</h1>
-      <p class="lead">Public-contest standing for the ES242 teaching assistants. This page is unlisted (not linked or indexed).</p>
+      <p class="lead">Public-contest standing for the ES242 teaching assistants.</p>
       <div class="last-updated" id="updated"></div>
     </section>
 
     <div class="ta-tabs" role="tablist" id="tabs"></div>
     <div class="ta-panel" id="panel"><p id="status" class="note">Loading&hellip;</p></div>
-
-    <p class="note" id="cc-note" style="display:none">
-      CodeChef ratings can&rsquo;t be fetched automatically (Cloudflare), so CodeChef shows each TA&rsquo;s handle &mdash; click to view their profile and rating.
-    </p>
   </main>
 
   <script src="../../assets/course-theme.js"></script>
@@ -67,35 +63,36 @@
       return rows;
     }
 
+    var MEDALS = ["🥇","🥈","🥉"];
+
     function render(){
       var plat = PLATFORMS.filter(function(p){return p.key===current;})[0];
-      var rows = rowsFor(current);
       var isCC = current==="codechef";
-      var html = '<table><thead><tr><th>Rank</th><th>TA</th><th>Handle</th>'+
-                 (isCC ? '<th class="num">Rating</th>' : '<th class="num">Rating</th><th class="num">Contests</th>')+
+      var rows = rowsFor(current);
+      if(isCC){ rows = rows.slice().sort(function(a,b){ return a.name.localeCompare(b.name); }); } // CodeChef: no ranking, A→Z
+
+      var link = function(h,txt){ return '<a href="'+plat.url(h)+'" target="_blank" rel="noopener">'+txt+'</a>'; };
+      var html = '<table><thead><tr><th></th><th>TA</th><th>Handle</th>'+
+                 (isCC ? '' : '<th class="num">Rating</th><th class="num">Contests</th>')+
                  '</tr></thead><tbody>';
       if(!rows.length){ html += '<tr><td colspan="5" class="muted">No handles submitted yet.</td></tr>'; }
-      var rank=0, prev=null;
+
       rows.forEach(function(r,i){
         var rating = r.p.rating;
-        var rateKey = (rating==null?-1:rating);
-        if(prev===null || rateKey!==prev){ rank=i+1; prev=rateKey; }
-        var rc = rank===1?'rk1':rank===2?'rk2':rank===3?'rk3':'';
-        var ratedRows = rating!=null;
-        var rankCell = ratedRows ? ('<span class="'+rc+'">'+rank+'</span>') : '<span class="muted">&ndash;</span>';
-        var ratingCell;
-        if (rating != null) ratingCell = rating;
-        else if (isCC) ratingCell = '<a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener" class="muted">view profile &rarr;</a>';
-        else ratingCell = '<span class="muted">&ndash;</span>';
-        html += '<tr><td>'+rankCell+'</td><td>'+esc(r.name)+'</td>'+
-                '<td><a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener">'+esc(r.p.handle)+'</a></td>'+
-                '<td class="num">'+ratingCell+'</td>';
-        if(!isCC){ html += '<td class="num">'+(r.p.contests!=null?r.p.contests:'&ndash;')+'</td>'; }
+        // Medal only for the genuine top 3 (rated) on the ranked platforms — celebrate the top, don't number the rest.
+        var medal = (!isCC && rating!=null && rating>0 && i<3) ? MEDALS[i] : "";
+        html += '<tr><td class="medal">'+medal+'</td>'+
+                '<td>'+esc(r.name)+'</td>'+
+                '<td>'+link(r.p.handle, esc(r.p.handle))+'</td>';
+        if(!isCC){
+          var rc = (rating!=null && rating>0) ? rating : '<span class="muted">getting started</span>';
+          html += '<td class="num">'+rc+'</td>'+
+                  '<td class="num">'+(r.p.contests ? r.p.contests : '<span class="muted">&ndash;</span>')+'</td>';
+        }
         html += '</tr>';
       });
       html += '</tbody></table>';
       document.getElementById("panel").innerHTML = html;
-      document.getElementById("cc-note").style.display = isCC ? "" : "none";
     }
 
     function buildTabs(){
