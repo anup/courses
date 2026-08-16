@@ -201,6 +201,13 @@
     #up-table th:nth-child(3), #up-table td:nth-child(3) { width: 168px; }
     #up-table th:nth-child(4), #up-table td:nth-child(4) { display: none; } /* hide Ends */
     #up-table td { word-break: break-word; }
+    /* Contest Matrix: contests as columns, one row per anonymous code. */
+    #mx-table th { padding: 10px 8px; text-align: center; font-size: 0.72em; }
+    #mx-table td { text-align: center; }
+    #mx-table th.mx-codecol, #mx-table td.mx-codecol { text-align: left; font-variant-numeric: normal; white-space: nowrap; }
+    #mx-table th:first-child, #mx-table td:first-child { width: 44px; text-align: center; }
+    #mx-table td.mx-tot { font-weight: 600; }
+    #mx-table .mx-z { color: var(--muted); }
     /* Contest Scores: a compact 3-column table, not stretched full width. */
     /* count mode (Rank · Code · Solved): compact, centered */
     #cs-table:not(.grid-mode) table { min-width: 0; max-width: 560px; margin: 0 auto; }
@@ -436,6 +443,7 @@
       <button class="tab" role="tab" aria-selected="false" aria-controls="grades-view" id="tab-grades" data-view="grades">Detailed Grades</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="performance-view" id="tab-performance" data-view="performance">Contest Performance</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="contests-view" id="tab-contests" data-view="contests">Contest Scores</button>
+      <button class="tab" role="tab" aria-selected="false" aria-controls="matrix-view" id="tab-matrix" data-view="matrix">Contest Matrix</button>
       <button class="tab" role="tab" aria-selected="true" aria-controls="leetcode-view" id="tab-leetcode" data-view="leetcode">LeetCode</button>
       <button class="tab" role="tab" aria-selected="false" aria-controls="upcoming-view" id="tab-upcoming" data-view="upcoming">Upcoming Contests</button>
     </div>
@@ -502,6 +510,25 @@
         <button class="scroll-arrow scroll-arrow-right" id="cs-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
         <div class="table-block" id="cs-table" tabindex="0" aria-label="Contest scores table, scrollable">
           <table aria-label="Contest Scores"><thead><tr id="cs-head"></tr></thead><tbody id="cs-body"></tbody></table>
+        </div>
+      </div>
+    </section>
+
+    <section id="matrix-view" class="hide" role="tabpanel" aria-labelledby="tab-matrix">
+      <p class="lead-note">Per-contest problems solved, by anonymous code. Pick a platform; each contest is a column (newest first). Search your code above.</p>
+      <div class="up-filter">
+        <label for="mx-platform">Platform</label>
+        <select id="mx-platform"></select>
+      </div>
+      <div class="loading hide" id="mx-loading" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div><br>Loading&hellip;
+      </div>
+      <div class="error-msg hide" id="mx-error" role="alert"></div>
+      <div class="scroll-wrap hide" id="mx-scroll-wrap">
+        <button class="scroll-arrow scroll-arrow-left" id="mx-arrow-left" aria-label="Scroll table left">&lsaquo;</button>
+        <button class="scroll-arrow scroll-arrow-right" id="mx-arrow-right" aria-label="Scroll table right">&rsaquo;</button>
+        <div class="table-block" id="mx-table" tabindex="0" aria-label="Contest matrix table, scrollable">
+          <table aria-label="Contest Matrix"><thead><tr id="mx-head"></tr></thead><tbody id="mx-body"></tbody></table>
         </div>
       </div>
     </section>
@@ -578,10 +605,11 @@
       performance:  { col: -1, asc: true },
       leetcode:     { col: 1, asc: false },
       upcoming:     { col: 2, asc: true },
-      contests:     { col: 1, asc: false }
+      contests:     { col: 1, asc: false },
+      matrix:       { col: -1, asc: false }
     };
-    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc", upcoming: "up", contests: "cs" };
-    var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming", "contests"];
+    var VIEW_PREFIX = { leaderboard: "lb", grades: "gr", performance: "pf", leetcode: "lc", upcoming: "up", contests: "cs", matrix: "mx" };
+    var ALL_VIEWS = ["leaderboard", "grades", "performance", "leetcode", "upcoming", "contests", "matrix"];
     var HIDDEN_COLUMNS = {
       leaderboard: {
         "final total": true,
@@ -743,6 +771,7 @@
         grades:       "Showing detailed grades",
         performance:  "Showing contest performance",
         contests:     "Showing contest scores",
+        matrix:       "Showing contest matrix",
         leetcode:     "Showing LeetCode practice",
         upcoming:     "Showing upcoming contests"
       };
@@ -909,6 +938,7 @@
           }
 
           setupContests(allData);
+          setupMatrix(allData);
 
           if (allData.leetcode) {
             var foundationsTotal = allData.leetcode.foundationsTotal || 0;
@@ -942,6 +972,104 @@
         : upcomingAllRows.slice();
       cache.upcoming.rows = rows;
       renderTable("up-head", "up-body", cache.upcoming.headers, rows, "upcoming");
+    }
+
+    // ---- Contest Matrix tab: per-contest problems solved, contests as columns ----
+    var MX_PLATFORM_ORDER = ["CodeChef", "AtCoder", "LeetCode", "Codeforces"];
+    var mxData = null;
+
+    function mxShort(code) {
+      var c = String(code || ""), m;
+      if ((m = c.match(/^abc0*(\d+)/i)))              return "ABC " + m[1];
+      if ((m = c.match(/^arc0*(\d+)/i)))              return "ARC " + m[1];
+      if ((m = c.match(/^agc0*(\d+)/i)))              return "AGC " + m[1];
+      if ((m = c.match(/biweekly-contest-(\d+)/i)))   return "Biweekly " + m[1];
+      if ((m = c.match(/weekly-contest-(\d+)/i)))     return "Weekly " + m[1];
+      if ((m = c.match(/^START(\d+)/i)))              return "START " + m[1];
+      return c;
+    }
+    // Trailing number in a contest code, for newest-first ordering.
+    function mxNum(code) { var m = String(code || "").match(/(\d+)(?!.*\d)/); return m ? Number(m[1]) : 0; }
+
+    function setupMatrix(allData) {
+      var perf = allData.performance;
+      mxData = {};
+      if (perf && perf.headers) {
+        var H = perf.headers.map(function (h) { return String(h || "").toLowerCase(); });
+        var ci = H.indexOf("code"), pi = H.indexOf("platform"),
+            cci = H.indexOf("contest code"), si = H.indexOf("problems solved");
+        (perf.rows || []).forEach(function (r) {
+          var plat = String(r[pi] || "").trim();
+          var code = String(r[ci] || "").trim();
+          var contest = String(r[cci] || "").trim();
+          if (!plat || !code || !contest) return;
+          var solved = Number(r[si]) || 0;
+          if (!mxData[plat]) mxData[plat] = { contestSet: {}, byCode: {} };
+          mxData[plat].contestSet[contest] = 1;
+          var bc = mxData[plat].byCode;
+          if (!bc[code]) bc[code] = { code: code, total: 0, m: {} };
+          bc[code].m[contest] = solved;
+          bc[code].total += solved;
+        });
+      }
+      var sel = document.getElementById("mx-platform");
+      var mxLoading = document.getElementById("mx-loading");
+      if (mxLoading) mxLoading.classList.add("hide");
+      var present = MX_PLATFORM_ORDER.filter(function (p) { return mxData[p]; })
+        .concat(Object.keys(mxData).filter(function (p) { return MX_PLATFORM_ORDER.indexOf(p) < 0; }));
+      if (!present.length) {
+        var mxErr = document.getElementById("mx-error");
+        if (mxErr) { mxErr.textContent = "No contest data yet."; mxErr.classList.remove("hide"); }
+        return;
+      }
+      sel.innerHTML = "";
+      present.forEach(function (p) {
+        var o = document.createElement("option");
+        o.value = p; o.textContent = p;
+        sel.appendChild(o);
+      });
+      if (!sel._wired) { sel._wired = true; sel.addEventListener("change", renderMatrix); }
+      renderMatrix();
+    }
+
+    function renderMatrix() {
+      var plat = document.getElementById("mx-platform").value;
+      var d = mxData && mxData[plat];
+      var head = document.getElementById("mx-head"), body = document.getElementById("mx-body");
+      head.innerHTML = ""; body.innerHTML = "";
+      document.getElementById("mx-scroll-wrap").classList.remove("hide");
+      if (!d) return;
+
+      var contests = Object.keys(d.contestSet).sort(function (a, b) {
+        return mxNum(b) - mxNum(a) || (a < b ? 1 : -1);
+      });
+      var codes = Object.keys(d.byCode).map(function (k) { return d.byCode[k]; });
+      codes.sort(function (a, b) { return b.total - a.total || (a.code < b.code ? -1 : 1); });
+
+      var thMedal = document.createElement("th"); head.appendChild(thMedal);
+      var thCode = document.createElement("th"); thCode.className = "mx-codecol"; thCode.textContent = "Code"; head.appendChild(thCode);
+      contests.forEach(function (c) {
+        var th = document.createElement("th"); th.title = c; th.textContent = mxShort(c); head.appendChild(th);
+      });
+      var thTot = document.createElement("th"); thTot.textContent = "Total"; head.appendChild(thTot);
+
+      var MEDALS = ["🥇", "🥈", "🥉"];
+      codes.forEach(function (x, i) {
+        var tr = document.createElement("tr");
+        var tdM = document.createElement("td"); tdM.textContent = (x.total > 0 && i < 3) ? MEDALS[i] : ""; tr.appendChild(tdM);
+        var tdC = document.createElement("td"); tdC.className = "mx-codecol"; tdC.textContent = x.code; tr.appendChild(tdC);
+        contests.forEach(function (c) {
+          var td = document.createElement("td");
+          var v = x.m[c];
+          if (v != null) { td.textContent = v; }
+          else { var s = document.createElement("span"); s.className = "mx-z"; s.textContent = "·"; td.appendChild(s); }
+          tr.appendChild(td);
+        });
+        var tdT = document.createElement("td"); tdT.className = "mx-tot"; tdT.textContent = x.total; tr.appendChild(tdT);
+        body.appendChild(tr);
+      });
+      setupScrollArrows("mx");
+      applySearch();
     }
 
     // ---- Contest Scores tab: per-contest solve counts, DOMjudge + CodeChef ----
