@@ -617,7 +617,12 @@
       },
       grades: {
         "final total": true,
-        "penalty": true
+        "penalty": true,
+        "c practice contests": true,
+        "non-c practice contests": true,
+        "c practice req met": true,
+        "practice contests counted": true,
+        "regular practice (/0)": true
       },
       performance: {},
       leetcode: {},
@@ -683,9 +688,10 @@
     // Anything not listed is dropped (e.g. the non-graded practice-contest
     // columns), so the Detailed Grades view mirrors the ES242 grading policy:
     // Labs 50 + Midsem 20 + Endsem 20 + CodeChef Starters 10 = 100.
-    var VIEW_ORDER = {
-      grades: ["Code", "Labs (/50)", "Midsem (/20)", "Endsem (/20)", "CodeChef Starters (/10)", "Total (/100)"]
-    };
+    // Detailed Grades shows the full per-contest (and, later, per-lab) breakdown in
+    // data order — practice columns are hidden via HIDDEN_COLUMNS.grades. The Leaderboard
+    // stays the clean summary. No fixed order here so new contest columns appear automatically.
+    var VIEW_ORDER = {};
 
     function visibleDataForView(view, data) {
       var hidden = HIDDEN_COLUMNS[view] || {};
