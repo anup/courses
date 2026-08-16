@@ -16,12 +16,17 @@
     .ta-tab { background:none; border:none; padding:8px 14px; font:inherit; cursor:pointer; color:var(--muted,#666); border-bottom:2px solid transparent; }
     .ta-tab[aria-selected="true"] { color:var(--ink); border-bottom-color:var(--ink); font-weight:600; }
     .ta-panel { margin-top:14px; }
-    .ta-panel table { width:100%; max-width:680px; border-collapse:collapse; }
-    .ta-panel th, .ta-panel td { padding:9px 12px; border-bottom:1px solid var(--line,#eee); text-align:left; }
-    .ta-panel th:first-child, .ta-panel td:first-child { text-align:center; width:64px; }
-    .ta-panel td.num, .ta-panel th.num { text-align:right; font-variant-numeric:tabular-nums; }
+    .cs-wrap { overflow-x:auto; }
+    .ta-panel table { border-collapse:collapse; }
+    .ta-panel th, .ta-panel td { padding:8px 11px; border-bottom:1px solid var(--line,#eee); text-align:left; white-space:nowrap; }
+    .ta-panel th:first-child, .ta-panel td:first-child { text-align:center; width:44px; }
+    .ta-panel .ta-col { text-align:left; min-width:150px; }
+    .ta-panel th.cnum, .ta-panel td.cnum { text-align:center; min-width:58px; font-variant-numeric:tabular-nums; }
+    .ta-panel th.num, .ta-panel td.num { text-align:right; font-variant-numeric:tabular-nums; }
+    .ta-panel td.tot { font-weight:600; }
+    .ta-panel .cdate { font-weight:400; font-size:.78em; color:var(--muted,#777); margin-top:2px; }
+    .ta-panel .z { color:#cfcfcf; }
     .ta-panel tr:hover td { background: var(--code-bg,#f6f6f6); }
-    .rk1{font-weight:700;color:#b8860b;} .rk2{font-weight:700;color:#888;} .rk3{font-weight:700;color:#a0522d;}
     .muted { color:var(--muted,#777); }
     .note { font-size:.9em; color:var(--muted,#777); margin:6px 0 0; }
   </style>
@@ -31,7 +36,7 @@
     <section class="hero">
       <p class="eyebrow">Internal &middot; not public</p>
       <h1>ES242 TA Leaderboard</h1>
-      <p class="lead">Problems solved on each platform since the course began (4 August 2026).</p>
+      <p class="lead">Problems solved per contest since the course began (4 August 2026) &mdash; newest contest first.</p>
       <div class="last-updated" id="updated"></div>
     </section>
 
@@ -51,37 +56,61 @@
 
     function esc(s){ return String(s==null?"":s).replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];}); }
 
-    function rowsFor(key){
+    var MEDALS = ["🥇","🥈","🥉"];
+
+    // TAs with a handle on this platform, sorted by total problems solved (desc).
+    function taRows(key){
       var rows = (DATA.tas||[]).map(function(t){ return { name:t.name, p:t[key] }; })
         .filter(function(x){ return x.p && x.p.handle; });
-      // sort: by problems solved desc (nulls/zeros last), then name
-      rows.sort(function(a,b){
-        var sa=(a.p.solved==null?-1:a.p.solved), sb=(b.p.solved==null?-1:b.p.solved);
-        if(sb!==sa) return sb-sa;
-        return a.name.localeCompare(b.name);
-      });
+      rows.sort(function(a,b){ var d=(b.p.total||0)-(a.p.total||0); return d || a.name.localeCompare(b.name); });
       return rows;
     }
-
-    var MEDALS = ["🥇","🥈","🥉"];
+    // Union of contests across TAs on this platform, newest first.
+    function contestCols(rows){
+      var m = {};
+      rows.forEach(function(x){ (x.p.contests||[]).forEach(function(c){ if(!m[c.code]) m[c.code] = {code:c.code, name:c.name, date:c.date, ts:c.ts||0}; }); });
+      var arr = Object.keys(m).map(function(k){ return m[k]; });
+      arr.sort(function(a,b){ return (b.ts||0)-(a.ts||0); });
+      return arr;
+    }
+    function shortContest(c){
+      var n = c.name || c.code || "", m;
+      if ((m = n.match(/AtCoder Beginner Contest\s*(\d+)/i))) return "ABC " + m[1];
+      if ((m = n.match(/AtCoder Regular Contest\s*(\d+)/i)))  return "ARC " + m[1];
+      if ((m = n.match(/AtCoder Grand Contest\s*(\d+)/i)))    return "AGC " + m[1];
+      if ((m = n.match(/Educational Codeforces Round\s*(\d+)/i))) return "Edu " + m[1];
+      if ((m = n.match(/Codeforces Round\s*(\d+)/i)))         return "Round " + m[1];
+      if ((m = n.match(/Biweekly Contest\s*(\d+)/i)))         return "Biweekly " + m[1];
+      if ((m = n.match(/Weekly Contest\s*(\d+)/i)))           return "Weekly " + m[1];
+      return c.code || n;
+    }
 
     function render(){
       var plat = PLATFORMS.filter(function(p){return p.key===current;})[0];
-      var rows = rowsFor(current);
-      var link = function(h,txt){ return '<a href="'+plat.url(h)+'" target="_blank" rel="noopener">'+txt+'</a>'; };
-      var html = '<table><thead><tr><th></th><th>TA</th><th>Handle</th><th class="num">Problems solved</th></tr></thead><tbody>';
-      if(!rows.length){ html += '<tr><td colspan="4" class="muted">No handles submitted yet.</td></tr>'; }
-      rows.forEach(function(r,i){
-        var solved = r.p.solved;
-        // Medal only for the genuine top 3 (solved > 0) — celebrate the top, don't number the rest.
-        var medal = (solved!=null && solved>0 && i<3) ? MEDALS[i] : "";
-        var sc = (solved!=null && solved>0) ? solved : '<span class="muted">getting started</span>';
-        html += '<tr><td class="medal">'+medal+'</td>'+
-                '<td>'+esc(r.name)+'</td>'+
-                '<td>'+link(r.p.handle, esc(r.p.handle))+'</td>'+
-                '<td class="num">'+sc+'</td></tr>';
+      var rows = taRows(current);
+      var cols = contestCols(rows);
+      var html = '<div class="cs-wrap"><table><thead><tr><th></th><th class="ta-col">TA</th>';
+      cols.forEach(function(c){
+        html += '<th class="cnum" title="'+esc(c.name)+' &mdash; '+esc(c.date)+'">'+esc(shortContest(c))+
+                '<div class="cdate">'+esc((c.date||"").slice(5))+'</div></th>';
       });
-      html += '</tbody></table>';
+      html += '<th class="num">Total</th></tr></thead><tbody>';
+      if (!rows.length) {
+        html += '<tr><td colspan="'+(cols.length+3)+'" class="muted">No handles submitted yet.</td></tr>';
+      } else if (!cols.length) {
+        html += '<tr><td colspan="3" class="muted">No contest participation on this platform yet.</td></tr>';
+      } else {
+        rows.forEach(function(r,i){
+          var total = r.p.total || 0;
+          var byCode = {}; (r.p.contests||[]).forEach(function(c){ byCode[c.code] = c.solved; });
+          var medal = (total>0 && i<3) ? MEDALS[i] : "";
+          html += '<tr><td class="medal">'+medal+'</td>'+
+                  '<td class="ta-col"><a href="'+plat.url(r.p.handle)+'" target="_blank" rel="noopener">'+esc(r.name)+'</a></td>';
+          cols.forEach(function(c){ var v = byCode[c.code]; html += '<td class="cnum">'+(v!=null ? v : '<span class="z">&middot;</span>')+'</td>'; });
+          html += '<td class="num tot">'+(total>0 ? total : '<span class="muted">&ndash;</span>')+'</td></tr>';
+        });
+      }
+      html += '</tbody></table></div>';
       document.getElementById("panel").innerHTML = html;
     }
 
@@ -89,7 +118,7 @@
       var t = document.getElementById("tabs");
       t.innerHTML = "";
       PLATFORMS.forEach(function(p){
-        var n = rowsFor(p.key).length;
+        var n = taRows(p.key).length;
         var b = document.createElement("button");
         b.className = "ta-tab"; b.setAttribute("role","tab");
         b.setAttribute("aria-selected", p.key===current ? "true":"false");
