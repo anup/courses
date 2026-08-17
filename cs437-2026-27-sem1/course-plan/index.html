@@ -21,24 +21,139 @@
         <a href="./" aria-current="page">Course Plan</a>
       </nav>
     </div>
+
     <section class="hero">
       <p class="eyebrow">Semester I, 2026-27</p>
       <h1>Course Plan</h1>
-      <p class="lead">The CS437 course plan is being finalized and will be posted here.</p>
+      <p class="lead">A lab course on building software with AI-assisted workflows. This page lists the topics the course plans to cover, week by week.</p>
     </section>
-    <section class="grid stack" aria-label="Course plan details">
-      <div class="tile">
-        <strong>Schedule</strong>
-        <span>Labs: K1 and L1 in 10/105.</span>
+
+    <div class="slide-band">
+      <h2>Subject to change</h2>
+      <p class="compact-list" style="list-style:none; padding-left:0;">This is the first offering of CS437. The topics below indicate what we intend to cover. The sequence, pace, and emphasis may change during the semester. Assessment details will be announced in class.</p>
+    </div>
+
+    <section class="content-section">
+      <h2>Objective</h2>
+      <p>Each student works in a small team on a single project throughout the semester. The final assessment is practical: a person who cannot program requests a new feature in plain English, the team's system implements it, and the team's own test suite determines whether it is accepted.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Format</h2>
+      <p>A lab-only course, conducted hands-on, in two 90-minute sessions each week. It is open to students of all years and backgrounds. The entry requirement is the ability to describe clearly what you want built.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Phase 1 &mdash; Foundations</h2>
+      <div class="agenda">
+        <div class="agenda-item">
+          <span class="marker">Wk 1</span>
+          <div>
+            <h2>Git and GitHub</h2>
+            <p>Version control performed manually, then with an agent: branches, commits, pull requests, reviewing changes, and resolving conflicts.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 2</span>
+          <div>
+            <h2>Model, agent, and harness</h2>
+            <p>The components of an AI coding agent, a brief history of language models, and building a minimal agent from first principles.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 3</span>
+          <div>
+            <h2>Specifications and prompting</h2>
+            <p>Writing specifications an agent can execute, and the difference between an unstructured request and a specification with acceptance tests.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 4</span>
+          <div>
+            <h2>Agentic development workflow and guardrails</h2>
+            <p>A disciplined workflow from request to pull request to deployment, and measures that prevent an agent from making unintended changes.</p>
+          </div>
+        </div>
       </div>
-      <div class="tile">
-        <strong>Staff</strong>
-        <span>Arjun Arul and Anup Kalbalia.</span>
+    </section>
+
+    <section class="content-section">
+      <h2>Phase 2 &mdash; Prototyping and scaling</h2>
+      <div class="agenda">
+        <div class="agenda-item">
+          <span class="marker">Wk 5</span>
+          <div>
+            <h2>Full-stack application from a specification</h2>
+            <p>Implementing a running application from a written specification. A web application with an API is the recommended form.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 6</span>
+          <div>
+            <h2>Providing context to the agent</h2>
+            <p>Supplying an agent with the context it needs through conventions files, skills, memory, and MCP servers.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 7</span>
+          <div>
+            <h2>Working in code you did not write</h2>
+            <p>Adding features to an unfamiliar codebase and reviewing large machine-generated changes, including using one agent to review another agent's work.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 8</span>
+          <div>
+            <h2>Stress-testing and profiling</h2>
+            <p>The difference between a prototype and a production system: measuring behavior under load and identifying performance bottlenecks.</p>
+          </div>
+        </div>
       </div>
-      <div class="tile">
-        <strong>Course Plan</strong>
-        <span>Coming soon.</span>
+    </section>
+
+    <section class="content-section">
+      <h2>Phase 3 &mdash; Security, testing, and architecture</h2>
+      <div class="agenda">
+        <div class="agenda-item">
+          <span class="marker">Wk 9</span>
+          <div>
+            <h2>Security auditing</h2>
+            <p>Common vulnerabilities in AI-generated code, prompt injection, and scanning and auditing a project for security issues.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 10</span>
+          <div>
+            <h2>Tests and the verification gate</h2>
+            <p>Defining correctness through a test suite, measuring coverage, and writing tests that agents cannot silently modify.</p>
+          </div>
+        </div>
+        <div class="agenda-item">
+          <span class="marker">Wk 11</span>
+          <div>
+            <h2>Architecture and hardening</h2>
+            <p>Evaluating the structure an agent has produced, deciding when to refactor rather than regenerate, and resolving outstanding security findings.</p>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Phase 4 &mdash; Capstone</h2>
+      <div class="agenda">
+        <div class="agenda-item">
+          <span class="marker">Wk 12</span>
+          <div>
+            <h2>Acceptance run and demonstrations</h2>
+            <p>A feature requested in plain English by someone outside the team, implemented by the team's system and evaluated by its verification suite, followed by demonstrations and a team review.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>Staff</h2>
+      <p>Arjun Arul and Anup Kalbalia, with guest sessions from practicing engineers during the semester.</p>
     </section>
   </main>
   <script src="../../assets/course-theme.js"></script>
