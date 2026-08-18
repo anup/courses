@@ -1085,19 +1085,39 @@
     // ---- Contest Scores tab: per-contest solve counts, DOMjudge + CodeChef ----
     var contestList = [];
 
+    // Turn a DOMjudge lab code like "ES242-2026-08-17" into "Lab Exam — 17 Aug 2026".
+    function csDjLabel(code) {
+      var m = String(code).match(/(\d{4})-(\d{2})-(\d{2})$/);
+      if (m) {
+        var mon = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][Number(m[2]) - 1];
+        return "Lab Exam — " + Number(m[3]) + " " + mon + " " + m[1];
+      }
+      return String(code);
+    }
+
     function setupContests(allData) {
       var csLoading = document.getElementById("cs-loading");
       if (csLoading) csLoading.classList.remove("hide");
 
-      // CodeChef course contests (START*) from the live performance feed
+      // Course contests from the live performance feed:
+      //   CodeChef Starters (START251+) and DOMjudge labs (aggregate solved).
       var ccByCode = {};
+      var djByCode = {};
       var perf = allData.performance;
       if (perf && perf.headers) {
         var H = perf.headers.map(function (h) { return String(h || "").toLowerCase(); });
         var ci = H.indexOf("code"), pi = H.indexOf("platform"),
             cci = H.indexOf("contest code"), si = H.indexOf("problems solved");
         (perf.rows || []).forEach(function (r) {
-          if (String(r[pi]) !== "CodeChef") return;
+          var plat = String(r[pi] || "");
+          if (plat === "DOMjudge") {
+            var dcode = String(r[cci] || "").trim();
+            if (!dcode) return;
+            if (!djByCode[dcode]) djByCode[dcode] = { label: csDjLabel(dcode) + " (DOMjudge)", platform: "DOMjudge", total: null, scores: {} };
+            djByCode[dcode].scores[r[ci]] = Number(r[si]) || 0;
+            return;
+          }
+          if (plat !== "CodeChef") return;
           var contest = String(r[cci] || "").trim();
           var m = contest.match(/^START(\d+)/i);
           if (!m || Number(m[1]) < 251) return; // course contests only (START251 onward)
@@ -1110,15 +1130,26 @@
         .then(function (r) { return r.ok ? r.json() : { contests: [] }; })
         .catch(function () { return { contests: [] }; })
         .then(function (dj) {
-          var list = [];
+          // Historical DOMjudge contests from the static archive (keep their
+          // per-problem grids); track names to avoid double-listing any the
+          // live feed also carries.
+          var jsonNames = {};
+          var jsonList = [];
           (dj.contests || []).forEach(function (c) {
             var scores = {};
             Object.keys(c.grid || {}).forEach(function (code) {
               scores[code] = (String(c.grid[code]).match(/S/g) || []).length;
             });
-            list.push({ label: c.name + " (DOMjudge, /" + c.total + ")", platform: c.platform, total: c.total,
+            jsonNames[String(c.name)] = true;
+            jsonList.push({ label: c.name + " (DOMjudge, /" + c.total + ")", platform: c.platform, total: c.total,
                         problems: c.problems, grid: c.grid, scores: scores });
           });
+          // Live DOMjudge labs from the feed (aggregate solved), newest first,
+          // excluding any already covered by the static archive.
+          var djFeed = Object.keys(djByCode).sort().reverse()
+            .map(function (k) { return djByCode[k]; })
+            .filter(function (e) { return !jsonNames[e.label.replace(/ \(DOMjudge\)$/, "")]; });
+          var list = djFeed.concat(jsonList);
           Object.keys(ccByCode).sort().forEach(function (k) { list.push(ccByCode[k]); });
           contestList = list;
 
