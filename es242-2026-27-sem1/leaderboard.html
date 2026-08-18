@@ -434,6 +434,9 @@
       <p class="lead-note">
         <strong>Practice vs graded:</strong> the 12 August CodeChef contest (START251) was an <strong>unrated practice round</strong> &mdash; tracked under <em>Contest Performance</em>, but it does <strong>not</strong> count toward marks. Graded contests begin <strong>Monday 17 August</strong>: the weekly <strong>Monday lab contests</strong> (on our platform) count toward <strong>Labs</strong> (50 marks, best N&minus;3), and the weekly <strong>Wednesday CodeChef Starters</strong> count toward the <strong>Programming contest</strong> (10 marks, best N&minus;3), beginning with <strong>START252 on 19 August</strong>.
       </p>
+      <p class="lead-note">
+        <strong>How Labs adds up:</strong> each Monday lab is worth <strong>10 marks</strong>, split equally across its problems (a 4-problem lab gives 2.5 per problem), with no partial credit for a partly-solved problem. Your <strong>best 9</strong> of roughly 12 labs count, scaled to <strong>50</strong>. This is a <strong>running total</strong> &mdash; early in the term only a few labs have been held, so the Labs number is small now and grows each week.
+      </p>
       <div class="last-updated" id="last-updated" aria-live="polite"></div>
       <p class="sr-only" id="status" aria-live="polite"></p>
     </section>
@@ -659,6 +662,7 @@
         { re: /^assignment/,             tip: "Best " + bestOf + " assignment scores, " + maxPer + " marks each" },
         { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " C contests." },
         { re: /^total/,                  tip: "Labs (50) + Midsem (20) + Endsem (20) + CodeChef Starters (10), out of 100" },
+        { re: /^labs/,                   tip: "Running total: each Monday lab is out of 10 (split equally across its problems, no partial credit); best 9 of ~12 labs count, scaled to 50. Small early in the term, grows as more labs are held." },
         { re: /assign.*c solved/,        tip: "Problems solved in C in this assignment contest" },
         { re: /assign.*marks/,           tip: "Marks per the assignment scale" },
         { re: /best.*assignment/,        tip: "Sum of top " + bestOf + " assignment scores (max " + (bestOf * maxPer) + ")" },
