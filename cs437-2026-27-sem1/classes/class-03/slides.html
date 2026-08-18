@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CS437 Class 03 — Git</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/theme/white.css">
+    <style>
+        :root {
+            --main-color: #2c3e50;
+            --accent-color: #3498db;
+            --light-bg: #f8f9fa;
+            --warning-color: #e67e22;
+            --success-color: #27ae60;
+        }
+        .reveal { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 28px; }
+        .reveal .slides section { height: 100%; overflow-y: auto !important; padding: 0 1.2em; }
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4 { color: var(--main-color); font-weight: 600; text-transform: none; margin-bottom: 0.6em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.3em; margin-bottom: 0.4em; }
+        .reveal h4 { font-size: 1.05em; margin-bottom: 0.3em; }
+        .reveal section { text-align: left; height: 100%; }
+        .reveal .center-content { text-align: center; }
+        .reveal li::marker { color: var(--accent-color); font-weight: 700; }
+        .reveal code { font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', monospace; padding: 0.1em 0.3em; background: var(--light-bg); border-radius: 3px; color: #e74c3c; }
+        .reveal .key-point { background: #fff3cd; border-left: 4px solid #ffc107; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .info-box { background: #dae8fc; border-left: 4px solid #2980b9; padding: 0.7em 1.1em; margin: 0.7em 0; border-radius: 4px; font-size: 0.85em; }
+        .reveal .highlight { color: var(--accent-color); font-weight: 600; }
+        .reveal ul, .reveal ol { margin: 0.7em 0; }
+        .reveal li { margin: 0.35em 0; line-height: 1.5; }
+        .reveal p { margin: 0.45em 0; }
+        .reveal .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.4em; margin: 0.7em 0; }
+        .reveal .card { background: var(--light-bg); padding: 1em 1.4em; border-radius: 8px; border-top: 4px solid var(--accent-color); }
+        .reveal .card h4 { margin-bottom: 0.4em; }
+        .reveal .card p { margin: 0.2em 0; font-size: 0.88em; }
+        .reveal .small { font-size: 0.78em; color: #6c757d; }
+        .reveal .mono { font-family: 'Monaco', 'Menlo', monospace; font-size: 0.78em; }
+
+        /* opener / plan slides */
+        .reveal section.vcenter { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; overflow: visible !important; }
+        .reveal section.vcenter h2 { color: #7f8c8d; font-weight: 400; font-size: 1.1em; margin-bottom: 0.4em; }
+        .reveal .line { font-size: 1.5em; font-weight: 600; color: var(--main-color); line-height: 1.35; margin: 0.5em auto; }
+        .reveal .sub { color: #95a5a6; font-size: 0.7em; margin-top: 1.4em; }
+        .reveal section.vcenter ul { display: inline-block; text-align: left; font-size: 0.9em; margin: 0.4em auto 0; }
+        .reveal .go { display: inline-block; margin-top: 1em; padding: 0.5em 1.1em; background: var(--accent-color); color: #fff; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.85em; }
+        .reveal .note { color: #95a5a6; font-size: 0.6em; margin-top: 1.6em; }
+        .big-q { font-size: 1.35em; font-weight: 600; color: var(--main-color); text-align: center; margin: 0.9em 0; line-height: 1.4; }
+    </style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+    <!-- 1 — the belief, calm size, a frame to talk over -->
+    <section class="vcenter">
+        <h2>Still software development</h2>
+        <p class="line">AI writes the code.<br>What you understand decides how good it is.</p>
+        <p class="sub">A belief — held today, and honestly open to being proven wrong.</p>
+    </section>
+
+    <!-- 2 — today's plan + into the lab -->
+    <section class="vcenter">
+        <h2>Today</h2>
+        <ul>
+            <li>Get your system set up — GitHub sign-in, Copilot</li>
+            <li>Learn Git by using it on your Bug Dodger game</li>
+        </ul>
+        <p><a class="go" href="index.html">Start the lab &rarr;</a></p>
+        <p class="note">Heads-up: Arnav takes Thursday's session — evening slot, plan for a long one.</p>
+    </section>
+
+    <!-- ══════════ AFTER THE LAB — name what you just did ══════════ -->
+
+    <!-- 3 — divider -->
+    <section class="center-content">
+        <p class="big-q">You just did all of this.<br>Now let's name it.</p>
+    </section>
+
+    <!-- 4 — the mental model -->
+    <section>
+        <h2>The whole idea, in one picture</h2>
+        <p>Your work moves through four places. Each step has a name — that's the vocabulary.</p>
+        <div style="max-width:720px; margin:0.4em auto 0;">
+            <div class="card" style="margin:0.22em 0;"><h4>Working folder</h4><p>The files you're editing right now.</p></div>
+            <p class="center-content mono" style="margin:0.08em 0; color:var(--accent-color); font-weight:700;">↓ &nbsp;stage&nbsp; (git add)</p>
+            <div class="card" style="margin:0.22em 0; border-top-color:var(--warning-color);"><h4>Staging area</h4><p>The changes you've picked to go into the next checkpoint.</p></div>
+            <p class="center-content mono" style="margin:0.08em 0; color:var(--accent-color); font-weight:700;">↓ &nbsp;commit&nbsp; (git commit)</p>
+            <div class="card" style="margin:0.22em 0;"><h4>Local history</h4><p>Your saved checkpoints, on your laptop.</p></div>
+            <p class="center-content mono" style="margin:0.08em 0; color:var(--accent-color); font-weight:700;">↓ &nbsp;push&nbsp; (git push)</p>
+            <div class="card" style="margin:0.22em 0; border-top-color:#27ae60;"><h4>GitHub</h4><p>The shared copy in the cloud — teammates and instructors can see it.</p></div>
+        </div>
+        <div class="key-point">Staging is the only strange one: it's you <strong>choosing which changes go into the next checkpoint</strong>. Everything else is just save (commit) and share (push).</div>
+    </section>
+
+    <!-- 5 — three more moves -->
+    <section>
+        <h2>Three more things you can ask for</h2>
+        <div class="two-col" style="grid-template-columns:1fr 1fr 1fr; margin-top:0.5em;">
+            <div class="card"><h4>See what changed</h4><p>"What did you change since my last checkpoint?"</p><p class="small mono">git diff</p></div>
+            <div class="card" style="border-top-color:var(--warning-color);"><h4>Rewind</h4><p>"Take me back to the last working checkpoint."</p><p class="small mono">git restore</p></div>
+            <div class="card" style="border-top-color:#27ae60;"><h4>A safe parallel try</h4><p>Experiment on a <strong>branch</strong> without touching the working version.</p><p class="small mono">git branch</p></div>
+        </div>
+        <div class="key-point">These are <em>concepts</em>, not spells to memorize. Know they exist and what they're for — that's enough to ask for them.</div>
+    </section>
+
+    <!-- 6 — why a branch (the strong motivation) -->
+    <section>
+        <h2>Why bother with a branch?</h2>
+        <p>A branch is a safe parallel copy of your code. Two reasons you'll reach for one:</p>
+        <ul>
+            <li class="fragment"><strong>Let the AI attempt something big</strong> — a whole start screen, a new level, a refactor — on a branch. If it turns into a mess, delete the branch; your working game never knew. If it's good, merge it.</li>
+            <li class="fragment"><strong>Work alongside a teammate</strong> — you each take a branch, change the same game at once, and merge without overwriting each other.</li>
+        </ul>
+        <div class="key-point"><code>main</code> stays working and demo-ready. The risk lives on the branch.</div>
+    </section>
+
+    <!-- 7 — how you drove it -->
+    <section>
+        <h2>You didn't memorize commands. You asked.</h2>
+        <p>Everything today, you did two easy ways — no terminal gymnastics:</p>
+        <ul>
+            <li><strong>VS Code's Source Control panel</strong> — stage, message, commit, push, with buttons.</li>
+            <li><strong>Copilot / the agent</strong> — just say what you want:</li>
+        </ul>
+        <div class="info-box">
+            "Commit this with a clear message." &middot; "What did you change?" &middot; "Undo the last change." &middot; "Put this on a branch called <span class="mono">login</span>." &middot; "Push it to GitHub."
+        </div>
+        <div class="key-point">You supply the <strong>intent</strong>; the tool runs the Git. The whole skill is knowing <em>what to ask for</em> — which is the handful of ideas above.</div>
+    </section>
+
+    <!-- 8 — closer -->
+    <section class="center-content">
+        <h2>Five commands. Infinite Git.</h2>
+        <p style="max-width:820px; margin:0.5em auto;">These five cover almost everything you'll do this semester:</p>
+        <p class="mono" style="font-size:1.15em; color:var(--main-color); text-align:center; margin:0.4em 0;">status &nbsp;&middot;&nbsp; add &nbsp;&middot;&nbsp; commit &nbsp;&middot;&nbsp; push &nbsp;&middot;&nbsp; restore</p>
+        <p style="max-width:820px; margin:0.5em auto;">Past them are hundreds more and endless situations — merges, conflicts, rebases, rewritten history.</p>
+        <div class="key-point" style="max-width:820px; margin:0.8em auto; text-align:left;">
+            You don't memorize that. Learn the <strong>ideas</strong>, recognize the words, and ask the AI for the rest. That's Git the easy way.
+        </div>
+    </section>
+
+</div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.0.4/dist/reveal.js"></script>
+<script>
+    Reveal.initialize({ hash: true, center: false, controls: true, progress: true, slideNumber: true, width: 1280, height: 720, margin: 0.04, minScale: 0.2, maxScale: 2.0 });
+</script>
+</body>
+</html>
