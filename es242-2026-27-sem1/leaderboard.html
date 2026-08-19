@@ -1140,51 +1140,29 @@
         });
       }
 
-      fetch("domjudge-scores.json", { cache: "no-store" })
-        .then(function (r) { return r.ok ? r.json() : { contests: [] }; })
-        .catch(function () { return { contests: [] }; })
-        .then(function (dj) {
-          // Historical DOMjudge contests from the static archive (keep their
-          // per-problem grids); track names to avoid double-listing any the
-          // live feed also carries.
-          var jsonNames = {};
-          var jsonList = [];
-          (dj.contests || []).forEach(function (c) {
-            if (!/lab exam/i.test(String(c.name || ""))) return; // Lab Scores = graded lab exams only (skips "Practice")
-            var scores = {};
-            Object.keys(c.grid || {}).forEach(function (code) {
-              scores[code] = (String(c.grid[code]).match(/S/g) || []).length;
-            });
-            jsonNames[String(c.name)] = true;
-            jsonList.push({ label: c.name + " (DOMjudge, /" + c.total + ")", platform: c.platform, total: c.total,
-                        problems: c.problems, grid: c.grid, scores: scores });
-          });
-          // Live DOMjudge labs from the feed (aggregate solved), newest first,
-          // excluding any already covered by the static archive.
-          var djFeed = Object.keys(djByCode).sort().reverse()
-            .map(function (k) { return djByCode[k]; })
-            .filter(function (e) { return !jsonNames[e.label.replace(/ \(DOMjudge\)$/, "")]; });
-          var list = djFeed.concat(jsonList);
-          Object.keys(ccByCode).sort().forEach(function (k) { list.push(ccByCode[k]); });
-          contestList = list;
+      // Graded lab exams come entirely from the live /exec feed now (DOMjudge
+      // labs + in-lab CodeChef). The static domjudge-scores.json archive has
+      // been retired. Newest DOMjudge first, then graded CodeChef.
+      var list = Object.keys(djByCode).sort().reverse().map(function (k) { return djByCode[k]; });
+      Object.keys(ccByCode).sort().forEach(function (k) { list.push(ccByCode[k]); });
+      contestList = list;
 
-          var sel = document.getElementById("cs-contest");
-          sel.innerHTML = "";
-          list.forEach(function (c, i) {
-            var opt = document.createElement("option");
-            opt.value = String(i);
-            opt.textContent = c.label;
-            sel.appendChild(opt);
-          });
-          if (!sel._wired) { sel._wired = true; sel.addEventListener("change", renderContest); }
-          if (csLoading) csLoading.classList.add("hide");
-          if (list.length) { sel.value = "0"; renderContest(); }
-          else {
-            var err = document.getElementById("cs-error");
-            err.textContent = "No contest results available yet.";
-            err.classList.remove("hide");
-          }
-        });
+      var sel = document.getElementById("cs-contest");
+      sel.innerHTML = "";
+      list.forEach(function (c, i) {
+        var opt = document.createElement("option");
+        opt.value = String(i);
+        opt.textContent = c.label;
+        sel.appendChild(opt);
+      });
+      if (!sel._wired) { sel._wired = true; sel.addEventListener("change", renderContest); }
+      if (csLoading) csLoading.classList.add("hide");
+      if (list.length) { sel.value = "0"; renderContest(); }
+      else {
+        var err = document.getElementById("cs-error");
+        err.textContent = "No graded lab results available yet.";
+        err.classList.remove("hide");
+      }
     }
 
     function renderContest() {
