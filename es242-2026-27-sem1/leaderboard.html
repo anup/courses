@@ -921,6 +921,7 @@
           if (p.classes) label += " — " + p.classes;
           dot.title = label;
           dot.setAttribute("aria-label", label);
+          dot.tabIndex = -1; // informational grid — keep thousands of cells out of the tab order
           td.appendChild(dot);
           tr.appendChild(td);
         });
@@ -932,6 +933,9 @@
       var tableEl   = document.getElementById(prefix + "-table");
       var leftArr   = document.getElementById(prefix + "-arrow-left");
       var rightArr  = document.getElementById(prefix + "-arrow-right");
+      // Decorative mouse helpers — the table container is keyboard-scrollable,
+      // so keep these out of the tab order.
+      leftArr.tabIndex = -1; rightArr.tabIndex = -1;
 
       function updateArrows() {
         var canLeft  = tableEl.scrollLeft > 5;
@@ -1106,7 +1110,7 @@
       var codes = Object.keys(d.byCode).map(function (k) { return d.byCode[k]; });
       codes.sort(function (a, b) { return b.total - a.total || (a.code < b.code ? -1 : 1); });
 
-      var thMedal = document.createElement("th"); head.appendChild(thMedal);
+      var thMedal = document.createElement("th"); thMedal.setAttribute("scope", "col"); thMedal.setAttribute("aria-label", "Top-three medal"); head.appendChild(thMedal);
       var thCode = document.createElement("th"); thCode.className = "mx-codecol"; thCode.textContent = "Code"; head.appendChild(thCode);
       contests.forEach(function (c) {
         var th = document.createElement("th"); th.title = c; th.textContent = mxShort(c); head.appendChild(th);
