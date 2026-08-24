@@ -479,6 +479,7 @@
         <ul>
           <li>Ranked by <strong>Final Total</strong>. Total (/100) = Labs (/50) + Midsem (/20) + Endsem (/20) + CodeChef Starters (/10), minus any Penalty.</li>
           <li>Midsem and Endsem stay 0 until those exams are held, so early in the term the ranking is driven by Labs.</li>
+          <li><strong>CodeChef Starters (/10)</strong>: each proctored contest is out of 10 &mdash; <strong>2</strong> for attending (verified present) plus <strong>3 / 5 / 7 / 8</strong> for solving <strong>1 / 2 / 3 / 4+</strong> problems in C. Absent = 0, even with outside activity. Your best 9 of ~12 contests count (worst 3 dropped), scaled to 10 &mdash; a running total that grows as more are held. The term may hold 11&ndash;13 contests; the best-of adjusts to the final count. This first contest (START252) accepts any accepted C submission; later contests require your first accepted submission to be in C.</li>
           <li>Search your <strong>anonymous code</strong> above to find your row.</li>
         </ul>
       </div>
@@ -500,7 +501,8 @@
         <p>Your score in each graded lab exam</p>
         <ul>
           <li>Covers the proctored exams held in the lab: the <strong>DOMjudge</strong> lab contests and the in-lab <strong>CodeChef</strong> contests.</li>
-          <li>Each lab is out of <strong>10</strong>, split equally across its problems (a 4-problem lab is 2.5 each), with <strong>no partial credit</strong>.</li>
+          <li>Each <strong>DOMjudge</strong> lab is out of <strong>10</strong>, split equally across its problems (a 4-problem lab is 2.5 each), with <strong>no partial credit</strong>; these feed <strong>Labs (/50)</strong>.</li>
+          <li><strong>CodeChef</strong> contests here show your <strong>problems solved in C</strong> &mdash; the count behind your <strong>CodeChef Starters (/10)</strong> marks.</li>
           <li><strong>Labs (/50)</strong> on the Leaderboard = your best 9 of ~12 labs, scaled to 50. It is a running total that grows as more labs are held.</li>
           <li>Pick a contest below; search your code to find your row.</li>
         </ul>
@@ -691,6 +693,8 @@
     function initTooltips(cfg) {
       var bestOf       = cfg ? cfg.assignmentBestOf       : 2;
       var maxPer       = cfg ? cfg.assignmentMaxPerContest: 10;
+      var attMarks     = cfg ? cfg.assignmentAttendanceMarks : 2;
+      var maxTotal     = cfg ? cfg.assignmentMaxMarks     : 10;
       var mpc          = cfg ? cfg.practiceMarksPerContest: 1.4;
       var maxMarks     = cfg ? cfg.practiceMaxMarks       : 20;
       var maxContests  = cfg ? cfg.practiceMaxContests    : 15;
@@ -712,11 +716,13 @@
       };
 
       TOOLTIP_PATTERNS = [
-        { re: /^assignment/,             tip: "Best " + bestOf + " assignment scores, " + maxPer + " marks each" },
+        { re: /codechef starters/,       tip: "Running total: each proctored contest is out of " + maxPer + " (" + attMarks + " for verified attendance + 3/5/7/8 for 1/2/3/4+ problems solved in C; absent = 0). Best " + bestOf + " of ~12 contests count, scaled to " + maxTotal + ". Grows as more contests are held." },
+        { re: /^assignment/,             tip: "Best " + bestOf + " contest scores (each out of " + maxPer + "), scaled to " + maxTotal },
         { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " C contests." },
         { re: /^total/,                  tip: "Labs (50) + Midsem (20) + Endsem (20) + CodeChef Starters (10), out of 100" },
         { re: /^labs/,                   tip: "Running total: each Monday lab is out of 10 (split equally across its problems, no partial credit); best 9 of ~12 labs count, scaled to 50. Small early in the term, grows as more labs are held." },
-        { re: /assign.*c solved/,        tip: "Problems solved in C in this assignment contest" },
+        { re: /start\d+ marks/,          tip: "This contest's score out of " + maxPer + ": " + attMarks + " for verified attendance + 3/5/7/8 for 1/2/3/4+ problems solved in C; absent = 0" },
+        { re: /c solved/,                tip: "Problems solved in C in this contest (for START252 any accepted C submission counts; later contests count only if the first accepted submission is in C)" },
         { re: /assign.*marks/,           tip: "Marks per the assignment scale" },
         { re: /best.*assignment/,        tip: "Sum of top " + bestOf + " assignment scores (max " + (bestOf * maxPer) + ")" },
         { re: /practice.*counted/,       tip: "Contests counted toward practice. If C req met: all (max " + maxContests + "). If not: only C." }
@@ -1220,6 +1226,29 @@
           if (!GRADED.CodeChef[contest]) return; // in-lab (graded) CodeChef exams only
           if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
           ccByCode[contest].scores[r[ci]] = Number(r[si]) || 0;
+        });
+      }
+
+      // In-lab (graded) CodeChef contests have no per-submission data in the
+      // tracker, so their "problems solved in C" comes from the grades feed
+      // ("<CODE> C Solved" — the verified count that also drives the /10 marks).
+      // This is authoritative, so it fills/overrides anything the performance
+      // loop above found for a graded CodeChef contest.
+      var gr = allData.grades;
+      if (gr && gr.headers) {
+        var GH2 = gr.headers.map(function (h) { return String(h || "").toLowerCase(); });
+        var gCodeI = GH2.indexOf("code");
+        Object.keys(GRADED.CodeChef || {}).forEach(function (contest) {
+          var solvedI = GH2.indexOf(contest.toLowerCase() + " c solved");
+          if (gCodeI < 0 || solvedI < 0) return;
+          if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
+          (gr.rows || []).forEach(function (r) {
+            var v = r[solvedI];
+            if (v === "" || v === null || v === undefined) return;
+            var n = Number(v);
+            if (isNaN(n)) return; // DNP / DQ / PRC — not part of the C-solved ranklist
+            ccByCode[contest].scores[r[gCodeI]] = n;
+          });
         });
       }
 
