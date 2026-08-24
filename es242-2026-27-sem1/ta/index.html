@@ -58,11 +58,14 @@
 
     var MEDALS = ["🥇","🥈","🥉"];
 
+    // Per-platform total. The live API returns {handle, solved}; the richer
+    // snapshot returns {handle, total, contests[]}. Support both.
+    function taTotal(p){ return p ? (p.total != null ? p.total : (p.solved || 0)) : 0; }
     // TAs with a handle on this platform, sorted by total problems solved (desc).
     function taRows(key){
       var rows = (DATA.tas||[]).map(function(t){ return { name:t.name, p:t[key] }; })
         .filter(function(x){ return x.p && x.p.handle; });
-      rows.sort(function(a,b){ var d=(b.p.total||0)-(a.p.total||0); return d || a.name.localeCompare(b.name); });
+      rows.sort(function(a,b){ var d=taTotal(b.p)-taTotal(a.p); return d || a.name.localeCompare(b.name); });
       return rows;
     }
     // Union of contests across TAs on this platform, newest first.
@@ -97,11 +100,9 @@
       html += '<th class="num">Total</th></tr></thead><tbody>';
       if (!rows.length) {
         html += '<tr><td colspan="'+(cols.length+3)+'" class="muted">No handles submitted yet.</td></tr>';
-      } else if (!cols.length) {
-        html += '<tr><td colspan="3" class="muted">No contest participation on this platform yet.</td></tr>';
       } else {
         rows.forEach(function(r,i){
-          var total = r.p.total || 0;
+          var total = taTotal(r.p);
           var byCode = {}; (r.p.contests||[]).forEach(function(c){ byCode[c.code] = c.solved; });
           var medal = (total>0 && i<3) ? MEDALS[i] : "";
           html += '<tr><td class="medal">'+medal+'</td>'+
