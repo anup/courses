@@ -54,7 +54,17 @@ git push              # send it to GitHub</code></pre>
     <section class="content-section">
       <h2>Track B &mdash; If you&rsquo;re already checked in</h2>
       <p>Continue on <strong>Arnav&rsquo;s agent code</strong> (the lab repo he walked through). Work through <strong>module 03 &mdash; tool calling</strong> on your own machine; change it, break it, make it yours.</p>
-      <p><strong>Same gate applies:</strong> commit and push your module-03 work to your repo <em>first</em>. Once it&rsquo;s in, pick a harder task below.</p>
+      <p><strong>Put it in your repo the right way.</strong> Don&rsquo;t scatter the files or drop them at the top level &mdash; that collides with your game and breaks the <code>from common import &hellip;</code> imports. Copy Arnav&rsquo;s lab into <em>one</em> new folder, <code>agent-lab/</code>, keeping the modules and <code>common/</code> together:</p>
+      <pre class="code-block"><code>your-repo/
+  games/week-01/        &larr; your game (already here)
+  lab-notes/            &larr; your logs
+  agent-lab/            &larr; NEW: Arnav's lab, all in one place
+    common/             &larr; must stay a sibling of the modules
+    01-llm-api-call/
+    02-chat-history/
+    03-tool-calling/    &larr; where you work today
+    requirements.txt</code></pre>
+      <p>Log what you did in <code>lab-notes/week-03.md</code>. Then <strong>the same gate applies:</strong> commit and push &mdash; <code>git add . &amp;&amp; git commit -m "agent-lab: module 03" &amp;&amp; git push</code> &mdash; <em>before</em> you pick a harder task below.</p>
     </section>
 
     <section class="content-section">
