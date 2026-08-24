@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 04: Catch Up, Then Go Further</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 04</a>
+        <a href="../../github/">Setup Form</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Week 3 Lab</p>
+      <h1>Catch Up, Then Go Further</h1>
+      <p class="lead">One job first: get last week&rsquo;s work <strong>committed and pushed</strong> to your course repo &mdash; the one where Anup and Arjun are collaborators. Once your code is in, you move on. If you&rsquo;re already there, you go further on the agent Arnav walked us through. Ask an instructor or TA the moment you&rsquo;re stuck &mdash; do not wait.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Today&rsquo;s One Rule: check in first</h2>
+      <p>The whole class runs on one gate. Your work only counts when it is in the repo we can see. So before anything new, get your previous work pushed. Then &mdash; and only then &mdash; take the next step.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Track A &mdash; If you haven&rsquo;t pushed yet</h2>
+      <p>This is your day-one of actually using Git. Finish last week (the Bug Dodger game, your <code>lab-notes/week-01.md</code>, and the Class&nbsp;3 Git steps), then check it in:</p>
+      <pre class="code-block"><code>git status            # see what changed
+git add .             # stage everything
+git commit -m "week 01 + git catch-up"
+git push              # send it to GitHub</code></pre>
+      <p>If <code>git push</code> fails, it is almost always the plumbing, not you. Check these with an instructor:</p>
+      <ul>
+        <li><code>git remote -v</code> &mdash; is a remote set, pointing at <em>your</em> repo?</li>
+        <li>Are <strong>Anup and Arjun</strong> added as collaborators on the repo?</li>
+        <li>Is VS Code signed in to the correct GitHub account?</li>
+      </ul>
+      <p>You are done when you can refresh your repo on GitHub and see your commit there.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Track B &mdash; If you&rsquo;re already checked in</h2>
+      <p>Continue on <strong>Arnav&rsquo;s agent code</strong> (the lab repo he walked through). Work through <strong>module 03 &mdash; tool calling</strong> on your own machine; change it, break it, make it yours.</p>
+      <p><strong>Same gate applies:</strong> commit and push your module-03 work to your repo <em>first</em>. Once it&rsquo;s in, pick a harder task below.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Harder Tasks (after you&rsquo;ve checked in)</h2>
+      <p>Each of these is harder work <em>inside the same idea</em> &mdash; the agent loop &mdash; not busywork:</p>
+      <ul>
+        <li><strong>Add your own tool.</strong> <code>roll_dice(sides)</code>, <code>get_time_in(city)</code> &mdash; write the schema, write the function, register it, and watch the model discover and use it. This is the real test that you understand the harness.</li>
+        <li><strong>A dangerous tool + a guardrail.</strong> Add <code>delete_file</code>, then make the loop ask for confirmation before it runs. (You&rsquo;re previewing a real safety idea from later in the course.)</li>
+        <li><strong>Use a branch.</strong> Do your new tool on a branch and open a pull request against <code>main</code>. (For this, your commit/push already needs to be smooth.)</li>
+        <li><strong>Baby Claude Code.</strong> Add <code>read_file</code>, <code>write_file</code>, and <code>run_bash</code> tools, then ask the model about a file. Congratulations &mdash; that&rsquo;s the same species of thing as the tools you use.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The Rule for AI Today: tutor, not typist</h2>
+      <p>You may ask your AI assistant to <strong>explain</strong> any line &mdash; &ldquo;what does this line do?&rdquo; You may <strong>not</strong> ask it to write code for you today. The test: <em>if what comes back is something you&rsquo;d paste, you&rsquo;ve crossed the line.</em> Same tool, different mode &mdash; and learning to switch modes is itself part of this course.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Stuck?</h2>
+      <p>Raise your hand. A floating helper or an instructor will come &mdash; do not sit stuck in silence. Getting unstuck fast is the skill; suffering quietly is not.</p>
+    </section>
+  </main>
+</body>
+</html>
