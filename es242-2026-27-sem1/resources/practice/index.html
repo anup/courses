@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Practice Problems by Topic</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .section-tag{
+      display:inline-block;margin-left:.5em;padding:.1em .55em;
+      font-size:.62em;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+      vertical-align:middle;border:1px solid currentColor;border-radius:999px;opacity:.6;
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../../classes/">Classes</a>
+        <a href="../">Resources</a>
+        <a href="./" aria-current="page">Practice</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Study and practice</p>
+      <h1>Practice Problems by Topic</h1>
+      <p class="lead">LeetCode problems for each topic we cover in class, in the order we cover it. Each class page links here to its own section. New topics are added as we reach them.</p>
+    </section>
+
+    <section class="content-section" id="big-o">
+      <h2>Running time &amp; Big-O <span class="section-tag">Class 01</span></h2>
+      <p class="lead">The point of each problem: write the obvious solution first, state its Big-O, then find a faster one and say why it is faster.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/running-sum-of-1d-array/">1480. Running Sum of 1d Array</a> &mdash; a clean O(n) pass.</li>
+        <li><a href="https://leetcode.com/problems/contains-duplicate/">217. Contains Duplicate</a> &mdash; O(n&sup2;) brute force vs an O(n) set.</li>
+        <li><a href="https://leetcode.com/problems/two-sum/">1. Two Sum</a> &mdash; nested loops vs a hash map.</li>
+        <li><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/">121. Best Time to Buy and Sell Stock</a> &mdash; O(n&sup2;) vs one pass.</li>
+        <li><a href="https://leetcode.com/problems/maximum-subarray/">53. Maximum Subarray</a> &mdash; brute force vs Kadane's O(n).</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="c-basics">
+      <h2>C basics <span class="section-tag">Class 02</span></h2>
+      <p class="lead">Pure C practice is best done where it compiles C directly. LeetCode also accepts C submissions if you want to use it.</p>
+      <ul class="compact-list">
+        <li><a href="https://www.hackerrank.com/es242-lecture1">HackerRank &mdash; es242-lecture1</a> &mdash; the C practice set used in class.</li>
+        <li><a href="../../../es242n/curriculum.html">C resources from the previous semester</a> &mdash; pointers, arrays, strings, and more, with problems.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="arrays-insertion-sort">
+      <h2>Arrays &amp; insertion sort <span class="section-tag">Class 03</span></h2>
+      <p class="lead">In-place array work and the shifting idea at the heart of insertion sort.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/insertion-sort-list/">147. Insertion Sort List</a> &mdash; insertion sort, spelled out.</li>
+        <li><a href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/">26. Remove Duplicates from Sorted Array</a> &mdash; in-place, two pointers.</li>
+        <li><a href="https://leetcode.com/problems/move-zeroes/">283. Move Zeroes</a> &mdash; stable shifting, like an insertion pass.</li>
+        <li><a href="https://leetcode.com/problems/merge-sorted-array/">88. Merge Sorted Array</a> &mdash; merge in place from the back.</li>
+        <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; submit your own sort.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="merge-sort">
+      <h2>Merge sort <span class="section-tag">Class 04</span></h2>
+      <p class="lead">The merge step, end to end, then merge sort itself &mdash; on arrays and on lists.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/merge-sorted-array/">88. Merge Sorted Array</a> &mdash; the merge step on its own.</li>
+        <li><a href="https://leetcode.com/problems/merge-two-sorted-lists/">21. Merge Two Sorted Lists</a> &mdash; the same merge, on linked lists.</li>
+        <li><a href="https://leetcode.com/problems/sort-list/">148. Sort List</a> &mdash; merge sort on a linked list.</li>
+        <li><a href="https://leetcode.com/problems/merge-k-sorted-lists/">23. Merge K Sorted Lists</a> &mdash; generalises the two-list merge.</li>
+        <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; submit your merge sort here.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="quick-sort">
+      <h2>Quick sort &amp; partitioning <span class="section-tag">Class 05</span></h2>
+      <p class="lead">Partition is the engine. Build from writing the sort to using partition alone to answer a question.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; submit your own quick sort.</li>
+        <li><a href="https://leetcode.com/problems/sort-colors/">75. Sort Colors</a> &mdash; three-way partition (Dutch National Flag).</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element</a> &mdash; quickselect: partition, recurse into one side.</li>
+        <li><a href="https://leetcode.com/problems/k-closest-points-to-origin/">973. K Closest Points to Origin</a> &mdash; quickselect on a computed key.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="heap-sort">
+      <h2>Heaps &amp; priority queues <span class="section-tag">Class 06</span></h2>
+      <p class="lead">From the smallest heap operations to using a heap as a tool: keep the top-k, or merge many sorted streams.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/last-stone-weight/">1046. Last Stone Weight</a> &mdash; a max-heap, pop two, push the difference.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">703. Kth Largest Element in a Stream</a> &mdash; keep a min-heap of size k.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element</a> &mdash; heap of size k; compare with quickselect above.</li>
+        <li><a href="https://leetcode.com/problems/top-k-frequent-elements/">347. Top K Frequent Elements</a> &mdash; count, then heap the counts.</li>
+        <li><a href="https://leetcode.com/problems/merge-k-sorted-lists/">23. Merge K Sorted Lists</a> &mdash; a min-heap over the list heads.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The full curated set</h2>
+      <p>Beyond the class topics, our larger LeetCode collection is organised by topic and difficulty (math, arrays, strings, binary search, bit manipulation, and more): <a class="action-link" href="https://docs.google.com/spreadsheets/d/1FfD-MNcW2d3QSpYmizNP4Jge5STnTDjxZzuR7trZHsA/edit?usp=sharing">Curated LeetCode set (Google Sheet)</a></p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
