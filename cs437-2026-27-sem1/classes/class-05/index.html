@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 05: Everyone Moves One Step</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 05</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Week 4 Lab</p>
+      <h1>Everyone Moves One Step</h1>
+      <p class="lead">One goal today: <strong>everyone who walks in leaves further than they came.</strong> If you are behind, we get you checked in. If you are already caught up, you make your agent harness harder. Find your row on the <a href="../../progress/">progress board</a> by your private code &mdash; then take the next step from wherever you are. Ask an instructor or TA the moment you are stuck; do not wait.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Find your step</h2>
+      <p>Open the <a href="../../progress/">progress board</a> and find your code. It shows three milestones: <strong>Access</strong> (repo + instructors added), <strong>Bug Dodger</strong> (Week-01 game &amp; log pushed), and <strong>Agent-lab</strong> (Arnav&rsquo;s module 03 in your repo).</p>
+      <ul>
+        <li>Any red <strong>&times;</strong> on your row &rarr; <strong>Track A</strong>. Close that gap today.</li>
+        <li>All three green &rarr; <strong>Track B</strong>. Make the harness harder.</li>
+      </ul>
+      <p>Not on the board, or your code doesn&rsquo;t match your repo? Tell an instructor &mdash; we&rsquo;ll fix it on the spot.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Track A &mdash; Close the gap and check in</h2>
+      <p>Finish whatever is red on your row, in order, then push. Your work only counts when it is in the repo we can see.</p>
+      <ul>
+        <li><strong>Bug Dodger + log:</strong> the Week-01 game in <code>games/week-01/</code> and your <code>lab-notes/week-01.md</code>.</li>
+        <li><strong>Agent-lab:</strong> copy Arnav&rsquo;s lab into one folder, <code>agent-lab/</code> (keep <code>common/</code> a sibling of the module folders so <code>from common import &hellip;</code> still works), and work through <strong>module 03 &mdash; tool calling</strong>. Log it in <code>lab-notes/week-03.md</code>. (Full folder layout is in <a href="../class-04/">Class 04</a>.)</li>
+      </ul>
+      <pre class="code-block"><code>git status            # see what changed
+git add .             # stage everything
+git commit -m "catch-up: game, logs, agent-lab module 03"
+git push              # send it to GitHub</code></pre>
+      <p>If <code>git push</code> fails it is almost always the plumbing, not you. Check with an instructor:</p>
+      <ul>
+        <li><code>git remote -v</code> &mdash; is a remote set, pointing at <em>your</em> repo?</li>
+        <li>Are <strong>anup</strong> and <strong>arjunarul-iitgn</strong> collaborators on the repo?</li>
+        <li>Is VS Code signed in to the correct GitHub account?</li>
+      </ul>
+      <p>You are done when you refresh the progress board and your row turns green &mdash; and you have moved at least one step.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Track B &mdash; Make the harness harder</h2>
+      <p>You have module 03 running and maybe your own first tool. Go further &mdash; each step is harder work <em>inside the same idea</em>, the agent loop. Do one, commit and push, then take the next.</p>
+      <ul>
+        <li><strong>Give it a personality.</strong> Add a system prompt <em>you</em> control. Make it a terse senior engineer, or a Socratic tutor that refuses to hand over code. Swap personas and watch the behaviour change &mdash; the system prompt is the steering wheel.</li>
+        <li><strong>Make it count.</strong> Print token usage each turn &mdash; input, output, and a running session total (from the API response&rsquo;s <code>usage</code>). Now you can <em>see</em> what context costs.</li>
+        <li><strong>Keep it in budget.</strong> When the running total crosses a threshold, trim or summarise old history so the agent keeps working. This is real context management. (Builds on the step above.)</li>
+        <li><strong>Grow and chain tools.</strong> Add two of your own &mdash; e.g. <code>calculator</code>, <code>read_file</code>, <code>write_file</code> &mdash; and let the model chain them in the loop: call one, use the result, call the next.</li>
+        <li><strong>Guardrail the dangerous ones.</strong> Any tool that changes state (<code>write_file</code>, <code>run_bash</code>) asks for confirmation before it runs. You are previewing a real safety idea from later in the course.</li>
+        <li><strong>Baby Claude Code.</strong> With <code>read_file</code>, <code>write_file</code>, and <code>run_bash</code> wired up, ask the model about a file in your repo. That is the same species of thing as the tools you use every day.</li>
+      </ul>
+      <p>Branching and project teams are coming next &mdash; we will <strong>form teams first, then learn branching together</strong>. Not today. If you want to branch now, treat it as a personal stretch (do a step above on a branch and open a PR), not something the whole room does yet.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The rule for AI today: tutor, not typist</h2>
+      <p>You may ask your AI assistant to <strong>explain</strong> any line &mdash; &ldquo;what does this do?&rdquo; You may <strong>not</strong> ask it to write the code for you. The test: <em>if what comes back is something you&rsquo;d paste, you&rsquo;ve crossed the line.</em> Same tool, different mode &mdash; switching modes is part of the course.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Stuck?</h2>
+      <p>Raise your hand. An instructor or TA will come &mdash; do not sit stuck in silence. Getting unstuck fast is the skill; suffering quietly is not.</p>
+    </section>
+  </main>
+</body>
+</html>
