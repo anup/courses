@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 05: Quick Sort</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 05</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 05 &middot; Friday 21 August 2026</p>
+      <h1>Quick Sort</h1>
+      <p class="lead">Another divide-and-conquer sort, but the work happens before the recursion, not after. Pick a pivot, partition the array so smaller elements sit left and larger sit right, then sort each side. Average case is O(n log n); a bad pivot gives O(n&sup2;), which is why pivot choice matters.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="quick-sort.pptx">Download Quick Sort slides (PowerPoint)</a></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; quick sort and partitioning</h2>
+      <p class="lead">The heart of quick sort is <em>partition</em>. These build from writing the sort itself to using partition on its own to answer a question without finishing the sort.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; submit your own quick sort here.</li>
+        <li><a href="https://leetcode.com/problems/sort-colors/">75. Sort Colors</a> &mdash; three-way partition (Dutch National Flag) in a single pass.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element</a> &mdash; quickselect: partition, then recurse into only one side.</li>
+        <li><a href="https://leetcode.com/problems/k-closest-points-to-origin/">973. K Closest Points to Origin</a> &mdash; quickselect again, on a computed key.</li>
+        <li>Paper trace: take an array of length 6&ndash;8. Run partition with the last element as pivot and write the array after every swap, then recurse on each side until sorted.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

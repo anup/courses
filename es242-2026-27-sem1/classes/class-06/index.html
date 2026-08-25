@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 06: Heap Sort</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 06</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 06 &middot; Tuesday 25 August 2026</p>
+      <h1>Heap Sort</h1>
+      <p class="lead">A binary heap is a complete tree stored in a plain array, where every parent outranks its children. Build a max-heap in O(n), then repeatedly swap the root to the end and sift down what is left. That gives an in-place O(n log n) sort &mdash; and the same heap is the priority queue behind many other algorithms.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="heap-sort.pptx">Download Heap Sort slides (PowerPoint)</a></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; heaps and priority queues</h2>
+      <p class="lead">Start with the smallest heap operations, then use a heap as a tool: keep the top-k, or merge many sorted streams. Contrast 215 here (heap of size k) with the quickselect version from <a href="../class-05/">Class 05</a>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/last-stone-weight/">1046. Last Stone Weight</a> &mdash; a max-heap, pop the two biggest, push the difference.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-a-stream/">703. Kth Largest Element in a Stream</a> &mdash; keep a min-heap of size k as numbers arrive.</li>
+        <li><a href="https://leetcode.com/problems/kth-largest-element-in-an-array/">215. Kth Largest Element</a> &mdash; solve it again with a size-k heap; compare with quickselect.</li>
+        <li><a href="https://leetcode.com/problems/top-k-frequent-elements/">347. Top K Frequent Elements</a> &mdash; count, then heap the counts.</li>
+        <li><a href="https://leetcode.com/problems/merge-k-sorted-lists/">23. Merge K Sorted Lists</a> &mdash; a min-heap over the list heads.</li>
+        <li>Paper trace: take an array of length 6&ndash;8. Build a max-heap by sifting down from the last parent, then run the sort &mdash; swap root to the end, shrink, sift down &mdash; recording the array after each step.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
