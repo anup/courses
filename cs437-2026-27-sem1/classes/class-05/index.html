@@ -62,16 +62,57 @@ git push              # send it to GitHub</code></pre>
 
     <section class="content-section">
       <h2>Track B &mdash; Make the harness harder</h2>
-      <p>You have module 03 running and maybe your own first tool. Go further &mdash; each step is harder work <em>inside the same idea</em>, the agent loop. Do one, commit and push, then take the next.</p>
-      <ul>
-        <li><strong>Give it a personality.</strong> Add a system prompt <em>you</em> control. Make it a terse senior engineer, or a Socratic tutor that refuses to hand over code. Swap personas and watch the behaviour change &mdash; the system prompt is the steering wheel.</li>
-        <li><strong>Make it count.</strong> Print token usage each turn &mdash; input, output, and a running session total (from the API response&rsquo;s <code>usage</code>). Now you can <em>see</em> what context costs.</li>
-        <li><strong>Keep it in budget.</strong> When the running total crosses a threshold, trim or summarise old history so the agent keeps working. This is real context management. (Builds on the step above.)</li>
-        <li><strong>Grow and chain tools.</strong> Add two of your own &mdash; e.g. <code>calculator</code>, <code>read_file</code>, <code>write_file</code> &mdash; and let the model chain them in the loop: call one, use the result, call the next.</li>
-        <li><strong>Guardrail the dangerous ones.</strong> Any tool that changes state (<code>write_file</code>, <code>run_bash</code>) asks for confirmation before it runs. You are previewing a real safety idea from later in the course.</li>
-        <li><strong>Baby Claude Code.</strong> With <code>read_file</code>, <code>write_file</code>, and <code>run_bash</code> wired up, ask the model about a file in your repo. That is the same species of thing as the tools you use every day.</li>
-      </ul>
-      <p>Branching and project teams are coming next &mdash; we will <strong>form teams first, then learn branching together</strong>. Not today. If you want to branch now, treat it as a personal stretch (do a step above on a branch and open a PR), not something the whole room does yet.</p>
+      <p>You have module 03 (tool calling) running, and maybe your own first tool. Each rung below is harder work <em>inside the same idea</em> &mdash; the agent loop. Pick one, build it, then <strong>commit and push before you start the next</strong>. They roughly build on each other, but you don&rsquo;t have to do them in order.</p>
+      <ol>
+        <li>
+          <strong>Give it a personality.</strong> Control the agent&rsquo;s behaviour with a system prompt.
+          <ul>
+            <li>Prepend a <em>system</em> message to the conversation your loop sends.</li>
+            <li>Write two personas and try both on the same question &mdash; e.g. a terse senior engineer (answers in two sentences, no fluff) versus a Socratic tutor (only asks questions, never hands over code).</li>
+            <li><em>Done when</em> the same model visibly behaves differently depending on the prompt. That prompt is your steering wheel.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Make it count.</strong> Surface token usage live (module 01 already reads it &mdash; now show it every turn).
+          <ul>
+            <li>Read the <code>usage</code> field on each API response.</li>
+            <li>After every turn, print input tokens, output tokens, and a <em>running session total</em>.</li>
+            <li><em>Done when</em> you can watch the total climb as the conversation grows &mdash; you can now see what context costs.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Keep it in budget.</strong> Stop the context from growing forever (builds on the step above).
+          <ul>
+            <li>Pick a budget &mdash; say 4,000 tokens.</li>
+            <li>When the running total crosses it, drop or summarise the oldest turns before the next call.</li>
+            <li><em>Done when</em> a long conversation keeps working instead of erroring or ballooning in cost.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Grow and chain tools.</strong> Module 03 ships <code>time</code>/<code>weather</code>; add your own and let the model combine them.
+          <ul>
+            <li>Add two tools with proper schemas &mdash; e.g. <code>calculator(expression)</code> and <code>read_file(path)</code>.</li>
+            <li>In the loop, let the model call one tool, feed the result back, then call another before it answers.</li>
+            <li><em>Done when</em> the model makes two or more tool calls in a single turn to reach an answer.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Guardrail the dangerous ones.</strong> Not every tool should run unchecked.
+          <ul>
+            <li>For any tool that changes state (<code>write_file</code>, <code>run_bash</code>), pause the loop and ask the user to confirm before running it; abort cleanly on &ldquo;no.&rdquo;</li>
+            <li><em>Done when</em> the agent asks before it writes or runs anything, and respects the answer. You&rsquo;re previewing a real safety idea from later in the course.</li>
+          </ul>
+        </li>
+        <li>
+          <strong>Baby Claude Code.</strong> Three tools together make a tiny coding agent.
+          <ul>
+            <li>Wire up <code>read_file</code>, <code>write_file</code>, and <code>run_bash</code> (keep the guardrail on the last two).</li>
+            <li>Ask it &ldquo;what does <code>game.js</code> do?&rdquo; and let it read; then ask it to add a comment and let it write.</li>
+            <li><em>Done when</em> it can inspect and edit a real file in your repo through the loop &mdash; the same species of thing as the tools you use every day.</li>
+          </ul>
+        </li>
+      </ol>
+      <p>Branching and project teams come next &mdash; we&rsquo;ll <strong>form teams first, then learn branching together</strong>, so hold off on making it a whole-room thing today. If you want to branch now, treat it as a personal stretch: do one rung above on a branch and open a pull request against <code>main</code>.</p>
     </section>
 
     <section class="content-section">
@@ -81,7 +122,7 @@ git push              # send it to GitHub</code></pre>
 
     <section class="content-section">
       <h2>Stuck?</h2>
-      <p>Raise your hand. An instructor or TA will come &mdash; do not sit stuck in silence. Getting unstuck fast is the skill; suffering quietly is not.</p>
+      <p>Raise your hand and an instructor or TA will come over. If you have been stuck on the same thing for more than a few minutes, ask &mdash; don&rsquo;t lose the session to one error you could clear in two minutes.</p>
     </section>
   </main>
 </body>
