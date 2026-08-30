@@ -10,6 +10,15 @@
     document.documentElement.dataset.theme =
       storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
   </script>
+  <style>
+    .tile-muted{
+      background:var(--code-bg);
+      border-color:var(--line);
+      box-shadow:none;
+      opacity:.8;
+    }
+    .tile-muted strong{color:var(--muted);font-weight:600;}
+  </style>
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to main content</a>
@@ -30,48 +39,36 @@
     </section>
     <section class="grid stack" aria-label="Class log">
       <a class="tile tile-feature" href="class-07/">
-        <strong>Class 07 &middot; Friday 28 August</strong>
-        <span>Why no comparison-based sort can beat O(n log n): the decision-tree argument.</span>
+        <strong>Lower Bounds on Comparison-Based Sorting</strong>
+        <span>Class 07 &middot; Friday 28 August &mdash; why no comparison-based sort can beat O(n log n): the decision-tree argument.</span>
       </a>
       <a class="tile tile-feature" href="class-06/">
-        <strong>Class 06 &middot; Tuesday 25 August</strong>
-        <span>Heap sort: build a max-heap, then extract the largest repeatedly.</span>
-      </a>
-      <a class="tile tile-feature" href="exam-03/">
-        <strong>Third Lab Exam &middot; Monday 24 August</strong>
-        <span>Five problems on DOMjudge. Counts toward the Labs grade.</span>
+        <strong>Heap Sort</strong>
+        <span>Class 06 &middot; Tuesday 25 August &mdash; build a max-heap, then extract the largest repeatedly.</span>
       </a>
       <a class="tile tile-feature" href="class-05/">
-        <strong>Class 05 &middot; Friday 21 August</strong>
-        <span>Quick sort: pick a pivot, partition, and recurse on each side.</span>
+        <strong>Quick Sort</strong>
+        <span>Class 05 &middot; Friday 21 August &mdash; pick a pivot, partition, and recurse on each side.</span>
       </a>
       <a class="tile tile-feature" href="class-04/">
-        <strong>Class 04 &middot; Tuesday 18 August</strong>
-        <span>Merge sort: divide, sort each half, and merge.</span>
-      </a>
-      <a class="tile tile-feature" href="exam-02/">
-        <strong>Second Lab Exam &middot; Monday 17 August</strong>
-        <span>Four problems on arrays, on DOMjudge. The first lab exam that counts toward the Labs grade.</span>
+        <strong>Merge Sort</strong>
+        <span>Class 04 &middot; Tuesday 18 August &mdash; divide, sort each half, and merge.</span>
       </a>
       <a class="tile tile-feature" href="class-03/">
-        <strong>Class 03 &middot; Friday 14 August</strong>
-        <span>Arrays and sorting, up to insertion sort.</span>
+        <strong>Arrays &amp; Insertion Sort</strong>
+        <span>Class 03 &middot; Friday 14 August &mdash; arrays and sorting, up to insertion sort.</span>
       </a>
-      <div class="tile" style="opacity:0.6;">
-        <strong>Tuesday 11 August &middot; Cancelled</strong>
-        <span>No class was held.</span>
+      <div class="tile tile-muted">
+        <strong>Cancelled</strong>
+        <span>Tuesday 11 August &mdash; no class was held.</span>
       </div>
-      <a class="tile tile-feature" href="exam-01/">
-        <strong>First Lab Exam &middot; Monday 10 August</strong>
-        <span>C programming on the lab's Ubuntu systems, submitted through DOMjudge &mdash; a first run of the exam workflow. Does not count toward the Labs grade.</span>
-      </a>
       <a class="tile tile-feature" href="class-02/">
-        <strong>Class 02 &middot; Friday 7 August</strong>
-        <span>Introduction to C programming.</span>
+        <strong>Introduction to C Programming</strong>
+        <span>Class 02 &middot; Friday 7 August &mdash; variables, loops, and the compile-run workflow.</span>
       </a>
       <a class="tile tile-feature" href="class-01/">
-        <strong>Class 01 &middot; Tuesday 4 August</strong>
-        <span>Running time and Big-O notation.</span>
+        <strong>Running Time &amp; Big-O Notation</strong>
+        <span>Class 01 &middot; Tuesday 4 August &mdash; how we measure an algorithm's cost.</span>
       </a>
     </section>
   </main>
