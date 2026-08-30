@@ -35,15 +35,28 @@
     </section>
 
     <section class="content-section">
+      <h2>Practice &mdash; sorting at the bound</h2>
+      <p class="lead">The theorem says &Omega;(n log n) is the floor for comparison-based sorting &mdash; these problems live right at it. Each one is sort-then-sweep: the sort is the dominant cost, and in the comparison model you cannot do better. In the first two, you define the comparison yourself. Full topic list on the <a href="../../resources/practice/#lower-bounds">practice page</a>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/sort-the-people/">2418. Sort the People</a> &mdash; warm-up: sort one array by the values of another, with a custom comparator.</li>
+        <li><a href="https://leetcode.com/problems/largest-number/">179. Largest Number</a> &mdash; the comparison model in action: decide when a comes before b (compare the two concatenations), and any comparison sort does the rest.</li>
+        <li><a href="https://leetcode.com/problems/merge-intervals/">56. Merge Intervals</a> &mdash; sort by start, then one sweep; the O(n log n) sort is the whole cost.</li>
+        <li><a href="https://leetcode.com/problems/non-overlapping-intervals/">435. Non-overlapping Intervals</a> &mdash; sort by end time, then greedily keep what fits.</li>
+        <li><a href="https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/">452. Minimum Number of Arrows to Burst Balloons</a> &mdash; the same sort-by-end recipe as 435, dressed up.</li>
+        <li>Revisit <a href="https://leetcode.com/problems/contains-duplicate/">217. Contains Duplicate</a> from <a href="../class-01/">Class 01</a>: the hash-set solution runs in O(n). Why does that not contradict today's theorem? (A hash lookup is not a comparison &mdash; the bound only governs the comparison model.)</li>
+        <li>Paper exercise: draw the complete execution tree for sorting three numbers a, b, c. Check it has 3! = 6 leaves and height 3 &mdash; matching &#8968;log&#8322;&nbsp;6&#8969; &mdash; so 3 comparisons are unavoidable in the worst case.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
       <h2>Practice &mdash; beating the bound</h2>
-      <p class="lead">The theorem says no comparison sort beats &Omega;(n log n) &mdash; so every problem below dodges it by not comparing. Whenever the keys are bounded integers, count them instead. Full topic list on the <a href="../../resources/practice/#lower-bounds">practice page</a>.</p>
+      <p class="lead">The bound only binds algorithms that compare. Every problem below dodges it by not comparing: whenever the keys are bounded integers, count them instead. More on the <a href="../../resources/practice/#beating-the-bound">practice page</a>.</p>
       <ul class="compact-list">
         <li><a href="https://leetcode.com/problems/sort-colors/">75. Sort Colors</a> &mdash; only three possible values: count them and rewrite the array in O(n). Compare with your partition solution from <a href="../class-05/">Class 05</a>.</li>
         <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; values fit in a fixed range; write counting sort and beat your earlier O(n log n) submissions.</li>
         <li><a href="https://leetcode.com/problems/relative-sort-array/">1122. Relative Sort Array</a> &mdash; values at most 1000; one counting array handles both the given order and the leftover tail.</li>
         <li><a href="https://leetcode.com/problems/h-index/">274. H-Index</a> &mdash; bucket papers by citation count for O(n), where sorting first costs O(n log n).</li>
         <li><a href="https://leetcode.com/problems/maximum-gap/">164. Maximum Gap</a> &mdash; hard: linear time via buckets, even though it looks like it needs a full sort.</li>
-        <li>Paper exercise: draw the complete execution tree for sorting three numbers a, b, c. Check it has 3! = 6 leaves and height 3 &mdash; matching &#8968;log&#8322;&nbsp;6&#8969; &mdash; so 3 comparisons are unavoidable in the worst case.</li>
       </ul>
     </section>
   </main>

@@ -110,8 +110,20 @@
     </section>
 
     <section class="content-section" id="lower-bounds">
-      <h2>Sorting lower bounds &amp; counting sort <span class="section-tag">Class 07</span></h2>
-      <p class="lead">Comparison sorts cannot beat &Omega;(n log n) &mdash; these problems beat it by not comparing. When keys are bounded integers, count them instead.</p>
+      <h2>Sorting at the &Omega;(n log n) bound <span class="section-tag">Class 07</span></h2>
+      <p class="lead">Comparison-based sorting cannot beat &Omega;(n log n), so these problems live right at it: sort (sometimes with your own comparator), then sweep. The sort is the dominant cost.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/sort-the-people/">2418. Sort the People</a> &mdash; warm-up: sort one array by another, with a custom comparator.</li>
+        <li><a href="https://leetcode.com/problems/largest-number/">179. Largest Number</a> &mdash; define the comparison (compare concatenations); any comparison sort does the rest.</li>
+        <li><a href="https://leetcode.com/problems/merge-intervals/">56. Merge Intervals</a> &mdash; sort by start, then one sweep.</li>
+        <li><a href="https://leetcode.com/problems/non-overlapping-intervals/">435. Non-overlapping Intervals</a> &mdash; sort by end time, then greedily keep what fits.</li>
+        <li><a href="https://leetcode.com/problems/minimum-number-of-arrows-to-burst-balloons/">452. Minimum Number of Arrows to Burst Balloons</a> &mdash; the same sort-by-end recipe as 435, dressed up.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="beating-the-bound">
+      <h2>Beating the bound: counting sort <span class="section-tag">Class 07</span></h2>
+      <p class="lead">The lower bound only binds algorithms that compare &mdash; these problems beat it by not comparing. When keys are bounded integers, count them instead.</p>
       <ul class="compact-list">
         <li><a href="https://leetcode.com/problems/sort-colors/">75. Sort Colors</a> &mdash; three possible values: count and rewrite in O(n), no comparisons.</li>
         <li><a href="https://leetcode.com/problems/sort-an-array/">912. Sort an Array</a> &mdash; values fit in a fixed range; submit counting sort this time.</li>
