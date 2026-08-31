@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 06: Teams, and Git Together</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 06</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Week 5 Lab &middot; Monday 31 August</p>
+      <h1>Teams, and Git Together</h1>
+      <p class="lead">Today you get your project group. Solo git you have done &mdash; branches, merges, and your first real merge conflict, you have not. By the end of the session your group has a shared repository, and every member's name got into it the hard way: on a branch, through a pull request, past a conflict.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Step 1 &mdash; The huddle</h2>
+      <p>Groups go up on the screen in class. When you find yours:</p>
+      <ol>
+        <li>Find your group members and <strong>make a circle</strong>.</li>
+        <li><strong>Introduce yourselves</strong> &mdash; name, year, what you've built so far in this course.</li>
+        <li><strong>Pick a captain.</strong> The captain owns the group repo and speaks for the group when we ask "where are you?"</li>
+        <li><strong>Pick a group name.</strong> You'll live with it on the dashboard all semester, so choose with care (or courage).</li>
+        <li><strong>Come back to us</strong> with the name and the captain. We record both.</li>
+      </ol>
+      <p>Not in any group on the screen? Come to us &mdash; you'll join a group today.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Step 2 &mdash; The captain creates the group repo</h2>
+      <ol>
+        <li>Captain creates a <strong>new private repository</strong> named <code>cs437-&lt;your-group-name&gt;</code>.</li>
+        <li>Add every group member as a <strong>collaborator</strong>, plus the instructors: <strong>anup</strong> and <strong>arjunarul-iitgn</strong>.</li>
+        <li>Create one file on <code>main</code>: <code>members.md</code>, containing only a heading &mdash; <code>#&nbsp;&lt;Group Name&gt;</code> &mdash; and commit it.</li>
+        <li>Turn on <strong>branch protection</strong> for <code>main</code>: Settings &rarr; Branches &rarr; add a rule &mdash; require a pull request before merging, with at least one approval. <em>If GitHub says this needs a paid plan on private repos</em>, apply for the free <a href="https://education.github.com/pack">Student Developer Pack</a> today; until it arrives, the rule still applies &mdash; enforced by us instead of GitHub. The history shows every direct push to <code>main</code>, and we look.</li>
+      </ol>
+      <p>From today, in the group repo: <strong>nobody pushes to <code>main</code>. Ever.</strong> Every change &mdash; including the instructors' &mdash; arrives by pull request with a review. This is not ceremony; it is the guardrail that makes it safe to let an AI write code later.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Step 3 &mdash; The collision drill</h2>
+      <p>Everyone now adds their own line to the <em>same</em> file. This is engineered to go wrong &mdash; that's the lesson.</p>
+      <ol>
+        <li>Every member clones the repo and creates a branch named after themselves:
+          <pre class="code-block"><code>git clone &lt;repo-url&gt;
+cd cs437-&lt;group-name&gt;
+git switch -c add-&lt;yourname&gt;</code></pre></li>
+        <li>Edit <code>members.md</code>: add <strong>one line directly under the heading</strong> &mdash; your name, roll number, GitHub handle. Everyone edits the same spot. Commit and push your branch:
+          <pre class="code-block"><code>git add members.md
+git commit -m "add &lt;yourname&gt; to members"
+git push -u origin add-&lt;yourname&gt;</code></pre></li>
+        <li><strong>First member</strong>: open a pull request; a teammate reviews and merges it. Painless. Enjoy it &mdash; it's the last painless one.</li>
+        <li><strong>Everyone else</strong>: your PR now shows a <strong>conflict</strong> &mdash; main has moved and your branch edits the same lines. Fix it on your branch:
+          <pre class="code-block"><code>git fetch origin
+git merge origin/main     # conflict appears in members.md
+# open the file: keep BOTH lines &mdash; theirs and yours &mdash; remove the &lt;&lt;&lt; === &gt;&gt;&gt; markers
+git add members.md
+git commit               # completes the merge
+git push</code></pre>
+          Then get your review and merge. The next member conflicts again &mdash; on purpose. Take turns; everyone resolves at least one conflict with their own hands.</li>
+        <li><strong>Last member, do it differently</strong>: instead of merging main into your branch, <strong>rebase</strong>:
+          <pre class="code-block"><code>git fetch origin
+git rebase origin/main    # same conflict, resolved the same way
+git add members.md
+git rebase --continue
+git push --force-with-lease</code></pre></li>
+        <li>Now look at what you built:
+          <pre class="code-block"><code>git log --oneline --graph --all</code></pre>
+          Find the merge commits (diamonds) and the rebased commit (a straight line). Same result, two shapes of history &mdash; discuss in the group which you'd rather read six weeks from now.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>Done when</h2>
+      <ul>
+        <li><code>members.md</code> on <code>main</code> lists every member &mdash; and every line got there through a reviewed pull request.</li>
+        <li>Every member resolved at least one conflict themselves.</li>
+        <li>The captain has given us: group name, captain, repo link.</li>
+        <li>Your personal log for today is in <em>your own</em> repo: <code>lab-notes/week-05.md</code>, same format as <a href="../class-05/">last week</a>. One honest paragraph on the conflict you resolved beats a page of ceremony.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The rule for AI today: explain, don't drive</h2>
+      <p>Today git is <strong>by hand</strong> &mdash; the whole point is to feel the conflict and fix it yourself. You may ask your AI to <em>explain</em> anything &mdash; "what does rebase actually do?", "what do these <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code> markers mean?" &mdash; but the commands and the conflict resolution are yours. If the AI resolves your conflict, you didn't have one.</p>
+      <p><strong>Tomorrow:</strong> the golf. Bring your token counter.</p>
+    </section>
+
+  </main>
+</body>
+</html>
