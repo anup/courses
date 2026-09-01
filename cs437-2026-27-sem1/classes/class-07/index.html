@@ -33,13 +33,14 @@
     <section class="content-section">
       <h2>How a hole works</h2>
       <ol>
-        <li>Read the challenge. Write a <strong>prompt</strong> that makes an AI produce the function &mdash; save it as <code>prompt.txt</code>.</li>
-        <li>Paste the AI's answer as <code>solution.py</code> (just the function, nothing else).</li>
+        <li>Read the challenge. Write a <strong>prompt</strong> and save it as <code>prompt.txt</code>.</li>
+        <li>Paste your prompt into <strong>your own AI tool</strong> &mdash; ChatGPT, Claude, Copilot, or your agent-lab harness &mdash; and save the code it gives back as <code>solution.py</code> (just the function, nothing else).</li>
         <li>Score it:
           <pre class="code-block"><code>python score.py 1 prompt.txt solution.py</code></pre>
           It runs the hidden tests and, only if they all pass, prints your token score.</li>
         <li>Report your group's score for each hole to the scoreboard on screen. Lowest total across the three holes wins.</li>
       </ol>
+      <p><strong>score.py does not call an AI.</strong> It only counts the tokens in your two files and checks the code against the tests &mdash; <em>you</em> generate the code with your own AI tool, then score the result. Don't sit waiting for the script to write code; it won't.</p>
       <p>Grab the scorer once and reuse it for all three holes: <a class="action-link" href="score.py" download>Download score.py</a>. It counts tokens the same way for everyone, so groups are comparable. Precise wording shortens the prompt; a tidy function shortens the code &mdash; both lower your score.</p>
     </section>
 
