@@ -31,17 +31,22 @@
     </section>
 
     <section class="content-section">
+      <h2>Everyone uses the same model</h2>
+      <p>So the leaderboard is fair, every group prompts the <strong>same</strong> model:</p>
+      <pre class="code-block"><code>google/gemma-4-26b-a4b-it:free   (on OpenRouter)</code></pre>
+      <p>Use it through your agent-lab harness, or open <a class="action-link" href="https://openrouter.ai/chat" target="_blank" rel="noopener">openrouter.ai/chat</a> and pick that model &mdash; it's free, no key needed for the chat. It's a small model on purpose: it rewards a precise prompt and punishes a sloppy one, which is the whole game. (It's also a preview of next week &mdash; small models have weak spots, and you'll go hunting for them.)</p>
+
       <h2>How a hole works</h2>
       <ol>
         <li>Read the challenge. Write a <strong>prompt</strong> and save it as <code>prompt.txt</code>.</li>
-        <li>Paste your prompt into <strong>your own AI tool</strong> &mdash; ChatGPT, Claude, Copilot, or your agent-lab harness &mdash; and save the code it gives back as <code>solution.py</code> (just the function, nothing else).</li>
+        <li>Paste your prompt into the model above and save the code it gives back as <code>solution.py</code> (just the function, nothing else).</li>
         <li>Score it:
           <pre class="code-block"><code>python score.py 1 prompt.txt solution.py</code></pre>
           It runs the hidden tests and, only if they all pass, prints your token score.</li>
-        <li>Report your group's score for each hole to the scoreboard on screen. Lowest total across the three holes wins.</li>
+        <li>Report your group's score for each hole to the scoreboard on screen. Lowest total across the holes wins.</li>
       </ol>
-      <p><strong>score.py does not call an AI.</strong> It only counts the tokens in your two files and checks the code against the tests &mdash; <em>you</em> generate the code with your own AI tool, then score the result. Don't sit waiting for the script to write code; it won't.</p>
-      <p>Grab the scorer once and reuse it for all three holes: <a class="action-link" href="score.py" download>Download score.py</a>. It counts tokens the same way for everyone, so groups are comparable. Precise wording shortens the prompt; a tidy function shortens the code &mdash; both lower your score.</p>
+      <p><strong>score.py does not call an AI.</strong> It only counts the tokens in your two files and checks the code against the tests &mdash; <em>you</em> generate the code with the model, then score the result. Don't sit waiting for the script to write code; it won't.</p>
+      <p>Grab the scorer once and reuse it for every hole: <a class="action-link" href="score.py" download>Download score.py</a>. It counts tokens the same way for everyone, so groups are comparable. Precise wording shortens the prompt; a tidy function shortens the code &mdash; both lower your score.</p>
     </section>
 
     <section class="content-section">
@@ -73,6 +78,28 @@ top_word("Hello hello WORLD")  ==  "hello"  # lowercased</code></pre>
 line_stats(path)  ==  (4, 7, 21)</code></pre>
       <p class="lead">The biggest task &mdash; reading, then computing.</p>
       <p><strong>Chain bonus.</strong> Solve this one through your <em>agent</em> instead of by hand: give it a <code>read_file</code> tool and a compute tool, and make it call <strong>both in a single turn</strong> &mdash; read the file, then compute the stats. Show the two tool calls to an instructor for a bonus. If you have never chained two tool calls, this is the rung from <a href="../class-05/">Class 05</a> &mdash; sit with a group-mate who has.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Hole 4 &mdash; Parse a config (bonus, harder)</h2>
+      <p>For groups that clear the first three. Write <code>parse_config(text)</code> that turns config text into a dictionary. Each line is <code>key: value</code>. <strong>Skip</strong> blank lines and lines starting with <code>#</code>. Strip whitespace around the key and value. Split on the <strong>first</strong> colon only. If the value is all digits, store it as an <code>int</code>; otherwise keep it a string.</p>
+      <pre class="code-block"><code>parse_config("# config\nname: Ada\nage: 36\n\ncity: London")
+  ==  {"name": "Ada", "age": 36, "city": "London"}
+
+parse_config("url: http://a.com:80")
+  ==  {"url": "http://a.com:80"}   # only the first colon splits</code></pre>
+      <p class="lead">More rules to convey means more room to be wordy or tight &mdash; the token spread here is the widest of the four. This is where a precise prompt really pays.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Finished the holes? Take on colf.dev</h2>
+      <p>The stretch round. <a class="action-link" href="https://colf.dev/" target="_blank" rel="noopener">colf.dev</a> is the polished version of this exact game &mdash; prompt an AI to solve a challenge, scored on prompt tokens plus code tokens, on a global leaderboard. Same idea as ours, but the problems are real algorithms (LRU cache, Dijkstra, N-queens) and the AI is built into the site.</p>
+      <ol>
+        <li>Open <a href="https://colf.dev/" target="_blank" rel="noopener">colf.dev</a>, sign in, and pick a challenge (start with <strong>LRU Cache</strong>).</li>
+        <li>Write the shortest prompt that makes it produce the required function, click <strong>Generate code</strong>, then <strong>Run tests</strong>.</li>
+        <li>Get it passing, then fight to shrink your token total &mdash; and see where you land on the global board.</li>
+      </ol>
+      <p>Compare notes as a group: what wording shaved the most tokens? The best players here beat the top of the leaderboard with prompts shorter than a single sentence.</p>
     </section>
 
     <section class="content-section">

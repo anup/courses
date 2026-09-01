@@ -7,7 +7,7 @@ The game: you PROMPT an AI to write the function. Your score for a hole is
 counted only if the solution passes every test. Lowest total across the holes wins.
 
 Usage:
-    python score.py <1|2|3> <your_prompt.txt> <the_ai_solution.py>
+    python score.py <1|2|3|4> <your_prompt.txt> <the_ai_solution.py>
 
 Everyone counts tokens with THIS script, so all groups are comparable. The
 counter here approximates how language models tokenize (each word and each
@@ -65,7 +65,23 @@ def check3(m):
     return None
 
 
-CHECKS = {"1": check1, "2": check2, "3": check3}
+def check4(m):
+    cases = [
+        ("# config\nname: Ada\nage: 36\n\ncity: London",
+         {"name": "Ada", "age": 36, "city": "London"}),
+        ("x: 5", {"x": 5}),
+        ("# just a comment", {}),
+        ("  key : value  ", {"key": "value"}),         # trimmed
+        ("url: http://a.com:80", {"url": "http://a.com:80"}),  # split on first colon only
+    ]
+    for text, want in cases:
+        got = m.parse_config(text)
+        if got != want:
+            return f"parse_config({text!r}) returned {got!r}, expected {want!r}"
+    return None
+
+
+CHECKS = {"1": check1, "2": check2, "3": check3, "4": check4}
 
 
 def main():
