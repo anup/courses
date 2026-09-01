@@ -35,6 +35,7 @@
       <p>So the leaderboard is fair, every group prompts the <strong>same</strong> model:</p>
       <pre class="code-block"><code>google/gemma-4-26b-a4b-it:free   (on OpenRouter)</code></pre>
       <p>Use it through your agent-lab harness, or open <a class="action-link" href="https://openrouter.ai/chat" target="_blank" rel="noopener">openrouter.ai/chat</a> and pick that model &mdash; it's free, no key needed for the chat. It's a small model on purpose: it rewards a precise prompt and punishes a sloppy one, which is the whole game. (It's also a preview of next week &mdash; small models have weak spots, and you'll go hunting for them.)</p>
+      <p class="lead">The score counts your <strong>prompt</strong> and the <strong>code</strong> &mdash; not the model's hidden "thinking." That keeps it simple and fair. In the real world your bill also includes the model's reasoning tokens, which is why picking the right model for a job is its own skill. We use a small non-reasoning model here, so what you see is basically what you'd pay.</p>
 
       <h2>How a hole works</h2>
       <ol>
@@ -108,9 +109,13 @@ parse_config("url: http://a.com:80")
     </section>
 
     <section class="content-section">
-      <h2>Log</h2>
-      <p>In <code>lab-notes/class-07.md</code> (one file per class now), record for each hole: your best prompt, the score <code>score.py</code> gave, and one line on what you cut to shrink it. Keep your prompt files if you want to compare later.</p>
-      <p class="lead"><strong>Next Monday:</strong> the AI takes the test, and you write it. We start building evals &mdash; your own benchmarks &mdash; and score them by how well they separate a strong model from a weak one.</p>
+      <h2>Commit to your own repo</h2>
+      <p>Today's work is individual practice, so it goes in <strong>your personal repo</strong> &mdash; not the group repo. The group repo is for the project, which starts next week.</p>
+      <ul>
+        <li><strong>The log:</strong> <code>lab-notes/class-07.md</code> (one file per class now). For each hole, record your best prompt, the score <code>score.py</code> gave, and one line on what you cut to shrink it.</li>
+        <li><strong>Your prompts:</strong> keep them in a <code>golf/</code> folder (<code>golf/hole1-prompt.txt</code> &hellip;) so you can compare later. Commit and push.</li>
+      </ul>
+      <p class="lead"><strong>Next Monday:</strong> the AI takes the test, and you write it. We start building evals &mdash; your own benchmarks &mdash; in your <em>group</em> repo, and score them by how well they separate a strong model from a weak one.</p>
     </section>
 
   </main>
