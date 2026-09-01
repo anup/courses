@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 07: Prompt Golf</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 07</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 07 &middot; Tuesday 1 September</p>
+      <h1>Prompt Golf</h1>
+      <p class="lead">Yesterday the rule was "explain, don't drive." Today it flips: the AI writes the code, and your skill is the prompt. But there's a catch &mdash; every token counts. You prompt an AI to write a small function, and your score is the number of tokens in <em>your prompt plus the AI's code</em>. Lowest score wins. Fewer tokens means less to pay for and less context to manage, which is a real thing you will care about all semester.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>How a hole works</h2>
+      <ol>
+        <li>Read the challenge. Write a <strong>prompt</strong> that makes an AI produce the function &mdash; save it as <code>prompt.txt</code>.</li>
+        <li>Paste the AI's answer as <code>solution.py</code> (just the function, nothing else).</li>
+        <li>Score it:
+          <pre class="code-block"><code>python score.py 1 prompt.txt solution.py</code></pre>
+          It runs the hidden tests and, only if they all pass, prints your token score.</li>
+        <li>Report your group's score for each hole to the scoreboard on screen. Lowest total across the three holes wins.</li>
+      </ol>
+      <p>Grab the scorer once and reuse it for all three holes: <a class="action-link" href="score.py" download>Download score.py</a>. It counts tokens the same way for everyone, so groups are comparable. Precise wording shortens the prompt; a tidy function shortens the code &mdash; both lower your score.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Hole 1 &mdash; Reverse</h2>
+      <p>Write <code>rev(s)</code> that returns the string <code>s</code> reversed.</p>
+      <pre class="code-block"><code>rev("hello")  ==  "olleh"
+rev("ab cd")  ==  "dc ba"
+rev("")       ==  ""</code></pre>
+      <p class="lead">The warm-up. See how few tokens a working prompt can be.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Hole 2 &mdash; Top word</h2>
+      <p>Write <code>top_word(text)</code> that returns the most frequent word. Split on whitespace, compare in lowercase, and if two words tie, return the one that <strong>appears first</strong>.</p>
+      <pre class="code-block"><code>top_word("the cat the dog")    ==  "the"
+top_word("a b b a")            ==  "a"      # tie 2-2, "a" appears first
+top_word("Hello hello WORLD")  ==  "hello"  # lowercased</code></pre>
+      <p class="lead">Here a vague prompt fails the tests &mdash; the tie rule and the lowercasing have to be said. Precision is the game.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Hole 3 &mdash; Line stats</h2>
+      <p>Write <code>line_stats(path)</code> that reads the text file at <code>path</code> and returns a tuple <code>(number_of_lines, total_words, longest_line_length)</code>. Count lines with <code>splitlines()</code> (a trailing newline does not add an empty line).</p>
+      <pre class="code-block"><code># a file containing:
+# hello world
+# foo
+# &lt;blank line&gt;
+# longest line here now
+line_stats(path)  ==  (4, 7, 21)</code></pre>
+      <p class="lead">The biggest task &mdash; reading, then computing.</p>
+      <p><strong>Chain bonus.</strong> Solve this one through your <em>agent</em> instead of by hand: give it a <code>read_file</code> tool and a compute tool, and make it call <strong>both in a single turn</strong> &mdash; read the file, then compute the stats. Show the two tool calls to an instructor for a bonus. If you have never chained two tool calls, this is the rung from <a href="../class-05/">Class 05</a> &mdash; sit with a group-mate who has.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The rule for AI today: the AI drives, you steer</h2>
+      <p>Opposite of yesterday. You <em>may</em> have the AI write the whole function &mdash; that is the point. What you may not do is hand-write the code and pretend it was prompted, or count tokens by hand. Submit the real prompt you used and the real answer you got, and let <code>score.py</code> count. The honest game is the fun one.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Log</h2>
+      <p>In <code>lab-notes/class-07.md</code> (one file per class now), record for each hole: your best prompt, the score <code>score.py</code> gave, and one line on what you cut to shrink it. Keep your prompt files if you want to compare later.</p>
+      <p class="lead"><strong>Next Monday:</strong> the AI takes the test, and you write it. We start building evals &mdash; your own benchmarks &mdash; and score them by how well they separate a strong model from a weak one.</p>
+    </section>
+
+  </main>
+</body>
+</html>
