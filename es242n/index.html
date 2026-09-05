@@ -25,7 +25,7 @@
     <section class="hero">
       <p class="eyebrow">course workspace</p>
       <h1>ES242(N)</h1>
-      <p class="lead">Day-wise material and student-facing course workflow.</p>
+      <p class="lead">Class materials, practice links, scores, and course information.</p>
     </section>
     <section class="grid stack" aria-label="ES242(N) links">
       <a class="tile tile-feature" href="leaderboard.html">
@@ -35,6 +35,62 @@
       <a class="tile tile-feature" href="leaderboard.html?view=upcoming">
         <strong>Upcoming Contests</strong>
         <span>Every upcoming LeetCode, CodeChef, AtCoder, and Codeforces contest in the course window. Times are IST.</span>
+      </a>
+      <a class="tile" href="classes/class-19/">
+        <strong>29 June 2026: MST, Union&ndash;Find, Sets &amp; Maps, Hashing</strong>
+        <span>Last class. Two threads close. Thread 1 finishes graphs: <strong>MST</strong> (Kruskal sort-and-pick, Prim grow-from-seed using the Monday heap), plus <strong>Union&ndash;Find</strong> as Kruskal&rsquo;s cycle-check &mdash; visual trace of trees growing, then path compression with a before/after picture. Thread 2 opens the last data structure family: <strong>Set</strong> and <strong>Map</strong>, with <strong>hashing</strong> as the implementation. The simplest map is an array (direct addressing); hashing generalises it. Chaining (coded) vs open addressing (shown only, with a 3-state tombstone demo). Students code the hash set in C and apply it to Contains Duplicate; hash map and Two Sum follow as the natural extension. Closes with a count-sort visual and an optional radix-sort slide.</span>
+      </a>
+      <a class="tile" href="classes/class-18/">
+        <strong>26 June 2026: Graphs II</strong>
+        <span>Close the loop on the adjacency-list code from Wednesday — an array of linked lists, head-insert from week 1. A richer graph vocabulary (directed, weighted, complete, disconnected, tree, DAG, bipartite) and the pairing pattern that bipartite matching unlocks. BFS and DFS as decision tools — components, cycle detection, is-it-a-tree. Then shortest paths: BFS distance for unweighted graphs, <strong>Dijkstra</strong> for weighted — Monday&rsquo;s heap finally cashes in. A one-slide MST preview at the end. Three things to code in class: adjacency list, BFS distance, Dijkstra.</span>
+      </a>
+      <a class="tile" href="classes/class-17/">
+        <strong>24 June 2026: Graphs I</strong>
+        <span>Vocabulary first — vertex, edge, neighbour, degree, path, cycle, connected — then the three-function <code>Graph</code> interface (<code>vertex_count</code>, <code>neighbors</code>, <code>has_edge</code>) that BFS and DFS will call. Adjacency matrix vs adjacency list: same interface, different storage, different cost. BFS and DFS animated step-by-step with explicit visited / current / neighbour state; both O(V+E), only the visiting order differs. Closes with a coding exercise where students implement both backings in C and run BFS against either — same answer, different cost. The supplementary heaps-with-pointers note runs as a 15-minute warm-up.</span>
+      </a>
+      <a class="tile" href="classes/class-16/">
+        <strong>22 June 2026: Heaps</strong>
+        <span>Opens by closing out binary search trees — the two ways to walk a tree: depth-first (the traversals already written — inorder, validate, LCA, delete) and breadth-first (level order with a queue) — and the one idea graphs will add next, a visited set. Then the day's topic: the heap. A heap is a binary tree with two extra rules — complete shape, and every parent dominating its children — and the array layout falls out of the shape rule for free, index arithmetic in place of pointers. Insert and extract-max are each a single walk up or down, O(log n); building a heap bottom-up is O(n). Closes with where heaps actually live: priority queues, top-K, and heap sort.</span>
+      </a>
+      <a class="tile" href="classes/class-15/">
+        <strong>20 June 2026: Binary Search Trees (Part 2)</strong>
+        <span>BST deletion in three cases, inorder successor and predecessor, validating the BST property, lowest common ancestors, building a balanced BST from sorted input, and recovering a BST with two swapped values.</span>
+      </a>
+      <a class="tile" href="classes/class-14/">
+        <strong>17 June 2026: Binary Search Trees</strong>
+        <span>Take Monday's binary tree and add one rule: every value in the left subtree is less than the node, every value in the right is greater. The rule pays off twice — search and insert both follow the same three-case recurrence as binary search, and inorder traversal produces sorted output for free. Closes with a range-query practice problem and the worst-case shape (sorted input degenerates the tree into a linked list). Part 2 — deletion in three cases, inorder successor/predecessor, validate BST, LCA, and recovering a corrupted BST — was held Saturday 20 June, and the unit was capped on 22 June with the two ways to walk a tree, DFS and BFS. The Part 2 deck is linked from the day page.</span>
+      </a>
+      <a class="tile" href="classes/class-13/">
+        <strong>15 June 2026: Binary Trees</strong>
+        <span>Two sessions on binary trees as the first data structure where recursion is the obvious tool — because the structure of the data <em>is</em> recursive. From the linked-list node to the binary-tree node, then traversals as a single skeleton with the work line in three positions (preorder / inorder / postorder), then size, height, and leaf count as the same skeleton with different return values. Closes with three problems: evaluating an expression tree, mirroring a tree, and root-to-leaf path sum.</span>
+      </a>
+      <a class="tile" href="classes/class-12/">
+        <strong>13 June 2026: Subsets, Merge Sort, Quick Sort</strong>
+        <span>Three-hour class. One more backtracking shape — subsets, as a delta from Monday's <code>permute()</code> — then a new recursion family: divide and conquer, through merge sort and quick sort. Time complexity for both sorts in best, average, and worst cases. A short look at iterative subsets and permutations along the way.</span>
+      </a>
+      <a class="tile" href="classes/class-11/">
+        <strong>8 June 2026: Permutations and Backtracking</strong>
+        <span>Post-midsem opens with permutations of <code>{1, 2, 3, 4}</code> built up properly: the recursive insight (same problem, smaller input), the one piece of state (the path so far), and the choose-recurse-undo pattern. Practice list runs to Friday.</span>
+      </a>
+      <a class="tile" href="curriculum.html">
+        <strong>4 June 2026: Exam I</strong>
+        <span>Coding contest on CodeChef (ES242N26E1) and MCQ quiz on learn.csbasics.in. Curriculum: topics, slides, and practice problems.</span>
+      </a>
+      <a class="tile" href="classes/class-10/">
+        <strong>1 June 2026: Recursion</strong>
+        <span>Structural recursion via the linked list, then generative and combinatorial recursion through binary search, Josephus, and permutations. The call stack is the stack you wrote on Friday. Curated practice across lists, trees, grid DFS, generative recursion, and backtracking.</span>
+      </a>
+      <a class="tile" href="classes/class-09/">
+        <strong>29 May 2026: Stack and Queue Applications</strong>
+        <span>Putting stacks and queues to work — postfix evaluation, and grid traversal with DFS (stack) and BFS (queue). Includes curated stack, grid-traversal, and queue practice lists. Recursion comes Monday.</span>
+      </a>
+      <a class="tile" href="classes/class-08/">
+        <strong>27 May 2026: Stacks and Queues</strong>
+        <span>Two linear data structures built on linked lists and arrays. LIFO and FIFO operations, array-backed and linked-list-backed implementations, plus classic applications — balanced parentheses, postfix evaluation, BFS, scheduling.</span>
+      </a>
+      <a class="tile" href="classes/class-07/">
+        <strong>25 May 2026: Time Complexity</strong>
+        <span>Today's agenda: learn time complexity. We get there by solving Josephus three ways (array, pointer, circular linked list) and then naming what each version cost.</span>
       </a>
       <a class="tile" href="classes/class-06/">
         <strong>22 May 2026: Linked Lists</strong>
