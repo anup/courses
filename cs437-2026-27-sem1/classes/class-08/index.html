@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 08: Hackattic Warm-Up</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .stat-table{border-collapse:collapse;width:100%;margin:18px 0;}
+    .stat-table th{text-align:left;font-weight:500;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);}
+    .stat-table td{text-align:right;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);white-space:nowrap;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 08</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 08 &middot; Monday 7 September</p>
+      <h1>Hackattic Warm-Up</h1>
+      <p class="lead">Golf was a toy: one function, hidden tests, a token count. Today you meet a real server. <a class="action-link" href="https://hackattic.com/" target="_blank" rel="noopener">Hackattic</a> hands you a problem over an API, you solve it in code, and you POST the answer back. Everyone solves the <strong>same one challenge</strong>. Nothing is marked today &mdash; the job is to get every single person through that loop once. Tomorrow it counts.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>First, where we actually are</h2>
+      <p>Seven classes in, we re-audited every repo this morning. The milestone board looks healthy &mdash; most of you sit at four or five out of five. But the milestones are all August work, and they never expire, so they hide what has happened in the last two weeks.</p>
+      <table class="stat-table">
+        <tr><th>Logged anything for the last week (Classes 06&ndash;07)</th><td><strong>18</strong> of 28</td></tr>
+        <tr><th>Wrote nothing at all for that week</th><td><strong>10</strong> of 28</td></tr>
+        <tr><th>Groups that committed their <code>golf/</code> work</th><td><strong>4</strong> of 9</td></tr>
+        <tr><th>Median logs written, across seven classes</th><td><strong>4</strong></td></tr>
+      </table>
+      <p><strong>A note on names, because this tripped the audit up too.</strong> We changed the log convention from <code>week-0X.md</code> to <code>class-NN.md</code> on 1 September &mdash; the day <em>after</em> Class 06. So if you logged Class 06 on the day, you correctly called it <code>week-05.md</code>, and you are counted. Nobody is penalised for using the old name on work done before the change. From Class 07 onward, please use <code>class-NN.md</code>.</p>
+      <p>The number that matters is the second row. <strong>Ten of you have written nothing for the last two classes</strong> &mdash; not under the old name, not under the new one.</p>
+      <p><strong>So today has a second job: backfill.</strong> Whatever classes you have missed logs for, write them. A log written late is worth far more than a log never written, and today is deliberately unmarked so you have the room to catch up.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Set up your account</h2>
+      <ol>
+        <li>Go to <a class="action-link" href="https://hackattic.com/" target="_blank" rel="noopener">hackattic.com</a> and create an account. <strong>Log in with GitHub</strong> is the quickest route and you all already have GitHub.</li>
+        <li>Find your <strong>access token</strong>. Every request you make is authenticated with it. Look under <strong>Secrets</strong> in the top navigation &mdash; if it isn't there, check your account page.</li>
+        <li>Keep the token in a variable or a local file. <strong>Do not commit it.</strong> Add it to <code>.gitignore</code> before you write a single line. Two of you have already leaked an API key to a public repo this semester; do not make it three.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>How a hackattic challenge works</h2>
+      <p>Every challenge on the site is the same three-step loop, and once you have done it once you can do all of them:</p>
+      <ol>
+        <li><strong>GET the problem.</strong> You call a URL with your access token and the server replies with JSON &mdash; your problem data, generated fresh for you.</li>
+        <li><strong>Solve it in code.</strong> Ordinary programming. Parse the JSON, compute the answer.</li>
+        <li><strong>POST the solution.</strong> You send JSON back to a submission URL, and the server replies telling you whether it was accepted or rejected.</li>
+      </ol>
+      <p>The exact URLs and the exact JSON field names are written on the challenge page itself. <strong>Read them there.</strong> Do not take them from an AI and do not take them from a blog post &mdash; see the rule below.</p>
+      <p class="lead">One thing worth understanding: <strong>your problem data is generated for your account.</strong> The person next to you gets different numbers. You can share code, you can share approach, you can debug together &mdash; but there is no answer to copy, because their answer is wrong for you. This is why we are using this platform.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Today's challenge &mdash; Help me unpack</h2>
+      <p><a class="action-link" href="https://hackattic.com/challenges/help_me_unpack" target="_blank" rel="noopener">hackattic.com/challenges/help_me_unpack</a></p>
+      <p>The site's own warm-up, and the cheapest challenge on the board. You are handed some encoded bytes and asked to read numbers out of them &mdash; signed, unsigned, floating point, and one where the byte order is reversed. The challenge page tells you exactly which values it wants and what to call them when you send them back.</p>
+      <p>It needs <strong>nothing but the Python standard library</strong>. No <code>pip install</code>, no Docker, no system packages. If you find yourself installing something, you have wandered off.</p>
+      <p class="lead">The puzzle is not the point. The point is the loop: fetch, solve, submit, see it accepted. When your submission comes back accepted, put your hand up so the instructor can count you.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The rule for AI today: the page is the truth, not the model</h2>
+      <p>Use AI freely &mdash; it is very good at byte unpacking and will write that part for you in seconds. But there is a specific way it will waste your time today, and it is worth watching for.</p>
+      <p><strong>The model will invent the API.</strong> Ask it how to submit to hackattic and it will confidently produce an endpoint URL, a parameter name, and a JSON shape. Some of it will be right. Some of it will be a plausible-looking guess, or correct for a different challenge, or correct for how the site worked years ago. It will not tell you which is which, because it does not know.</p>
+      <p>So: <strong>get the byte-wrangling from the model, get the API contract from the challenge page.</strong> When your submission is rejected, your first move is to re-read the spec on the page and compare it to what you actually sent &mdash; not to ask the model why it failed.</p>
+      <p class="lead">This is the habit the whole semester is built on. AI is excellent where the answer is common knowledge and unreliable where the answer is specific to one system. Knowing which kind of question you are asking is the skill.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Finished early?</h2>
+      <p>Two more that also need only the standard library, so nothing to install:</p>
+      <ul>
+        <li><a class="action-link" href="https://hackattic.com/challenges/mini_miner" target="_blank" rel="noopener">Mini miner</a> &mdash; hash a block over and over until the result starts with enough zeros. Proof of work, in about fifteen lines.</li>
+        <li><a class="action-link" href="https://hackattic.com/challenges/password_hashing" target="_blank" rel="noopener">Password hashing</a> &mdash; PBKDF2, scrypt and HMAC out of <code>hashlib</code>. Genuinely useful knowledge, and it clears up some misconceptions.</li>
+      </ul>
+      <p>Browse the rest if you like, but <strong>save the heavy ones for another day</strong>. Anything asking you to run a DNS server, host a git server, serve a Docker registry or receive requests from the open internet will eat the session in setup rather than solving.</p>
+      <p>Then help someone in your group who is stuck. Nobody leaves without a green submission.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What to commit, and where</h2>
+      <ul>
+        <li><strong>Group repo.</strong> A <code>hackattic/</code> folder with your solving script &mdash; <code>hackattic/help_me_unpack.py</code>. Through a pull request, as always. <strong>No tokens in the file.</strong> Read it from an environment variable or an ignored file.</li>
+        <li><strong>Personal repo.</strong> Your own <code>lab-notes/class-08.md</code>: which challenge you cleared, how many attempts it took, one thing the AI got wrong about the API, and &mdash; as always &mdash; whether you used AI as tutor or typist today.</li>
+      </ul>
+      <p class="lead"><strong>Tomorrow:</strong> the scored round. A pool of challenges spanning easy to hard, ninety minutes, and your group is measured on how many you clear &mdash; with the catch that a challenge you cannot explain does not count. Today is your only free run at the platform, so use it.</p>
+    </section>
+
+  </main>
+</body>
+</html>
