@@ -13,7 +13,9 @@
   <style>
     .stat-table{border-collapse:collapse;width:100%;margin:18px 0;}
     .stat-table th{text-align:left;font-weight:500;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);}
-    .stat-table td{text-align:right;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);white-space:nowrap;}
+    .stat-table td{text-align:right;vertical-align:top;padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);white-space:nowrap;}
+    .stat-table th{font-weight:400;}
+    .stat-table .muted{opacity:.72;font-size:.93em;}
   </style>
 </head>
 <body>
@@ -37,15 +39,36 @@
 
     <section class="content-section">
       <h2>First, where we actually are</h2>
-      <p>Seven classes in, we re-audited every repo this morning. The milestone board looks healthy &mdash; most of you sit at four or five out of five. But the milestones are all August work, and they never expire, so they hide what has happened in the last two weeks.</p>
+      <p>Before hackattic, two minutes on the scoreboard &mdash; because <strong>it has a new column on it as of this morning</strong>. Open it in another tab and find your row: <a href="../../progress/">the progress board</a>. You need your anonymous code, which was emailed to you.</p>
+
+      <h3>What the five milestones are</h3>
       <table class="stat-table">
-        <tr><th>Logged anything for the last week (Classes 06&ndash;07)</th><td><strong>18</strong> of 28</td></tr>
-        <tr><th>Wrote nothing at all for that week</th><td><strong>10</strong> of 28</td></tr>
+        <tr><th><strong>M1 &mdash; Access</strong><br><span class="muted">Private repo created, both instructors added as collaborators.</span></th><td>&nbsp;</td></tr>
+        <tr><th><strong>M2 &mdash; Bug Dodger</strong><br><span class="muted">The Class 01 game plus its log, committed and pushed.</span></th><td>&nbsp;</td></tr>
+        <tr><th><strong>M3 &mdash; Agent-lab</strong><br><span class="muted">Arnav's <code>agent-lab</code> module 03 present in your repo.</span></th><td>&nbsp;</td></tr>
+        <tr><th><strong>M4 &mdash; Harder work</strong><br><span class="muted">You went past the clone &mdash; edited the harness, or built your own tool, token counter or guardrail.</span></th><td>&nbsp;</td></tr>
+        <tr><th><strong>M5 &mdash; Golf</strong> &nbsp;<em>new today</em><br><span class="muted">Your Class 07 reflection, committed as <code>lab-notes/class-07.md</code>.</span></th><td>&nbsp;</td></tr>
+      </table>
+
+      <p><strong>Now the important part about the first four.</strong> They are all August work, and a milestone once earned never goes away. So a board full of 4-out-of-5s can sit on top of a fortnight in which nothing at all happened. It has been flattering us.</p>
+      <p class="lead">M5 is the first milestone that measures something <em>recent</em>. It is also the first one most of you do not have.</p>
+
+      <table class="stat-table">
+        <tr><th>Have M5 &mdash; wrote <code>lab-notes/class-07.md</code></th><td><strong>12</strong> of 28</td></tr>
+        <tr><th>Logged anything at all for Classes 06&ndash;07</th><td><strong>18</strong> of 28</td></tr>
+        <tr><th>Wrote nothing whatsoever for those two classes</th><td><strong>10</strong> of 28</td></tr>
         <tr><th>Groups that committed their <code>golf/</code> work</th><td><strong>4</strong> of 9</td></tr>
         <tr><th>Median logs written, across seven classes</th><td><strong>4</strong></td></tr>
       </table>
-      <p><strong>A note on names, because this tripped the audit up too.</strong> We changed the log convention from <code>week-0X.md</code> to <code>class-NN.md</code> on 1 September &mdash; the day <em>after</em> Class 06. So if you logged Class 06 on the day, you correctly called it <code>week-05.md</code>, and you are counted. Nobody is penalised for using the old name on work done before the change. From Class 07 onward, please use <code>class-NN.md</code>.</p>
-      <p>The number that matters is the second row. <strong>Ten of you have written nothing for the last two classes</strong> &mdash; not under the old name, not under the new one.</p>
+
+      <p><strong>Why M5 counts only your personal log, and not your group's <code>golf/</code> folder.</strong> On 1 September two groups had no repository to commit into &mdash; not through any fault of their members. Marking the group half would have put a red cross against people for something they could not control. So the milestone measures the half that was yours alone. The group half is the fourth row above, and it is tracked separately.</p>
+
+      <p><strong>A note on file names, because this caught the audit out too.</strong> We changed the convention from <code>week-0X.md</code> to <code>class-NN.md</code> on 1 September &mdash; the day <em>after</em> Class 06. So if you logged Class 06 on the day, you correctly called it <code>week-05.md</code>, and you are counted in row two. Nobody is penalised for using the old name on work done before the change. From Class 07 onward, please use <code>class-NN.md</code>.</p>
+
+      <p>The row that matters is the third one. <strong>Ten of you have written nothing for the last two classes</strong> &mdash; not under the old name, not under the new one.</p>
+
+      <p class="lead">The log is not busywork and it is not decoration. It is the one piece of this course that is <strong>yours alone</strong> &mdash; everything from here on is group work, scored as a group. It carries marks on its own, and it is the only record that shows what <em>you</em> did rather than what your group did. If your group ships something excellent and you never wrote a line about your part in it, the record says nothing about you.</p>
+
       <p><strong>So today has a second job: backfill.</strong> Whatever classes you have missed logs for, write them. A log written late is worth far more than a log never written &mdash; and because today's challenge is the easy one, you have the room to catch up while you are here.</p>
     </section>
 
