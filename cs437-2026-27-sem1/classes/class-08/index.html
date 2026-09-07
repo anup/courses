@@ -77,6 +77,7 @@
       <ol>
         <li>Go to <a href="https://hackattic.com/" target="_blank" rel="noopener">hackattic.com</a> and create an account. <strong>Log in with GitHub</strong> is the quickest route and you all already have GitHub.</li>
         <li>Open the challenge page below. <strong>Your access token is shown right there on the problem page</strong> &mdash; you do not need to go hunting through a settings screen for it. Every request you make is authenticated with it, and it is yours alone.</li>
+        <li><strong>Register your hackattic username on the setup form.</strong> The form has a new field for it, and it checks the username against your public profile at <code>hackattic.com/u/&lt;name&gt;</code>, so a typo will be caught rather than silently recorded. Either the bare username or the full profile URL works. <a href="../../github/">Open the setup form</a> &mdash; it loads your existing submission, so you are adding one field, not filling it in again.</li>
         <li>Keep the token in a variable or a local file. <strong>Do not commit it.</strong> Add it to <code>.gitignore</code> before you write a single line. Two of you have already leaked an API key to a public repo this semester; do not make it three.</li>
       </ol>
     </section>
