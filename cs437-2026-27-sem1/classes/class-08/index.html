@@ -102,11 +102,13 @@
     </section>
 
     <section class="content-section">
-      <h2>The rule for AI today: the page is the truth, not the model</h2>
-      <p>Use AI freely &mdash; it is very good at byte unpacking and will write that part for you in seconds. But there is a specific way it will waste your time today, and it is worth watching for.</p>
-      <p><strong>The model will invent the API.</strong> Ask it how to submit to hackattic and it will confidently produce an endpoint URL, a parameter name, and a JSON shape. Some of it will be right. Some of it will be a plausible-looking guess, or correct for a different challenge, or correct for how the site worked years ago. It will not tell you which is which, because it does not know.</p>
-      <p>So: <strong>get the byte-wrangling from the model, get the API contract from the challenge page.</strong> When your submission is rejected, your first move is to re-read the spec on the page and compare it to what you actually sent &mdash; not to ask the model why it failed.</p>
-      <p class="lead">This is the habit the whole semester is built on. AI is excellent where the answer is common knowledge and unreliable where the answer is specific to one system. Knowing which kind of question you are asking is the skill.</p>
+      <h2>The rule for AI today: check the page, not because the model is wrong</h2>
+      <p>Use AI freely. It will write the byte-unpacking in seconds and there is no reason not to let it.</p>
+      <p>The thing to watch is the <strong>API contract</strong> &mdash; the exact submission URL, the parameter name, the JSON keys. Ask a model for those and what you get back depends entirely on which model you asked. A strong one, especially one that can read the web, will very likely fetch the challenge page and give you the right answer. A smaller one may give you something assembled from memory: right for a different challenge, or right for how the site worked some years ago, or simply plausible.</p>
+      <p class="lead">Here is the part that matters. <strong>Both answers look exactly the same.</strong> A confident correct answer and a confident wrong one arrive in the same tone, the same format, the same length. You cannot tell by looking which one you got &mdash; and neither can the model, because it does not know whether it is recalling or reconstructing.</p>
+      <p>So the rule is not "the model will lie to you." It is: <strong>when the answer is specific to one system, check it against that system.</strong> The challenge page is thirty seconds away and it is the source of truth. That check costs you almost nothing when the model was right, and saves you the entire session when it wasn't.</p>
+      <p>Concretely: if your submission comes back rejected, re-read the spec on the page and compare it against what you actually sent, <em>before</em> you go back to the model and ask why it failed. Debugging your own code is productive. Debugging a hallucinated field name while asking the thing that hallucinated it is not.</p>
+      <p><strong>This is worth paying attention to today because it is a real skill and you will be graded on it later.</strong> Knowing where a given model is reliable and where it is guessing is exactly what the eval assignment at the end of this course asks you to measure. Start noticing now: when your model got the API right, was it because it read the page, or because it remembered? Put the answer in your log.</p>
     </section>
 
     <section class="content-section">
