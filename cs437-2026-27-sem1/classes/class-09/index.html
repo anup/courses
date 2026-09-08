@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 09: The Hackattic Contest</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:18px 0;}
+    .rules th,.rules td{text-align:left;padding:10px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .rules th{width:2.2em;font-weight:600;opacity:.6;}
+    .pool{border-collapse:collapse;width:100%;margin:18px 0;}
+    .pool th,.pool td{padding:10px 12px;border-bottom:1px solid rgba(128,128,128,.25);text-align:left;}
+    .pool td.pts{text-align:right;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;}
+    .pool th.pts{text-align:right;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 09</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 09 &middot; Tuesday 8 September</p>
+      <h1>The Hackattic Contest</h1>
+      <p class="lead">Yesterday was the free run. Today is scored. Ninety minutes, four challenges, and your group is measured on what it actually clears &mdash; with one catch: <strong>a challenge nobody in your group can explain does not count.</strong></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Before anything else &mdash; can everyone log in?</h2>
+      <p>Five people do not have a hackattic account yet. If you are one of them, fix it in the first two minutes: go to <a href="https://hackattic.com/" target="_blank" rel="noopener">hackattic.com</a>, choose <strong>Log in with GitHub</strong>, done. Your hackattic username becomes your GitHub username.</p>
+      <p class="lead">This matters more than it sounds. Your problem data is generated <strong>per account</strong>. A member without an account cannot contribute a single point, and one group currently has only one member who can play. Sort it before the clock starts.</p>
+      <p>One challenge today needs a library. Run this now, not at minute forty:</p>
+      <pre class="code-block"><code>pip install cryptography</code></pre>
+    </section>
+
+    <section class="content-section">
+      <h2>The four challenges</h2>
+      <p>Points are hackattic's own, so difficulty is already priced in. There are <strong>125 points</strong> on the table.</p>
+      <table class="pool">
+        <tr><th>Challenge</th><th>What it is</th><th class="pts">Points</th></tr>
+        <tr><td><a href="https://hackattic.com/challenges/mini_miner" target="_blank" rel="noopener"><strong>Mini miner</strong></a></td><td>Hash a block over and over until the result starts with enough zero bits. Proof of work. Standard library only.</td><td class="pts">15</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/password_hashing" target="_blank" rel="noopener"><strong>Password hashing</strong></a></td><td>SHA256, HMAC, PBKDF2 and scrypt over a given password and salt. Standard library only.</td><td class="pts">15</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/tales_of_ssl" target="_blank" rel="noopener"><strong>Tales of SSL</strong></a></td><td>Generate an X.509 certificate to spec and return it base64 DER-encoded. Needs <code>cryptography</code>.</td><td class="pts">25</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/the_redis_one" target="_blank" rel="noopener"><strong>The one with Redis</strong></a></td><td>Parse a Redis <code>.rdb</code> binary dump by hand and pull four values out of it. No Redis server needed. The header has been tampered with. Standard library only.</td><td class="pts">70</td></tr>
+      </table>
+      <p><em>Help me unpack</em> is deliberately not on the list &mdash; most of you cleared it yesterday, so it would be free points nobody earned today.</p>
+      <p class="lead">Notice the shape of this. Redis alone is worth more than the other three combined, because it is harder than the other three combined. Three easy clears is a respectable score. One Redis clear beats it. Decide early how ambitious you are, because you cannot do both in ninety minutes.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>How scoring works</h2>
+      <ol>
+        <li>Your <strong>group's score</strong> is the sum of the points of the <strong>distinct</strong> challenges it clears.</li>
+        <li>A challenge counts <strong>once</strong>, however many of you clear it. Two people solving Mini miner scores 15, not 30. <strong>Split up.</strong></li>
+        <li>Any member's account counts for the group. It does not matter who clears what.</li>
+        <li><strong>Ties are broken by how many different members cleared something.</strong> If two groups finish on 55 points, the group where all three contributed beats the group where one person did everything.</li>
+      </ol>
+      <p>Rule 4 exists for a reason and it is not decoration. One strong member can carry the raw score. They cannot carry the tiebreak, and they cannot carry the viva.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>How to claim a challenge</h2>
+      <p><strong>Nothing counts unless an instructor saw it during the session.</strong> No screenshots afterwards, no "we definitely solved it", no claims after the clock stops.</p>
+      <ol>
+        <li>Your submission comes back <strong>accepted</strong> on hackattic.</li>
+        <li><strong>Raise your hand.</strong> An instructor comes over and looks at your screen.</li>
+        <li>The instructor picks <strong>one member of your group &mdash; not the one who solved it, and not one you choose</strong> &mdash; and asks three questions.</li>
+        <li>If that member answers them, the points go on the board.</li>
+      </ol>
+      <h3>The three questions, in advance</h3>
+      <p>There is no trick here. These are the questions, you know them now, and they are the same for every challenge:</p>
+      <ol>
+        <li><strong>What did the problem give you?</strong> What was in the JSON when you fetched it.</li>
+        <li><strong>What did you compute?</strong> In plain words &mdash; the actual step, not "we used a library".</li>
+        <li><strong>What did you send back?</strong> The field names and what was in them.</li>
+      </ol>
+      <p class="lead">Sixty seconds, no code reading, no memorised line numbers. If you understand what your group did, you will pass this without preparing for it.</p>
+      <h3>If the answer does not come</h3>
+      <p>The challenge does not count &mdash; <strong>but you may claim it once more, later in the session.</strong> Go and understand it together first, then put your hand up again. This is not a trap and it is not a single shot.</p>
+      <p>Which tells you the winning strategy outright: <strong>the moment someone clears a challenge, they should spend two minutes explaining it to the other two.</strong> That is cheaper than losing the points, and it is the actual point of the exercise.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The rules, complete</h2>
+      <table class="rules">
+        <tr><th>1</th><td>You compete as your group. Nine groups.</td></tr>
+        <tr><td></td></tr>
+        <tr><th>2</th><td>Everyone solves on their <strong>own</strong> hackattic account. Your problem data is generated for you &mdash; your teammate's answer is literally wrong for you, so there is nothing to copy.</td></tr>
+        <tr><th>3</th><td><strong>Any AI, any model, any tool.</strong> No restrictions, and we are not checking. The viva is the check, and a model that one-shots a challenge you cannot explain has cost you the points rather than won them.</td></tr>
+        <tr><th>4</th><td>Talk within your group. Not across groups.</td></tr>
+        <tr><th>5</th><td><strong>Rejected submissions cost nothing.</strong> Retry as often as you like. Only <em>claims</em> are gated, and a rejection is not a claim.</td></tr>
+        <tr><th>6</th><td>You may attempt the challenges in any order, and you may abandon one and come back to it.</td></tr>
+        <tr><th>7</th><td>If hackattic errors or rate-limits you, tell an instructor at the time. We will note it. Do not discover it afterwards and ask for points.</td></tr>
+        <tr><th>8</th><td>The board closes at the announced time. A submission accepted at the buzzer still needs its viva, so leave yourself the minute.</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>What to commit, by the end of today</h2>
+      <ul>
+        <li><strong>Group repo</strong> &mdash; <code>hackattic/&lt;challenge_slug&gt;/solve.py</code> for each challenge you cleared. <strong>No access token in any file.</strong></li>
+        <li><strong>Group repo</strong> &mdash; one <code>hackattic/NOTES.md</code> for the session: for each challenge, who solved it, roughly how long it took, and one thing that went wrong. Short. Five lines a challenge is plenty.</li>
+        <li><strong>Your own repo</strong> &mdash; <code>lab-notes/class-09.md</code>. Which challenges you personally worked on, what your AI got right and wrong, and whether you used it as tutor or typist.</li>
+      </ul>
+      <p class="lead">Write the personal log in <strong>&ldquo;I&rdquo;, not &ldquo;we&rdquo;.</strong> Everything scored today is scored as a group. Your log is the only place the record shows what <em>you</em> did.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Questions you are about to ask</h2>
+      <p><strong>&ldquo;Can we all work on the same challenge?&rdquo;</strong> You can, and it scores once. You have three people and four challenges. Do the arithmetic.</p>
+      <p><strong>&ldquo;My teammate solved it &mdash; do I have to understand it?&rdquo;</strong> Yes. The instructor picks who answers.</p>
+      <p><strong>&ldquo;I already solved Mini miner yesterday.&rdquo;</strong> Then you have a head start on explaining it. Points are for clearing it today, in front of an instructor.</p>
+      <p><strong>&ldquo;Can I use Claude / Copilot / Gemini / anything?&rdquo;</strong> Yes. Rule 3.</p>
+      <p><strong>&ldquo;What if we clear Redis with two minutes left?&rdquo;</strong> Raise your hand immediately. The viva has to happen before the buzzer.</p>
+      <p><strong>&ldquo;Is this graded?&rdquo;</strong> Yes. Weighting will be published with the full marks scheme; today's result is recorded per group.</p>
+    </section>
+
+  </main>
+</body>
+</html>
