@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 09: The Hackattic Contest</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .pool{border-collapse:collapse;width:100%;margin:16px 0;}
+    .pool th,.pool td{padding:9px 12px;border-bottom:1px solid rgba(128,128,128,.25);text-align:left;}
+    .pool td.pts,.pool th.pts{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap;}
+    .pool td.pts{font-weight:700;}
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .rules td:first-child{width:2em;opacity:.55;font-weight:600;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 09</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 09 &middot; Tuesday 8 September</p>
+      <h1>The Hackattic Contest</h1>
+      <p class="lead">Scored, as a group. <strong>If even one person in your group cannot explain a challenge, it does not count.</strong></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Setup</h2>
+      <ul>
+        <li>Every member needs their own hackattic account. No account, no points.</li>
+        <li><code>pip install websockets</code> &mdash; the only install.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The challenges</h2>
+      <table class="pool">
+        <tr><th>Challenge</th><th class="pts">Points</th></tr>
+        <tr><td><a href="https://hackattic.com/challenges/collision_course" target="_blank" rel="noopener">Collision course</a></td><td class="pts">15</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/websocket_chit_chat" target="_blank" rel="noopener">WebSocket chit chat</a></td><td class="pts">30</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/visual_basic_math" target="_blank" rel="noopener">Visual basic math</a></td><td class="pts">35</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/the_redis_one" target="_blank" rel="noopener">The one with Redis</a></td><td class="pts">70</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>Scoring</h2>
+      <p>Your score is the total points of the challenges you clear on your own account.</p>
+      <p class="lead"><strong>Your team's score is the average of its members' scores.</strong></p>
+    </section>
+
+    <section class="content-section">
+      <h2>Rules</h2>
+      <table class="rules">
+        <tr><td>1</td><td>You compete as your group.</td></tr>
+        <tr><td>2</td><td>Everyone solves every challenge on their own account.</td></tr>
+        <tr><td>3</td><td>Any AI, any model, any tool. The viva is the check.</td></tr>
+        <tr><td>4</td><td>Talk within your group, not across groups.</td></tr>
+        <tr><td>5</td><td>Rejected submissions cost nothing. Retry freely.</td></tr>
+        <tr><td>6</td><td>Any order. You may abandon a challenge and come back.</td></tr>
+        <tr><td>7</td><td>If hackattic errors or rate-limits you, tell an instructor at the time.</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>Commit by end of day</h2>
+      <p><strong>Group repo &mdash; through a pull request, approved by a different member.</strong> Nothing goes straight to main.</p>
+      <ul>
+        <li><code>hackattic/&lt;challenge&gt;/solve.py</code> &mdash; <strong>one</strong> agreed solution per challenge your group cleared. You each wrote your own; compare them and commit the one you agree is best.</li>
+        <li><code>hackattic/NOTES.md</code> &mdash; each of you adds your own short summary: what tripped you up on each challenge and how you got past it. All of you editing one file will conflict. Resolve it.</li>
+        <li>No access token in any file.</li>
+      </ul>
+      <p><strong>Your own repo</strong></p>
+      <ul>
+        <li><code>hackattic/&lt;challenge&gt;/solve.py</code> &mdash; <strong>your own</strong> solution, the one that cleared it on your account. Not your group's agreed version.</li>
+        <li><code>lab-notes/class-09.md</code>, written in &ldquo;I&rdquo;, not &ldquo;we&rdquo;.</li>
+      </ul>
+    </section>
+
+  </main>
+</body>
+</html>
