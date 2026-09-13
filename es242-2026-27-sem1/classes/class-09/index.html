@@ -57,6 +57,7 @@
         <li><code>int *add(int A[], int n, int num)</code> &mdash; a new array one longer, original untouched.</li>
         <li>Read positive integers until <code>-1</code> and print them in reverse, growing the array as you go. Order matters inside the loop: allocate, then free the old block, then reassign.</li>
         <li><code>int *removeAt(int *arr, int n, int index)</code> &mdash; two pointers walk in step; on the removed index only the source advances.</li>
+        <li>On the judge: the <a href="../../resources/practice/#malloc">malloc problems</a> on the practice page &mdash; same allocate, fill, return shape as <code>add</code>, but marked for you.</li>
         <li><strong>The employee record.</strong> Commands one per line until <code>-1</code>: <code>0 &lt;name&gt;</code> adds a person, <code>1 &lt;index&gt;</code> removes one. Reuse <code>add</code> and <code>removeAt</code> with <code>struct Person</code> &mdash; almost nothing else changes, which is the point. Handle the empty record and an out-of-range index.</li>
       </ul>
       <p class="lead">On the judge, from the <a href="../../resources/practice/#pointers">practice page</a>:</p>

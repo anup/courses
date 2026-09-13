@@ -50,6 +50,34 @@
       </ul>
     </section>
 
+    <section class="content-section" id="malloc">
+      <h2>Dynamic memory &mdash; <code>malloc</code> and <code>free</code> <span class="section-tag">Class 08</span> <span class="section-tag">Class 09</span></h2>
+      <p class="lead">Most array problems hand you the array and ask you to change it in place, so you never allocate anything. The ones below are different: they ask you to <strong>return</strong> something, and in C that means you have to make it yourself. LeetCode says so in the stub it gives you &mdash; <em>"the returned array must be malloced, assume caller calls free()"</em>. Every problem here is a <code>malloc</code> exercise wearing an array problem as a disguise.</p>
+      <p>Two rules that catch everyone at first. You must set <code>*returnSize</code> as well as returning the pointer, because a pointer carries no length &mdash; that is the same fact from Class 08, now enforced by a judge. And the judge frees what you <em>return</em>; anything else you allocate along the way is yours to <code>free</code>.</p>
+
+      <p class="lead"><strong>Start here &mdash; one array in, one array out.</strong></p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/concatenation-of-array/">1929. Concatenation of Array</a> &mdash; the simplest <code>malloc</code> on the site: allocate <code>2n</code> ints, fill it, set <code>*returnSize</code>. If you can do this one you have the pattern.</li>
+        <li><a href="https://leetcode.com/problems/squares-of-a-sorted-array/">977. Squares of a Sorted Array</a> &mdash; allocate <code>n</code>, then fill it from the back with two pointers.</li>
+        <li><a href="https://leetcode.com/problems/plus-one/">66. Plus One</a> &mdash; the answer is sometimes <em>longer</em> than the input (999 becomes 1000), so you cannot reuse the array you were given. Decide the size before you allocate.</li>
+        <li><a href="https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/">448. Find All Numbers Disappeared in an Array</a> &mdash; you do not know how big the answer is until you have counted. Either count first and allocate exactly, or allocate the worst case and report the real size.</li>
+        <li><a href="https://leetcode.com/problems/product-of-array-except-self/">238. Product of Array Except Self</a> &mdash; allocate the answer, then two passes over it.</li>
+      </ul>
+
+      <p class="lead"><strong>Then &mdash; an array of arrays.</strong></p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/pascals-triangle/">118. Pascal's Triangle</a> &mdash; the real test. The signature is <code>int** generate(int numRows, int* returnSize, int** returnColumnSizes)</code>, which needs <strong>three</strong> separate allocations: the outer array of row pointers, each row, and the array holding every row's length. Draw the picture before you write it.</li>
+        <li><a href="https://leetcode.com/problems/spiral-matrix/">54. Spiral Matrix</a> &mdash; a 2D array in, one flat allocated array out.</li>
+      </ul>
+
+      <p class="lead"><strong>Finally &mdash; allocating nodes, not arrays.</strong></p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/add-two-numbers/">2. Add Two Numbers</a> &mdash; the linked-list problem where the judge does <em>not</em> hand you the answer's memory. You <code>malloc</code> a node per digit, carry included. This is the exercise from <a href="../../classes/class-10/">Class 10</a> with a judge attached.</li>
+        <li><a href="https://leetcode.com/problems/design-linked-list/">707. Design Linked List</a> &mdash; build the whole structure yourself: add, get, delete. Every <code>malloc</code> needs its matching <code>free</code>, and here you are the one who has to remember.</li>
+      </ul>
+      <p class="small-text">A warning about the rest of the linked-list set on this page: the judge builds those lists for you, so they exercise pointer <em>manipulation</em> but never allocation. That is why the two problems above are listed separately &mdash; and why the write-it-yourself exercises on the <a href="../../classes/class-10/">Class 10</a> page still matter.</p>
+    </section>
+
     <section class="content-section" id="structures">
       <h2>Structures <span class="section-tag">Class 09</span></h2>
       <p class="lead">No judge for these &mdash; they are short C programs. A struct behaves exactly like any other value: pass it by value and it is copied, pass its address and the function sees the original.</p>
