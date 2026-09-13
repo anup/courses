@@ -42,6 +42,28 @@
     </section>
 
     <section class="content-section">
+      <h2>Reference &mdash; video</h2>
+      <p class="lead">Pointers is the topic where one explanation is often not enough. If this class did not land, work through these instead &mdash; the same ground at a different pace.</p>
+      <ul class="compact-list">
+        <li><a href="https://www.youtube.com/playlist?list=PL2_aWCzGMAwLZp6LMUKI3cc7pgGsasm2_">Pointers in C/C++</a> &mdash; mycodeschool, 17 short videos, and the clearest treatment of this topic anywhere. Worth watching in order. Start with <a href="https://www.youtube.com/watch?v=h-HBipu_1P0">Introduction to pointers</a> (10 min), then <a href="https://www.youtube.com/watch?v=X1DcpcgSUXw">Working with pointers</a>.</li>
+        <li><a href="https://www.youtube.com/watch?v=LW8Rfh6TzGg">Pointers as function arguments &mdash; call by reference</a> &mdash; exactly the <code>increment</code> puzzle from snippets 4 to 6, drawn out on screen.</li>
+        <li><a href="https://www.youtube.com/watch?v=ASVB8KAFypk">Pointers and arrays</a> &mdash; why passing an array copies nothing.</li>
+        <li><a href="https://www.youtube.com/watch?v=JTttg85xsbo">Pointer types, pointer arithmetic, void pointers</a> &mdash; why <code>+1</code> moves an <code>int*</code> by 4 bytes and a <code>char*</code> by 1.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Reference &mdash; notes from earlier courses</h2>
+      <ul class="compact-list">
+        <li><a href="../../../es248/pointers-I.html">ES248: Pointers &amp; Memory</a> &mdash; the same material as a slide deck, with memory diagrams.</li>
+        <li><a href="../../../es248/pointers-II.html">ES248: Pointers II &mdash; 2D Arrays &amp; Dynamic Memory</a> &mdash; goes further than we did, into <code>malloc</code> for two-dimensional data.</li>
+        <li><a href="../../../es248/pointers-III.html">ES248: Pointers III &mdash; Precedence, Memory, Function Pointers</a> &mdash; beyond this course, but read it if <code>*p++</code> versus <code>(*p)++</code> bothers you.</li>
+        <li><a href="../../../es242n/classes/class-04/">ES242(N) Day 4: Pointers and Memory</a> &mdash; a third pass, from the summer term.</li>
+        <li><a href="https://pythontutor.com">pythontutor.com</a> &mdash; paste a C program and step through it, watching the arrows move. Use this before you ask anyone for help.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
       <h2>Work through the snippets first</h2>
       <p class="lead">Before the practice problems, make sure you can predict the output of these without running them. If you can, the rest of the topic is downhill.</p>
       <ul class="compact-list">
@@ -56,7 +78,8 @@
 
     <section class="content-section">
       <h2>Practice &mdash; two pointers walking an array</h2>
-      <p class="lead">Snippet 17 reversed an array with two pointers starting at opposite ends and walking inward. That pattern solves a whole family of problems, and every one below is a variation on it. Write them in C with pointers rather than indices, even where indices would be easier &mdash; the point is fluency with <code>*left</code>, <code>left++</code>, and <code>left &lt; right</code>. Full topic list on the <a href="../../resources/practice/#pointers">practice page</a>.</p>
+      <p class="lead">A word on what follows. LeetCode has no "pointers" category, and it cannot really have one: the judge runs your function and checks the return value, so it can test what pointers let you <em>do</em>, never the syntax itself. That makes these problems indirect practice. Do them in C, with pointers instead of indices, even where indices would be easier &mdash; the fluency with <code>*left</code>, <code>left++</code> and <code>left &lt; right</code> is the whole point. The place where the judge really does exercise pointer manipulation is linked lists, in <a href="../class-10/">Class 10</a>.</p>
+      <p class="lead">Snippet 17 reversed an array with two pointers starting at opposite ends and walking inward. That pattern solves a whole family of problems, and every one below is a variation on it. Full topic list on the <a href="../../resources/practice/#pointers">practice page</a>.</p>
       <ul class="compact-list">
         <li><a href="https://leetcode.com/problems/reverse-string/">344. Reverse String</a> &mdash; snippet 17 almost verbatim, on a <code>char</code> array.</li>
         <li><a href="https://leetcode.com/problems/valid-palindrome/">125. Valid Palindrome</a> &mdash; the same two pointers, but they compare instead of swapping, and skip non-alphanumeric characters.</li>
