@@ -84,6 +84,14 @@
             padding: 1em;
             border-radius: 8px;
             border-left: 4px solid var(--accent-color);
+            min-width: 0;           /* grid items default to min-width:auto,
+                                       which lets wide <pre> blocks overflow
+                                       the column and get clipped */
+        }
+
+        .reveal .comparison-item pre {
+            overflow-x: auto;       /* if a line is still too wide, scroll it
+                                       rather than silently cutting it off */
         }
 
         .reveal .key-point {
@@ -461,7 +469,50 @@ scanf("%s", name);
 printf("%s\n", name); // Alice  ← "Smith" is still in the buffer!</code></pre>
             </section>
 
+
+
             <section>
+                <h2>A New Tool: the Scanset <code>%[...]</code></h2>
+                <p>So far we know <code>%d</code>, <code>%f</code>, <code>%c</code>, <code>%s</code> — each reads a specific type.</p>
+                <p><code>%[...]</code> is different: you give <code>scanf</code> a <strong>set of characters to match</strong>.</p>
+                <pre><code class="language-c">scanf("%[aeiou]", s);   // reads only vowels, stops at anything else
+scanf("%[0-9]",   s);   // reads only digits, stops at anything else
+scanf("%[^\n]",   s);   // reads everything EXCEPT newline</code></pre>
+                <p>Let's break down <code>%[^\n]</code> symbol by symbol:</p>
+                <table>
+                    <tr><th>Symbol</th><th>Meaning</th></tr>
+                    <tr><td><code>%</code></td><td>Start of a format specifier — same as in <code>%d</code>, <code>%s</code></td></tr>
+                    <tr><td><code>[</code></td><td>Open a character set — "match characters from this set"</td></tr>
+                    <tr><td><code>^</code></td><td>Negate the set — "match anything <strong>not</strong> in this set"</td></tr>
+                    <tr><td><code>\n</code></td><td>Newline — the one character we want to exclude</td></tr>
+                    <tr><td><code>]</code></td><td>Close the character set</td></tr>
+                </table>
+                <div class="key-point">
+                    <code>%[^\n]</code> = <span class="highlight">"keep reading any character that is not a newline"</span>.
+                    It stops the moment the user presses Enter.
+                </div>
+            </section>
+
+            <section>
+                <h2>Reading a Full Line: the Scanset <code>%[^\n]</code></h2>
+                <p>Now put the scanset to work &mdash; this is the tool that reads a whole line:</p>
+                <pre><code class="language-c">char name[50];
+scanf("%49[^\n]", name);</code></pre>
+                <div class="key-point">
+                    Unlike <code>%s</code>, this does <span class="highlight">not stop at a space</span>.
+                    It keeps reading until you press Enter.
+                </div>
+                <pre><code class="language-c">// Input: Alice Smith
+scanf("%49[^\n]", name);
+printf("%s\n", name);  // Alice Smith ✓</code></pre>
+                <p class="small-text">
+                    The <code>49</code> is a <strong>width limit</strong> — reads at most 49 characters,
+                    leaving 1 byte for <code>'\0'</code> in a 50-char array.
+                    Always set this — without it the scanset has no size limit.
+                </p>
+            </section>
+
+<section>
                 <h2>The Leftover <code>'\n'</code> Problem</h2>
                 <p>After <code>scanf("%d")</code>, the Enter key (<code>'\n'</code>) stays in the input buffer.</p>
                 <p>This causes a problem with <code>%c</code> and <code>%[^\n]</code> — but NOT with <code>%s</code>:</p>
@@ -481,7 +532,7 @@ scanf("%c", &initial);
 
 scanf("%d", &age);
 scanf("%[^\n]", name);
-// fails immediately if next char is '\n'
+// fails if next char is '\n'
 // name is left unchanged</code></pre>
                     </div>
                 </div>
@@ -511,50 +562,6 @@ scanf(" %[^\n]", name);   // ✓ space skips the '\n'</code></pre>
                 <p class="warning-box" style="font-size: 0.75em;">
                     Caveat: the leading space skips <em>all</em> leading whitespace, not just one newline.
                     This is fine for most contest input, but use <code>fgets</code> if leading spaces or blank lines matter.
-                </p>
-            </section>
-
-            <section>
-                <h2>A New Tool: the Scanset <code>%[...]</code></h2>
-                <p>So far we know <code>%d</code>, <code>%f</code>, <code>%c</code>, <code>%s</code> — each reads a specific type.</p>
-                <p><code>%[...]</code> is different: you give <code>scanf</code> a <strong>set of characters to match</strong>.</p>
-                <pre><code class="language-c">scanf("%[aeiou]", s);   // reads only vowels, stops at anything else
-scanf("%[0-9]",   s);   // reads only digits, stops at anything else
-scanf("%[^\n]",   s);   // reads everything EXCEPT newline</code></pre>
-                <p>Let's break down <code>%[^\n]</code> symbol by symbol:</p>
-                <table>
-                    <tr><th>Symbol</th><th>Meaning</th></tr>
-                    <tr><td><code>%</code></td><td>Start of a format specifier — same as in <code>%d</code>, <code>%s</code></td></tr>
-                    <tr><td><code>[</code></td><td>Open a character set — "match characters from this set"</td></tr>
-                    <tr><td><code>^</code></td><td>Negate the set — "match anything <strong>not</strong> in this set"</td></tr>
-                    <tr><td><code>\n</code></td><td>Newline — the one character we want to exclude</td></tr>
-                    <tr><td><code>]</code></td><td>Close the character set</td></tr>
-                </table>
-                <div class="key-point">
-                    <code>%[^\n]</code> = <span class="highlight">"keep reading any character that is not a newline"</span>.
-                    It stops the moment the user presses Enter.
-                </div>
-            </section>
-
-            <section>
-                <h2>Reading a Full Line: the Scanset <code>%[^\n]</code></h2>
-                <p>To read a full line including spaces, use a <strong>scanset</strong>:</p>
-                <pre><code class="language-c">char name[50];
-scanf(" %49[^\n]", name);</code></pre>
-                <div class="key-point">
-                    <strong>How to read <code>%[^\n]</code>:</strong><br>
-                    <code>%[...]</code> — match a set of characters<br>
-                    <code>^</code> — "not" (invert the set)<br>
-                    <code>\n</code> — newline<br>
-                    Result: <span class="highlight">"match any character that is not a newline"</span>
-                </div>
-                <pre><code class="language-c">// Input: Alice Smith
-scanf(" %49[^\n]", name);
-printf("%s\n", name);  // Alice Smith ✓</code></pre>
-                <p class="small-text">
-                    The <code>49</code> is a <strong>width limit</strong> — reads at most 49 characters,
-                    leaving 1 byte for <code>'\0'</code> in a 50-char array.
-                    Always set this — without it the scanset has no size limit.
                 </p>
             </section>
 
@@ -589,6 +596,14 @@ printf("%s\n", name);  // Alice Smith ✓</code></pre>
                 <div class="key-point">
                     Always set a width limit equal to <code>array_size - 1</code>.
                     The <code>-1</code> leaves room for <code>'\0'</code>.
+                </div>
+                <div class="warning-box">
+                    <strong>The width limit stops the overflow &mdash; it does not
+                    consume the rest of the line.</strong>
+                    Type 60 characters into <code>%49[^\n]</code> and you safely get
+                    the first 49; the other 11 stay in the buffer and turn up in your
+                    <em>next</em> read. Same thing that left <code>"Smith"</code> behind
+                    earlier. Nothing crashes, which is exactly what makes it hard to find.
                 </div>
                 <blockquote>
                     For a single word: <code>scanf("%49s", s)</code><br>
@@ -718,9 +733,9 @@ scanf(" %4[^\n]", name);    // reads at most 4 chars with spaces ✓</code></pre
                         <h4>Normal execution</h4>
                         <pre><code>Stack memory:
 ┌──────────────────┐ ← high address
-│  return address  │  where to go after main()
+│  return address  │ ← after main()
 │  other variables │
-│  name[4]  'a'    │ ← your array ends here
+│  name[4]  'a'    │ ← array ends
 │  name[3]  'x'    │
 │  name[2]  'e'    │
 │  name[1]  'l'    │
@@ -731,8 +746,8 @@ scanf(" %4[^\n]", name);    // reads at most 4 chars with spaces ✓</code></pre
                         <h4>After <code>gets()</code> overflow</h4>
                         <pre><code>Stack memory:
 ┌──────────────────┐
-│  return address  │ ← 💥 OVERWRITTEN
-│  other variables │ ← 💥 OVERWRITTEN
+│  return address  │ ← OVERWRITTEN
+│  other variables │ ← OVERWRITTEN
 │  name[4]  'a'    │
 │  name[3]  'x'    │
 │  name[2]  'e'    │
