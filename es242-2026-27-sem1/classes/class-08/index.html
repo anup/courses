@@ -26,91 +26,57 @@
     <section class="hero">
       <p class="eyebrow">Class 08 &middot; Tuesday 1 September 2026</p>
       <h1>Pointers in C</h1>
-      <p class="lead">Every variable sits somewhere in memory, and that somewhere has a number. <code>&amp;x</code> hands you the number; <code>*p</code> goes back to it. Once you have both, a function can finally change a caller's variable &mdash; which is what <code>scanf</code> has been quietly doing with <code>&amp;a</code> since Class 02. From there the rest follows: an array passed to a function is just a pointer to its first element, so <code>A[i]</code> is only ever shorthand for <code>*(A+i)</code>, and arithmetic on pointers counts in elements rather than bytes. Then the harder question &mdash; where does memory live, and for how long? A local dies when its function returns, which is why returning its address is a bug; <code>malloc</code> gives you memory that outlives the call, and it is yours until you <code>free</code> it.</p>
+      <p class="lead">Every variable sits somewhere in memory, and that somewhere has a number. <code>&amp;x</code> hands you the number; <code>*p</code> goes back to it. Once you have both, a function can change a caller's variable &mdash; which is what <code>scanf</code> has been doing with <code>&amp;a</code> since Class 02. The rest follows: an array passed to a function is a pointer to its first element, so <code>A[i]</code> is shorthand for <code>*(A+i)</code>. Then lifetime &mdash; a local dies when its function returns, so returning its address is a bug, and <code>malloc</code> is the fix.</p>
     </section>
 
     <section class="content-section">
-      <h2>Material</h2>
-      <p class="lead">The slides, plus thirty-one worked snippets &mdash; each a short program with its real output and an explanation of why it behaves that way. The PDF and the HTML have the same content; the HTML is easier to copy code out of.</p>
+      <h2>Slides</h2>
       <ul class="compact-list">
         <li><a class="action-link" href="pointers.pptx">Pointers slides (PowerPoint)</a></li>
-        <li><a class="action-link" href="pointers-annotated.pdf">Annotated snippets (PDF)</a></li>
-        <li><a class="action-link" href="pointers-annotated.html">Annotated snippets (HTML)</a></li>
+        <li><a class="action-link" href="pointers-annotated.pdf">Annotated snippets (PDF)</a> &mdash; 31 short programs, each with its real output explained.</li>
+        <li><a class="action-link" href="pointers-annotated.html">Annotated snippets (HTML)</a> &mdash; same content, easier to copy code from.</li>
       </ul>
-      <p>Strongly recommended: run each snippet on <a href="https://pythontutor.com">pythontutor.com</a> and watch the boxes and arrows as it executes. Pointers are much easier to see than to read about &mdash; step through snippets 5 and 6 in particular, and watch what changes when the <code>*</code> appears.</p>
-      <p><a href="../class-09/">Class 09</a> picks this topic up again and carries it through to structures. Where the two overlap, the second pass is the one that makes it stick.</p>
+      <p>Run each snippet on <a href="https://pythontutor.com">pythontutor.com</a> and watch the arrows move. Pointers are easier to see than to read about.</p>
     </section>
 
     <section class="content-section">
-      <h2>Reference &mdash; video</h2>
-      <p class="lead">Pointers is the topic where one explanation is often not enough. If this class did not land, work through these instead &mdash; the same ground at a different pace.</p>
+      <h2>Check you can predict these</h2>
+      <p class="lead">If you can call the output of these without running them, the topic is yours.</p>
       <ul class="compact-list">
-        <li><a href="https://www.youtube.com/playlist?list=PL2_aWCzGMAwLZp6LMUKI3cc7pgGsasm2_">Pointers in C/C++</a> &mdash; mycodeschool, 17 short videos, and the clearest treatment of this topic anywhere. Worth watching in order. Start with <a href="https://www.youtube.com/watch?v=h-HBipu_1P0">Introduction to pointers</a> (10 min), then <a href="https://www.youtube.com/watch?v=X1DcpcgSUXw">Working with pointers</a>.</li>
-        <li><a href="https://www.youtube.com/watch?v=LW8Rfh6TzGg">Pointers as function arguments &mdash; call by reference</a> &mdash; exactly the <code>increment</code> puzzle from snippets 4 to 6, drawn out on screen.</li>
-        <li><a href="https://www.youtube.com/watch?v=ASVB8KAFypk">Pointers and arrays</a> &mdash; why passing an array copies nothing.</li>
-        <li><a href="https://www.youtube.com/watch?v=JTttg85xsbo">Pointer types, pointer arithmetic, void pointers</a> &mdash; why <code>+1</code> moves an <code>int*</code> by 4 bytes and a <code>char*</code> by 1.</li>
-      </ul>
-    </section>
-
-    <section class="content-section">
-      <h2>Reference &mdash; notes from earlier courses</h2>
-      <ul class="compact-list">
-        <li><a href="../../../es248/pointers-I.html">ES248: Pointers &amp; Memory</a> &mdash; the same material as a slide deck, with memory diagrams.</li>
-        <li><a href="../../../es248/pointers-II.html">ES248: Pointers II &mdash; 2D Arrays &amp; Dynamic Memory</a> &mdash; goes further than we did, into <code>malloc</code> for two-dimensional data.</li>
-        <li><a href="../../../es248/pointers-III.html">ES248: Pointers III &mdash; Precedence, Memory, Function Pointers</a> &mdash; beyond this course, but read it if <code>*p++</code> versus <code>(*p)++</code> bothers you.</li>
-        <li><a href="../../../es242n/classes/class-04/">ES242(N) Day 4: Pointers and Memory</a> &mdash; a third pass, from the summer term.</li>
-        <li><a href="https://pythontutor.com">pythontutor.com</a> &mdash; paste a C program and step through it, watching the arrows move. Use this before you ask anyone for help.</li>
-      </ul>
-    </section>
-
-    <section class="content-section">
-      <h2>Work through the snippets first</h2>
-      <p class="lead">Before the practice problems, make sure you can predict the output of these without running them. If you can, the rest of the topic is downhill.</p>
-      <ul class="compact-list">
-        <li><strong>Snippets 4, 5, 6</strong> &mdash; three attempts at a function that adds 1 to a variable. The first fails because it got a copy; the second fails because it moved the pointer instead of following it; only the third writes through with <code>*a = *a + 1</code>. Understand why each does what it does.</li>
+        <li><strong>Snippets 4, 5, 6</strong> &mdash; three attempts at a function that adds 1 to a variable. The first got a copy; the second moved the pointer instead of following it; only the third writes through with <code>*a = *a + 1</code>.</li>
         <li><strong>Snippet 8</strong> &mdash; a function assigns to <code>A[1]</code> and the caller's array changes. Nothing was copied.</li>
-        <li><strong>Snippet 11</strong> &mdash; <code>+1</code> moves an <code>int*</code> by 4, a <code>char*</code> by 1, a <code>double*</code> by 8. Pointer arithmetic counts elements, never bytes.</li>
-        <li><strong>Snippet 21</strong> &mdash; a function returns the address of its own local array. The compiler warns; the pointer dangles the moment the function returns.</li>
-        <li><strong>Snippet 31</strong> &mdash; why <code>int* p, q;</code> does not declare two pointers. The <code>*</code> binds to the name, not the type.</li>
-        <li>Paper exercise: for <code>int num[5]</code> and <code>int *p = num</code>, write down four different expressions that all read <code>num[3]</code>. There are more than four.</li>
+        <li><strong>Snippet 11</strong> &mdash; <code>+1</code> moves an <code>int*</code> by 4, a <code>char*</code> by 1. Pointer arithmetic counts elements, never bytes.</li>
+        <li><strong>Snippet 21</strong> &mdash; returning the address of a local array. The compiler warns; the pointer dangles the moment the function returns.</li>
+        <li><strong>Snippet 31</strong> &mdash; why <code>int* p, q;</code> does not declare two pointers.</li>
       </ul>
     </section>
 
     <section class="content-section">
-      <h2>Practice &mdash; two pointers walking an array</h2>
-      <p class="lead">A word on what follows. LeetCode has no "pointers" category, and it cannot really have one: the judge runs your function and checks the return value, so it can test what pointers let you <em>do</em>, never the syntax itself. That makes these problems indirect practice. Do them in C, with pointers instead of indices, even where indices would be easier &mdash; the fluency with <code>*left</code>, <code>left++</code> and <code>left &lt; right</code> is the whole point. The place where the judge really does exercise pointer manipulation is linked lists, in <a href="../class-10/">Class 10</a>.</p>
-      <p class="lead">Snippet 17 reversed an array with two pointers starting at opposite ends and walking inward. That pattern solves a whole family of problems, and every one below is a variation on it. Full topic list on the <a href="../../resources/practice/#pointers">practice page</a>.</p>
+      <h2>Practice</h2>
+      <p class="lead">LeetCode has no pointers category and cannot have one &mdash; the judge checks your return value, so it tests what pointers let you do, not the syntax. Solve these in C using pointers rather than indices, even where indices would be easier. Linked lists in <a href="../class-10/">Class 10</a> are where the judge really exercises pointer manipulation. Full list on the <a href="../../resources/practice/#pointers">practice page</a>.</p>
       <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/reverse-string/">344. Reverse String</a> &mdash; snippet 17 almost verbatim, on a <code>char</code> array.</li>
-        <li><a href="https://leetcode.com/problems/valid-palindrome/">125. Valid Palindrome</a> &mdash; the same two pointers, but they compare instead of swapping, and skip non-alphanumeric characters.</li>
-        <li><a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">167. Two Sum II</a> &mdash; ends inward again: too small means move left up, too large means move right down.</li>
-        <li><a href="https://leetcode.com/problems/move-zeroes/">283. Move Zeroes</a> &mdash; both pointers start at the left and move at different speeds.</li>
-        <li><a href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/">26. Remove Duplicates from Sorted Array</a> &mdash; one pointer reads, one writes; the gap between them is what you removed.</li>
-        <li><a href="https://leetcode.com/problems/container-with-most-water/">11. Container With Most Water</a> &mdash; harder: the ends-inward walk again, but you have to argue why moving the shorter side is safe.</li>
+        <li><a href="https://leetcode.com/problems/reverse-string/">344. Reverse String</a> &mdash; snippet 17's two-pointer reverse, on a <code>char</code> array.</li>
+        <li><a href="https://leetcode.com/problems/valid-palindrome/">125. Valid Palindrome</a> &mdash; the same walk, comparing instead of swapping.</li>
+        <li><a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">167. Two Sum II</a> &mdash; ends inward on a sorted array.</li>
+        <li><a href="https://leetcode.com/problems/move-zeroes/">283. Move Zeroes</a> &mdash; read and write pointers at different speeds.</li>
+        <li><a href="https://leetcode.com/problems/remove-element/">27. Remove Element</a> &mdash; copy and skip, in place.</li>
+        <li><a href="https://leetcode.com/problems/container-with-most-water/">11. Container With Most Water</a> &mdash; harder: why is moving the shorter side safe?</li>
+      </ul>
+      <p class="lead">And these in C, with no judge &mdash; this is where <code>malloc</code> and <code>free</code> actually get practised:</p>
+      <ul class="compact-list">
+        <li><code>void swap(int *a, int *b)</code>, then use it to shorten snippet 17's <code>reverse</code>.</li>
+        <li><code>void min_max(int *A, int n, int *min_out, int *max_out)</code> &mdash; returning two answers through pointer parameters.</li>
+        <li>Fix snippet 21 so <code>create()</code> returns an array the caller can use and free.</li>
+        <li>Run a <code>malloc</code> program without its <code>free</code>. On macOS, <code>leaks -atExit -- ./a.out</code> shows what you lost.</li>
       </ul>
     </section>
 
     <section class="content-section">
-      <h2>Practice &mdash; writing through a pointer</h2>
-      <p class="lead">These need a function to modify the caller's data rather than return a new value &mdash; snippet 6's pattern.</p>
+      <h2>If it did not land</h2>
+      <p class="lead">Pointers is the topic where one explanation is often not enough.</p>
       <ul class="compact-list">
-        <li><a href="https://leetcode.com/problems/rotate-array/">189. Rotate Array</a> &mdash; rotate in place. The neat solution is three reversals, so snippet 17's <code>reverse</code> is your building block.</li>
-        <li><a href="https://leetcode.com/problems/merge-sorted-array/">88. Merge Sorted Array</a> &mdash; merge into the first array's spare room. Walking backwards from the end avoids overwriting what you have not read yet.</li>
-        <li><a href="https://leetcode.com/problems/remove-element/">27. Remove Element</a> &mdash; read and write pointers; advance the reader alone when you drop a value.</li>
-        <li>C exercise, no judge: write <code>void swap(int *a, int *b)</code> and use it to shorten snippet 17's <code>reverse</code>. Confirm the caller's array really changed.</li>
-        <li>C exercise, no judge: write <code>void min_max(int *A, int n, int *min_out, int *max_out)</code>, returning both answers through pointer parameters &mdash; the standard way a C function returns two things.</li>
-      </ul>
-    </section>
-
-    <section class="content-section">
-      <h2>Practice &mdash; memory that outlives the function</h2>
-      <p class="lead">Snippets 21 through 30 are about lifetime: stack memory dies with the function, the heap lasts until you <code>free</code> it. No judge for these &mdash; write them, run them, and check for leaks.</p>
-      <ul class="compact-list">
-        <li>Fix snippet 21. Make <code>create()</code> return an array the caller can actually use, and have the caller <code>free</code> it.</li>
-        <li>Read an unknown number of integers until <code>-1</code>, storing them all (snippet 29). Then count how many element copies your program did for 1000 inputs. It should be about 500,000 &mdash; which is why doubling the capacity matters.</li>
-        <li>Write <code>int *concat(int *A, int n, int *B, int m)</code> returning a freshly allocated array holding A then B. Check for <code>NULL</code>, and be clear about who owns the result.</li>
-        <li>Write <code>remove_at</code> from snippet 30, then handle the edge case the snippet skips: <code>n == 1</code>, where <code>malloc(0)</code> is the wrong answer.</li>
-        <li>Run one of your <code>malloc</code> programs without the matching <code>free</code>. On macOS, <code>leaks -atExit -- ./a.out</code> will tell you what you lost.</li>
+        <li><a href="https://www.youtube.com/playlist?list=PL2_aWCzGMAwLZp6LMUKI3cc7pgGsasm2_">Pointers in C/C++</a> &mdash; mycodeschool, 17 short videos, the clearest treatment of this topic anywhere. Watch in order from <a href="https://www.youtube.com/watch?v=h-HBipu_1P0">Introduction to pointers</a> (10 min).</li>
+        <li><a href="https://www.youtube.com/watch?v=LW8Rfh6TzGg">Call by reference</a> &mdash; the <code>increment</code> puzzle from snippets 4 to 6, drawn out on screen.</li>
       </ul>
     </section>
   </main>
