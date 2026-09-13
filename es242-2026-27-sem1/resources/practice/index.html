@@ -36,6 +36,50 @@
       <p class="lead">LeetCode problems for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
     </section>
 
+    <section class="content-section" id="linked-lists">
+      <h2>Linked lists <span class="section-tag">Class 10</span></h2>
+      <p class="lead">Write your own list in C first &mdash; <code>add</code>, <code>printList</code>, <code>delete</code>, <code>freeList</code>. The judge hands you a list already built, which skips the part worth practising. Then these drill the pointer moves.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/reverse-linked-list/">206. Reverse Linked List</a> &mdash; the essential one: previous, current, next. Draw it before writing it.</li>
+        <li><a href="https://leetcode.com/problems/middle-of-the-linked-list/">876. Middle of the Linked List</a> &mdash; fast and slow pointers.</li>
+        <li><a href="https://leetcode.com/problems/remove-linked-list-elements/">203. Remove Linked List Elements</a> &mdash; the class <code>delete</code>, applied to every match.</li>
+        <li><a href="https://leetcode.com/problems/merge-two-sorted-lists/">21. Merge Two Sorted Lists</a> &mdash; merge sort's merge step, relinking instead of copying.</li>
+        <li><a href="https://leetcode.com/problems/linked-list-cycle/">141. Linked List Cycle</a> &mdash; fast and slow again; if they meet, it loops.</li>
+        <li><a href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/">19. Remove Nth Node From End of List</a> &mdash; one pointer starts n ahead.</li>
+        <li><a href="https://leetcode.com/problems/palindrome-linked-list/">234. Palindrome Linked List</a> &mdash; harder: middle, reverse, compare.</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="structures">
+      <h2>Structures <span class="section-tag">Class 09</span></h2>
+      <p class="lead">No judge for these &mdash; they are short C programs. A struct behaves exactly like any other value: pass it by value and it is copied, pass its address and the function sees the original.</p>
+      <ul class="compact-list">
+        <li>The employee record exercise from class: <code>0 &lt;name&gt;</code> adds, <code>1 &lt;index&gt;</code> removes, <code>-1</code> ends. Reuse <code>add</code> and <code>removeAt</code> with <code>struct Person</code> in place of <code>int</code>.</li>
+        <li><code>void birthday(struct Person *p)</code> &mdash; add a year. Write the by-value version too, and confirm it does nothing.</li>
+        <li>Print <code>sizeof(struct Person)</code> and compare it with the sum of its fields. Any difference is padding.</li>
+        <li><code>struct Person *highest_paid(struct Person *arr, int n)</code> &mdash; return a pointer into the array, then modify through it.</li>
+        <li>Sort an array of structs by salary, reusing any sort from Classes 03&ndash;06. Only the comparison changes.</li>
+        <li>Swap <code>char name[50]</code> for <code>char *name</code>. What has to change when you add a person, and when you remove one?</li>
+      </ul>
+    </section>
+
+    <section class="content-section" id="pointers">
+      <h2>Pointers &amp; memory <span class="section-tag">Class 08</span></h2>
+      <p class="lead">Two pointers walking an array, functions that write through a pointer, and memory whose lifetime you manage yourself. Write these in C with pointers rather than indices &mdash; the point is fluency with <code>*p</code>, <code>p++</code>, and <code>left &lt; right</code>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/reverse-string/">344. Reverse String</a> &mdash; two pointers from opposite ends, swapping inward.</li>
+        <li><a href="https://leetcode.com/problems/valid-palindrome/">125. Valid Palindrome</a> &mdash; the same walk, comparing instead of swapping.</li>
+        <li><a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">167. Two Sum II</a> &mdash; ends inward on a sorted array.</li>
+        <li><a href="https://leetcode.com/problems/move-zeroes/">283. Move Zeroes</a> &mdash; read and write pointers moving at different speeds.</li>
+        <li><a href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/">26. Remove Duplicates from Sorted Array</a> &mdash; one reads, one writes.</li>
+        <li><a href="https://leetcode.com/problems/remove-element/">27. Remove Element</a> &mdash; copy and skip, in place.</li>
+        <li><a href="https://leetcode.com/problems/rotate-array/">189. Rotate Array</a> &mdash; in place via three reversals.</li>
+        <li><a href="https://leetcode.com/problems/merge-sorted-array/">88. Merge Sorted Array</a> &mdash; merge backwards into the spare room.</li>
+        <li><a href="https://leetcode.com/problems/container-with-most-water/">11. Container With Most Water</a> &mdash; harder: why is moving the shorter side safe?</li>
+      </ul>
+      <p>Alongside these, write the C exercises on the <a href="../../classes/class-08/">Class 08</a> page: <code>reverse</code>, <code>add</code>, <code>removeAt</code>, and the unknown-length input loop. They are where <code>malloc</code> and <code>free</code> actually get practised.</p>
+    </section>
+
     <section class="content-section" id="lower-bounds">
       <h2>Sorting at the &Omega;(n log n) bound <span class="section-tag">Class 07</span></h2>
       <p class="lead">Comparison-based sorting cannot beat &Omega;(n log n), so these problems live right at it: sort (sometimes with your own comparator), then sweep. The sort is the dominant cost.</p>

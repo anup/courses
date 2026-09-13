@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 10: Linked Lists</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 10</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 10 &middot; Friday 11 September 2026</p>
+      <h1>Linked Lists</h1>
+      <p class="lead">The dynamic array from Class 08 could grow, but every insertion copied the whole thing. The cost is structural: an array's elements must sit next to each other in memory, so making room means moving everything. Give up that requirement and the problem disappears. Let each element carry the address of the next one, and inserting at the front costs one <code>malloc</code> and one assignment &mdash; O(1), no matter how long the list is. The bill arrives elsewhere. There is no arithmetic that jumps to element <i>i</i> any more, so reaching it means following <i>i</i> pointers from the head, and search becomes a walk. Two data structures, the same operations, opposite cost profiles &mdash; that trade is the whole lesson.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="lists.pptx">Download Linked Lists slides (PowerPoint)</a></p>
+      <p>The deck steps through <code>printList</code>, <code>add</code>, and <code>delete</code> one pointer move at a time, redrawing the boxes-and-arrows diagram at each step. Follow those diagrams rather than just reading the code &mdash; a linked list is much easier to see than to parse.</p>
+      <p>It builds directly on <a href="../class-09/">Class 09</a>: a node is a structure, and you reach its fields with <code>-&gt;</code>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The thread through the slides</h2>
+      <ul class="compact-list">
+        <li><strong>Why bother</strong> &mdash; the deck opens and closes with the same comparison table. Array: insert O(n), get the <i>i</i>-th O(1). List: insert O(1), get the <i>i</i>-th O(<i>i</i>). Neither wins outright.</li>
+        <li><strong>The node</strong> &mdash; <code>struct record { int num; struct record *next; };</code>. A structure containing a pointer to its own type, which is legal precisely because a pointer has a fixed size.</li>
+        <li><strong>The head</strong> &mdash; the list is nothing more than a pointer to its first node. An empty list is <code>head == NULL</code>, and the last node's <code>next</code> is <code>NULL</code>, which is what stops every loop.</li>
+        <li><strong>Printing</strong> &mdash; <code>while (head != NULL) { printf(...); head = head-&gt;next; }</code>. Moving the local <code>head</code> is safe because it is a copy, so the caller's head is untouched. That is the pass-by-value rule from <a href="../class-08/">Class 08</a> working in your favour.</li>
+        <li><strong>Adding at the front</strong> &mdash; allocate the node, point its <code>next</code> at the current head, then make it the new head. Order matters: reassign <code>head</code> first and you have lost the rest of the list. It returns the new head, which is why callers write <code>head = add(head, 3);</code>.</li>
+        <li><strong>Deleting</strong> &mdash; two pointers again, but this time <code>p</code> walks ahead and <code>q</code> trails one behind, because unlinking a node means writing to the node before it. Then <code>free(p)</code>.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The cases delete has to handle</h2>
+      <p class="lead">The slides ask you to think about all of them. Work these out on paper before you write the code &mdash; each one breaks a different assumption in the simple version.</p>
+      <ul class="compact-list">
+        <li>The value is not in the list at all. <code>p</code> reaches <code>NULL</code>; do not dereference it.</li>
+        <li>The value is in the first node. <code>q</code> is still <code>NULL</code>, so there is no <code>q-&gt;next</code> to update &mdash; the head itself has to move.</li>
+        <li>The list is empty to begin with.</li>
+        <li>The list has exactly one node, and it is the one being deleted.</li>
+        <li>The value appears more than once. The slides delete only the first; decide what your version does.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; writing the list yourself</h2>
+      <p class="lead">In C, from scratch, with <code>malloc</code> and <code>free</code>. These come before the LeetCode problems &mdash; the judge hands you a list already built, so it skips the part you most need to practise.</p>
+      <ul class="compact-list">
+        <li>Write <code>add</code>, <code>printList</code> and <code>delete</code> from the slides, driven by a <code>main</code> that reads commands until <code>-1</code>.</li>
+        <li>Write <code>freeList(struct record *head)</code>. Careful: you cannot <code>free(p)</code> and then read <code>p-&gt;next</code>, so save the next pointer before freeing.</li>
+        <li>Write <code>int length(struct record *head)</code> and <code>struct record *find(struct record *head, int num)</code>, returning <code>NULL</code> when it is absent.</li>
+        <li>Write <code>append</code>, which adds to the <i>end</i> instead of the front. Why is this O(n) when <code>add</code> was O(1), and what would you store to make it O(1)?</li>
+        <li>Build a list of 10,000 elements, then time reading the 9,000th against the same read on an array. The table on slide 1 should stop being abstract.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; linked list problems</h2>
+      <p class="lead">Once your own list works, these drill the pointer manipulation. Full topic list on the <a href="../../resources/practice/#linked-lists">practice page</a>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/reverse-linked-list/">206. Reverse Linked List</a> &mdash; the essential one. Three pointers: previous, current, next. Draw it before you write it.</li>
+        <li><a href="https://leetcode.com/problems/middle-of-the-linked-list/">876. Middle of the Linked List</a> &mdash; two pointers at different speeds; the fast one moves two nodes per step.</li>
+        <li><a href="https://leetcode.com/problems/remove-linked-list-elements/">203. Remove Linked List Elements</a> &mdash; the <code>delete</code> from class, applied to every match instead of the first.</li>
+        <li><a href="https://leetcode.com/problems/merge-two-sorted-lists/">21. Merge Two Sorted Lists</a> &mdash; the merge step of merge sort from <a href="../class-04/">Class 04</a>, relinking nodes rather than copying values.</li>
+        <li><a href="https://leetcode.com/problems/linked-list-cycle/">141. Linked List Cycle</a> &mdash; the same fast and slow pointers as 876. If they ever meet, the list loops.</li>
+        <li><a href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/">19. Remove Nth Node From End of List</a> &mdash; start one pointer n nodes ahead, then move both until it falls off the end.</li>
+        <li><a href="https://leetcode.com/problems/palindrome-linked-list/">234. Palindrome Linked List</a> &mdash; harder: find the middle, reverse the second half, compare. Three of the problems above, combined.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 09: Structures</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 09</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 09 &middot; Tuesday 8 September 2026</p>
+      <h1>Structures</h1>
+      <p class="lead">An employee has a name, an age, and a salary. Three parallel arrays would work and would be miserable to keep in step, so C lets you glue the three fields into one type: <code>struct Person</code>. Everything from the last class then applies unchanged. Pass a struct by value and it is copied, all fifty-eight bytes of it, and the function cannot change the original &mdash; so you pass <code>&amp;p1</code> instead and reach the fields through <code>p-&gt;name</code>. Return a local struct and you hit the same lifetime problem as returning a local array, with the same fix. Put structs in a heap array that grows and shrinks, and you have a record system.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="../class-08/arrays-and-pointers.pptx">Download Arrays &amp; Pointers slides (PowerPoint)</a></p>
+      <p>Structures begin at slide 36. Slides 1&ndash;35 are <a href="../class-08/">Class 08</a>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The thread through the slides</h2>
+      <ul class="compact-list">
+        <li><strong>Declaring and filling one</strong> &mdash; <code>struct Person p1 = {"Ria", 25, 10000};</code> at declaration, or field by field afterwards. Note that <code>p2.name = "Rahul"</code> does not compile: <code>name</code> is a <code>char</code> array, so it needs <code>strcpy</code>.</li>
+        <li><strong>Passing by value copies the whole struct</strong> &mdash; <code>print(p1)</code> duplicates every field, and changes inside the function do not reach <code>main</code>. Exactly the behaviour from Class 08, just with a bigger thing being copied.</li>
+        <li><strong>Passing a pointer</strong> &mdash; <code>print(&amp;p1)</code> with a <code>struct Person *p</code> parameter. Now the function sees the original.</li>
+        <li><strong>The arrow</strong> &mdash; <code>p-&gt;name</code> is shorthand for <code>(*p).name</code>. You need it because <code>.</code> binds tighter than <code>*</code>, so <code>*p.name</code> parses the wrong way.</li>
+        <li><strong>Returning a struct</strong> &mdash; returning by value copies; returning a pointer to a local is the dangling-pointer bug again. <code>malloc(sizeof(struct Person))</code> is the fix.</li>
+        <li><strong>Arrays of structs</strong> &mdash; a heap array of <code>struct Person</code>, grown and shrunk with the <code>add</code> and <code>removeAt</code> patterns from <a href="../class-08/">Class 08</a>.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; the employee record exercise</h2>
+      <p class="lead">The main exercise from class. Input is a series of commands, one per line, ending at <code>-1</code>: <code>0 &lt;name&gt;</code> adds a person to the record, <code>1 &lt;index&gt;</code> removes the person at that index. The record is a dynamically sized array of structures.</p>
+      <ul class="compact-list">
+        <li>Build it with the <code>add</code> and <code>removeAt</code> functions from <a href="../class-08/">Class 08</a>, changed from <code>int</code> to <code>struct Person</code>. Almost nothing else changes &mdash; that is the point.</li>
+        <li>Print the record after every command so you can see it working.</li>
+        <li>Handle the cases the happy path ignores: removing from an empty record, and an index that is out of range.</li>
+        <li>Check that every <code>malloc</code> is matched by exactly one <code>free</code>. On macOS, <code>leaks -atExit -- ./a.out</code> will tell you.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; structs and pointers together</h2>
+      <p class="lead">No judge for these; they are short C programs. Full topic list on the <a href="../../resources/practice/#structures">practice page</a>.</p>
+      <ul class="compact-list">
+        <li>Write <code>void birthday(struct Person *p)</code> that adds 1 to the person's age. Then write the by-value version and confirm it does nothing.</li>
+        <li>Print <code>sizeof(struct Person)</code> and compare it with the sum of its fields. If it is larger, the compiler has inserted padding to keep fields aligned.</li>
+        <li>Write <code>struct Person *highest_paid(struct Person *arr, int n)</code> returning a pointer into the array, not a copy. Then change the salary through that pointer and confirm the array changed.</li>
+        <li>Sort an array of <code>struct Person</code> by salary, reusing any sort from Classes 03&ndash;06. Only the comparison changes &mdash; the algorithm does not care what it is moving.</li>
+        <li>Give <code>struct Person</code> a <code>char *name</code> instead of a <code>char name[50]</code>. What now has to happen when you create a person, and what has to happen when you remove one?</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

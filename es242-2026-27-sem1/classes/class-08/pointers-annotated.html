@@ -1,0 +1,824 @@
+<!DOCTYPE html><html><head><meta charset='utf-8'><title>Pointers in C — Annotated Snippets</title><style>
+@page { size: A4; margin: 18mm 16mm; }
+body { font-family: 'DejaVu Sans', Arial, sans-serif; font-size: 11pt; line-height: 1.45; color:#111; max-width: 820px; margin: 0 auto; padding: 0 12px; }
+h1 { font-size: 20pt; margin: 0 0 8px; }
+h2 { font-size: 13.5pt; margin: 22px 0 6px; padding-top: 6px; border-top: 1px solid #ccc; page-break-after: avoid; }
+p { margin: 6px 0; }
+code { font-family: 'DejaVu Sans Mono', Menlo, monospace; font-size: 9.5pt; background: #f2f2f2; padding: 0 3px; border-radius: 3px; }
+.codewrap { position: relative; margin: 8px 0; page-break-inside: avoid; }
+pre { background: #f6f6f6; border: 1px solid #d8d8d8; border-radius: 4px; padding: 8px 10px; margin: 0; overflow-x: auto; white-space: pre; page-break-inside: avoid; }
+pre code { background: none; padding: 0; font-size: 10pt; line-height: 1.35; }
+.copy { position:absolute; top:6px; right:6px; font: 9pt 'DejaVu Sans', Arial, sans-serif; padding:2px 8px; border:1px solid #bbb; border-radius:3px; background:#fff; cursor:pointer; }
+.copy:hover { background:#eee; }
+table { border-collapse: collapse; margin: 8px 0; font-size: 10pt; }
+th, td { border: 1px solid #bbb; padding: 4px 8px; text-align: left; vertical-align: top; }
+th { background: #eee; }
+hr { display: none; }
+strong { font-weight: bold; }
+@media print { .copy { display: none; } }
+</style></head><body><h1>Pointers in C — Annotated Snippets</h1>
+<p>The main syntaxes to remember:</p>
+<ul>
+<li><code>&amp;x</code> — <strong>address-of</strong>: gives the memory address where the variable <code>x</code> is stored.</li>
+<li><code>int* p</code> — this is a <strong>declaration</strong>, <code>*</code> means "p is a pointer to int". This is the same as <code>int *p</code>, which is more commonly used.</li>
+<li><code>*p</code> — in an <strong>expression</strong>, <code>*</code> means <strong>dereference</strong>: go to the address stored in <code>p</code> and read/write the int there. So <code>*p</code> basically is another way to refer to the variable that <code>p</code> points to.
+Note that the addresses shown in outputs are examples. Actual values differ on every run (the OS randomises stack/heap placement).</li>
+</ul>
+<hr />
+<h2>1. Address-of and dereference</h2>
+<p><code>int *p</code> (or <code>int* p</code> - both are the same) declares a pointer; <code>*p = 20</code> writes through it. Since <code>p</code> holds the address of <code>x</code>, writing to <code>*p</code> writes to <code>x</code>.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int x = 10;
+    int *p = &amp;x;   // &amp; : address-of. p now holds x's address
+    *p = 20;       // * : dereference. &quot;go to that address, treat as int&quot;
+                   // x is now 20
+    printf(&quot;%d&quot;,x);
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>20
+</code></pre></div>
+<p><code>x</code> was never assigned directly after <code>10</code>, yet it prints <code>20</code>. Two names (<code>x</code> and <code>*p</code>) refer to the same memory location.</p>
+<hr />
+<h2>2. <code>&amp;a</code> and <code>pa</code> are the same; <code>a</code> and <code>*pa</code> are the same</h2>
+<p>If <code>pa</code> was set to <code>&amp;a</code>, then <code>pa</code> and <code>&amp;a</code> should print the same address, and <code>*pa</code> and <code>a</code> should print the same value. Let's verify both claims in one program.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int a = 3;
+    int *pa = &amp;a;
+
+    printf(&quot;%p %p \n&quot;, &amp;a, pa);
+    printf(&quot;%d %d&quot;, a, *pa);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output (address varies):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>0x7ffee4a3b99c 0x7ffee4a3b99c
+3 3
+</code></pre></div>
+<p>First line: two identical addresses — <code>pa</code> holds exactly what <code>&amp;a</code> produces. Notice the form of the address: <code>0x7ffee4a3b99c</code>. Memory addresses are conventionally written in <strong>hexadecimal</strong> (base 16: digits <code>0</code>–<code>9</code> then <code>a</code>–<code>f</code>, with a <code>0x</code> prefix). </p>
+<p><code>%p</code> is the <code>printf</code> specifier for printing an address in this form; we'll look at it, and at what goes wrong with other specifiers, in snippets 14–16. </p>
+<p>Second line: two identical values — dereferencing <code>pa</code> reads <code>a</code>. This is the whole idea of a pointer in two lines: <code>pa</code> <em>is</em> the address, <code>*pa</code> <em>is</em> the variable.</p>
+<p><strong>Optional detailed note on hex:</strong>
+Hex fits memory naturally because each hex digit is exactly 4 bits, so two hex digits make one byte — a 12-hex-digit address is 48 bits. Why 48 and not 64? A pointer has room for 64 bits, but 2⁶⁴ bytes is 16 exabytes — no machine has anything close — so current processors only implement 48-bit virtual addresses (2⁴⁸ = 256 TB, plenty). The unused top 16 bits are zero for user programs, and <code>%p</code> doesn't print leading zeros, so <code>0x7ffee4a3b99c</code> is really <code>0x00007ffee4a3b99c</code>. That's also why stack addresses on an Intel Mac always begin with <code>0x7ff</code>: user space ends at <code>0x00007fffffffffff</code>.</p>
+<hr />
+<h2>3. Pass by value — <code>sum</code></h2>
+<p>Before mixing pointers with functions, recall how an ordinary function call works. When we call <code>sum(a, b)</code>, does <code>sum</code> receive the variables <code>a</code> and <code>b</code> themselves, or something else? Also notice <code>scanf</code> needs <code>&amp;a</code> and <code>&amp;b</code> — why does it need addresses when <code>sum</code> doesn't?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int a, int b)
+{
+    return a+b;
+}
+
+int main() {
+    int a,b;
+    scanf(&quot;%d %d&quot;, &amp;a,&amp;b);
+    int c = sum(a, b);
+    printf(&quot;%d&quot;, c);
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>4 5
+9
+</code></pre></div>
+<p><code>sum</code> receives <em>copies</em> of <code>a</code> and <code>b</code>. That's fine here because <code>sum</code> only reads them and sends the answer back via <code>return</code>. <code>scanf</code> is different: its job is to <em>write</em> into <code>a</code> and <code>b</code>, so a copy would be useless — it needs to know where the real variables live, hence <code>&amp;a</code>, <code>&amp;b</code>. Keep this contrast in mind for the next few snippets.</p>
+<hr />
+<h2>4. Pass by value — why <code>increment</code> doesn't work</h2>
+<p>Suppose we want a function that adds 1 to a variable. The obvious attempt is below. Will <code>a</code> in <code>main</code> change?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+void increment(int a)
+{
+    a = a+1;
+    return;
+}
+
+int main() {
+    int a;
+    scanf(&quot;%d&quot;, &amp;a);
+    increment(a);
+    printf(&quot;%d&quot;, a);
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>5
+5
+</code></pre></div>
+<p>No change. <code>increment</code> received a <em>copy</em> of <code>a</code>, incremented the copy, and the copy was destroyed when the function returned. <code>main</code>'s <code>a</code> was never touched. The function "ran" but had no visible effect.</p>
+<hr />
+<h2>5. Passing a pointer — but incrementing the pointer, not the value</h2>
+<p>The lesson from <code>scanf</code> was: to let a function modify a variable, give it the variable's address. So let's change the parameter to <code>int *a</code> and call <code>increment(&amp;a)</code>. Is this enough?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+void increment(int *a)
+{
+    a = a+1;
+    return;
+}
+
+int main() {
+    int a,b;
+    scanf(&quot;%d&quot;, &amp;a);
+    increment(&amp;a);
+    printf(&quot;%d&quot;, a);
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>5
+5
+</code></pre></div>
+<p>Still no change, but for a different reason. Inside the function, <code>a</code> is a pointer, and <code>a = a+1</code> modifies <em>the pointer</em> — it now points 4 bytes further along (pointer arithmetic on <code>int*</code> moves by <code>sizeof(int)</code>). We never dereferenced, so the int that <code>a</code> points to was never read or written. And since the pointer itself was passed by value, moving the local copy of it has no effect on <code>main</code> either.</p>
+<hr />
+<h2>6. Passing a pointer — dereferencing to modify the caller's variable</h2>
+<p>We have the address; we just need to <em>go to it</em>. That's what <code>*</code> does in an expression. Let's write <code>*a = *a + 1</code>.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+void increment(int *a)
+{
+    *a = *a+1;
+    return;
+}
+
+int main() {
+    int a,b;
+    scanf(&quot;%d&quot;, &amp;a);
+    increment(&amp;a);
+    printf(&quot;%d&quot;, a);
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>5
+6
+</code></pre></div>
+<p>It works. <code>*a</code> on the right reads the int at the address; <code>*a</code> on the left writes it back to the same address. That address is <code>main</code>'s <code>a</code>. This is the standard C pattern for letting a function modify a caller's variable — sometimes called "pass by reference", though really it's still passing a value, just a value that happens to be an address. It's exactly what <code>scanf</code> does.</p>
+<hr />
+<h2>7. <code>sum</code> with pointer parameters</h2>
+<p>Can we write <code>sum</code> this way too, with pointers? Yes. Should we?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int *a, int *b)
+{
+    return *a + *b;
+}
+
+int main() {
+    int a,b;
+    scanf(&quot;%d %d&quot;, &amp;a,&amp;b);
+    int c = sum(&amp;a, &amp;b);
+    printf(&quot;%d&quot;, c);
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>4 5
+9
+</code></pre></div>
+<p>Same answer as snippet 3. <code>*a + *b</code> reads the two ints through the pointers and adds them. But since <code>sum</code> only reads, passing copies (snippet 3) was already fine — the pointer version is extra work for no gain. Use pointers when a function needs to <em>modify</em> the caller's data, or when copying would be expensive. The next snippet is where that second reason shows up.</p>
+<hr />
+<h2>8. Arrays are passed as pointers</h2>
+<p>What happens when we pass an <em>array</em> to a function? Is the whole array copied like an int? Watch what happens to <code>num[1]</code> after the call.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int A[], int n)
+{
+    int total = 0;
+    for(int i=0 ; i &lt; n; i++)
+    {
+        total += A[i];
+    }
+    A[1] = 100;
+    return total;
+}
+
+int main() {
+    int num[5] = {1,2,3,4,5};
+    int c = sum(num, 5);
+    printf(&quot;%d&quot;,num[1]);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>100
+</code></pre></div>
+<p>The array was <em>not</em> copied. The <code>A[1] = 100;</code> inside the sum function actually modified the original array itself! When you pass an array name to a function, C passes a <strong>pointer to its first element</strong> — so <code>int A[]</code> in the parameter list is really <code>int *A</code>. <code>A[1] = 100</code> inside the function wrote straight into <code>main</code>'s <code>num</code>. (<code>c</code> receives 15 but is never printed.) This is also why the function needs the extra <code>n</code> argument: a pointer carries no length information, and so doesn't know where the array ends - only where it begins.</p>
+<hr />
+<h2>9. Pointer with <code>[]</code> indexing</h2>
+<p>If an array name is basically a pointer to its first element, can we store it in a pointer variable and then use <code>[]</code> on that pointer? Note there's no <code>&amp;</code> in <code>int *p = num;</code>.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int num[5] = {1, 2, 3, 4, 5};
+    int *p = num;
+
+    for (int i = 0; i &lt; 5; i++)
+    {
+        printf(&quot;%d&quot;, p[i]);
+    }
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>12345
+</code></pre></div>
+<p>Yes. <code>num</code> on its own "decays" to <code>&amp;num[0]</code> (i.e. the address of the first element of the array), so <code>p</code> now points at the first element, and <code>p[i]</code> reads element <code>i</code> exactly like <code>num[i]</code>. The <code>[]</code> operator isn't special to arrays — it works on any pointer.</p>
+<hr />
+<h2>10. <code>p[i]</code> is <code>*(p+i)</code></h2>
+<p>What does <code>p[i]</code> actually mean to the compiler? Let's write out the pointer arithmetic by hand and see if we get the same result.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int num[5] = {1, 2, 3, 4, 5};
+    int *p = num;
+
+    for (int i = 0; i &lt; 5; i++)
+    {
+        printf(&quot;%d&quot;, *(p+i));
+    }
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>12345
+</code></pre></div>
+<p>Identical. <code>p + i</code> is the address <code>i</code> ints after <code>p</code> (<code>i * sizeof(int)</code> bytes further), and <code>*(p+i)</code> reads the int there. The C language <em>defines</em> <code>A[i]</code> as <code>*(A + i)</code> — the two forms are interchangeable everywhere, and the next two snippets look at that arithmetic more closely.</p>
+<hr />
+<h2>11. Pointer arithmetic scales by element size</h2>
+<p>We keep saying <code>p+1</code> is "4 bytes further" for an <code>int *</code>. Is the 4 special, or does it depend on what <code>p</code> points to? Let's do <code>+1</code> on pointers to three different types and print the before/after addresses.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int    i_arr[3];   int    *ip = i_arr;
+    char   c_arr[3];   char   *cp = c_arr;
+    double d_arr[3];   double *dp = d_arr;
+
+    printf(&quot;%p %p\n&quot;, ip, ip + 1);
+    printf(&quot;%p %p\n&quot;, cp, cp + 1);
+    printf(&quot;%p %p\n&quot;, dp, dp + 1);
+    printf(&quot;%zu %zu %zu\n&quot;, sizeof(int), sizeof(char), sizeof(double));
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output (addresses vary):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>0x7ffee4a3b9a0 0x7ffee4a3b9a4
+0x7ffee4a3b99d 0x7ffee4a3b99e
+0x7ffee4a3b980 0x7ffee4a3b988
+4 1 8
+</code></pre></div>
+<p><code>+1</code> moved the <code>int *</code> by 4, the <code>char *</code> by 1, and the <code>double *</code> by 8 — exactly <code>sizeof</code> of the pointed-to type in each case. </p>
+<p>So pointer arithmetic is always in units of <em>elements</em>, never bytes: <code>p + i</code> is really the address <code>p + i * sizeof(*p)</code>. This is why the type of a pointer matters even though every pointer is just an 8-byte address — the type tells the compiler how far to step (and how many bytes to read when you dereference). (<code>%zu</code> is the specifier for <code>sizeof</code> results.)</p>
+<hr />
+<h2>12. Subtracting and comparing pointers</h2>
+<p>If <code>p + 3</code> steps forward 3 elements, does <code>q - p</code> give back a number of elements? And can we compare two pointers? Let's try, using pointers into the same array.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int num[5] = {10, 20, 30, 40, 50};
+    int *p = &amp;num[1];
+    int *q = &amp;num[4];
+
+    printf(&quot;%ld\n&quot;, (long)(q - p));   // how many elements apart?
+    printf(&quot;%ld\n&quot;, (long)(q - num)); // index of the element q points to
+    printf(&quot;%d %d\n&quot;, *(q - 1), *(p + 2));
+    printf(&quot;%d\n&quot;, q &gt; p);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>3
+4
+40 40
+1
+</code></pre></div>
+<p><code>q - p</code> is <code>3</code>, not <code>12</code>. <code>p</code> and <code>q</code> are 12 bytes apart in memory (three <code>int</code>s × 4 bytes), but the compiler divides that byte difference by <code>sizeof(int)</code> and reports the answer in <em>elements</em>. This makes subtraction the exact inverse of addition: <code>p + 3</code> means "3 elements forward", and <code>(p + 3) - p</code> gives back <code>3</code> — the same number you added. The language keeps addition, subtraction, indexing and <code>++</code> all in units of elements, so you never have to think in bytes.</p>
+<p><code>q - num</code> gives the index of the element <code>q</code> points to — a handy trick when a function hands you a pointer into an array and you want its position. </p>
+<p><code>*(q - 1)</code> and <code>*(p + 2)</code> both reach <code>num[3]</code>. </p>
+<p>And <code>q &gt; p</code> is <code>1</code> (true) because <code>q</code> points further along. </p>
+<p>All of this is only meaningful when both pointers point into the <em>same</em> array (the reverse function in snippet 17 relies on exactly that); subtracting or comparing pointers into unrelated objects is undefined behaviour. </p>
+<hr />
+<h2>13. Walking a pointer with <code>p++</code></h2>
+<p>Instead of recomputing <code>p+i</code> every iteration, can we just move <code>p</code> itself one step each time?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int num[5] = {1, 2, 3, 4, 5};
+    int *p = num;
+
+    for (int i = 0; i &lt; 5; i++)
+    {
+        printf(&quot;%d&quot;, *p);
+        p++;
+    }
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>12345
+</code></pre></div>
+<p>Same output. <code>p++</code> advances by one <code>int</code> (4 bytes), not one byte. After the loop, <code>p</code> points one past the end of the array — that's legal to <em>hold</em> but not to dereference. Note that <code>num++</code> would be a compile error: an array name is not a modifiable pointer, which is why we copy it into <code>p</code> first. Using <code>num</code> in arithmetic <em>without</em> modifying it is fine, though — <code>*(num+i)</code> and <code>num[i]</code> both work, because <code>num</code> decays to a pointer to its first element in any expression; the only thing you can't do is assign to <code>num</code> itself (<code>num++</code>, <code>num = p</code>).</p>
+<hr />
+<h2>14. Printing a pointer with <code>%d</code> (wrong)</h2>
+<p>Let us now try to print the pointer and see what happens. We know that <code>p</code> stores the address of the variable it is pointing to. And since the entire memory is like a huge array, each address is just a number (like index in an array). So let's just print the pointer as an int and see what happens.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int x = 10;
+    int *p = &amp;x;
+    *p = 20;
+    printf(&quot;%d&quot;,p);
+}
+</code></pre></div>
+<p><strong>Output (garbage, varies):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>-1345849236
+</code></pre></div>
+<p>Compile warning: <code>format '%d' expects argument of type 'int', but argument has type 'int *'</code>.</p>
+<p>This is clearly garbage value, since address can't be negative. What went wrong?</p>
+<p><code>p</code> has an address, not an int. <code>%d</code> tells <code>printf</code> to expect an <code>int</code>, so this is a type mismatch — undefined behaviour. The compiler warns about it.
+On a typical 64-bit Mac/Linux, each address is 8 bytes (ie. 64 bits) long, whereas int is typically 4 bytes (ie. 32 bits) long. And so you'll get some meaningless number (often the low 32 bits of the address, reinterpreted as a signed int). It changes every run.</p>
+<hr />
+<h2>15. Printing a pointer with <code>%p</code> (correct)</h2>
+<p>So how do we print an address properly? C has a format specifier made specifically for pointers: <code>%p</code>. Let's use that instead.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int x = 10;
+    int *p = &amp;x;
+    *p = 20;
+    printf(&quot;%p&quot;,p);
+}
+</code></pre></div>
+<p><strong>Output (example, varies):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>0x7ffee4a3b9ac
+</code></pre></div>
+<p>Now we get a sensible address, printed in hexadecimal (which is how memory locations are referred to). This is <em>where <code>x</code> lives in memory</em>, not its contents. Run the program twice and the address will differ; that's the OS placing the stack at a different location each run, and is nothing to worry about.</p>
+<hr />
+<h2>16. Can I use <code>%lld</code> instead of <code>%p</code>?</h2>
+<p>Addresses are 8 bytes, and so is a <code>long long</code>. So can we skip <code>%p</code> and just print the pointer with <code>%lld</code> to see the address as a normal decimal number? Let's try it both with and without a cast.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int x = 10;
+    int *p = &amp;x;
+    printf(&quot;%p\n&quot;, p);
+    printf(&quot;%lld\n&quot;, p);
+    printf(&quot;%lld\n&quot;, p+1);
+    printf(&quot;%lld\n&quot;, (long long)p);     // cast, then %lld
+    printf(&quot;%lld\n&quot;, (long long)(p+1)); // the next int's address
+}
+</code></pre></div>
+<p><strong>Output (address varies):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>0x7ffee4a3b9ac
+140732820683180
+140732820683184
+140732820683180
+140732820683184
+</code></pre></div>
+<p>Compile warnings (two of them, for lines 2 and 3): <code>format specifies type 'long long' but the argument has type 'int *' [-Wformat]</code>.</p>
+<p>All four decimal lines look right — lines 2 and 4 are the same number as line 1 in decimal, and lines 3 and 5 are 4 higher because <code>p+1</code> is the next <code>int</code> (+4 for a +1, as we saw in snippet 11). So why does the compiler complain about lines 2 and 3 but not 4 and 5?</p>
+<p>Because the rule for <code>printf</code> is that the argument's <em>type</em> must match the format specifier, and <code>int *</code> is not <code>long long</code> — same mistake as <code>%d</code> in snippet 14, so it's undefined behaviour. It only <em>happens</em> to print correctly here because on a 64-bit system a pointer and a <code>long long</code> are both 8 bytes and are passed to <code>printf</code> the same way, so <code>printf</code> reads the right bytes. The cast in lines 4 and 5 converts the pointer to an actual <code>long long</code> before the call, so the type now matches and the warning goes away. Even then, this relies on <code>long long</code> being wide enough to hold an address — true on every machine you'll use in this course, but not guaranteed by C. <code>%p</code> remains the default: it's the only specifier that accepts a pointer directly.</p>
+<hr />
+<h2>17. Two-pointer reverse</h2>
+<p>Putting pointer arithmetic to work: reverse an array using two pointers that start at opposite ends and walk toward each other. What does <code>num</code> hold afterwards?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+void reverse(int *A, int n)
+{
+    int *left = A;
+    int *right = A + n - 1;
+    while (left &lt; right)
+    {
+        int temp = *left;
+        *left = *right;
+        *right = temp;
+        left++;
+        right--;
+    }
+}
+
+int main() {
+    int num[6] = {1, 2, 3, 4, 5, 6};
+    reverse(num, 6);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p>There's no <code>printf</code>, but <code>num</code> is now <code>{6, 5, 4, 3, 2, 1}</code>. <code>A + n - 1</code> is the address of the last element. Each iteration swaps <code>*left</code> and <code>*right</code>, then moves both inward. Comparing pointers (<code>left &lt; right</code>) is valid because both point into the same array; the loop stops when they meet or cross. Because <code>reverse</code> received a pointer to <code>main</code>'s array (snippet 8), the swaps happened in place.</p>
+<hr />
+<h2>18. <code>int *A</code> vs <code>int A[]</code> as a parameter — identical</h2>
+<p>Snippet 8 declared the parameter as <code>int A[]</code>. Does declaring it as <code>int *A</code> change anything?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int *A, int n)
+{
+    int total = 0;
+    for(int i=0 ; i &lt; n; i++)
+    {
+        total += A[i];
+    }
+    A[1] = 100;
+    return total;
+}
+
+int main() {
+    int num[5] = {1,2,3,4,5};
+    int c = sum(num, 5);
+    printf(&quot;%d&quot;,num[1]);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>100
+</code></pre></div>
+<p>Nothing changes. In a parameter list, <code>int A[]</code> and <code>int *A</code> mean exactly the same thing: a pointer to int. Indexing with <code>A[i]</code> on a pointer parameter is perfectly normal (snippet 9).</p>
+<hr />
+<h2>19. Pointer parameter, pointer-arithmetic access</h2>
+<p>And if we also swap the access from <code>A[i]</code> to <code>*(A+i)</code>?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int *A, int n)
+{
+    int total = 0;
+    for(int i=0 ; i &lt; n; i++)
+    {
+        total += *(A+i);
+    }
+    A[1] = 100;
+    return total;
+}
+
+int main() {
+    int num[5] = {1,2,3,4,5};
+    int c = sum(num, 5);
+    printf(&quot;%d&quot;,num[1]);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>100
+</code></pre></div>
+<p>Still the same. You can even mix <code>*(A+i)</code> and <code>A[1]</code> in the same function, as done here — they're the same operation (snippet 10).</p>
+<hr />
+<h2>20. Array-style parameter, pointer-arithmetic access</h2>
+<p>The fourth combination: <code>int A[]</code> in the signature, <code>*(A+i)</code> in the body.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int sum(int A[], int n)
+{
+    int total = 0;
+    for(int i=0 ; i &lt; n; i++)
+    {
+        total += *(A+i);
+    }
+    A[1] = 100;
+    return total;
+}
+
+int main() {
+    int num[5] = {1,2,3,4,5};
+    int c = sum(num, 5);
+    printf(&quot;%d&quot;,num[1]);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>100
+</code></pre></div>
+<p>Also works. Snippets 8, 18, 19, 20 all compile to the same code: signature style (<code>A[]</code> vs <code>*A</code>) and access style (<code>A[i]</code> vs <code>*(A+i)</code>) are independent choices, and none of them causes the array to be copied.</p>
+<hr />
+<h2>21. Returning a local array — dangling pointer (BUG)</h2>
+<p>Now that we know a function can receive an array via a pointer, can a function <em>create</em> an array and return it via a pointer?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int *create()
+{
+    int num[5] = {1,2,3,4,5};
+    return num;    // address of a dead local
+}
+
+int main() {
+    int *p = create();
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p>Compile warning: <code>function returns address of local variable</code>.</p>
+<p>The program exits cleanly only because <code>p</code> is never used. <code>num</code> lives on <code>create</code>'s stack frame; when <code>create</code> returns, that frame is gone and the memory can be reused by the next function call. <code>p</code> now points to memory that belongs to nobody — a <strong>dangling pointer</strong>. Writing <code>printf("%d", p[0])</code> here would be undefined behaviour: it might print 1, might print garbage, might crash. We need memory whose lifetime isn't tied to a function.</p>
+<hr />
+<h2>22. <code>malloc</code> — memory that survives the function</h2>
+<p>How do we get memory that outlives the function that created it? Ask the system for it explicitly with <code>malloc</code>.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int *create()
+{
+    int *num = malloc(5 * sizeof(int));
+    if (num == NULL)
+    {
+        printf(&quot;Could not allocate&quot;);
+        return NULL;
+    }
+
+    for(int i = 0;i&lt;5; i++)
+      num[i] = (i+1);
+    return num;
+}
+
+int main() {
+    int *p = create();
+    free(p);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p><code>malloc(5 * sizeof(int))</code> reserves 20 bytes on the <strong>heap</strong> and returns their address. Heap memory isn't attached to any function's stack frame; it lives until you call <code>free</code> on it, so returning its address is safe and <code>p</code> in <code>main</code> is valid. Three habits come with <code>malloc</code>: check for <code>NULL</code> (allocation can fail), initialise the memory yourself (it starts as garbage, hence the loop), and pair every <code>malloc</code> with exactly one <code>free</code> (otherwise the memory leaks). After <code>free(p)</code>, <code>p</code> still holds the old address but must not be used.</p>
+<hr />
+<h2>23. Stack array vs heap array</h2>
+<p>Here are two ways to get space for 5 ints. They're used identically afterwards (<code>arr[i]</code>, <code>num[i]</code>). What's actually different?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int main() {
+    int arr[5];
+    int *num = malloc(5 * sizeof(int));
+    free(num);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p><code>arr</code> is on the <strong>stack</strong>: its size must be known at compile time, and it's freed automatically when <code>main</code> returns. <code>num</code> is on the <strong>heap</strong>: the size is decided at run time (that <code>5</code> could be a variable read from input), it survives function returns, and it's freed only when you call <code>free</code>. Rule of thumb: stack for fixed, small, local data; heap when the size is only known at run time or the data must outlive the function. The next few snippets make "stack" and "heap" concrete.</p>
+<hr />
+<h2>24. Local vs global variables</h2>
+<p>So far every variable has lived inside a function. What changes if we declare one <em>outside</em> all functions? Call <code>bump</code> three times and watch the two counters.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int counter = 0;          // global: declared outside every function
+
+void bump()
+{
+    int local = 0;        // local: declared inside the function
+    local++;
+    counter++;
+    printf(&quot;local=%d counter=%d\n&quot;, local, counter);
+}
+
+int main() {
+    bump();
+    bump();
+    bump();
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>local=1 counter=1
+local=1 counter=2
+local=1 counter=3
+</code></pre></div>
+<p><code>local</code> is created fresh on every call — a new slot on the stack, set to 0, incremented to 1, then thrown away when <code>bump</code> returns. Three calls, three separate <code>local</code>s, so it prints <code>1</code> every time. </p>
+<p><code>counter</code> is a <strong>global</strong>: there is exactly one of it, it's created when the program starts, and it lives until the program ends, so each call sees the previous call's increment. Globals are also zero-initialised automatically (<code>int counter;</code> would still start at 0), whereas an uninitialised local holds garbage. Globals can be accessed from any function, which is convenient but also why they're easy to misuse.</p>
+<hr />
+<h2>25. Three regions of memory</h2>
+<p>We now have three kinds of storage: globals, locals, and <code>malloc</code>'d blocks. Are they in different places? Let's take one of each and print the addresses.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int g = 0;
+
+int main() {
+    int local = 0;
+    int *heap = malloc(sizeof(int));
+
+    printf(&quot;global: %p\n&quot;, &amp;g);
+    printf(&quot;local:  %p\n&quot;, &amp;local);
+    printf(&quot;heap:   %p\n&quot;, heap);
+    free(heap);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output (addresses vary):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>global: 0x10c3e8010
+local:  0x7ffee4a3b9ac
+heap:   0x7fb5a4c05a70
+</code></pre></div>
+<p>Three addresses in three very different parts of memory. The global sits low, in a region laid out when the program is loaded — its address never changes during the run. The local is on the <strong>stack</strong>, high up; the stack grows and shrinks as functions are called and return, and a local's slot is reclaimed the moment its function returns (that's the dangling-pointer bug in snippet 21). The <code>malloc</code>'d int is on the <strong>heap</strong>, a region that grows as you allocate and is managed by <code>malloc</code>/<code>free</code> rather than by function calls. </p>
+<p>Lifetime, in one line each: 
+global = whole program;<br />
+stack = until the function returns;<br />
+heap = until you <code>free</code> it.</p>
+<hr />
+<h2>26. The stack is small</h2>
+<p>If locals live on the stack, is there a limit to how much we can put there? Let's declare a large local array — 10 million ints is 40 MB.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int big[10000000];     // 40 MB on the stack
+    big[0] = 1;
+    printf(&quot;%d\n&quot;, big[0]);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output (macOS):</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>zsh: segmentation fault  ./a.out
+</code></pre></div>
+<p>It crashes before printing anything. The stack has a fixed, fairly small size — 8 MB by default on macOS — and asking for 40 MB of locals overflows it. This is a <strong>stack overflow</strong> (the same thing that happens with runaway recursion, since every call adds a frame). The compiler doesn't warn: it's a run-time limit, not a language rule. Large or variable-sized data doesn't belong on the stack.</p>
+<hr />
+<h2>27. Large data goes on the heap</h2>
+<p>Same 40 MB, but requested from the heap with <code>malloc</code> instead of declared as a local.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int main() {
+    int *big = malloc(10000000 * sizeof(int));   // 40 MB on the heap
+    if (big == NULL)
+    {
+        printf(&quot;Could not allocate&quot;);
+        return 1;
+    }
+    big[0] = 1;
+    printf(&quot;%d\n&quot;, big[0]);
+    free(big);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>1
+</code></pre></div>
+<p>Works. The heap is limited only by available memory (gigabytes, not megabytes), and <code>malloc</code> tells you via <code>NULL</code> if it can't satisfy the request instead of crashing. A global array (<code>int big[10000000];</code> outside <code>main</code>) would also work, since globals aren't on the stack either — but a global's size is fixed at compile time, while <code>malloc</code> lets you decide at run time. </p>
+<p>The remaining snippets build on heap memory, which sized on demand (using <code>malloc</code>), and freed when done.</p>
+<hr />
+<h2>28. Growing an array by allocating a bigger one</h2>
+<p>C arrays can't be resized in place. So how do we "append" an element? Allocate a bigger block and copy.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int *add(int A[], int n, int num)
+{
+    int *arr = malloc((n + 1) * sizeof(int));
+    if (arr == NULL)
+    {
+        printf(&quot;Could not allocate&quot;);
+        return NULL;
+    }
+    for (int i = 0; i &lt; n; i++)
+    {
+        arr[i] = A[i];
+    }
+    arr[n] = num;
+    return arr;
+}
+
+int main() {
+    int A[5] = {10, 20, 30, 40, 50};
+    int *p = add(A, 5, 60);
+    int *q = add(p, 6, 70);
+    free(p);
+    free(q);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p>After the two calls: <code>A</code> (stack) is unchanged <code>{10,20,30,40,50}</code>; <code>p</code> (heap) is <code>{10,...,50,60}</code>; <code>q</code> (heap) is <code>{10,...,60,70}</code>. Each <code>add</code> allocates <code>n+1</code> slots, copies the old <code>n</code>, writes the new value at index <code>n</code>, and returns the new block — the original is never modified. Two <code>malloc</code>s, two <code>free</code>s. <code>A</code> is not freed because it was never malloc'd.</p>
+<hr />
+<h2>29. Dynamic array from unknown-length input</h2>
+<p>Read numbers until <code>-1</code> and store them all — but we don't know how many are coming. Can we build the array up one element at a time using <code>add</code>?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int *add(int A[], int n, int num)
+{
+    int *arr = malloc((n + 1) * sizeof(int));
+    if (arr == NULL)
+    {
+        printf(&quot;Could not allocate&quot;);
+        return NULL;
+    }
+    for (int i = 0; i &lt; n; i++)
+    {
+        arr[i] = A[i];
+    }
+    arr[n] = num;
+    return arr;
+}
+
+int main() {
+    int *arr = NULL;
+    int n = 0, num;
+    while (1)
+    {
+        scanf(&quot;%d&quot;, &amp;num);
+        if (num == -1)
+            break;
+        int *newarr = add(arr, n, num);
+        if (newarr == NULL)
+        {
+            printf(&quot;Program failed&quot;);
+            break;
+        }
+        free(arr);
+        arr = newarr;
+        n++;
+    }
+    free(arr);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Input / Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>3 1 4 1 5 -1
+(nothing printed; arr holds {3,1,4,1,5}, n = 5)
+</code></pre></div>
+<p>Start with <code>arr = NULL, n = 0</code>. On the first iteration <code>add(NULL, 0, num)</code> copies zero elements, so it never dereferences <code>NULL</code>; and <code>free(NULL)</code> is defined to do nothing, so the first <code>free(arr)</code> is safe too. The order inside the loop matters: get <code>newarr</code> first, then <code>free</code> the old block, then reassign — freeing before copying would lose the data. Cost: every append copies everything, so <code>n</code> appends do about <code>n²/2</code> copies. That's the motivation for doubling-capacity growth (like <code>std::vector</code> / Python lists) later on.</p>
+<hr />
+<h2>30. Removing an element by walking two pointers</h2>
+<p>The reverse operation: remove the element at a given index, producing a new array of <code>n-1</code> elements. Here we walk with pointers instead of indices. What does <code>p</code> hold at the end, and is <code>A</code> changed?</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+int *remove_at(int *arr, int n, int index)
+{
+    int *newarr = malloc((n - 1) * sizeof(int));
+    if (newarr == NULL)
+    {
+        printf(&quot;Could not allocate&quot;);
+        return NULL;
+    }
+    int *p = newarr;
+    for (int i = 0; i &lt; n; i++)
+    {
+        if (i == index)
+        {
+            arr++;
+            continue;
+        }
+        *p = *arr;
+        arr++;
+        p++;
+    }
+    return newarr;
+}
+
+int main() {
+    int A[5] = {1, 2, 3, 4, 5};
+    int *p = remove_at(A, 5, 2);
+    free(p);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>(nothing printed)
+</code></pre></div>
+<p><code>p</code> holds <code>{1, 2, 4, 5}</code>; <code>A</code> is still <code>{1, 2, 3, 4, 5}</code>. Two pointers walk in step — <code>arr</code> over the source, <code>p</code> over the destination. On the index to remove, only the source advances (<code>arr++</code>) and nothing is written; everywhere else, copy and advance both. <code>arr++</code> modifies the function's own copy of the pointer, so <code>main</code>'s <code>A</code> is untouched (same reason as snippet 5). The start of the new block is kept in <code>newarr</code> because <code>p</code> has walked to the end by the time we return. One edge case is not handled: <code>n == 1</code> gives <code>malloc(0)</code>.</p>
+<hr />
+<h2>31. Why <code>int *p</code> rather than <code>int* p</code>?</h2>
+<p><code>int* p</code> reads more naturally — "<code>int*</code> is the type, <code>p</code> is the variable" — and it's exactly how snippet 1 introduced it. So why does almost all C code write <code>int *p</code>? Let's declare two pointers on one line each way and see what the compiler thinks.</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">#include &lt;stdio.h&gt;
+int main() {
+    int x = 10, y = 20;
+    int* p, q;       // looks like: two pointers to int
+    p = &amp;x;
+    q = &amp;y;
+    printf(&quot;%d %d\n&quot;, *p, *q);
+    return 0;
+}
+</code></pre></div>
+<p><strong>Output:</strong></p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code>error: incompatible pointer to integer conversion assigning to 'int' from 'int *'
+error: indirection requires pointer operand ('int' invalid)
+</code></pre></div>
+<p>It doesn't compile. Despite the spacing, <code>int* p, q;</code> declares <code>p</code> as <code>int *</code> and <code>q</code> as a plain <code>int</code> — the <code>*</code> binds to the variable name, not to the type. So <code>q = &amp;y</code> tries to store an address in an int, and <code>*q</code> tries to dereference an int. To get two pointers you must write the <code>*</code> on each one:</p>
+<div class="codewrap"><button class="copy" onclick="cp(this)">Copy</button><pre><code class="language-c">int *p, *q;
+</code></pre></div>
+<p>That's the reason for the convention. <code>int *p</code> puts the <code>*</code> where it actually belongs grammatically (with <code>p</code>), so <code>int *p, *q</code> looks consistent and <code>int *p, q</code> visibly declares one pointer and one int. <code>int* p</code> is legal and means the same thing for a single declaration, but it suggests a grouping the compiler doesn't use, and the mistake above is easy to make. Whichever style you pick, the safe habit is one pointer declaration per line.</p>
+<hr />
+<h2>Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Snippet</th>
+<th>Key idea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–2</td>
+<td><code>&amp;</code> gives an address, <code>*</code> (in expression) follows it; addresses are hex numbers</td>
+</tr>
+<tr>
+<td>3–7</td>
+<td>Pass by value copies; to modify the caller's variable, pass its address and dereference</td>
+</tr>
+<tr>
+<td>8, 18–20</td>
+<td>Arrays are passed as pointers; <code>A[i]</code> ≡ <code>*(A+i)</code>; <code>int A[]</code> ≡ <code>int *A</code> in parameters</td>
+</tr>
+<tr>
+<td>9–13, 17</td>
+<td>Pointer indexing, arithmetic in units of elements, subtraction, <code>p++</code>, two-pointer algorithms</td>
+</tr>
+<tr>
+<td>14–16</td>
+<td>Print addresses with <code>%p</code>; <code>%d</code>/<code>%lld</code> on a raw pointer is a type mismatch — cast first</td>
+</tr>
+<tr>
+<td>21–27</td>
+<td>Stack memory dies with the function and is small; globals live for the whole run; heap (<code>malloc</code>/<code>free</code>) is big and lives until freed</td>
+</tr>
+<tr>
+<td>28–30</td>
+<td>Building resizable arrays by allocate-copy-free</td>
+</tr>
+<tr>
+<td>31</td>
+<td><code>int *p, *q</code> — the <code>*</code> binds to the name, so write it next to the name</td>
+</tr>
+</tbody>
+</table>
+<script>
+function cp(btn){
+  var code = btn.parentNode.querySelector('pre').innerText;
+  navigator.clipboard.writeText(code).then(function(){
+    btn.textContent='Copied'; setTimeout(function(){btn.textContent='Copy';},1200);
+  });
+}
+</script>
+</body></html>
