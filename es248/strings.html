@@ -220,6 +220,35 @@ print(name == "Alice") # True</code></pre>
                 </div>
             </section>
 
+            <section>
+                <h2>Then what is <code>"Alice"</code>? What is <code>%s</code>?</h2>
+                <p>Fair question &mdash; C clearly lets you write both. Neither one is a string <em>type</em>.</p>
+                <div class="comparison-box">
+                    <div class="comparison-item">
+                        <h4><code>"Alice"</code> &mdash; a string <em>literal</em></h4>
+                        <p class="small-text">Syntax, not a type. The compiler lays down 6 bytes
+                        &mdash; <code>'A' 'l' 'i' 'c' 'e' '\0'</code> &mdash; and the type of the
+                        expression is <code>char[6]</code>. An array of <code>char</code>, nothing more.</p>
+                    </div>
+                    <div class="comparison-item">
+                        <h4><code>%s</code> &mdash; a <em>promise</em> to printf</h4>
+                        <p class="small-text">Not a type either. It tells <code>printf</code>:
+                        &ldquo;this argument is the address of a <code>char</code> &mdash; print bytes
+                        from there until you hit <code>'\0'</code>.&rdquo; <code>printf</code> is
+                        never told the length.</p>
+                    </div>
+                </div>
+                <div class="key-point">
+                    A string in C is a <span class="highlight">convention, not a type</span>:
+                    a <code>char</code> array ending in <code>'\0'</code>.
+                    <code>printf</code>, <code>strlen</code>, <code>strcpy</code> &mdash; every one
+                    of them is ordinary code that agrees to follow it.
+                </div>
+                <p class="small-text">Which is also the catch: nothing enforces the convention.
+                Lose the <code>'\0'</code> and every one of those functions keeps reading past
+                the end of your array. That is Part 5.</p>
+            </section>
+
             <!-- ==================== -->
             <!-- PART 1: char type    -->
             <!-- ==================== -->
@@ -357,7 +386,7 @@ char name[6] = "Alice";   // compiler adds '\0'
 char name[]  = "Alice";   // compiler counts size too → 6</code></pre>
                 <div class="key-point">
                     Double quotes <code>"..."</code> are for strings.
-                    Single quotes <code>'...'</code> are for a single character.
+                    Single quotes <code>'.'</code> hold exactly <strong>one</strong> character.
                     They are <span class="highlight">not interchangeable</span>.
                 </div>
                 <pre><code class="language-c">char c  = 'A';   // ✓ one char, value 65
