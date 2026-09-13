@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ES242 Class 09: Structures</title>
+  <title>ES242 Class 09: Arrays, Pointers &amp; Structures</title>
   <link rel="stylesheet" href="../../../assets/course-theme.css">
   <script>
     var storedTheme = localStorage.getItem("iitgn-course-theme");
@@ -25,33 +25,60 @@
     </div>
     <section class="hero">
       <p class="eyebrow">Class 09 &middot; Tuesday 8 September 2026</p>
-      <h1>Structures</h1>
-      <p class="lead">An employee has a name, an age, and a salary. Three parallel arrays would work and would be miserable to keep in step, so C lets you glue the three fields into one type: <code>struct Person</code>. Everything from the last class then applies unchanged. Pass a struct by value and it is copied, all fifty-eight bytes of it, and the function cannot change the original &mdash; so you pass <code>&amp;p1</code> instead and reach the fields through <code>p-&gt;name</code>. Return a local struct and you hit the same lifetime problem as returning a local array, with the same fix. Put structs in a heap array that grows and shrinks, and you have a record system.</p>
+      <h1>Arrays, Pointers &amp; Structures</h1>
+      <p class="lead">A second pass over pointers, starting from a question about an ordinary function: when <code>sum(a, b)</code> runs, does it get <code>a</code> and <code>b</code>, or copies of them? Copies &mdash; which is why a function cannot change its caller's variable, and why <code>scanf</code> has always needed <code>&amp;a</code> instead. Arrays break the pattern: pass one to a function and nothing is copied at all, because what the function receives is a pointer to the first element. That single fact explains why <code>int A[]</code> and <code>int *A</code> mean the same thing in a parameter list, and why a function can quietly rewrite your array. The class then moves to memory you manage yourself &mdash; <code>malloc</code>, <code>free</code>, and an array whose size you do not know until the input arrives &mdash; and finishes by gluing several fields into one type, <code>struct Person</code>, which is what the next class needs to build a list.</p>
     </section>
 
     <section class="content-section">
       <h2>Slides</h2>
-      <p><a class="action-link" href="../class-08/arrays-and-pointers.pptx">Download Arrays &amp; Pointers slides (PowerPoint)</a></p>
-      <p>Structures begin at slide 36. Slides 1&ndash;35 are <a href="../class-08/">Class 08</a>.</p>
+      <p><a class="action-link" href="arrays-and-pointers.pptx">Download Arrays &amp; Pointers slides (PowerPoint)</a></p>
+      <p>Forty-seven slides: arrays and pointers through slide 35, then structures from slide 36.</p>
+      <p>This continues <a href="../class-08/">Class 08</a>, where the same pointer material is worked through as 31 annotated snippets with their real output. If something here does not land, that is the place to look.</p>
     </section>
 
     <section class="content-section">
-      <h2>The thread through the slides</h2>
+      <h2>The thread through the slides &mdash; arrays and pointers</h2>
+      <p class="lead">The deck builds one idea at a time, each slide answering the question the previous one raised:</p>
+      <ul class="compact-list">
+        <li><strong>Pass by value</strong> &mdash; <code>sum(a, b)</code> gets copies, so the parameters are not the caller's variables. <code>scanf</code> needs <code>&amp;a</code> precisely because it has to write back.</li>
+        <li><strong>Arrays are the exception</strong> &mdash; <code>sum(num, 5)</code> copies nothing. <code>A</code> is a pointer to <code>num[0]</code>, so the function reads your array directly, and a pointer carries no length, hence the separate <code>n</code>.</li>
+        <li><strong>Four ways to write the same function</strong> &mdash; <code>int A[]</code> or <code>int *A</code> in the signature, <code>A[i]</code> or <code>*(A+i)</code> in the body. All four compile to the same thing.</li>
+        <li><strong>Reverse with two pointers</strong> &mdash; <code>left</code> and <code>right</code> start at the ends and walk inward, swapping. Because the array arrived as a pointer, the swaps land in the caller's array.</li>
+        <li><strong>Returning an array</strong> &mdash; the <code>create()</code> that returns a local array is broken: <code>num</code> dies when <code>create</code> returns. <code>malloc</code> fixes it, and the caller then owes a <code>free</code>.</li>
+        <li><strong>Growing an array</strong> &mdash; <code>add()</code> allocates one slot bigger, copies, appends. In a loop, that reads input of unknown length.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The thread through the slides &mdash; structures</h2>
+      <p class="lead">An employee has a name, an age, and a salary. Three parallel arrays would work and would be miserable to keep in step, so C lets you glue the fields into one type. Everything above then applies unchanged.</p>
       <ul class="compact-list">
         <li><strong>Declaring and filling one</strong> &mdash; <code>struct Person p1 = {"Ria", 25, 10000};</code> at declaration, or field by field afterwards. Note that <code>p2.name = "Rahul"</code> does not compile: <code>name</code> is a <code>char</code> array, so it needs <code>strcpy</code>.</li>
-        <li><strong>Passing by value copies the whole struct</strong> &mdash; <code>print(p1)</code> duplicates every field, and changes inside the function do not reach <code>main</code>. Exactly the behaviour from Class 08, just with a bigger thing being copied.</li>
+        <li><strong>Passing by value copies the whole struct</strong> &mdash; <code>print(p1)</code> duplicates every field, and changes inside the function do not reach <code>main</code>. The same rule as above, just with a bigger thing being copied.</li>
         <li><strong>Passing a pointer</strong> &mdash; <code>print(&amp;p1)</code> with a <code>struct Person *p</code> parameter. Now the function sees the original.</li>
         <li><strong>The arrow</strong> &mdash; <code>p-&gt;name</code> is shorthand for <code>(*p).name</code>. You need it because <code>.</code> binds tighter than <code>*</code>, so <code>*p.name</code> parses the wrong way.</li>
         <li><strong>Returning a struct</strong> &mdash; returning by value copies; returning a pointer to a local is the dangling-pointer bug again. <code>malloc(sizeof(struct Person))</code> is the fix.</li>
-        <li><strong>Arrays of structs</strong> &mdash; a heap array of <code>struct Person</code>, grown and shrunk with the <code>add</code> and <code>removeAt</code> patterns from <a href="../class-08/">Class 08</a>.</li>
+        <li><strong>Arrays of structs</strong> &mdash; a heap array of <code>struct Person</code>, grown and shrunk with the same <code>add</code> and <code>removeAt</code> patterns.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice &mdash; the exercises from the slides</h2>
+      <p class="lead">These are the problems posed in class. No judge &mdash; write them, run them, and make sure every <code>malloc</code> has exactly one <code>free</code>.</p>
+      <ul class="compact-list">
+        <li><code>void reverse(int *A, int n)</code> &mdash; reverse in place with two pointers. Check that <code>main</code>'s array actually changed.</li>
+        <li><code>int *add(int A[], int n, int num)</code> &mdash; return a new array one longer, with <code>num</code> appended. The original must be untouched.</li>
+        <li>Read positive integers until <code>-1</code>, one per line, and print them in reverse. You do not know how many are coming, so grow the array with <code>add</code> as you go. Mind the order inside the loop: allocate the new block, then free the old one, then reassign.</li>
+        <li><code>int *removeAt(int *arr, int n, int index)</code> &mdash; return a new array with that element gone. Two pointers walk in step; on the removed index only the source advances.</li>
+        <li>Count the element copies your input loop performs for 1000 numbers. About 500,000 &mdash; the cost of growing by one each time, and the reason real implementations double instead.</li>
       </ul>
     </section>
 
     <section class="content-section">
       <h2>Practice &mdash; the employee record exercise</h2>
-      <p class="lead">The main exercise from class. Input is a series of commands, one per line, ending at <code>-1</code>: <code>0 &lt;name&gt;</code> adds a person to the record, <code>1 &lt;index&gt;</code> removes the person at that index. The record is a dynamically sized array of structures.</p>
+      <p class="lead">The structures exercise from class. Input is a series of commands, one per line, ending at <code>-1</code>: <code>0 &lt;name&gt;</code> adds a person to the record, <code>1 &lt;index&gt;</code> removes the person at that index. The record is a dynamically sized array of structures.</p>
       <ul class="compact-list">
-        <li>Build it with the <code>add</code> and <code>removeAt</code> functions from <a href="../class-08/">Class 08</a>, changed from <code>int</code> to <code>struct Person</code>. Almost nothing else changes &mdash; that is the point.</li>
+        <li>Build it with the <code>add</code> and <code>removeAt</code> functions above, changed from <code>int</code> to <code>struct Person</code>. Almost nothing else changes &mdash; that is the point.</li>
         <li>Print the record after every command so you can see it working.</li>
         <li>Handle the cases the happy path ignores: removing from an empty record, and an index that is out of range.</li>
         <li>Check that every <code>malloc</code> is matched by exactly one <code>free</code>. On macOS, <code>leaks -atExit -- ./a.out</code> will tell you.</li>
@@ -59,14 +86,16 @@
     </section>
 
     <section class="content-section">
-      <h2>Practice &mdash; structs and pointers together</h2>
-      <p class="lead">No judge for these; they are short C programs. Full topic list on the <a href="../../resources/practice/#structures">practice page</a>.</p>
+      <h2>Practice &mdash; two pointers, and structs</h2>
+      <p class="lead">Full topic lists on the practice page: <a href="../../resources/practice/#pointers">pointers</a> and <a href="../../resources/practice/#structures">structures</a>.</p>
       <ul class="compact-list">
-        <li>Write <code>void birthday(struct Person *p)</code> that adds 1 to the person's age. Then write the by-value version and confirm it does nothing.</li>
-        <li>Print <code>sizeof(struct Person)</code> and compare it with the sum of its fields. If it is larger, the compiler has inserted padding to keep fields aligned.</li>
-        <li>Write <code>struct Person *highest_paid(struct Person *arr, int n)</code> returning a pointer into the array, not a copy. Then change the salary through that pointer and confirm the array changed.</li>
+        <li><a href="https://leetcode.com/problems/reverse-string/">344. Reverse String</a> &mdash; the slide's <code>reverse</code>, on a <code>char</code> array.</li>
+        <li><a href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/">167. Two Sum II</a> &mdash; ends inward: too small moves left up, too large moves right down.</li>
+        <li><a href="https://leetcode.com/problems/rotate-array/">189. Rotate Array</a> &mdash; three reversals, in place.</li>
+        <li><a href="https://leetcode.com/problems/merge-sorted-array/">88. Merge Sorted Array</a> &mdash; merge backwards into the spare room.</li>
+        <li>Write <code>void birthday(struct Person *p)</code> that adds a year. Then write the by-value version and confirm it does nothing.</li>
+        <li>Print <code>sizeof(struct Person)</code> and compare it with the sum of its fields. Any difference is padding the compiler inserted to keep fields aligned.</li>
         <li>Sort an array of <code>struct Person</code> by salary, reusing any sort from Classes 03&ndash;06. Only the comparison changes &mdash; the algorithm does not care what it is moving.</li>
-        <li>Give <code>struct Person</code> a <code>char *name</code> instead of a <code>char name[50]</code>. What now has to happen when you create a person, and what has to happen when you remove one?</li>
       </ul>
     </section>
   </main>

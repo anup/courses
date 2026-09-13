@@ -31,14 +31,14 @@
 
     <section class="content-section">
       <h2>Material</h2>
-      <p class="lead">Two sets of material for this class, covering the same ground from different angles. Read both &mdash; where they overlap, the second pass is the one that makes it stick.</p>
+      <p class="lead">The slides, plus thirty-one worked snippets &mdash; each a short program with its real output and an explanation of why it behaves that way. The PDF and the HTML have the same content; the HTML is easier to copy code out of.</p>
       <ul class="compact-list">
-        <li><a class="action-link" href="arrays-and-pointers.pptx">Arrays &amp; Pointers slides (PowerPoint)</a> &mdash; the lecture deck. Slides 1&ndash;35 are this class; the deck then continues into structures, which is <a href="../class-09/">Class 09</a>.</li>
-        <li><a class="action-link" href="pointers.pptx">Pointers slides (PowerPoint)</a> &mdash; a second deck on the same topic.</li>
-        <li><a class="action-link" href="pointers-annotated.pdf">Annotated snippets (PDF)</a> &mdash; thirty-one short programs, each with its real output and an explanation of why it behaves that way.</li>
-        <li><a class="action-link" href="pointers-annotated.html">Annotated snippets (HTML)</a> &mdash; same content as the PDF, easier to copy code out of.</li>
+        <li><a class="action-link" href="pointers.pptx">Pointers slides (PowerPoint)</a></li>
+        <li><a class="action-link" href="pointers-annotated.pdf">Annotated snippets (PDF)</a></li>
+        <li><a class="action-link" href="pointers-annotated.html">Annotated snippets (HTML)</a></li>
       </ul>
       <p>Strongly recommended: run each snippet on <a href="https://pythontutor.com">pythontutor.com</a> and watch the boxes and arrows as it executes. Pointers are much easier to see than to read about &mdash; step through snippets 5 and 6 in particular, and watch what changes when the <code>*</code> appears.</p>
+      <p><a href="../class-09/">Class 09</a> picks this topic up again and carries it through to structures. Where the two overlap, the second pass is the one that makes it stick.</p>
     </section>
 
     <section class="content-section">
@@ -51,19 +51,6 @@
         <li><strong>Snippet 21</strong> &mdash; a function returns the address of its own local array. The compiler warns; the pointer dangles the moment the function returns.</li>
         <li><strong>Snippet 31</strong> &mdash; why <code>int* p, q;</code> does not declare two pointers. The <code>*</code> binds to the name, not the type.</li>
         <li>Paper exercise: for <code>int num[5]</code> and <code>int *p = num</code>, write down four different expressions that all read <code>num[3]</code>. There are more than four.</li>
-      </ul>
-    </section>
-
-    <section class="content-section">
-      <h2>The thread through the lecture deck</h2>
-      <p class="lead">The slides build one idea at a time, each answering the question the previous one raised:</p>
-      <ul class="compact-list">
-        <li><strong>Pass by value</strong> &mdash; <code>sum(a, b)</code> gets copies, so the parameters are not the caller's variables. <code>scanf</code> needs <code>&amp;a</code> precisely because it has to write back.</li>
-        <li><strong>Arrays are the exception</strong> &mdash; <code>sum(num, 5)</code> copies nothing. <code>A</code> is a pointer to <code>num[0]</code>, so the function reads your array directly, and a pointer carries no length, hence the separate <code>n</code>.</li>
-        <li><strong>Four ways to write the same function</strong> &mdash; <code>int A[]</code> or <code>int *A</code> in the signature, <code>A[i]</code> or <code>*(A+i)</code> in the body. All four compile to the same thing.</li>
-        <li><strong>Reverse with two pointers</strong> &mdash; <code>left</code> and <code>right</code> start at the ends and walk inward, swapping. Because the array arrived as a pointer, the swaps land in the caller's array.</li>
-        <li><strong>Returning an array</strong> &mdash; the <code>create()</code> that returns a local array is broken: <code>num</code> dies when <code>create</code> returns. <code>malloc</code> fixes it, and the caller then owes a <code>free</code>.</li>
-        <li><strong>Growing an array</strong> &mdash; <code>add()</code> allocates one slot bigger, copies, appends. In a loop, that reads input of unknown length.</li>
       </ul>
     </section>
 
@@ -101,8 +88,6 @@
         <li>Write <code>int *concat(int *A, int n, int *B, int m)</code> returning a freshly allocated array holding A then B. Check for <code>NULL</code>, and be clear about who owns the result.</li>
         <li>Write <code>remove_at</code> from snippet 30, then handle the edge case the snippet skips: <code>n == 1</code>, where <code>malloc(0)</code> is the wrong answer.</li>
         <li>Run one of your <code>malloc</code> programs without the matching <code>free</code>. On macOS, <code>leaks -atExit -- ./a.out</code> will tell you what you lost.</li>
-        <li>From the lecture deck: read positive integers until <code>-1</code>, one per line, and print them in reverse, growing the array with <code>add</code> as you go. Mind the order inside the loop &mdash; allocate the new block, then free the old one, then reassign.</li>
-        <li>From the lecture deck: <code>int *removeAt(int *arr, int n, int index)</code>, returning a new array with that element gone.</li>
       </ul>
     </section>
   </main>
