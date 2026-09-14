@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 10: Serving DNS</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .rules td:first-child{width:2em;opacity:.55;font-weight:600;}
+    .ports{border-collapse:collapse;width:100%;margin:16px 0;}
+    .ports th{text-align:left;font-weight:500;padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.35);font-size:.9em;opacity:.75;}
+    .ports td{padding:6px 12px;border-bottom:1px solid rgba(128,128,128,.18);font-variant-numeric:tabular-nums;}
+    .ports td:first-child{font-weight:600;}
+    .portwrap{column-count:2;column-gap:36px;}
+    @media (max-width:620px){.portwrap{column-count:1;}}
+    .warnbar{border-left:3px solid #b3453d;padding:10px 0 10px 16px;margin:18px 0;}
+    .warnbar strong{color:#b3453d;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 10</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 10 &middot; Monday 14 September</p>
+      <h1>Serving DNS</h1>
+      <p class="lead">Scored individually. Your own hackattic account, your own port on the class server.</p>
+    </section>
+
+    <section class="content-section">
+      <div class="warnbar">
+        <p><strong>The class server is shared and logged.</strong> Commands and shell history are recorded. Put nothing private on it. It is deleted within a day or two &mdash; work left only on it is lost.</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Your login and port</h2>
+      <pre class="code-block"><code>ssh &lt;username&gt;@204.168.202.138</code></pre>
+      <p>Your port is yours alone. Do not use anyone else's. It is also in <code>~/PORT</code>, and there are instructions in <code>~/START-HERE.md</code>.</p>
+      <div class="portwrap">
+        <table class="ports">
+          <tr><th>Username</th><th>Port</th></tr>
+          <tr><td>amisha</td><td>5316</td></tr>
+          <tr><td>ananya</td><td>5309</td></tr>
+          <tr><td>anurag</td><td>5302</td></tr>
+          <tr><td>aparnamala</td><td>5317</td></tr>
+          <tr><td>arka</td><td>5324</td></tr>
+          <tr><td>arpan</td><td>5307</td></tr>
+          <tr><td>aryan</td><td>5312</td></tr>
+          <tr><td>beli</td><td>5308</td></tr>
+          <tr><td>chaitanya</td><td>5315</td></tr>
+          <tr><td>deepanjali</td><td>5327</td></tr>
+          <tr><td>devansh</td><td>5301</td></tr>
+          <tr><td>drishti</td><td>5322</td></tr>
+          <tr><td>eshwar</td><td>5318</td></tr>
+          <tr><td>gomtesh</td><td>5323</td></tr>
+          <tr><td>harsh</td><td>5311</td></tr>
+          <tr><td>jils</td><td>5328</td></tr>
+          <tr><td>kushal</td><td>5306</td></tr>
+          <tr><td>manashree</td><td>5310</td></tr>
+          <tr><td>mohit</td><td>5320</td></tr>
+          <tr><td>nakshatra</td><td>5314</td></tr>
+          <tr><td>nishchay</td><td>5321</td></tr>
+          <tr><td>nishtha</td><td>5325</td></tr>
+          <tr><td>praneeth</td><td>5305</td></tr>
+          <tr><td>raj</td><td>5313</td></tr>
+          <tr><td>saikrishna</td><td>5326</td></tr>
+          <tr><td>shivangi</td><td>5303</td></tr>
+          <tr><td>smrutee</td><td>5319</td></tr>
+          <tr><td>tanish</td><td>5304</td></tr>
+        </table>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>2. If it says permission denied</h2>
+      <p>Your public key is not on the machine. Add one to GitHub, wait three minutes, try again.</p>
+      <pre class="code-block"><code>ssh-keygen -t ed25519 -C "your.email@iitgn.ac.in"
+cat ~/.ssh/id_ed25519.pub
+# Windows Command Prompt: type %USERPROFILE%\.ssh\id_ed25519.pub
+# paste it at github.com/settings/keys</code></pre>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Prove your port works before anything else</h2>
+      <p>On the server:</p>
+      <pre class="code-block"><code>python3 -c "
+from dnslib import RR
+from dnslib.server import DNSServer, BaseResolver
+class R(BaseResolver):
+    def resolve(self, q, h):
+        r = q.reply(); r.add_answer(*RR.fromZone('hello.cs437. 60 IN TXT \"it works\"')); return r
+DNSServer(R(), port=YOUR_PORT, address='0.0.0.0').start()"</code></pre>
+      <p>From your own laptop:</p>
+      <pre class="code-block"><code>dig @204.168.202.138 -p YOUR_PORT hello.cs437 TXT
+
+# Windows has no dig. Use:
+nslookup -port=YOUR_PORT -type=TXT hello.cs437 204.168.202.138</code></pre>
+      <p>No answer: stop and fix this. Bind <code>0.0.0.0</code>, not <code>127.0.0.1</code>. Use your own port.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. The challenge</h2>
+      <p><a href="https://hackattic.com/challenges/serving_dns" target="_blank" rel="noopener">Serving DNS</a> &mdash; 60 points.</p>
+      <pre class="code-block"><code>export HACKATTIC_TOKEN=your_own_token     # never commit this</code></pre>
+      <p>Submit:</p>
+      <pre class="code-block"><code>{"dns_ip": "204.168.202.138", "dns_port": YOUR_PORT}</code></pre>
+      <p class="lead"><strong>You have 60 seconds from fetching the problem.</strong> Your server must already be running and answering before you fetch. Structure it: listen, then fetch, then load the records, then submit. Rejected attempts cost nothing &mdash; retry as often as you need.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Rules</h2>
+      <table class="rules">
+        <tr><td>1</td><td>Scored individually. Clear it on your own hackattic account, on your own port.</td></tr>
+        <tr><td>2</td><td>Any AI, any model, any tool. The viva is the check.</td></tr>
+        <tr><td>3</td><td>No access token in any file.</td></tr>
+        <tr><td>4</td><td>Your port is yours. Do not run anything on someone else's.</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Commit before you leave</h2>
+      <p><strong>Your own repo</strong></p>
+      <ul>
+        <li><code>hackattic/serving_dns/solve.py</code></li>
+        <li><code>lab-notes/class-10.md</code>, written in &ldquo;I&rdquo;, not &ldquo;we&rdquo;.</li>
+      </ul>
+      <p>The server is deleted within a day or two. Work left only on it is lost.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>7. While you wait</h2>
+      <p>This is a shared Linux machine with a public address. Run these and work out what each one tells you.</p>
+      <pre class="code-block"><code>w                                  # who else is logged in
+ss -lun                            # every nameserver on the box, including theirs
+dig @localhost -p 5321 example.com # query a classmate's server
+ps aux | grep python               # you can see their processes
+cat /home/raj/solve.py             # but not their files. why?
+ls -ld /home/raj ~                 # read the first ten characters
+free -h; nproc; uptime             # one core, 2 GB, 28 of you</code></pre>
+      <p>Then try binding port <code>53</code>, and port <code>8053</code>. Both fail. The reasons are different. Work out what they are.</p>
+    </section>
+
+  </main>
+</body>
+</html>
