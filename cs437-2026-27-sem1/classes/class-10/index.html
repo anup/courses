@@ -98,21 +98,15 @@ cat ~/.ssh/id_ed25519.pub
     </section>
 
     <section class="content-section">
-      <h2>3. Prove your port works before anything else</h2>
-      <p>On the server:</p>
-      <pre class="code-block"><code>python3 -c "
-from dnslib import RR
-from dnslib.server import DNSServer, BaseResolver
-class R(BaseResolver):
-    def resolve(self, q, h):
-        r = q.reply(); r.add_answer(*RR.fromZone('hello.cs437. 60 IN TXT \"it works\"')); return r
-DNSServer(R(), port=YOUR_PORT, address='0.0.0.0').start()"</code></pre>
-      <p>From your own laptop:</p>
-      <pre class="code-block"><code>dig @204.168.202.138 -p YOUR_PORT hello.cs437 TXT
-
-# Windows has no dig. Use:
-nslookup -port=YOUR_PORT -type=TXT hello.cs437 204.168.202.138</code></pre>
-      <p>No answer: stop and fix this. Bind <code>0.0.0.0</code>, not <code>127.0.0.1</code>. Use your own port.</p>
+      <h2>3. Prove your port is reachable before you touch the challenge</h2>
+      <p>Two things have to be true, and it is worth establishing them in that order:</p>
+      <ul>
+        <li>something you started is listening on <strong>your</strong> port, on the server</li>
+        <li>a query sent from <strong>your own laptop</strong> actually reaches it</li>
+      </ul>
+      <p>You are going to write a nameserver anyway. Get the simplest possible one answering on your port first, then prove from your own machine that you can reach it. <code>dnslib</code> is already installed.</p>
+      <p><strong>Hint:</strong> <code>dig</code> is the usual way to ask a nameserver a question directly, and it takes both a server and a port. Windows does not have <code>dig</code> &mdash; find the equivalent.</p>
+      <p>If you cannot get an answer, stop and fix that. Nothing else will work until you can, and a dropped packet looks exactly like a server that is not running.</p>
     </section>
 
     <section class="content-section">
