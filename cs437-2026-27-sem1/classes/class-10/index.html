@@ -98,7 +98,22 @@ cat ~/.ssh/id_ed25519.pub
     </section>
 
     <section class="content-section">
-      <h2>3. Prove your port is reachable before you touch the challenge</h2>
+      <h2>3. The machine is shared. Find out what that means.</h2>
+      <p>Twenty-eight of you are on one machine with one public address. Run these and work out what each one is telling you. Two of them explain something that will otherwise cost you an hour later.</p>
+      <pre class="code-block"><code>w                                  # who else is logged in
+ss -lun                            # every nameserver on the box, including theirs
+ps aux | grep python               # you can see their processes
+cat /home/raj/solve.py             # but not their files. why?
+ls -ld /home/raj ~                 # read the first ten characters
+free -h; nproc; uptime             # one core, 2 GB, 28 of you</code></pre>
+      <p>Two more, once something of yours is running:</p>
+      <ul>
+        <li>Can you ask a classmate's nameserver a question from this machine? Their ports are in the table above.</li>
+        <li>Try binding port <code>53</code>, then port <code>8053</code>. Both fail. <strong>The reasons are completely different.</strong> Work out what they are &mdash; this is the one that saves you an hour later.</li>
+      </ul>
+    </section>
+    <section class="content-section">
+      <h2>4. Prove your port is reachable before you touch the challenge</h2>
       <p>Two things have to be true, and it is worth establishing them in that order:</p>
       <ul>
         <li>something you started is listening on <strong>your</strong> port, on the server</li>
@@ -110,7 +125,7 @@ cat ~/.ssh/id_ed25519.pub
     </section>
 
     <section class="content-section">
-      <h2>4. The challenge</h2>
+      <h2>5. The challenge</h2>
       <p><a href="https://hackattic.com/challenges/serving_dns" target="_blank" rel="noopener">Serving DNS</a> &mdash; 60 points.</p>
       <pre class="code-block"><code>export HACKATTIC_TOKEN=your_own_token     # never commit this</code></pre>
       <p>Submit:</p>
@@ -119,7 +134,7 @@ cat ~/.ssh/id_ed25519.pub
     </section>
 
     <section class="content-section">
-      <h2>5. Rules</h2>
+      <h2>6. Rules</h2>
       <table class="rules">
         <tr><td>1</td><td>Scored individually. Clear it on your own hackattic account, on your own port.</td></tr>
         <tr><td>2</td><td>Any AI, any model, any tool. The viva is the check.</td></tr>
@@ -129,7 +144,7 @@ cat ~/.ssh/id_ed25519.pub
     </section>
 
     <section class="content-section">
-      <h2>6. Commit before you leave</h2>
+      <h2>7. Commit before you leave</h2>
       <p><strong>Your own repo</strong></p>
       <ul>
         <li><code>hackattic/serving_dns/solve.py</code></li>
@@ -138,18 +153,6 @@ cat ~/.ssh/id_ed25519.pub
       <p>The server is deleted within a day or two. Work left only on it is lost.</p>
     </section>
 
-    <section class="content-section">
-      <h2>7. While you wait</h2>
-      <p>This is a shared Linux machine with a public address. Run these and work out what each one tells you.</p>
-      <pre class="code-block"><code>w                                  # who else is logged in
-ss -lun                            # every nameserver on the box, including theirs
-dig @localhost -p 5321 example.com # query a classmate's server
-ps aux | grep python               # you can see their processes
-cat /home/raj/solve.py             # but not their files. why?
-ls -ld /home/raj ~                 # read the first ten characters
-free -h; nproc; uptime             # one core, 2 GB, 28 of you</code></pre>
-      <p>Then try binding port <code>53</code>, and port <code>8053</code>. Both fail. The reasons are different. Work out what they are.</p>
-    </section>
 
   </main>
 </body>
