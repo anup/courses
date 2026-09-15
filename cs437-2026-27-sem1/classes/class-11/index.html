@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 11: Make It Actually Work</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .rules td:first-child{width:2em;opacity:.55;font-weight:600;}
+    .facts{border-collapse:collapse;width:100%;margin:16px 0;}
+    .facts th{text-align:left;font-weight:500;padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.35);font-size:.9em;opacity:.75;}
+    .facts td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.18);}
+    .facts td.n{text-align:right;font-variant-numeric:tabular-nums;font-weight:600;white-space:nowrap;}
+    .warnbar{border-left:3px solid #b3453d;padding:10px 0 10px 16px;margin:18px 0;}
+    .warnbar strong{color:#b3453d;}
+    .track{border-left:3px solid rgba(128,128,128,.4);padding:4px 0 4px 16px;margin:18px 0;}
+    .track h3{margin:0 0 6px;font-size:1.05em;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 11</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 11 &middot; Tuesday 15 September</p>
+      <h1>Make It Actually Work</h1>
+      <p class="lead">Serving DNS, continued. Vivas on the Class 09 challenges run in parallel &mdash; when you are not being interviewed, you are working on this.</p>
+    </section>
+
+    <section class="content-section">
+      <div class="warnbar">
+        <p><strong>Do this first, before anything else.</strong> The class server is temporary. <strong>Six of you have a working nameserver that exists nowhere else.</strong> When that machine is deleted, so is your work, and there will be no record that you did it.</p>
+      </div>
+      <pre class="code-block"><code># from your laptop, pull it down
+scp &lt;username&gt;@204.168.202.138:~/solve.py .
+
+# then commit it
+hackattic/serving_dns/solve.py
+lab-notes/class-10.md</code></pre>
+      <p>Ten minutes. Do it now, then read on.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Where the class actually is</h2>
+      <p>Every solver written for this challenge was read.</p>
+      <table class="facts">
+        <tr><th>&nbsp;</th><th>&nbsp;</th></tr>
+        <tr><td>Cleared Serving DNS on their own account</td><td class="n">12 of 28</td></tr>
+        <tr><td>Wrote a nameserver</td><td class="n">18 of 28</td></tr>
+        <tr><td>Wrote nothing at all</td><td class="n">10 of 28</td></tr>
+        <tr><td>Build the program in the order the clock demands</td><td class="n">8 of 18</td></tr>
+        <tr><td>Handle the name format a resolver actually sends</td><td class="n">11 of 18</td></tr>
+      </table>
+      <p>The last two rows are the interesting ones. They are not about DNS. They are about verifying what you built instead of assuming it.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Pick your track</h2>
+
+      <div class="track">
+        <h3>A &mdash; you cleared it</h3>
+        <p>Passing once is not the same as understanding it. Do these, in order:</p>
+        <ul>
+          <li>Commit the solver and write <code>lab-notes/class-10.md</code> if you have not.</li>
+          <li>Run it again. Does it still pass on a fresh problem set, or did you get lucky on the records you happened to be given?</li>
+          <li>Answer section 4 without looking anything up. If you cannot, you did not solve it &mdash; your agent did.</li>
+        </ul>
+      </div>
+
+      <div class="track">
+        <h3>B &mdash; you wrote a server but never cleared it</h3>
+        <p>You are closer than you think. Stop guessing and bisect it:</p>
+        <ul>
+          <li>Is your server reachable from your own laptop right now? If not, nothing else matters.</li>
+          <li>Fetch a problem set and <strong>print the records you were given</strong>. Read them. How many types are in there? Is any name unusual?</li>
+          <li>Now query your own server for <strong>every single one of those records</strong>, by exact name and exact type. Not one of them. All of them.</li>
+          <li>The one that does not answer is your bug. You will not find it by reading your code.</li>
+        </ul>
+      </div>
+
+      <div class="track">
+        <h3>C &mdash; you have nothing yet</h3>
+        <p>Start at <a href="../class-10/">Class 10</a> and work forward. You are behind but this is recoverable in one session &mdash; twelve people did the whole thing in an afternoon.</p>
+        <p>If you still cannot log in, your public key is not on the machine. Generate one, add it to GitHub, wait three minutes. Nobody needs to do this for you.</p>
+      </div>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Two questions to ask your own code</h2>
+      <p>Regardless of track. Answer both honestly, in your log.</p>
+      <table class="rules">
+        <tr><td>1</td><td><strong>In what order does your program do these four things:</strong> start listening, fetch the problem, load the records, submit? Write the order down. Then work out what happens if the fetch takes three seconds.</td></tr>
+        <tr><td>2</td><td><strong>When a resolver asks your server for a name, what exactly does it send?</strong> Not what you think it sends &mdash; print it. Then compare it, character by character, with the key in your records table.</td></tr>
+      </table>
+      <p>More than half the class got the first one wrong and did not notice, because free retries hide it. A third got the second one wrong, and it produces a server that looks perfect and answers nothing.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Understand it</h2>
+      <p>You should be able to answer these with no notes and no AI. If you cannot, that is the work for today, not the code.</p>
+      <ul>
+        <li>A query is not just a name. What else is in it, and why does that change the answer?</li>
+        <li>Why does this challenge need no domain name and no registrar, when every real nameserver has both?</li>
+        <li>Your server does not reply. Name three different causes that look identical from outside, and say how you would tell them apart.</li>
+        <li>What is a wildcard record, and what does your code have to do differently to serve one?</li>
+        <li>Why is <code>0.0.0.0</code> not the same as <code>127.0.0.1</code>?</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Commit before you leave</h2>
+      <ul>
+        <li><code>hackattic/serving_dns/solve.py</code></li>
+        <li><code>lab-notes/class-11.md</code> &mdash; what you fixed today, what you found when you printed the records, and which of the section 4 questions you could not answer.</li>
+      </ul>
+      <p>The last part is not a trap. Writing down what you do not understand is how you stop not understanding it.</p>
+    </section>
+
+  </main>
+</body>
+</html>
