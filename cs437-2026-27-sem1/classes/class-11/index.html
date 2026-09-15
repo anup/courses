@@ -75,12 +75,20 @@ lab-notes/class-10.md</code></pre>
 
       <div class="track">
         <h3>A &mdash; you cleared it</h3>
-        <p>Passing once is not the same as understanding it. Do these, in order:</p>
+        <p>Re-running your own code proves nothing you do not already believe. Test somebody else's.</p>
+        <p><strong>Write a conformance tester.</strong> It takes an address, a port and a record set, and reports what fails. Then run it for two people in Track B who ask you to.</p>
+        <p>A correct nameserver must do all of these, whatever records it happens to hold:</p>
         <ul>
-          <li>Commit the solver and write <code>lab-notes/class-10.md</code> if you have not.</li>
-          <li>Run it again. Does it still pass on a fresh problem set, or did you get lucky on the records you happened to be given?</li>
-          <li>Answer section 4 without looking anything up. If you cannot, you did not solve it &mdash; your agent did.</li>
+          <li>answer at all, asked from a machine that is not the one it runs on</li>
+          <li>answer the same name whether or not the query carries a trailing dot</li>
+          <li>answer <strong>the type that was asked</strong> &mdash; not a different type it happens to hold for that name</li>
+          <li>say <em>no such name</em> for a name it does not hold &mdash; not silence, not an empty answer</li>
+          <li>still be answering on the tenth query, not just the first</li>
+          <li>serve a wildcard name, if the record set has one</li>
         </ul>
+        <p>You cannot check their data without knowing what it should be, so ask them for the records they were given. That exchange is the point.</p>
+        <p><strong>Report what failed. Do not fix it for them and do not say where to look.</strong> If your report is any good, they will find it themselves &mdash; and if it is not, you will learn that too.</p>
+        <p>Then commit the tester as <code>hackattic/serving_dns/conformance.py</code>. It is worth more than the solver.</p>
       </div>
 
       <div class="track">
@@ -91,6 +99,7 @@ lab-notes/class-10.md</code></pre>
           <li>Fetch a problem set and <strong>print the records you were given</strong>. Read them. How many types are in there? Is any name unusual?</li>
           <li>Now query your own server for <strong>every single one of those records</strong>, by exact name and exact type. Not one of them. All of them.</li>
           <li>The one that does not answer is your bug. You will not find it by reading your code.</li>
+          <li><strong>Ask someone in Track A to test you.</strong> Give them your address, your port and the records you were given. An outside prober finds in a minute what you will stare past for an hour.</li>
         </ul>
       </div>
 
@@ -127,7 +136,8 @@ lab-notes/class-10.md</code></pre>
       <h2>5. Commit before you leave</h2>
       <ul>
         <li><code>hackattic/serving_dns/solve.py</code></li>
-        <li><code>lab-notes/class-11.md</code> &mdash; what you fixed today, what you found when you printed the records, and which of the section 4 questions you could not answer.</li>
+        <li><code>hackattic/serving_dns/conformance.py</code> &mdash; if you were in Track A</li>
+        <li><code>lab-notes/class-11.md</code> &mdash; what you fixed today, what you found when you printed the records, and which of the section 4 questions you could not answer. If you tested somebody, say what your tester caught and what it missed.</li>
       </ul>
       <p>The last part is not a trap. Writing down what you do not understand is how you stop not understanding it.</p>
     </section>
