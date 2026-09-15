@@ -43,7 +43,7 @@
     <section class="content-section">
       <h2>1. Commit what is on the server</h2>
       <pre class="code-block"><code>scp &lt;username&gt;@204.168.202.138:~/solve.py .</code></pre>
-      <p>Into your own repo: <code>hackattic/serving_dns/solve.py</code> and <code>lab-notes/class-10.md</code>.</p>
+      <p>Commit <code>hackattic/serving_dns/solve.py</code> and <code>lab-notes/class-10.md</code>.</p>
     </section>
 
     <section class="content-section">
@@ -62,8 +62,8 @@
 
       <div class="track">
         <h3>A &mdash; you cleared it</h3>
-        <p>Write a tester: takes an address, a port and a record set, reports what fails. Run it for two people in Track B. Report failures only &mdash; do not fix them, do not say where to look.</p>
-        <p>A correct server, whatever records it holds:</p>
+        <p>Write a tester: takes an address, a port and a record set, reports what fails. Run it for two people in Track B. Report failures only; do not fix them.</p>
+        <p>Check, regardless of records:</p>
         <ul>
           <li>answers from a different machine</li>
           <li>answers with and without a trailing dot</li>
@@ -72,7 +72,6 @@
           <li>still answers on the tenth query</li>
           <li>serves a wildcard, if the set has one</li>
         </ul>
-        <p>Commit as <code>hackattic/serving_dns/conformance.py</code>.</p>
       </div>
 
       <div class="track">
@@ -81,7 +80,6 @@
           <li>Check it is reachable from your laptop.</li>
           <li>Fetch a problem set. Print the records.</li>
           <li>Query your server for every record, exact name and exact type.</li>
-          <li>The one that fails is your bug.</li>
           <li>Ask Track A to test you. Give them your address, port and records.</li>
         </ul>
       </div>
