@@ -1267,9 +1267,10 @@
 
       // Graded lab exams come entirely from the live /exec feed now (DOMjudge
       // labs + in-lab CodeChef). The static domjudge-scores.json archive has
-      // been retired. Newest DOMjudge first, then graded CodeChef.
+      // been retired. Newest first throughout: DOMjudge labs (dated codes),
+      // then graded CodeChef Starters (weekly, so a higher number is later).
       var list = Object.keys(djByCode).sort().reverse().map(function (k) { return djByCode[k]; });
-      Object.keys(ccByCode).sort().forEach(function (k) { list.push(ccByCode[k]); });
+      Object.keys(ccByCode).sort().reverse().forEach(function (k) { list.push(ccByCode[k]); });
       contestList = list;
 
       var sel = document.getElementById("cs-contest");
