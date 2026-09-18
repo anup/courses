@@ -1201,6 +1201,37 @@
     // ---- Lab Scores tab: graded lab exams (DOMjudge + in-lab CodeChef) ----
     var contestList = [];
 
+    // "16 Sep 2026" from an ISO date string; "" if unparseable.
+    function csDateLabel(iso) {
+      var d = iso ? new Date(iso) : null;
+      if (!d || isNaN(d.getTime())) return "";
+      var mon = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][d.getMonth()];
+      return d.getDate() + " " + mon + " " + d.getFullYear();
+    }
+    // Feed metadata (name, start) for a graded contest, from config.gradedContests.
+    function csGradedMeta(platform, code) {
+      var list = (SCORE_CONTEXT && SCORE_CONTEXT.gradedContests) || [];
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].platform === platform && String(list[i].code) === String(code)) return list[i];
+      }
+      return {};
+    }
+    // "CodeChef Starters 256 — 16 Sep 2026" (falls back to "CodeChef START256").
+    function csCcLabel(code) {
+      var meta = csGradedMeta("CodeChef", code);
+      var name = meta.name && meta.name !== code ? meta.name : code;
+      var date = csDateLabel(meta.start);
+      return "CodeChef " + name + (date ? " — " + date : "");
+    }
+    // Sort key: start date from the feed; DOMjudge codes carry their date; else 0.
+    function csStartKey(platform, code) {
+      var meta = csGradedMeta(platform, code);
+      var d = meta.start ? new Date(meta.start) : null;
+      if (d && !isNaN(d.getTime())) return d.getTime();
+      var m = String(code).match(/(\d{4})-(\d{2})-(\d{2})$/);
+      return m ? new Date(m[1] + "-" + m[2] + "-" + m[3] + "T00:00:00").getTime() : 0;
+    }
+
     // Turn a DOMjudge lab code like "ES242-2026-08-17" into "Lab Exam — 17 Aug 2026".
     function csDjLabel(code) {
       var m = String(code).match(/(\d{4})-(\d{2})-(\d{2})$/);
@@ -1230,14 +1261,14 @@
             var dcode = String(r[cci] || "").trim();
             if (!dcode) return;
             if (!GRADED.DOMjudge[dcode]) return; // graded lab exams only
-            if (!djByCode[dcode]) djByCode[dcode] = { label: csDjLabel(dcode) + " (DOMjudge)", platform: "DOMjudge", total: null, scores: {} };
+            if (!djByCode[dcode]) djByCode[dcode] = { label: csDjLabel(dcode) + " (DOMjudge)", platform: "DOMjudge", code: dcode, total: null, scores: {} };
             djByCode[dcode].scores[r[ci]] = Number(r[si]) || 0;
             return;
           }
           if (plat !== "CodeChef") return;
           var contest = String(r[cci] || "").trim();
           if (!GRADED.CodeChef[contest]) return; // in-lab (graded) CodeChef exams only
-          if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
+          if (!ccByCode[contest]) ccByCode[contest] = { label: csCcLabel(contest), platform: "CodeChef", code: contest, total: null, scores: {} };
           ccByCode[contest].scores[r[ci]] = Number(r[si]) || 0;
         });
       }
@@ -1254,7 +1285,7 @@
         Object.keys(GRADED.CodeChef || {}).forEach(function (contest) {
           var solvedI = GH2.indexOf(contest.toLowerCase() + " c solved");
           if (gCodeI < 0 || solvedI < 0) return;
-          if (!ccByCode[contest]) ccByCode[contest] = { label: "CodeChef " + contest, platform: "CodeChef", total: null, scores: {} };
+          if (!ccByCode[contest]) ccByCode[contest] = { label: csCcLabel(contest), platform: "CodeChef", code: contest, total: null, scores: {} };
           (gr.rows || []).forEach(function (r) {
             var v = r[solvedI];
             if (v === "" || v === null || v === undefined) return;
@@ -1266,11 +1297,14 @@
       }
 
       // Graded lab exams come entirely from the live /exec feed now (DOMjudge
-      // labs + in-lab CodeChef). The static domjudge-scores.json archive has
-      // been retired. Newest first throughout: DOMjudge labs (dated codes),
-      // then graded CodeChef Starters (weekly, so a higher number is later).
-      var list = Object.keys(djByCode).sort().reverse().map(function (k) { return djByCode[k]; });
-      Object.keys(ccByCode).sort().reverse().forEach(function (k) { list.push(ccByCode[k]); });
+      // labs + in-lab CodeChef). One list, newest first by start date, labs
+      // and CodeChef contests interleaved in the order they were held.
+      var list = Object.keys(djByCode).map(function (k) { return djByCode[k]; })
+        .concat(Object.keys(ccByCode).map(function (k) { return ccByCode[k]; }));
+      list.sort(function (a, b) {
+        var d = csStartKey(b.platform, b.code) - csStartKey(a.platform, a.code);
+        return d !== 0 ? d : String(b.code).localeCompare(String(a.code));
+      });
       contestList = list;
 
       var sel = document.getElementById("cs-contest");
