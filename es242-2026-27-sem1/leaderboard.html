@@ -696,6 +696,12 @@
       return isNaN(n) ? String(value) : n.toFixed(2).replace(/\.00$/, "").replace(/(\.\d)0$/, "$1");
     }
 
+    function gradedCodes(platform) {
+      return ((SCORE_CONTEXT && SCORE_CONTEXT.gradedContests) || [])
+        .filter(function (g) { return g.platform === platform; })
+        .map(function (g) { return g.code; });
+    }
+
     function initTooltips(cfg) {
       SCORE_CONTEXT = cfg || {};
       var bestOf       = cfg ? cfg.assignmentBestOf       : 2;
@@ -723,11 +729,11 @@
       };
 
       TOOLTIP_PATTERNS = [
-        { re: /codechef starters/,       tip: (cfg ? cfg.gradedAssignmentContestCount + " graded contests considered so far; current maximum " + scoreNumber(cfg.assignmentAvailableMaxMarks) + " out of " + maxTotal + ". " : "") + "Each proctored contest is out of " + maxPer + " (" + attMarks + " for verified attendance + 3/5/7/8 for 1/2/3/4+ problems solved in C; absent = 0). Best " + bestOf + " contests count." },
+        { re: /codechef starters/,       tip: (cfg ? "N = " + cfg.gradedAssignmentContestCount + " graded contests so far (" + gradedCodes("CodeChef").join(", ") + "), each out of " + maxPer + ". Column = sum of your best " + bestOf + " contest scores \u00f7 " + (bestOf * maxPer) + " \u00d7 " + maxTotal + ", so the most anyone can have right now is " + scoreNumber(cfg.assignmentAvailableMaxMarks) + " of " + maxTotal + ". " : "") + "Per contest: " + attMarks + " for verified attendance + 3/5/7/8 for 1/2/3/4+ problems solved in C; absent = 0." },
         { re: /^assignment/,             tip: "Best " + bestOf + " contest scores (each out of " + maxPer + "), scaled to " + maxTotal },
         { re: /^practice\b(?!.*counted)/, tip: mpc + " marks per contest with 1+ problem solved, capped at " + maxMarks + ". Requires " + cReq + " C contests." },
         { re: /^total/,                  tip: "Labs (50) + Midsem (20) + Endsem (20) + CodeChef Starters (10), out of 100" },
-        { re: /^labs/,                   tip: (cfg ? cfg.gradedLabContestCount + " graded lab exams considered so far; current maximum " + scoreNumber(cfg.labsAvailableMaxMarks) + " out of " + cfg.diagnosticMaxMarks + ". " : "") + "Each lab is out of 10 (split equally across its problems, no partial credit); best 9 labs count." },
+        { re: /^labs/,                   tip: (cfg ? "N = " + cfg.gradedLabContestCount + " graded labs so far (" + gradedCodes("DOMjudge").join(", ") + "), each out of 10. Column = sum of your best 9 lab scores \u00f7 90 \u00d7 " + cfg.diagnosticMaxMarks + ", so the most anyone can have right now is " + scoreNumber(cfg.labsAvailableMaxMarks) + " of " + cfg.diagnosticMaxMarks + ". " : "") + "Each lab is out of 10, split equally across its problems, no partial credit." },
         { re: /start\d+ marks/,          tip: "This contest's score out of " + maxPer + ": " + attMarks + " for verified attendance + 3/5/7/8 for 1/2/3/4+ problems solved in C; absent = 0" },
         { re: /c solved/,                tip: "Problems solved in C in this contest (for START252 and START254 any accepted C submission counts; other contests count only if the first accepted submission is in C)" },
         { re: /assign.*marks/,           tip: "Marks per the assignment scale" },
@@ -1400,13 +1406,15 @@
           }
           var header = String(headers[i] || "").toLowerCase();
           if (/^labs/.test(header) && SCORE_CONTEXT.gradedLabContestCount != null) {
-            td.title = scoreNumber(cell) + " out of " + scoreNumber(SCORE_CONTEXT.labsAvailableMaxMarks) +
-              " currently available from " + SCORE_CONTEXT.gradedLabContestCount + " graded lab exams (course component: /" +
-              scoreNumber(SCORE_CONTEXT.diagnosticMaxMarks) + ").";
+            td.title = scoreNumber(cell) + " of the " + scoreNumber(SCORE_CONTEXT.labsAvailableMaxMarks) +
+              " available so far from N = " + SCORE_CONTEXT.gradedLabContestCount + " graded labs (" + gradedCodes("DOMjudge").join(", ") +
+              "), each out of 10. Best 9 labs count; column = sum of best \u00f7 90 \u00d7 " + scoreNumber(SCORE_CONTEXT.diagnosticMaxMarks) + ".";
           } else if (/codechef starters/.test(header) && SCORE_CONTEXT.gradedAssignmentContestCount != null) {
-            td.title = scoreNumber(cell) + " out of " + scoreNumber(SCORE_CONTEXT.assignmentAvailableMaxMarks) +
-              " currently available from " + SCORE_CONTEXT.gradedAssignmentContestCount + " graded CodeChef contests (course component: /" +
-              scoreNumber(SCORE_CONTEXT.assignmentMaxMarks) + ").";
+            td.title = scoreNumber(cell) + " of the " + scoreNumber(SCORE_CONTEXT.assignmentAvailableMaxMarks) +
+              " available so far from N = " + SCORE_CONTEXT.gradedAssignmentContestCount + " graded contests (" + gradedCodes("CodeChef").join(", ") +
+              "), each out of " + scoreNumber(SCORE_CONTEXT.assignmentPerContestMax) + ". Best " + SCORE_CONTEXT.assignmentBestOf +
+              " count; column = sum of best \u00f7 " + (Number(SCORE_CONTEXT.assignmentBestOf) * Number(SCORE_CONTEXT.assignmentPerContestMax)) +
+              " \u00d7 " + scoreNumber(SCORE_CONTEXT.assignmentMaxMarks) + ".";
           }
           if (i === bonusCol) td.classList.add("bonus-col");
           tr.appendChild(td);
