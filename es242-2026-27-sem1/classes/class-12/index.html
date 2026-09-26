@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 12: Queues</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 12</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 12 &middot; Friday 25 September 2026</p>
+      <h1>Queues</h1>
+      <p class="lead">Numbers arrive one at a time. After each one, report the earliest number that has so far appeared exactly once. A frequency array tells you how often each number has appeared, but not which single-appearance number came first; rescanning the stream after every arrival costs O(n) each time. Instead, keep the candidates in arrival order. New numbers join at the back. The answer is always at the front, once you throw away any front number that has since repeated. A stack serves the newest element first; this problem needs the oldest. That is a queue.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="queues.pptx">Download Queues slides (PowerPoint)</a></p>
+      <p>The deck steps the example stream through the frequency array and the queue side by side, then redraws <code>first</code>, <code>last</code> and the nodes at every <code>enqueue</code> and <code>dequeue</code>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the class covered</h2>
+      <ul class="compact-list">
+        <li><strong>The problem</strong> &mdash; first non-repeating number in a stream. Numbers lie between <code>0</code> and <code>n-1</code>, and <code>-1</code> ends the stream. Print <code>-1</code> when no number has appeared exactly once.</li>
+        <li><strong>Frequency array</strong> &mdash; <code>frequency[num]++</code> on each arrival. That answers &ldquo;how many times?&rdquo; in O(1), but not &ldquo;which came first?&rdquo;</li>
+        <li><strong>The queue of candidates</strong> &mdash; enqueue a number the first time it appears, when its frequency becomes 1. A repeat only raises its count; it is not added again.</li>
+        <li><strong>Finding the answer</strong> &mdash; while the front number's frequency is above 1, dequeue it. What is left at the front is the answer. If the queue empties, the answer is <code>-1</code>.</li>
+        <li><strong>Why it is fast</strong> &mdash; each number is enqueued at most once and dequeued at most once. The whole stream costs O(n), even though one arrival may trigger several dequeues.</li>
+        <li><strong>Queue in a linked list</strong> &mdash; two pointers: <code>first</code> for removing, <code>last</code> for adding. <code>enqueue</code> links a new node after <code>last</code>; <code>dequeue</code> removes the node at <code>first</code> and <code>free</code>s it. Both O(1).</li>
+        <li><strong>The empty-queue cases</strong> &mdash; enqueueing into an empty queue must set both <code>first</code> and <code>last</code>. Dequeueing the only node must set both back to <code>NULL</code>, or <code>last</code> keeps pointing at freed memory.</li>
+      </ul>
+      <p class="lead">Trace the stream <code>5 1 5 1 -1</code> by hand, writing down the frequency array and the queue after each number. The answers should be <code>5</code>, <code>5</code>, <code>1</code>, <code>-1</code>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice</h2>
+      <p class="lead">Write the queue in C first, with <code>malloc</code> and <code>free</code>. The judge problems below let you use whatever you like, so they skip the pointer work.</p>
+      <ul class="compact-list">
+        <li><code>enqueue</code> and <code>dequeue</code> from the slides, plus the stream program built on them. Test with a queue that empties and refills several times.</li>
+        <li>A queue in an array. Where do <code>first</code> and <code>last</code> go when they reach the end of the array? Wrap them around with <code>%</code>, and work out how to tell a full queue from an empty one.</li>
+        <li>Why not use one pointer, as the stack did? Try <code>enqueue</code> with only <code>first</code> and count the steps.</li>
+      </ul>
+      <p class="lead">Then the judge. Full list on the <a href="../../resources/practice/#queues">practice page</a>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/first-unique-character-in-a-string/">387. First Unique Character in a String</a> &mdash; the class problem with the whole input known up front. Count first, then scan.</li>
+        <li><a href="https://leetcode.com/problems/number-of-recent-calls/">933. Number of Recent Calls</a> &mdash; enqueue each call; dequeue the ones older than 3000 ms.</li>
+        <li><a href="https://leetcode.com/problems/time-needed-to-buy-tickets/">2073. Time Needed to Buy Tickets</a> &mdash; simulate the line first, then look for a formula.</li>
+        <li><a href="https://leetcode.com/problems/implement-queue-using-stacks/">232. Implement Queue using Stacks</a> &mdash; two stacks, one for each end. Links back to <a href="../class-11/">Class 11</a>.</li>
+        <li><a href="https://leetcode.com/problems/design-circular-queue/">622. Design Circular Queue</a> &mdash; the array queue from the exercise above, checked by the judge.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>If it did not land</h2>
+      <ul class="compact-list">
+        <li><a href="https://www.youtube.com/watch?v=XuCbpw6Bj1U">Introduction to Queues</a> &mdash; mycodeschool. Enqueue, dequeue, and how a queue differs from a stack.</li>
+        <li><a href="https://www.youtube.com/watch?v=A5_XdiK4J8A">Linked list implementation of Queue</a> &mdash; the <code>first</code>/<code>last</code> version from the slides, including the empty-queue cases.</li>
+        <li><a href="https://www.youtube.com/watch?v=okr-XE8yTO8">Array implementation of Queue</a> &mdash; the circular array, for the practice exercise.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

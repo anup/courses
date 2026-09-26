@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 11: Stacks</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 11</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 11 &middot; Tuesday 15 September 2026</p>
+      <h1>Stacks</h1>
+      <p class="lead">A compiler has to check that every <code>(</code> and <code>{</code> in your program is closed, and closed in the right order. The first algorithm the class wrote finds the first closing bracket, walks left to its partner, deletes both, and repeats. It works, but every walk left passes over brackets already deleted, and that costs O(n<sup>2</sup>). The fix is to keep the unmatched opening brackets somewhere, with the latest one on top. A closing bracket then needs to look in one place only. That place is a stack, and it brings the check down to O(n).</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="stacks.pptx">Download Stacks slides (PowerPoint)</a></p>
+      <p>Most of the 108 slides are animation steps: the bracket string shrinking, the stack growing and emptying, and <code>top</code> changing value. Click through them one at a time rather than skimming.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the class covered</h2>
+      <ul class="compact-list">
+        <li><strong>Balanced brackets</strong> &mdash; every opening bracket has a closing partner, and pairs nest properly. <code>{()}</code> is balanced; <code>(){)}}</code> and <code>((}{))</code> are not.</li>
+        <li><strong>The slow version</strong> &mdash; find the first closing bracket, match it with the nearest undeleted bracket to its left, delete both, repeat. Walking over deleted brackets makes it O(n<sup>2</sup>).</li>
+        <li><strong>The stack idea</strong> &mdash; push opening brackets. When a closing bracket arrives, its partner must be on top. Pop it and compare.</li>
+        <li><strong>Two operations</strong> &mdash; <code>push</code> puts an element on top; <code>pop</code> removes the top element and returns it. Both are O(1).</li>
+        <li><strong>Stack in an array</strong> &mdash; the array plus an index <code>top</code> that starts at <code>-1</code>. <code>push</code> and <code>pop</code> change <code>top</code> through a pointer, <code>int *ptop</code>, so the caller sees the change. Push onto a full stack or pop from an empty one and the program stops.</li>
+        <li><strong>The full checker</strong> &mdash; read the string once. The answer is <code>0</code> in three cases: a closing bracket finds the stack empty, it pops the wrong kind of opening bracket, or the string ends with brackets still on the stack. Otherwise print <code>1</code>. O(n).</li>
+        <li><strong>Stack in a linked list</strong> &mdash; when the maximum size is not known in advance, <code>push</code> is <a href="../class-10/">Class 10</a>'s add-at-the-front, and <code>pop</code> removes the head node and <code>free</code>s it. Still O(1) each, with no size limit.</li>
+      </ul>
+      <p class="lead">Before you trust your checker, run it on these by hand: <code>""</code>, <code>"("</code>, <code>")"</code>, <code>"(()"</code>, <code>"())"</code>, <code>"({)}"</code>. Each one breaks a different line of the code.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice</h2>
+      <p class="lead">Write both stacks in C first: the array version with <code>top</code>, then the linked-list version. Solve the problems below with a stack you wrote yourself.</p>
+      <ul class="compact-list">
+        <li>The balanced-bracket checker from the slides. Extend it to <code>[</code> and <code>]</code>, and make it print the position of the first bracket that breaks the balance.</li>
+        <li>Reverse a string with a stack: push every character, then pop them all.</li>
+        <li>Remove the <code>exit</code> calls from <code>pop</code>. How can the caller tell that the stack was empty when the return type is <code>char</code>?</li>
+      </ul>
+      <p class="lead">Then the judge. Full list on the <a href="../../resources/practice/#stacks">practice page</a>.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/valid-parentheses/">20. Valid Parentheses</a> &mdash; the class problem, with three kinds of bracket. Do this one first.</li>
+        <li><a href="https://leetcode.com/problems/backspace-string-compare/">844. Backspace String Compare</a> &mdash; <code>#</code> is a pop.</li>
+        <li><a href="https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/">1047. Remove All Adjacent Duplicates In String</a> &mdash; the delete-a-pair-and-repeat idea from the slow algorithm, done in one pass.</li>
+        <li><a href="https://leetcode.com/problems/min-stack/">155. Min Stack</a> &mdash; get the minimum in O(1). Store a little more with each element.</li>
+        <li><a href="https://leetcode.com/problems/evaluate-reverse-polish-notation/">150. Evaluate Reverse Polish Notation</a> &mdash; push numbers; an operator pops two and pushes one.</li>
+        <li><a href="https://leetcode.com/problems/daily-temperatures/">739. Daily Temperatures</a> &mdash; harder: the stack holds days still waiting for a warmer one.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>If it did not land</h2>
+      <ul class="compact-list">
+        <li><a href="https://www.youtube.com/watch?v=F1F2imiOJfk">Introduction to stack</a> &mdash; mycodeschool. What push and pop mean, and why both are O(1).</li>
+        <li><a href="https://www.youtube.com/watch?v=QZOLb0xHB_Q">Check for balanced parentheses using stack</a> &mdash; the class problem, worked through slowly.</li>
+        <li><a href="https://www.youtube.com/watch?v=sFVxsglODoo">Array implementation of stacks</a>, then <a href="https://www.youtube.com/watch?v=MuwxQ2IB8lQ">linked list implementation of stacks</a> &mdash; the two versions from the slides.</li>
+      </ul>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
