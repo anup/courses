@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 12: The Elevator</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .rules td:first-child{width:2em;opacity:.55;font-weight:600;}
+    .marks{border-collapse:collapse;width:100%;margin:16px 0;}
+    .marks th,.marks td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .marks td.n{text-align:right;font-weight:600;white-space:nowrap;}
+    .dates{border-collapse:collapse;width:100%;margin:16px 0;}
+    .dates td{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;}
+    .dates td:first-child{white-space:nowrap;font-weight:600;width:9em;}
+    pre{overflow-x:auto;padding:12px 14px;border-radius:6px;background:var(--code-bg);font-size:.88em;line-height:1.45;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 12</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 12 &middot; Monday 28 September</p>
+      <h1>The Elevator</h1>
+      <p class="lead">You are building the software for a bank of lifts. We fix the building and the rules every lift must obey. Everything else is yours to decide: what it looks like, how it is built, and which lift answers which call.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. The building</h2>
+      <ul class="compact-list">
+        <li>The number of <strong>floors</strong> and the number of <strong>lifts</strong> are set when the app starts. Your app must handle anything from 2 to 20 floors and 1 to 4 lifts.</li>
+        <li>Floors are numbered from 0 (the ground floor) upward.</li>
+        <li>All lifts start at floor 0 with their doors closed.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Outside: on every floor</h2>
+      <ul class="compact-list">
+        <li>An <strong>Up</strong> and a <strong>Down</strong> call button. The ground floor has only Up; the top floor has only Down.</li>
+        <li>A display showing every lift's current floor and direction.</li>
+        <li>A pressed call button stays lit until a lift stops at that floor heading the way the button asked.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Inside: in every lift</h2>
+      <ul class="compact-list">
+        <li>One button for each floor.</li>
+        <li><strong>Open door</strong> and <strong>Close door</strong> buttons.</li>
+        <li>A display showing the current floor and direction.</li>
+        <li>A pressed floor button stays lit until the lift stops at that floor.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Time</h2>
+      <ul class="compact-list">
+        <li>Moving one floor takes 2 seconds.</li>
+        <li>Doors stay open for 3 seconds, then close by themselves. <strong>Close door</strong> shuts them at once. <strong>Open door</strong> while they are closing opens them again.</li>
+        <li>Use simulated time, not the wall clock, so a run can be sped up.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>5. The rules</h2>
+      <p>These must hold at every moment, in every run. We check them automatically.</p>
+      <table class="rules">
+        <tr><td>1</td><td>A lift never moves while its door is open.</td></tr>
+        <tr><td>2</td><td>A lift never goes below floor 0 or above the top floor.</td></tr>
+        <tr><td>3</td><td>Every lit button is eventually served. Nobody waits forever.</td></tr>
+        <tr><td>4</td><td>A lift does not reverse direction while it still has stops ahead of it in the direction it is going.</td></tr>
+        <tr><td>5</td><td>A lift stops at a floor only if someone asked it to: its own floor button, or a call at that floor in its direction.</td></tr>
+        <tr><td>6</td><td>A call from a floor is answered by one lift, not all of them.</td></tr>
+        <tr><td>7</td><td>A button's light goes off when, and only when, its request is served.</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Make it a good lift</h2>
+      <p>Following the rules makes a lift safe. It does not make it good. We will put your lift in a busy building and compare how well it serves people with a simple lift we built ourselves.</p>
+      <p>What "serves people well" means is for you to decide. Your README must say what you chose, how you measured it, and which lift answers which call and why.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>7. Scenarios: the one fixed interface</h2>
+      <p>Your app can look like anything, but it must be able to replay a scenario: a list of button presses at given times. With one command and no UI, it reads a scenario file and writes a log of what happened. This is how we test your lift.</p>
+      <p>Scenario file (JSON):</p>
+<pre>{
+  "floors": 10,
+  "elevators": 2,
+  "events": [
+    {"t": 0,  "type": "call",  "floor": 7, "dir": "down"},
+    {"t": 0,  "type": "press", "elevator": 0, "floor": 3},
+    {"t": 5,  "type": "call",  "floor": 2, "dir": "up"},
+    {"t": 12, "type": "open",  "elevator": 1}
+  ]
+}</pre>
+      <p><code>call</code> is a button outside on a floor. <code>press</code> is a floor button inside a lift. <code>open</code> and <code>close</code> are the door buttons. <code>t</code> is in seconds of simulated time.</p>
+      <p>Log: one JSON object per line, for every arrival and every door change. <code>dir</code> is the direction the lift will leave in: <code>up</code>, <code>down</code>, or <code>idle</code>.</p>
+<pre>{"t": 6,  "elevator": 0, "floor": 3, "dir": "up",   "event": "arrive"}
+{"t": 6,  "elevator": 0, "floor": 3, "dir": "up",   "event": "door_open"}
+{"t": 9,  "elevator": 0, "floor": 3, "dir": "up",   "event": "door_close"}
+{"t": 14, "elevator": 1, "floor": 7, "dir": "down", "event": "arrive"}</pre>
+      <p>Also log every button light turning on or off. A call button is named by floor and direction; a floor button inside a lift by lift and floor:</p>
+<pre>{"t": 0,  "event": "light_on",  "button": "call",  "floor": 7, "dir": "down"}
+{"t": 0,  "event": "light_on",  "button": "press", "elevator": 0, "floor": 3}
+{"t": 6,  "event": "light_off", "button": "press", "elevator": 0, "floor": 3}
+{"t": 14, "event": "light_off", "button": "call",  "floor": 7, "dir": "down"}</pre>
+      <p>A replay ends when every light is off and every lift is idle with its door closed, or after 3600 seconds of simulated time, whichever comes first.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>8. Tests: your own rule checker</h2>
+      <p>Your tests are a program that reads a scenario and the log your lift wrote for it, and reports which of the seven rules broke. Nothing else. It does not look at your lift's code, only at what the lift did. That way the same checker works on any lift that writes the log, including the one you receive on Tuesday.</p>
+
+      <h3>What each rule looks like in a log</h3>
+      <table class="rules">
+        <tr><td>1</td><td>Between a lift's <code>door_open</code> and its next <code>door_close</code>, that lift has no <code>arrive</code> at another floor.</td></tr>
+        <tr><td>2</td><td>Every floor in the log is between 0 and the top floor.</td></tr>
+        <tr><td>3</td><td>Every <code>light_on</code> has a matching <code>light_off</code> before the log ends.</td></tr>
+        <tr><td>4</td><td>When a lift's <code>dir</code> changes from <code>up</code> to <code>down</code> at a floor, no floor button in that lift is lit for a floor above it, and no call it was given above it is still waiting. The same the other way round.</td></tr>
+        <tr><td>5</td><td>Every <code>door_open</code> is at a floor that lift had a lit button for, or where a call was lit in the direction it is leaving (or it was idle).</td></tr>
+        <tr><td>6</td><td>For each call, at most one lift opens its door at that floor, in that direction, while the call is lit.</td></tr>
+        <tr><td>7</td><td>A <code>light_off</code> for a floor button comes with that lift's <code>door_open</code> at that floor at the same time; for a call button, with some lift's <code>door_open</code> at that floor leaving in that direction. No light goes off any other way, and no lit button gets a second <code>light_on</code>.</td></tr>
+      </table>
+
+      <h3>What to commit</h3>
+      <ul class="compact-list">
+        <li><code>tests/check.*</code>: the checker. Given a scenario and a log, it prints each broken rule with the time and the log line that broke it, and exits non-zero if any rule broke.</li>
+        <li><code>tests/bad-logs/</code>: at least one hand-written log for each rule that breaks that rule and no other, with the scenario it belongs to. Your checker must catch each one. This is how you know your checker works.</li>
+        <li>One command, in the README, that replays every scenario in <code>scenarios/</code> through your lift, runs the checker on each log, and runs the checker on every bad log. It passes only if the good logs are clean and every bad log is caught.</li>
+      </ul>
+
+      <h3>How we mark it</h3>
+      <p>We plant a bug in a copy of your lift: we change one line so that it breaks a rule. For example, the door may open while the lift is moving. Then we run your one test command. If it fails, your tests caught the bug and you get the mark. If it still passes, your tests missed a broken lift.</p>
+      <p>We do not tell you which rule we will break. A checker that only checks rule 1 will miss most bugs.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>9. What you decide</h2>
+      <ul class="compact-list">
+        <li>What the page looks like. It must be a web page. Someone watching must be able to see, at a glance, where every lift is, which way it is going, whether its door is open, and which buttons are lit.</li>
+        <li>The language, the libraries and how the code is organised.</li>
+        <li>Which lift answers which call.</li>
+        <li>How you use AI to build it. Log it as usual.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>10. What to commit</h2>
+      <p>In your group repo, under <code>elevator/</code>, through reviewed pull requests:</p>
+      <ul class="compact-list">
+        <li>The app.</li>
+        <li><code>README.md</code>: how to start the UI and how to replay a scenario, one command each; what "good" means for your lift and how you measured it; which lift answers which call, and why.</li>
+        <li><code>scenarios/</code>: at least three scenarios of your own, each with one line saying what it tests.</li>
+        <li><code>tests/</code>: your rule checker and bad logs, as in section 8.</li>
+      </ul>
+      <p>In your own repo: <code>lab-notes/class-NN.md</code> for each session, naming the part you built.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>11. Tuesday: swap and change</h2>
+      <ul class="compact-list">
+        <li><strong>Mon 28 Sep, 23:59:</strong> your lift is frozen. We record your last commit; that is the version we score as yours.</li>
+        <li><strong>Before Monday night ends:</strong> add the next team's members as collaborators on your group repo. They will need it on Tuesday.</li>
+        <li><strong>Tue 29 Sep, in class,</strong> each team receives the next team's lift: G1 works on G2's, G2 on G3's, and so on, and the last team on G1's. The authors may not help.</li>
+        <li>We show a list of change requests. Each team picks one, first come, first served. No two teams take the same request. Every request says exactly what the lift must do and what new scenario event it adds.</li>
+        <li>Make the change in the other team's repo as a reviewed pull request from your team. Add a test for it, and a paragraph in their README saying what changed and how to try it.</li>
+        <li><strong>Due Wed 30 Sep, 23:59.</strong></li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>12. How it is judged</h2>
+      <p>We test everything over the weekend. Results in class on Mon 5 Oct.</p>
+      <table class="marks">
+        <tr><th>For</th><th>What</th><th>Marks</th></tr>
+        <tr><td>Your lift</td><td><strong>Safety:</strong> the seven rules hold on our hidden scenarios. 3, minus 1 for each rule broken.</td><td class="n">3</td></tr>
+        <tr><td>Your lift</td><td><strong>Service:</strong> how well it serves people in our busy building, against our simple lift.</td><td class="n">2</td></tr>
+        <tr><td>Your lift</td><td><strong>Tests:</strong> we plant one bug in a copy of your lift and run your test command. It must fail. See section 8.</td><td class="n">1</td></tr>
+        <tr><td>Your lift</td><td><strong>README:</strong> both commands work for us first time, and it says what "good" means for your lift and how you measured it.</td><td class="n">1</td></tr>
+        <tr><td>Your change</td><td>Scored as below.</td><td class="n">3</td></tr>
+        <tr><th colspan="2">Total</th><th class="n">10</th></tr>
+      </table>
+      <table class="marks">
+        <tr><th>Your change</th><th>Marks</th></tr>
+        <tr><td><strong>It works:</strong> we run four check scenarios of our own for your request, 0.5 each</td><td class="n">2</td></tr>
+        <tr><td><strong>Nothing broken:</strong> the seven rules still hold on the changed lift, except any your request relaxes on purpose</td><td class="n">0.5</td></tr>
+        <tr><td><strong>Your test and README paragraph</strong></td><td class="n">0.5</td></tr>
+        <tr><th>Total</th><th class="n">3</th></tr>
+      </table>
+      <p>Your own lift's marks come from the frozen version, whatever the next team's change does to it.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>13. Bonus: find a bug in someone else's lift</h2>
+      <p>Optional. From Tue 29 Sep to Sun 4 Oct, anyone may try to break another team's frozen lift.</p>
+      <ul class="compact-list">
+        <li>A bug is a scenario that makes a lift break one of the seven rules. Send us the scenario and the rule it breaks.</li>
+        <li>It counts only if our checker confirms the rule really broke.</li>
+        <li><strong>+1 to your team</strong> for each different rule you break in each lift, up to +2 per team. The elevator mark cannot go above 10.</li>
+        <li>A confirmed bug counts against that lift's safety mark, exactly as if our own scenarios had found it.</li>
+      </ul>
+    </section>
+
+  </main>
+</body>
+</html>
