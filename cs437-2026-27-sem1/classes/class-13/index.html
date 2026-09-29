@@ -55,7 +55,7 @@
         <tr><td>G8</td><td>G9</td></tr>
         <tr><td>G9</td><td>G1</td></tr>
       </table>
-      <p>The version you change is the one frozen today: the last commit on the other team's <code>main</code> before the freeze.</p>
+      <p>Start from the other team's <code>main</code> as it is now. <strong>Your own lift is frozen: push nothing more to your own <code>main</code>.</strong> Another team is building on it.</p>
     </section>
 
     <section class="content-section">
@@ -69,7 +69,8 @@
 
     <section class="content-section">
       <h2>3. The three changes</h2>
-      <p>Every team makes all three. They get harder from 1 to 3. Split them in your team: <strong>one change per person</strong>. Decide who owns which in the first 15 minutes and post it in your group chat.</p>
+      <p>Every team makes all three. They get harder from 1 to 3. Split them in your team: <strong>one change per person</strong>. Tell an instructor who owns which in the first 15 minutes.</p>
+      <p><strong>Who takes which:</strong> whoever built most of your own team's lift yesterday takes Fire mode, and reviews the other two pull requests. If you wrote little or none of your team's lift, today is where you do your share: take Basement or Destination dispatch.</p>
       <table class="rules">
         <tr><th></th><th>Change</th><th>Exactly what the lift must do</th><th>New scenario input</th></tr>
         <tr><td class="n">1</td><td><strong>Fire mode</strong></td><td>At <code>fire</code>, every lit button goes dark at once, and presses and calls do nothing until <code>reset</code>. Each lift heads straight to floor 0: a lift with its door open closes it first; a moving lift turns back at the next floor it reaches if that is the way to 0; it stops nowhere on the way. At floor 0 it opens its door and keeps it open. At <code>reset</code>, doors close and every lift is idle at floor 0, ready for new requests.</td><td><code>{"t": 20, "type": "fire"}</code>, <code>{"t": 60, "type": "reset"}</code></td></tr>
@@ -82,14 +83,14 @@
     <section class="content-section">
       <h2>4. Make the changes</h2>
       <ol class="steps">
-        <li>Each person makes their own branch in <strong>their</strong> repo, named <code>&lt;your group&gt;-&lt;change&gt;</code>, for example <code>G3-fire</code>.</li>
+        <li>You work in the <strong>other team's group repo</strong>: the team whose lift you are changing (from section 1). Each person makes their own branch there, named after your team and your change. For example, G3 changes G4's lift, so in G4's repo G3 makes three branches: <code>G3-fire</code>, <code>G3-basement</code> and <code>G3-dispatch</code>.</li>
         <li>Change their lift so it does exactly what your change says. The seven rules must still hold everywhere else.</li>
-        <li>Add at least two scenarios that use your change to <code>elevator/scenarios/</code>, each with one line saying what it tests.</li>
+        <li>Add at least two scenarios that use your change to <code>elevator/scenarios/</code>. Put one line saying what each tests in a <code>"description"</code> field in the scenario file.</li>
         <li>Add a test for your change, so their one test command checks it.</li>
         <li>Add a paragraph to their README: what you changed, and how to try it.</li>
-        <li>Open one pull request per change, titled <code>Change: &lt;name&gt; (from G3)</code>. A teammate reviews and approves it. <strong>Do not merge it.</strong> We score your pull request branch.</li>
+        <li>Open a pull request from your branch into the other team's <code>main</code>, titled with the change and your team, for example <code>Fire mode (from G3)</code>. One pull request per change. A teammate from <em>your</em> team reviews and approves it. <strong>Do not merge it.</strong> We score your branch as it is at the deadline.</li>
       </ol>
-      <p>Your three changes will touch some of the same code. Talk to each other before you both edit the same function.</p>
+      <p>Each branch starts from the other team's <code>main</code> and carries only its own change. The three are never merged together, so they are scored separately and cannot clash.</p>
     </section>
 
     <section class="content-section">
@@ -106,7 +107,7 @@
         <li><strong>Nothing broken:</strong> the seven rules still hold on the changed lift. Only breaks your change introduced count against you. If the lift you received already broke a rule, that is not yours.</li>
         <li><strong>Your test and README paragraph.</strong></li>
       </ul>
-      <p>Each change is also the individual record for the person who owns it. The other team's own marks come from their frozen lift; nothing you do today changes them.</p>
+      <p>Each change has one owner, so everyone in your team does a real part of the work. The other team's own marks come from their frozen lift; nothing you do today changes them.</p>
     </section>
   </main>
 </body>
