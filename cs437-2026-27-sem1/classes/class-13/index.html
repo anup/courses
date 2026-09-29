@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 13: Change Someone Else's Lift</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .rules td.n{width:2em;opacity:.55;font-weight:600;}
+    .marks td.n{text-align:right;font-weight:600;white-space:nowrap;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    pre{overflow-x:auto;padding:12px 14px;border-radius:6px;background:var(--code-bg);font-size:.88em;line-height:1.45;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 13</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 13 &middot; Tuesday 29 September</p>
+      <h1>Change Someone Else's Lift</h1>
+      <p class="lead">Your lift is frozen. Today your team adds three features to another team's lift, without help from the people who wrote it. All you have is their code, their README and their tests. Every team gets the same three, and each of you owns one.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Whose lift you change</h2>
+      <table class="rules">
+        <tr><th>Your team</th><th>Changes the lift of</th></tr>
+        <tr><td>G1</td><td>G2</td></tr>
+        <tr><td>G2</td><td>G3</td></tr>
+        <tr><td>G3</td><td>G4</td></tr>
+        <tr><td>G4</td><td>G5</td></tr>
+        <tr><td>G5</td><td>G6</td></tr>
+        <tr><td>G6</td><td>G7</td></tr>
+        <tr><td>G7</td><td>G8</td></tr>
+        <tr><td>G8</td><td>G9</td></tr>
+        <tr><td>G9</td><td>G1</td></tr>
+      </table>
+      <p>The version you change is the one frozen today: the last commit on the other team's <code>main</code> before the freeze.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. First 15 minutes: get their lift running</h2>
+      <ol class="steps">
+        <li>Clone their group repo. If GitHub refuses, their team has not added you as a collaborator yet: tell them, now.</li>
+        <li>Follow <strong>only their README</strong>. Replay one of their scenarios, run their test command, open their UI.</li>
+        <li>If it does not run from the README after 15 minutes, tell an instructor. We note it; you carry on with whatever runs.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>3. The three changes</h2>
+      <p>Every team makes all three. They get harder from 1 to 3. Split them in your team: <strong>one change per person</strong>. Decide who owns which in the first 15 minutes and post it in your group chat.</p>
+      <table class="rules">
+        <tr><th></th><th>Change</th><th>Exactly what the lift must do</th><th>New scenario input</th></tr>
+        <tr><td class="n">1</td><td><strong>Fire mode</strong></td><td>At <code>fire</code>, every lit button goes dark at once, and presses and calls do nothing until <code>reset</code>. Each lift heads straight to floor 0: a lift with its door open closes it first; a moving lift turns back at the next floor it reaches if that is the way to 0; it stops nowhere on the way. At floor 0 it opens its door and keeps it open. At <code>reset</code>, doors close and every lift is idle at floor 0, ready for new requests.</td><td><code>{"t": 20, "type": "fire"}</code>, <code>{"t": 60, "type": "reset"}</code></td></tr>
+        <tr><td class="n">2</td><td><strong>Basement</strong></td><td>Floors start below ground. With <code>"lowest": -2</code> and <code>"floors": 10</code>, the floors are −2 to 7. <code>lowest</code> is between −5 and 0, and <code>floors</code> still counts every floor (2 to 20). Every rule, button, display and log line uses these numbers. The ground floor is still 0 and every lift still starts there. Without <code>"lowest"</code>, floors start at 0 as before.</td><td><code>"lowest": -2</code> in the scenario header</td></tr>
+        <tr><td class="n">3</td><td><strong>Destination dispatch</strong></td><td>A person at floor <code>from</code> keys in floor <code>to</code> (different floors) instead of pressing Up or Down. At that moment the system picks one lift and logs <code>{"t": …, "event": "assign", "from": 3, "to": 9, "elevator": 1}</code>. From then on it behaves exactly like <strong>a call at <code>from</code> in the direction of <code>to</code> that only that lift may answer, plus a press for <code>to</code> inside that lift</strong>: the same seven rules apply, it may stop for others on the way, and its stops count as stops ahead. Nothing lights up for it. Up and Down buttons keep working as before.</td><td><code>{"t": 5, "type": "dest", "from": 3, "to": 9}</code></td></tr>
+      </table>
+      <p>Where a change conflicts with the seven rules, the change wins, and only in what it describes: between <code>fire</code> and <code>reset</code>, rules 3, 4, 5 and 7 do not apply (requests are dropped, lifts turn back and open at floor 0 unasked); rules 1, 2 and 6 still do. In a basement building, rule 2's range is lowest to top.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Make the changes</h2>
+      <ol class="steps">
+        <li>Each person makes their own branch in <strong>their</strong> repo, named <code>&lt;your group&gt;-&lt;change&gt;</code>, for example <code>G3-fire</code>.</li>
+        <li>Change their lift so it does exactly what your change says. The seven rules must still hold everywhere else.</li>
+        <li>Add at least two scenarios that use your change to <code>elevator/scenarios/</code>, each with one line saying what it tests.</li>
+        <li>Add a test for your change, so their one test command checks it.</li>
+        <li>Add a paragraph to their README: what you changed, and how to try it.</li>
+        <li>Open one pull request per change, titled <code>Change: &lt;name&gt; (from G3)</code>. A teammate reviews and approves it. <strong>Do not merge it.</strong> We score your pull request branch.</li>
+      </ol>
+      <p>Your three changes will touch some of the same code. Talk to each other before you both edit the same function.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Before you leave</h2>
+      <p>In your own repo, <code>lab-notes/class-13.md</code>, in "I": which part you did, what in their code helped you, and what got in your way.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>6. How it is marked</h2>
+      <p><strong>Due Wednesday 30 September, 23:59.</strong> We score each pull request branch as it is then.</p>
+      <p>As announced in section 12 of the <a href="../class-12/">Class 12 page</a>, your change is marked on three things, for each of the three changes:</p>
+      <ul class="compact-list">
+        <li><strong>It works:</strong> we run check scenarios of our own for that change.</li>
+        <li><strong>Nothing broken:</strong> the seven rules still hold on the changed lift. Only breaks your change introduced count against you. If the lift you received already broke a rule, that is not yours.</li>
+        <li><strong>Your test and README paragraph.</strong></li>
+      </ul>
+      <p>Each change is also the individual record for the person who owns it. The other team's own marks come from their frozen lift; nothing you do today changes them.</p>
+    </section>
+  </main>
+</body>
+</html>
