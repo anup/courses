@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 13: Binary Search Trees</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 13</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 13 &middot; Tuesday 29 September 2026</p>
+      <h1>Binary Search Trees</h1>
+      <p class="lead">Keep a set of numbers that changes as you insert and delete elements. In a binary search tree, every node separates smaller values on the left from larger values on the right. A comparison tells you which branch to follow. Search, insertion and deletion take O(h) time, where h is the tree's height. A short tree makes these operations fast; a tree that grows into a chain can still take O(n).</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="bst.pptx">Download Binary Search Trees slides (PowerPoint)</a></p>
+      <p>The 102-slide deck builds the tree in C, then traces insertion, search and deletion. Many slides are successive steps of the same example. Follow the changes to <code>root</code>, the parent pointer and the child links one step at a time.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the class covered</h2>
+      <ul class="compact-list">
+        <li><strong>A binary tree in C</strong> &mdash; a <code>struct node</code> stores an integer and two pointers, <code>left</code> and <code>right</code>. <code>makenode</code> allocates a node and sets both child pointers to <code>NULL</code>. An empty tree has <code>root == NULL</code>.</li>
+        <li><strong>The BST rule</strong> &mdash; every value in a node's left subtree is smaller than its value; every value in its right subtree is larger. This applies to whole subtrees, not just immediate children. The slides assume distinct values.</li>
+        <li><strong>Insertion</strong> &mdash; follow comparisons until the new value belongs at an empty child link, then attach the new node. Inserting into an empty tree changes <code>root</code>.</li>
+        <li><strong>Search</strong> &mdash; follow the same comparisons. Finding the value returns <code>1</code>; reaching <code>NULL</code> returns <code>0</code>.</li>
+        <li><strong>Deleting a leaf or a node with one child</strong> &mdash; find the node and its parent, then replace the parent's link with <code>NULL</code> or the surviving child. Deleting the root needs to update <code>root</code>. Free the removed node.</li>
+        <li><strong>Deleting a node with two children</strong> &mdash; find its inorder successor, the smallest value in its right subtree. Copy that value into the node, then remove the successor. The successor has no left child; its right child, if present, must stay connected.</li>
+        <li><strong>Height determines the cost</strong> &mdash; these operations follow paths through the tree and take O(h). A balanced tree has height O(log n), but the insertion algorithm here does not keep the tree balanced.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Build and trace it in C</h2>
+      <p class="lead">Write <code>makenode</code>, <code>insert</code>, <code>search</code> and <code>delete</code> from the slides before moving to the judge. Draw the links that each operation changes.</p>
+      <ul class="compact-list">
+        <li>Insert <code>4, 2, 9, 5, 6</code> into an empty tree. Search for <code>6</code> and <code>7</code>, listing the nodes visited in each search.</li>
+        <li>On fresh copies of that tree, delete <code>2</code> (a leaf), <code>5</code> (one child), and <code>4</code> (the root, with two children). Also try deleting a missing value and deleting the only node in a tree.</li>
+        <li>Insert <code>10, 4, 15, 12, 13</code>, then delete <code>10</code>. Its successor is <code>12</code>, which has a right child. Check that <code>13</code> is still reachable afterward.</li>
+        <li>Insert <code>1, 2, 3, 4, 5, 6, 7</code> in that order, then compare with <code>4, 2, 6, 1, 3, 5, 7</code>. Search for <code>7</code> in both. The same values can produce very different heights.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>LeetCode practice</h2>
+      <p class="lead">Start with the three operations from class, in this order. Use C and keep track of which function can change the root.</p>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/search-in-a-binary-search-tree/">700. Search in a Binary Search Tree</a> &mdash; Easy. The same search path as in the slides, but return the matching node rather than <code>1</code> or <code>0</code>.</li>
+        <li><a href="https://leetcode.com/problems/insert-into-a-binary-search-tree/">701. Insert into a Binary Search Tree</a> &mdash; Medium. Allocate and attach the new node; return the root, including when the original tree was empty.</li>
+        <li><a href="https://leetcode.com/problems/delete-node-in-a-bst/">450. Delete Node in a BST</a> &mdash; Medium. Work through all three deletion cases and return the possibly changed root.</li>
+      </ol>
+      <p>Then try <a href="https://leetcode.com/problems/validate-binary-search-tree/">98. Validate Binary Search Tree</a> to check your understanding of the rule for whole subtrees.</p>
+      <p><a class="action-link" href="../../resources/practice/#bst">All 13 BST practice problems</a></p>
+      <p>The full set adds range queries and common ancestors, followed by optional exercises on traversals, construction and iterators. Those extensions go beyond the operations in these slides.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

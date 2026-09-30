@@ -42,6 +42,42 @@
       <p class="lead">LeetCode problems for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
     </section>
 
+    <section class="content-section" id="bst">
+      <h2>Binary search trees <span class="section-tag">Class 13</span></h2>
+      <p class="lead">Start with the operations from <a href="../../classes/class-13/">Class 13</a>. Write them in C and test an empty tree, a missing value, and deletion of the root. The slides assume distinct values; keep that rule in your own implementation.</p>
+
+      <h3>The three operations from class</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/search-in-a-binary-search-tree/">700. Search in a Binary Search Tree</a> &mdash; Easy. Follow one branch at each comparison. Return the node if found, or <code>NULL</code>.</li>
+        <li><a href="https://leetcode.com/problems/insert-into-a-binary-search-tree/">701. Insert into a Binary Search Tree</a> &mdash; Medium. Find the empty link, allocate a node, and return the root. Remember the initially empty tree.</li>
+        <li><a href="https://leetcode.com/problems/delete-node-in-a-bst/">450. Delete Node in a BST</a> &mdash; Medium. Leaf, one child, two children. Preserve the successor's right child and handle a change of root.</li>
+      </ol>
+
+      <h3>Use the BST ordering</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/validate-binary-search-tree/">98. Validate Binary Search Tree</a> &mdash; Medium. Every descendant must respect the bounds inherited from its ancestors; checking each node against its children is not enough.</li>
+        <li><a href="https://leetcode.com/problems/range-sum-of-bst/">938. Range Sum of BST</a> &mdash; Easy. Sum values in an inclusive range. Which subtrees can you skip altogether?</li>
+        <li><a href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/">235. Lowest Common Ancestor of a Binary Search Tree</a> &mdash; Medium. Follow the two search paths until they split, or until you reach one of the target nodes.</li>
+      </ul>
+
+      <h3>Optional: inorder traversal and construction</h3>
+      <p>These extend the lecture. An inorder traversal visits the left subtree, then the node, then the right subtree. In a BST with distinct values, this produces increasing order. Write that traversal first, then use it below.</p>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/minimum-absolute-difference-in-bst/">530. Minimum Absolute Difference in BST</a> &mdash; Easy. Compare neighbouring values in inorder order. Problem 783 is the same exercise, so it is not listed separately.</li>
+        <li><a href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">230. Kth Smallest Element in a BST</a> &mdash; Medium. Count nodes during inorder traversal. Leave the follow-up about frequent updates for later.</li>
+        <li><a href="https://leetcode.com/problems/two-sum-iv-input-is-a-bst/">653. Two Sum IV - Input is a BST</a> &mdash; Easy. Collect values in sorted order, then use two pointers. The pair must use two different nodes.</li>
+        <li><a href="https://leetcode.com/problems/convert-sorted-array-to-binary-search-tree/">108. Convert Sorted Array to Binary Search Tree</a> &mdash; Easy. Choose the middle element as the root and recurse on the two halves. Build a balanced tree without inserting the sorted values one at a time.</li>
+      </ul>
+
+      <h3>Optional: further practice</h3>
+      <ul class="compact-list">
+        <li><a href="https://leetcode.com/problems/trim-a-binary-search-tree/">669. Trim a Binary Search Tree</a> &mdash; Medium. Remove values outside a range while preserving the structure among the remaining nodes. The root can change.</li>
+        <li><a href="https://leetcode.com/problems/binary-search-tree-iterator/">173. Binary Search Tree Iterator</a> &mdash; Medium. Produce the next inorder value on demand. Try a stack of pending nodes, connecting this to <a href="../../classes/class-11/">Class 11</a>.</li>
+        <li><a href="https://leetcode.com/problems/construct-binary-search-tree-from-preorder-traversal/">1008. Construct Binary Search Tree from Preorder Traversal</a> &mdash; Medium. Preorder visits the node before its left and right subtrees. Start with repeated insertion; then try building directly with bounds.</li>
+      </ul>
+      <p>For search, insertion and deletion, explain your running time in terms of the height h. Do not assume O(log n) unless the height is bounded that way.</p>
+    </section>
+
     <section class="content-section" id="queues">
       <h2>Queues <span class="section-tag">Class 12</span></h2>
       <p class="lead">Write your own queue in C first &mdash; a linked list with <code>first</code> and <code>last</code>, then a circular array. Most of these problems let you use a built-in queue, which skips the pointer work.</p>
