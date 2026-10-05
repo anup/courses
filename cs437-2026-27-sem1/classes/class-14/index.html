@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 14: Find Your User</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 14</a>
+        <a href="../../hackathon/">Hackathon</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 14 &middot; Monday 5 October</p>
+      <h1>Find Your User</h1>
+      <p class="lead">The <a href="../../hackathon/">Open Hackathon</a> starts today. Your group builds one piece of software until 17 November, for a real person who will use it. Today you find that person and decide what to build for them. The code comes later.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Read the hackathon page (5 minutes)</h2>
+      <p>All of it: <a href="../../hackathon/">the Open Hackathon</a>. The rules and dates there hold for the rest of the semester.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Pick what to build (25 minutes)</h2>
+      <p>Start from a person, not a technology: someone you know whose week has a job that is slow, messy or still done on paper. Talk it through as a group and settle on one idea that passes the three tests on the hackathon page.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Write it in three sentences (10 minutes)</h2>
+      <ol class="steps">
+        <li>Who the user is: a named person or role, not "students".</li>
+        <li>What they do today, without your software.</li>
+        <li>What your software changes for them.</li>
+      </ol>
+      <p>Show it to an instructor before you leave.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Your first five statements (30 minutes)</h2>
+      <p>A spec statement says one thing the user can do or one thing that must never happen, in a way a test can check. Draft five now. They go into <code>SPEC.md</code> once your repo exists.</p>
+      <table class="rules">
+        <tr><th>Cannot be checked</th><th>Can be checked</th></tr>
+        <tr><td>The app is easy to use.</td><td>A student can book a court in at most three clicks from the home page.</td></tr>
+        <tr><td>Bookings are handled properly.</td><td>Two students cannot book the same court for the same hour.</td></tr>
+        <tr><td>It is fast.</td><td>The list of today's bookings loads in under one second with 500 bookings stored.</td></tr>
+        <tr><td>Admins can manage things.</td><td>The sports secretary can cancel any booking; a student can cancel only their own.</td></tr>
+      </table>
+      <p>For each statement, ask: what would a test do, and what would it look for? If you cannot say, rewrite the statement.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Tonight, and this week</h2>
+      <ol class="steps">
+        <li><strong>Tonight, by 23:59,</strong> one person posts in the CS437 space: your group name and the three sentences.</li>
+        <li><strong>This week, talk to your user.</strong> Ask what they do today, what annoys them about it, and what they would want first. Write one thing they said, in their words, at the top of your <code>SPEC.md</code> (due Friday 9 October).</li>
+      </ol>
+      <p>If two groups post the same idea, the group that posted first builds it, and the other picks something else. Ideas are approved on Tuesday 6 October.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Before you leave</h2>
+      <p>In your own repo, <code>lab-notes/class-14.md</code>, in "I": the two people you named, which idea you argued for and why, and the statement you wrote.</p>
+      <p>Class 09 vivas continue today for G1, G2, G7, G8 and G9. If your group is called, go; the rest of your group carries on.</p>
+    </section>
+  </main>
+</body>
+</html>
