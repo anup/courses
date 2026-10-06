@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 15: Prove Your User Exists</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    pre{overflow-x:auto;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 15</a>
+        <a href="../../hackathon/">Hackathon</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 15 &middot; Tuesday 6 October</p>
+      <h1>Prove Your User Exists</h1>
+      <p class="lead">Eight groups posted an idea last night. None of them named a real person, and none said what a user told them. Today you fix that, then turn what your user says into your first five spec statements.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Test your idea (20 minutes)</h2>
+      <p>Answer these as a group, in writing.</p>
+      <ol class="steps">
+        <li><strong>Who, exactly?</strong> A name and a role: "&lt;name&gt;, supervisor at the main-gate security cabin", not "the IITGN community". One person you can talk to this week.</li>
+        <li><strong>The last time.</strong> When did this person last do the job your software helps with? Walk through what they actually did, step by step.</li>
+        <li><strong>What it costs them.</strong> How often does it happen, and what goes wrong: time lost, money lost, something missed?</li>
+        <li><strong>What already exists.</strong> Is there a portal, an app, a WhatsApp group, a spreadsheet that does this? What does yours do that it does not?</li>
+        <li><strong>Who has to say yes.</strong> Do you need someone's data or permission to make it real: an office, a committee, a website that needs a login? Ask them this week.</li>
+        <li><strong>Where it grows.</strong> Write three features your user might ask for next. On 16 November, someone will ask for one you have not seen.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Talk to your user (this week)</h2>
+      <p>If your user is on campus, go now: during class counts. Otherwise book a time today. Ask about what they do now, not about your app. "Tell me about the last time you…" gets you facts. "Would you use an app that…?" gets you a polite yes.</p>
+      <p>Write it down at the top of your <code>SPEC.md</code>, in a section called <code>## Our user</code>:</p>
+<pre><code>## Our user
+Who:       name, role, how you know them
+When/how:  date; in person, call or chat; who from the group was there
+They said: "two or three things, in their own words"
+Changed:   one thing in our idea that changed because of what they said
+Evidence:  docs/user/ — a photo, a screenshot of the chat, or notes they agreed to</code></pre>
+      <p>At least one conversation; two is better.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Draft five spec statements (30 minutes)</h2>
+      <p>Each statement says one thing your user can do, or one thing that must never happen, so that a test can check it. Write them from what your user told you, not from features you like.</p>
+      <table class="rules">
+        <tr><th>Weak</th><th>Checkable</th></tr>
+        <tr><td>Signing up is easy.</td><td>A student can register for an event from its page in one step and sees "You are registered".</td></tr>
+        <tr><td>Events don't overfill.</td><td>When all 40 seats are taken, the next student who registers goes on the waitlist and is not registered.</td></tr>
+        <tr><td>It is private.</td><td>A student never sees another student's phone number on the sign-up list.</td></tr>
+        <tr><td>Organisers manage things.</td><td>Only the club coordinator can cancel an event, and every registered student is notified when it is cancelled.</td></tr>
+      </table>
+      <p>For each of your five:</p>
+      <ol class="steps">
+        <li>Under it, one line: what would a test do, and what would it look for?</li>
+        <li>Say which user quote it comes from.</li>
+        <li>At least one of the five says what must <em>never</em> happen.</li>
+      </ol>
+      <p>If you use an AI model inside your app, write the statement about what your code controls: which document is cited, whether it refuses when unsure. Do not write it about the exact wording of an answer, which a test cannot pin down.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Before you leave</h2>
+      <ol class="steps">
+        <li>One person replies to your group's idea in the CS437 space with: your user's name and role, and when you will talk to them (or what they said, if you already have). G2: post your idea in three sentences first. G5: post the narrowed version.</li>
+        <li>In your own repo, <code>lab-notes/class-15.md</code>, in "I": which question in section 1 your group could not answer, and the statement you wrote.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Due Friday 9 October</h2>
+      <p>As on the <a href="../../hackathon/">hackathon page</a>: repo <code>cs437-&lt;group&gt;-hack</code> created, branch protection on, both instructors invited. <code>SPEC.md</code> with the <code>## Our user</code> section filled in from a real conversation, and at least five statements. One test, for one statement, running and failing.</p>
+      <p>Next week: token golf.</p>
+    </section>
+  </main>
+</body>
+</html>
