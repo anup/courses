@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 15: Tree Traversals — Continued</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 15</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 15 &middot; Friday 9 October 2026</p>
+      <h1>Tree Traversals — Continued</h1>
+      <p class="lead">Inorder, preorder and postorder change when the node is visited. Use traversal order to check a BST, find its k-th smallest value, reconstruct a tree, and combine child results to solve height, diameter and coloured-tree problems.</p>
+    </section>
+    <section class="content-section">
+      <h2>Slides shared across both classes</h2>
+      <p><a class="action-link" href="../class-14/traversals.pptx">Download Tree Traversals slides (PowerPoint)</a></p>
+      <p>This 125-slide deck was taught across Tuesday 6 October and Friday 9 October. Many slides trace successive steps of the same example. The topic summary below covers the shared deck.</p>
+      <p><a href="../class-14/">The other session in this two-class sequence</a> &middot; <a href="../class-13/">Previous topic: Binary Search Trees</a></p>
+    </section>
+    <section class="content-section">
+      <h2>Topics in the shared deck</h2>
+      <ul class="compact-list">
+        <li><strong>Three traversal orders</strong> &mdash; inorder is left, node, right; preorder is node, left, right; postorder is left, right, node. Each takes O(n) time.</li>
+        <li><strong>Inorder in a BST</strong> &mdash; distinct keys appear in increasing order. Use this to validate a BST and find the k-th smallest value.</li>
+        <li><strong>Reconstruction</strong> &mdash; with distinct values, inorder plus preorder or postorder determines the tree. Preorder plus postorder alone does not uniquely determine a general binary tree.</li>
+        <li><strong>Height</strong> &mdash; combine child heights after visiting both children. The slides count edges: empty subtree -1, leaf 0.</li>
+        <li><strong>Diameter</strong> &mdash; return subtree height while tracking the longest path through each node. The diameter may lie entirely below the root.</li>
+        <li><strong>Coloured subtrees</strong> &mdash; return yellow-minus-red counts to classify subtrees, then find the smallest connected subtree containing all yellow nodes.</li>
+      </ul>
+    </section>
+    <section class="content-section">
+      <h2>Practice</h2>
+      <p>Work through inorder, preorder and postorder first, then BST applications, reconstruction, height and diameter. Finish with the coloured-tree exercises from the slides.</p>
+      <p><a class="action-link" href="../../resources/practice/#tree-traversals">Tree traversal practice: 11 LeetCode problems, 4 HackerRank alternatives, and 3 local exercises</a></p>
+      <p>Use C and test an empty tree, one node, a chain and a branching tree. Read each judge's height convention: LeetCode maximum depth counts nodes, while the lecture height counts edges.</p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

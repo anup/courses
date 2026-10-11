@@ -39,7 +39,49 @@
     <section class="hero">
       <p class="eyebrow">Study and practice</p>
       <h1>Practice Problems by Topic</h1>
-      <p class="lead">LeetCode problems for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+      <p class="lead">Practice problems from LeetCode and HackerRank for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+    </section>
+
+    <section class="content-section" id="tree-traversals">
+      <h2>Tree traversals <span class="section-tag">Classes 14 &amp; 15</span></h2>
+      <p class="lead">From <a href="../../classes/class-14/">Tuesday 6 October</a> and <a href="../../classes/class-15/">Friday 9 October</a>. Use C. Start with recursive traversals before trying iterative follow-ups. A traversal visits every node once: O(n) time and O(h) recursion space.</p>
+      <p>In LeetCode C solutions, traversal functions return an allocated array and set its length through <code>returnSize</code>; the slides and HackerRank print the values. Follow the supplied function signature and leave the judge's starter code intact.</p>
+<h3>Traversal order and BST applications</h3>
+<ol class="compact-list">
+<li><a href="https://leetcode.com/problems/binary-tree-inorder-traversal/">94. Binary Tree Inorder Traversal</a> &mdash; Easy. Visit left subtree, node, then right subtree.</li>
+<li><a href="https://leetcode.com/problems/binary-tree-preorder-traversal/">144. Binary Tree Preorder Traversal</a> &mdash; Easy. Visit the node before its children.</li>
+<li><a href="https://leetcode.com/problems/binary-tree-postorder-traversal/">145. Binary Tree Postorder Traversal</a> &mdash; Easy. Visit both children before the node.</li>
+<li><a href="https://leetcode.com/problems/validate-binary-search-tree/">98. Validate Binary Search Tree</a> &mdash; Medium. Check that inorder values are strictly increasing; distinct values matter.</li>
+<li><a href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">230. Kth Smallest Element in a BST</a> &mdash; Medium. Count nodes in inorder order.</li>
+</ol>
+<h3>Reconstruct a tree</h3>
+<ol class="compact-list">
+<li><a href="https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/">105. Construct Binary Tree from Preorder and Inorder Traversal</a> &mdash; Medium. Find the root in inorder and split the two subtrees. Assume distinct values.</li>
+<li><a href="https://leetcode.com/problems/construct-binary-tree-from-inorder-and-postorder-traversal/">106. Construct Binary Tree from Inorder and Postorder Traversal</a> &mdash; Medium. The last postorder value is the root. Reuse the inorder split.</li>
+</ol>
+<h3>Combine results from the children</h3>
+<ol class="compact-list">
+<li><a href="https://leetcode.com/problems/maximum-depth-of-binary-tree/">104. Maximum Depth of Binary Tree</a> &mdash; Easy. Combine the two child depths. This judge counts nodes, while the slides count edges.</li>
+<li><a href="https://leetcode.com/problems/diameter-of-binary-tree/">543. Diameter of Binary Tree</a> &mdash; Easy. Return height to the parent and update the longest path through each node. Diameter counts edges.</li>
+<li><a href="https://leetcode.com/problems/balanced-binary-tree/">110. Balanced Binary Tree</a> &mdash; Easy. Optional: combine height and balance information in one postorder pass.</li>
+<li><a href="https://leetcode.com/problems/binary-tree-pruning/">814. Binary Tree Pruning</a> &mdash; Medium. Optional: return whether a subtree contains a 1. This keeps root-to-1 paths; it is not the minimal connecting subtree from the slides.</li>
+</ol>
+
+      <h3>HackerRank alternatives</h3>
+      <p>These publicly available exercises give you a tree and a function to complete. An account is needed to submit. They practise the same fundamentals, so you can choose either platform rather than repeat every exercise.</p>
+      <ul class="compact-list">
+        <li><a href="https://www.hackerrank.com/challenges/tree-inorder-traversal/problem">Tree: Inorder Traversal</a> &mdash; print left, node, right.</li>
+        <li><a href="https://www.hackerrank.com/challenges/tree-preorder-traversal/problem">Tree: Preorder Traversal</a> &mdash; print node, left, right.</li>
+        <li><a href="https://www.hackerrank.com/challenges/tree-postorder-traversal/problem">Tree: Postorder Traversal</a> &mdash; print left, right, node.</li>
+        <li><a href="https://www.hackerrank.com/challenges/tree-height-of-a-binary-tree/problem">Tree: Height of a Binary Tree</a> &mdash; counts edges, matching the slides: a single node has height 0.</li>
+      </ul>
+      <h3>Exercises from the slides: solve locally in C</h3>
+      <ol class="compact-list">
+        <li>Given inorder and preorder sequences of distinct integers, print postorder. Start with linear searches for the root, then aim for O(n) with an index lookup. Explain why preorder and postorder alone do not uniquely determine a general binary tree.</li>
+        <li>For red/yellow nodes (<code>color == 1</code> means yellow), print 1 in postorder if a node's subtree has more yellow nodes than red, and 0 otherwise. Return the yellow-minus-red count from each recursive call; a tie prints 0.</li>
+        <li>Find the number of nodes in the smallest connected subtree containing all yellow nodes. Nodes between yellow nodes must be retained, even if red. Test no yellow nodes (answer 0), one yellow node (answer 1), yellow nodes in one branch, and yellow nodes in both branches. This is a local exercise, not an external judge problem.</li>
+      </ol>
+      <p>For height in the slides, return -1 for an empty subtree and 0 for a leaf. For LeetCode 104, return 0 for an empty tree and 1 for a leaf. Reset any global diameter or node counter before each new test.</p>
     </section>
 
     <section class="content-section" id="bst">
