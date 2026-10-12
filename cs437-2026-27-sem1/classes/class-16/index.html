@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 16: Agent Golf</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 16</a>
+        <a href="https://agent-golf.csbasics.in/">Board</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 16 &middot; Monday 12 October</p>
+      <h1>Agent Golf</h1>
+      <p class="lead">In Class 07 you counted the tokens in one prompt and one answer. Today an agent does the whole job: it reads, runs commands, reads the output and tries again. Every token in that run counts, including the agent's own reading. Solve a Hackattic problem with the Pi coding agent, then do it again with fewer tokens.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Set up (once, 15 minutes)</h2>
+      <p>On Windows, install <a href="https://git-scm.com/download/win">Git for Windows</a> first and type every command below in <strong>Git Bash</strong>, not PowerShell.</p>
+      <ol class="steps">
+        <li><strong>Install Pi.</strong>
+          <p><strong>macOS or Linux:</strong></p>
+<pre data-label="macOS or Linux terminal"><code>curl -fsSL https://pi.dev/install.sh | sh</code></pre>
+          <p><strong>Windows:</strong> there is no installer script, so Pi comes from npm.</p>
+          <ol>
+            <li>Install <a href="https://git-scm.com/download/win">Git for Windows</a>. Pi runs the agent's commands in its Git Bash.</li>
+            <li>Install <a href="https://nodejs.org/">Node.js</a>, version 22.19 or newer (the LTS download is fine). Keep the installer's option that adds Node to your PATH.</li>
+            <li>Open <strong>Git Bash</strong> (from the Start menu) and run:
+<pre data-label="Git Bash (or any terminal with Node.js 22.19+)"><code>npm install -g --ignore-scripts @earendil-works/pi-coding-agent</code></pre></li>
+          </ol>
+          <p>The same npm command also works on macOS or Linux if you already have Node.js 22.19 or newer.</p>
+          <p>Check it with <code>pi --version</code>. If Windows says <code>pi</code> is not found, close Git Bash and open it again.</p></li>
+        <li><strong>Install the golf plugin.</strong>
+<pre data-label="Terminal (Git Bash on Windows)"><code>pi install npm:agent-golf@preview</code></pre>
+          Check that it landed where the start command in section 2 looks for it; this should list <code>package.json</code>:
+<pre data-label="Terminal (Git Bash on Windows)"><code>ls ~/.pi/agent/npm/node_modules/agent-golf</code></pre></li>
+        <li><strong>Register</strong> at <a href="https://agent-golf.csbasics.in/register">agent-golf.csbasics.in/register</a> with a username and your Hackattic username. The page shows your secret key once. Save it somewhere private.</li>
+        <li><strong>Have your two secrets ready, and never type them into a prompt.</strong> Your whole session is uploaded when you submit, and anything you type goes with it.
+          <ul>
+            <li><strong>OpenRouter key</strong>: <a href="https://openrouter.ai/settings/keys">openrouter.ai/settings/keys</a>. If you committed one earlier this semester, make a new one today. You give it to Pi once, with <code>/login</code> (section 2), not as an environment variable: the agent's commands run in your terminal and could print it.</li>
+            <li><strong>Hackattic token</strong>: shown on any challenge page when you are logged in to hackattic.com. The agent needs this one, so put it in the terminal you start Pi from:
+<pre data-label="Terminal: your own token in place of the placeholder"><code>export HACKATTIC_TOKEN=your-hackattic-token</code></pre>
+              Tell the agent the token is in <code>$HACKATTIC_TOKEN</code>.</li>
+          </ul></li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Start every attempt the same way</h2>
+      <p>Each attempt is a new, empty folder and a new Pi session. Do both steps every time.</p>
+      <p>First, a new empty folder:</p>
+<pre data-label="Terminal: a new folder for each attempt"><code>mkdir -p ~/golf/try-1 &amp;&amp; cd ~/golf/try-1</code></pre>
+      <p>Then start Pi in it:</p>
+<pre data-label="Terminal: start Pi"><code>AGENT_GOLF_API_BASE_URL=https://agent-golf.csbasics.in pi \
+  --model openrouter/nvidia/nemotron-3-super-120b-a12b:free \
+  --no-extensions -e ~/.pi/agent/npm/node_modules/agent-golf \
+  --no-skills --no-context-files --no-mcp --no-prompt-templates</code></pre>
+      <p>Change <code>try-1</code> each time (<code>try-2</code>, <code>try-3</code>…). The flags load nothing but Pi and the golf plugin. That matters: an agent with extra tools and skills carries them into every turn. In our test, the same one-word reply cost 1,211 tokens with this command and 14,005 tokens with a Pi full of add-ons.</p>
+      <p><strong>The model is your choice.</strong> The one above is free on OpenRouter and handled a small test task cleanly. Gemma, which we used in Class 07, was being refused by its provider when we tested this morning, because everyone shares its free capacity. Other free models that worked: <code>openrouter/cohere/north-mini-code:free</code> and <code>openrouter/poolside/laguna-s-2.1:free</code>. Pick one and keep it for the whole session: replies from two models unrank the attempt.</p>
+      <p><strong>Free models have a daily limit.</strong> An OpenRouter account that has never bought credit gets 50 free-model requests a day and 20 a minute, shared across all free models. Every agent turn is one request, so a long, wandering attempt can use up your day, and switching to another free model will not help. Plan each attempt before you start it. (An account that has bought $10 of credit gets 1,000 a day.)</p>
+      <p>The first time, inside Pi, give it your OpenRouter key: type <code>/login</code>, choose OpenRouter and paste the key. Then log in to the board with the key from step 3:</p>
+<pre data-label="Inside Pi: your own key in place of the placeholder"><code>/golf-login your-secret-key</code></pre>
+      <p><code>/golf-problems</code> shows the rules and both problems. None of these commands costs a token.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. The problems</h2>
+      <table class="rules">
+        <tr><th>Problem</th><th>What the agent must do</th><th>Note</th></tr>
+        <tr><td><a href="https://hackattic.com/challenges/help_me_unpack">Help me unpack</a><br><code>help_me_unpack</code></td>
+          <td>Fetch a base64 string, unpack the numbers packed in its bytes, send them back.</td>
+          <td>Start here. Most of you solved it in Class 08. Today the question is not whether you can solve it, but how cheaply.</td></tr>
+        <tr><td><a href="https://hackattic.com/challenges/brute_force_zip">Brute force ZIP</a><br><code>brute_force_zip</code></td>
+          <td>Download a password-protected ZIP, find the password (4 to 6 lowercase letters or digits), read <code>secret.txt</code>, send it back.</td>
+          <td>Very hard; try it only after Help me unpack. Nobody in the class has solved it. The problem expires 30 seconds after the fetch, and a Python search over 6-character passwords is far too slow: the one solve we have ran a compiled C program on several cores, and took over 200,000 tokens. Windows Git Bash has no C compiler.</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>4. The rules</h2>
+      <ol class="steps">
+        <li>One attempt is one new Pi session in a new, empty folder, started with the command in section 2. Runs with other add-ons do not count. Try as often as you like; your best solved attempt counts.</li>
+        <li>Solve from scratch. No code from an earlier attempt or from your Class 08 repo, and do not point the agent at it.</li>
+        <li>Prompts in plain English. No code pasted in, and no <code>!</code> commands of your own: only the agent runs commands.</li>
+        <li>The agent's program must fetch the problem from hackattic.com, submit the answer there, and print both of Hackattic's replies. The board counts a solve only when that printed reply says <code>"result": "passed"</code>.</li>
+        <li>Stop as soon as Hackattic says passed. Everything in the session counts: wrong answers, dead ends, retries.</li>
+        <li>Fewest total tokens wins. Ties go to fewer prompts, then fewer characters typed.</li>
+        <li>Unusually low scores may be asked to repeat the run in front of us.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Spending fewer tokens</h2>
+      <p>Every turn sends the whole conversation back to the model. A short prompt that leaves the agent to explore costs more than a precise one, because the exploring is paid for again on every later turn.</p>
+      <ul>
+        <li>Read the challenge page yourself first. You know what the agent would otherwise spend tokens finding out.</li>
+        <li>Say exactly what you want: the endpoint, the format, and one script that fetches, solves, submits and prints both replies.</li>
+        <li>Ask for no explanations. Stop the agent the moment it starts reading things it does not need.</li>
+        <li>Watch what the commands print. A command that prints a whole page costs every line of it.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Submit</h2>
+      <p>In the same Pi session, after Hackattic says passed:</p>
+<pre data-label="Inside Pi"><code>/golf-submit help_me_unpack</code></pre>
+      <p>or, for the ZIP problem:</p>
+<pre data-label="Inside Pi"><code>/golf-submit brute_force_zip</code></pre>
+      <p>Confirm, and Pi shows your tokens and a link to your entry. Resubmitting the same session replaces it.</p>
+      <p>Closed Pi before submitting? Go back into that attempt's folder and run the section 2 start command again with <code>--continue</code> added at the end. It reopens your last session there; then <code>/golf-submit</code>. Reopening costs no tokens. The board is at <a href="https://agent-golf.csbasics.in/">agent-golf.csbasics.in</a>.</p>
+      <p>"Unranked" lists the reason. If Hackattic said passed but the board says "not solved", keep that session folder and tell an instructor: the checker is new, and we will read the log ourselves. The "custom setup" warning appears for everyone today and does not affect your rank.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>7. Before you leave</h2>
+      <p>In your own repo, <code>lab-notes/class-16.md</code>, in "I": the model you used, your best token count for each problem you solved, the one thing that cost the most tokens, and the change that cut the most.</p>
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll("pre[data-label]").forEach(function (pre) {
+      var box = document.createElement("div"); box.className = "cmd";
+      var head = document.createElement("div"); head.className = "cmd-head";
+      var label = document.createElement("span"); label.textContent = pre.dataset.label;
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "cmd-copy"; btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy: " + pre.dataset.label);
+      btn.addEventListener("click", function () {
+        var text = pre.innerText.replace(/\n+$/, "");
+        var done = function (ok) { btn.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { btn.textContent = "Copy"; }, 1600); };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        } else {
+          var r = document.createRange(); r.selectNodeContents(pre);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try { done(document.execCommand("copy")); } catch (e) { done(false); }
+        }
+      });
+      head.appendChild(label); head.appendChild(btn);
+      pre.parentNode.insertBefore(box, pre); box.appendChild(head); box.appendChild(pre);
+    });
+  </script>
+</body>
+</html>
