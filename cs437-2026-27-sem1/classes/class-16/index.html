@@ -87,9 +87,9 @@ pi install npm:pi-github-copilot-auto@0.3.0</code></pre>
   -e ~/.pi/agent/npm/node_modules/pi-github-copilot-auto \
   --no-skills --no-context-files --no-mcp --no-prompt-templates</code></pre>
       <p>Change <code>try-1</code> each time (<code>try-2</code>, <code>try-3</code>…). The flags load nothing but Pi, the golf plugin and Copilot Auto. That matters: an agent with extra tools and skills carries them into every turn. In our test, the same one-word reply cost 1,211 tokens with this command and 14,005 tokens with a Pi full of add-ons.</p>
-      <p><strong>Pick your model inside Pi, before your first prompt, and keep it for the whole session.</strong> Replies from two models unrank the attempt. The first time, type <code>/login</code> and choose one:</p>
+      <p><strong>Use any model you like; pick it inside Pi before your first prompt.</strong> The first time, type <code>/login</code> and choose a provider, for example:</p>
       <ul>
-        <li><strong>GitHub Copilot</strong>: choose GitHub Copilot and follow the steps. Then <code>/model</code> and pick <strong>Copilot Auto</strong>. Do not run <code>/compact</code> or change provider mid-session: Auto may then switch to a second model.</li>
+        <li><strong>GitHub Copilot</strong>: choose GitHub Copilot and follow the steps. Then <code>/model</code> and pick <strong>Copilot Auto</strong>. Auto may change model during a session; that is fine.</li>
         <li><strong>OpenRouter</strong>: choose OpenRouter and paste your key. Then <code>/model</code> and pick a model ending in <code>:free</code>. Free models allow 50 requests a day and 20 a minute in total, and every agent turn is one request, so plan each attempt. If Pi says <code>401 User not found</code>, the key is wrong: make a new one and <code>/login</code> again.</li>
       </ul>
       <p>Then log in to the board with the key from step 3:</p>
