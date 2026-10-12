@@ -116,7 +116,7 @@ pi install npm:pi-github-copilot-auto@0.3.0</code></pre>
         <li>One attempt is one new Pi session in a new, empty folder, started with the command in section 2. Runs with other add-ons do not count. Try as often as you like; your best solved attempt counts.</li>
         <li>Solve from scratch. No code from an earlier attempt or from your Class 08 repo, and do not point the agent at it.</li>
         <li>Prompts in plain English. No code pasted in, and no <code>!</code> commands of your own: only the agent runs commands.</li>
-        <li>The agent's program must fetch the problem from hackattic.com, submit the answer there, and print both of Hackattic's replies. The board counts a solve only when that printed reply says <code>"result": "passed"</code>. Solved it on Hackattic before? Hackattic then refuses a new answer unless the solve URL ends with <code>&amp;playground=1</code>; tell the agent to add it. <code>"passed (playground mode)"</code> counts too.</li>
+        <li>The agent's program must fetch the problem from hackattic.com, submit the answer there, and print both of Hackattic's replies. The board counts a solve only when that printed reply says <code>"result": "passed"</code>. If you have already solved the problem on Hackattic, Hackattic rejects further answers unless the submission URL includes <code>&amp;playground=1</code>, i.e. <code>…/solve?access_token=&lt;token&gt;&amp;playground=1</code>. Include this in your prompt. The board accepts the resulting <code>"passed (playground mode)"</code> reply as solved.</li>
         <li>Stop as soon as Hackattic says passed. Everything in the session counts: wrong answers, dead ends, retries.</li>
         <li>Fewest total tokens wins. Ties go to fewer prompts, then fewer characters typed.</li>
         <li>Unusually low scores may be asked to repeat the run in front of us.</li>
@@ -140,7 +140,7 @@ pi install npm:pi-github-copilot-auto@0.3.0</code></pre>
 <pre data-label="Inside Pi"><code>/golf-submit help_me_unpack</code></pre>
       <p>or, for the ZIP problem:</p>
 <pre data-label="Inside Pi"><code>/golf-submit brute_force_zip</code></pre>
-      <p>Confirm, and Pi shows your tokens and a link to your entry. Resubmitting the same session replaces it.</p>
+      <p>Confirm, and Pi shows your tokens and a link to your entry. <code>/golf-submit</code> may be run again in the same session; the session is re-scored each time.</p>
       <p>Closed Pi before submitting? Go back into that attempt's folder and run the section 2 start command again with <code>--continue</code> added at the end. It reopens your last session there; then <code>/golf-submit</code>. Reopening costs no tokens. The board is at <a href="https://agent-golf.csbasics.in/">agent-golf.csbasics.in</a>.</p>
       <p>"Unranked" lists the reason. If Hackattic said passed but the board says "not solved", keep that session folder and tell an instructor: the checker is new, and we will read the log ourselves. A "custom setup" warning does not affect your rank.</p>
     </section>
