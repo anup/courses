@@ -60,14 +60,15 @@
           </ol>
           <p>The same npm command also works on macOS or Linux if you already have Node.js 22.19 or newer.</p>
           <p>Check it with <code>pi --version</code>. If Windows says <code>pi</code> is not found, close Git Bash and open it again.</p></li>
-        <li><strong>Install the golf plugin.</strong>
-<pre data-label="Terminal (Git Bash on Windows)"><code>pi install npm:agent-golf@preview</code></pre>
-          Check that it landed where the start command in section 2 looks for it; this should list <code>package.json</code>:
-<pre data-label="Terminal (Git Bash on Windows)"><code>ls ~/.pi/agent/npm/node_modules/agent-golf</code></pre></li>
+        <li><strong>Install the golf plugin and the Copilot Auto extension.</strong> The start command in section 2 loads both, whichever model you use.
+<pre data-label="Terminal (Git Bash on Windows)"><code>pi install npm:agent-golf@preview
+pi install npm:pi-github-copilot-auto@0.3.0</code></pre>
+          Check that both landed where the start command looks for them; the list should include <code>agent-golf</code> and <code>pi-github-copilot-auto</code>:
+<pre data-label="Terminal (Git Bash on Windows)"><code>ls ~/.pi/agent/npm/node_modules/</code></pre></li>
         <li><strong>Register</strong> at <a href="https://agent-golf.csbasics.in/register">agent-golf.csbasics.in/register</a> with a username and your Hackattic username. The page shows your secret key once. Save it somewhere private.</li>
         <li><strong>Have your two secrets ready, and never type them into a prompt.</strong> Your whole session is uploaded when you submit, and anything you type goes with it.
           <ul>
-            <li><strong>OpenRouter key</strong>: <a href="https://openrouter.ai/settings/keys">openrouter.ai/settings/keys</a>. If you committed one earlier this semester, make a new one today. You give it to Pi once, with <code>/login</code> (section 2), not as an environment variable: the agent's commands run in your terminal and could print it.</li>
+            <li><strong>A model login</strong>: your GitHub account with Copilot (GitHub Education), or an OpenRouter key from <a href="https://openrouter.ai/settings/keys">openrouter.ai/settings/keys</a>. You give it to Pi once, with <code>/login</code> (section 2), not as an environment variable: the agent's commands run in your terminal and could print it.</li>
             <li><strong>Hackattic token</strong>: shown on any challenge page when you are logged in to hackattic.com. The agent needs this one, so put it in the terminal you start Pi from:
 <pre data-label="Terminal: your own token in place of the placeholder"><code>export HACKATTIC_TOKEN=your-hackattic-token</code></pre>
               Tell the agent the token is in <code>$HACKATTIC_TOKEN</code>.</li>
@@ -82,13 +83,16 @@
 <pre data-label="Terminal: a new folder for each attempt"><code>mkdir -p ~/golf/try-1 &amp;&amp; cd ~/golf/try-1</code></pre>
       <p>Then start Pi in it:</p>
 <pre data-label="Terminal: start Pi"><code>AGENT_GOLF_API_BASE_URL=https://agent-golf.csbasics.in pi \
-  --model openrouter/nvidia/nemotron-3-super-120b-a12b:free \
   --no-extensions -e ~/.pi/agent/npm/node_modules/agent-golf \
+  -e ~/.pi/agent/npm/node_modules/pi-github-copilot-auto \
   --no-skills --no-context-files --no-mcp --no-prompt-templates</code></pre>
-      <p>Change <code>try-1</code> each time (<code>try-2</code>, <code>try-3</code>…). The flags load nothing but Pi and the golf plugin. That matters: an agent with extra tools and skills carries them into every turn. In our test, the same one-word reply cost 1,211 tokens with this command and 14,005 tokens with a Pi full of add-ons.</p>
-      <p><strong>The model is your choice.</strong> The one above is free on OpenRouter and handled a small test task cleanly. Gemma, which we used in Class 07, was being refused by its provider when we tested this morning, because everyone shares its free capacity. Other free models that worked: <code>openrouter/cohere/north-mini-code:free</code> and <code>openrouter/poolside/laguna-s-2.1:free</code>. Pick one and keep it for the whole session: replies from two models unrank the attempt.</p>
-      <p><strong>Free models have a daily limit.</strong> An OpenRouter account that has never bought credit gets 50 free-model requests a day and 20 a minute, shared across all free models. Every agent turn is one request, so a long, wandering attempt can use up your day, and switching to another free model will not help. Plan each attempt before you start it. (An account that has bought $10 of credit gets 1,000 a day.)</p>
-      <p>The first time, inside Pi, give it your OpenRouter key: type <code>/login</code>, choose OpenRouter and paste the key. Then log in to the board with the key from step 3:</p>
+      <p>Change <code>try-1</code> each time (<code>try-2</code>, <code>try-3</code>…). The flags load nothing but Pi, the golf plugin and Copilot Auto. That matters: an agent with extra tools and skills carries them into every turn. In our test, the same one-word reply cost 1,211 tokens with this command and 14,005 tokens with a Pi full of add-ons.</p>
+      <p><strong>Pick your model inside Pi, before your first prompt, and keep it for the whole session.</strong> Replies from two models unrank the attempt. The first time, type <code>/login</code> and choose one:</p>
+      <ul>
+        <li><strong>GitHub Copilot</strong>: choose GitHub Copilot and follow the steps. Then <code>/model</code> and pick <strong>Copilot Auto</strong>. Do not run <code>/compact</code> or change provider mid-session: Auto may then switch to a second model.</li>
+        <li><strong>OpenRouter</strong>: choose OpenRouter and paste your key. Then <code>/model</code> and pick a model ending in <code>:free</code>. Free models allow 50 requests a day and 20 a minute in total, and every agent turn is one request, so plan each attempt. If Pi says <code>401 User not found</code>, the key is wrong: make a new one and <code>/login</code> again.</li>
+      </ul>
+      <p>Then log in to the board with the key from step 3:</p>
 <pre data-label="Inside Pi: your own key in place of the placeholder"><code>/golf-login your-secret-key</code></pre>
       <p><code>/golf-problems</code> shows the rules and both problems. None of these commands costs a token.</p>
     </section>
@@ -112,7 +116,7 @@
         <li>One attempt is one new Pi session in a new, empty folder, started with the command in section 2. Runs with other add-ons do not count. Try as often as you like; your best solved attempt counts.</li>
         <li>Solve from scratch. No code from an earlier attempt or from your Class 08 repo, and do not point the agent at it.</li>
         <li>Prompts in plain English. No code pasted in, and no <code>!</code> commands of your own: only the agent runs commands.</li>
-        <li>The agent's program must fetch the problem from hackattic.com, submit the answer there, and print both of Hackattic's replies. The board counts a solve only when that printed reply says <code>"result": "passed"</code>.</li>
+        <li>The agent's program must fetch the problem from hackattic.com, submit the answer there, and print both of Hackattic's replies. The board counts a solve only when that printed reply says <code>"result": "passed"</code>. Solved it on Hackattic before? Hackattic then refuses a new answer unless the solve URL ends with <code>&amp;playground=1</code>; tell the agent to add it. <code>"passed (playground mode)"</code> counts too.</li>
         <li>Stop as soon as Hackattic says passed. Everything in the session counts: wrong answers, dead ends, retries.</li>
         <li>Fewest total tokens wins. Ties go to fewer prompts, then fewer characters typed.</li>
         <li>Unusually low scores may be asked to repeat the run in front of us.</li>
@@ -138,7 +142,7 @@
 <pre data-label="Inside Pi"><code>/golf-submit brute_force_zip</code></pre>
       <p>Confirm, and Pi shows your tokens and a link to your entry. Resubmitting the same session replaces it.</p>
       <p>Closed Pi before submitting? Go back into that attempt's folder and run the section 2 start command again with <code>--continue</code> added at the end. It reopens your last session there; then <code>/golf-submit</code>. Reopening costs no tokens. The board is at <a href="https://agent-golf.csbasics.in/">agent-golf.csbasics.in</a>.</p>
-      <p>"Unranked" lists the reason. If Hackattic said passed but the board says "not solved", keep that session folder and tell an instructor: the checker is new, and we will read the log ourselves. The "custom setup" warning appears for everyone today and does not affect your rank.</p>
+      <p>"Unranked" lists the reason. If Hackattic said passed but the board says "not solved", keep that session folder and tell an instructor: the checker is new, and we will read the log ourselves. A "custom setup" warning does not affect your rank.</p>
     </section>
 
     <section class="content-section">
