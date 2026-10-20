@@ -39,7 +39,55 @@
     <section class="hero">
       <p class="eyebrow">Study and practice</p>
       <h1>Practice Problems by Topic</h1>
-      <p class="lead">Practice problems from LeetCode and HackerRank for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+      <p class="lead">Public practice problems from LeetCode, HackerRank, CSES and SPOJ for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+    </section>
+
+    <section class="content-section" id="augmentation">
+      <h2>Augmenting data structures <span class="section-tag">Class 16</span></h2>
+      <p class="lead">From <a href="../../classes/class-16/">Augmenting Data Structures</a>: choose the extra information to store, state its invariant, and maintain it after every update. These 12 public problems cover stacks, BST order statistics and segment trees. Start with the lecture matches, then choose extensions.</p>
+      <p>Use C and follow each site's function signature or input format. <a href="https://cses.fi/howto/">CSES supports C</a>; its tasks use standard input and output. Judge submissions generally require a free account. The statements below are publicly readable.</p>
+
+      <h3>1. Augment a stack: start here</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/min-stack/">LeetCode 155. Min Stack</a> &mdash; Medium, direct lecture match. Store the running minimum with each element so push, pop, top and getMin take O(1). Unlike the lecture's empty-stack convention, this judge calls pop, top and getMin only on nonempty stacks.</li>
+        <li><a href="https://www.hackerrank.com/challenges/maximum-element/problem">HackerRank: Maximum Element</a> &mdash; Easy, an alternative to Min Stack. Apply the same invariant to the maximum. Test repeated maxima and popping the most recent maximum.</li>
+      </ol>
+
+      <h3>2. Augment a BST: selection and rank</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/">LeetCode 230. Kth Smallest Element in a BST</a> &mdash; Medium, revisit from traversals. The judge's basic task accepts inorder traversal. For this class, build counts separately from the supplied tree, then answer repeated selection queries in O(h). Count construction costs O(n); the problem's insert/delete follow-up is the augmentation exercise.</li>
+        <li><a href="https://www.spoj.com/problems/ORDERSET/">SPOJ ORDERSET: Order statistic set</a> &mdash; Extension, close match to the lecture's operations: insert, delete, k-th smallest and count keys less than x. Duplicate insertions leave the set unchanged; invalid k prints <code>invalid</code>. With up to 200,000 operations, a plain unbalanced BST can time out. Use balancing or, as a further technique, coordinate compression with a count tree.</li>
+      </ol>
+      <p>First implement the distinct-key BST locally. Store left-subtree counts or total subtree sizes, and keep the chosen invariant consistent. The judge's node structure may be fixed, so do not assume you can add a field to its supplied type.</p>
+
+      <h3>3. Segment-tree queries: direct lecture matches</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1647">CSES: Static Range Minimum Queries</a> &mdash; build an interval-minimum tree and answer inclusive [a, b] queries in O(log n). This is the deck's <code>findMin</code> problem. Array length need not be a power of two.</li>
+        <li><a href="https://cses.fi/problemset/task/1646">CSES: Static Range Sum Queries</a> &mdash; change the stored summary and merge operation to addition. Use a segment tree to practise the slides, then compare it with prefix sums, which give O(1) queries when the array never changes.</li>
+        <li><a href="https://cses.fi/problemset/task/1651">CSES: Range Update Queries</a> &mdash; the deck's <code>Update(u,v,x)</code> and <code>Report(u)</code>: interleaved range additions and point queries. Keep initial values separate from pending additions, or include them in the leaf values. Accumulate every node on the report path, including the root.</li>
+      </ol>
+      <p>CSES indices are 1-based and endpoints are inclusive. If you use the deck's complete-tree layout, pad to the next power of two. Use a neutral value for extra leaves: 0 for sums, a value at least as large as every input for minimum queries. Use <code>long long</code> and <code>%lld</code> for sums and accumulated additions.</p>
+
+      <h3>4. Add point updates: extensions</h3>
+      <p>These add an operation to the range-query trees. Change one leaf, then recompute summaries on the path to the root in O(log n).</p>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1649">CSES: Dynamic Range Minimum Queries</a> &mdash; assign a new value to one position, then answer inclusive range minima.</li>
+        <li><a href="https://cses.fi/problemset/task/1648">CSES: Dynamic Range Sum Queries</a> &mdash; point assignment and inclusive range sums. An update replaces the old value; it does not add to it.</li>
+        <li><a href="https://leetcode.com/problems/range-sum-query-mutable/">LeetCode 307. Range Sum Query &ndash; Mutable</a> &mdash; Medium, an alternative interface for the previous exercise. Implement the supplied <code>NumArray</code> functions in C. Indices are 0-based.</li>
+      </ol>
+
+      <h3>5. Combine counts and segment trees: optional challenges</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1749">CSES: List Removals</a> &mdash; store how many positions remain in each segment. Descend using counts to locate the k-th remaining position, then mark it removed. This selects by current position, rather than by the numerical order of values.</li>
+        <li><a href="https://cses.fi/problemset/task/1144">CSES: Salary Queries</a> &mdash; count salaries in an inclusive value range while salaries change. Repeated salaries must count separately. Coordinate compression and a frequency tree are useful extra techniques beyond the lecture's distinct-key BST.</li>
+      </ol>
+
+      <h3>Local C exercises from the slides</h3>
+      <ul class="compact-list">
+        <li><strong>Min-stack:</strong> store a minimum at each node. Push <code>8, 3, 3, 7</code> and pop repeatedly. Verify that one remaining 3 still keeps the minimum at 3. Use the lecture's -1 result on an empty stack.</li>
+        <li><strong>Dynamic rank and range counts:</strong> implement insertion, deletion, k-th smallest, <code>findLessThan(x)</code>, and inclusive <code>findRange(x,y)</code>. Test a missing key, duplicate insertion, invalid k and deletion of a two-child root whose successor has a right child. Check counts against an inorder array after each update. For range counts, use count-at-most(y) minus count-less-than(x), avoiding overflow from y+1.</li>
+        <li><strong>Segment-tree boundary cases:</strong> compare every interval of a short array against a simple loop. Include n=1, u=v, the entire array, non-power-of-two lengths after padding, overlapping updates and negative additions. For the range-add tree, verify that a full-array update reaches every point report.</li>
+      </ul>
     </section>
 
     <section class="content-section" id="tree-traversals">

@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 16: Augmenting Data Structures</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 16</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 16 &middot; Friday 16 October 2026</p>
+      <h1>Augmenting Data Structures</h1>
+      <p class="lead">Store extra information in a data structure so it can answer a new query quickly. The extra field must remain correct after every update. Start with the minimum in a stack, add counts to a BST, then store summaries of array intervals in a segment tree.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="augmenting-data-structures.pptx">Download Augmenting Data Structures slides (PowerPoint)</a></p>
+      <p>The 116-slide deck traces the added fields and the paths used by each query. Slides 2&ndash;10 cover min-stacks, 11&ndash;41 cover augmented BSTs, and 42&ndash;116 cover segment trees.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the material covers</h2>
+      <ul class="compact-list">
+        <li><strong>Min-stack</strong> &mdash; store the minimum of the stack prefix at each node. The top node then answers <code>getmin</code> in O(1), while push and pop also take O(1). Popping restores the previous minimum automatically.</li>
+        <li><strong>K-th smallest in a BST</strong> &mdash; <code>lessThanNum</code> stores the number of nodes in the left subtree. Compare k with that count plus one to choose a single branch. Selection takes O(h), rather than visiting the whole tree.</li>
+        <li><strong>Maintaining counts</strong> &mdash; update ancestor counts when inserting or deleting. For deletion with two children, account for the successor that is physically removed. The slides assume distinct keys.</li>
+        <li><strong>Rank and range counts</strong> &mdash; count keys strictly less than x even when x is absent. For an inclusive range [x, y], subtract the number below x from the number at most y.</li>
+        <li><strong>Range minimum and range sum</strong> &mdash; a segment tree stores an interval summary at each node. Build in O(n), use O(n) space, and combine O(log n) pieces for each query. The slides use an array layout with children at <code>2*i+1</code> and <code>2*i+2</code>.</li>
+        <li><strong>Range addition and point reporting</strong> &mdash; store additions on nodes covering the updated interval. Report a value by accumulating the additions along its path, including the root. Both operations take O(log n).</li>
+      </ul>
+      <p>The BST bounds are O(h). They become O(log n) only when the tree's height stays logarithmic. The array segment tree is balanced by construction.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice route</h2>
+      <ol class="compact-list">
+        <li>Implement the lecture min-stack, then solve LeetCode Min Stack or HackerRank Maximum Element.</li>
+        <li>Revisit k-th smallest using subtree counts, then add <code>findLessThan</code> and the lecture's inclusive range-count homework.</li>
+        <li>Solve CSES Static Range Minimum Queries and Static Range Sum Queries with your own segment tree.</li>
+        <li>Solve CSES Range Update Queries, matching the deck's range-add and point-report operations.</li>
+      </ol>
+      <p><a class="action-link" href="../../resources/practice/#augmentation">All 12 augmentation practice problems across four websites, with local C exercises</a></p>
+      <p>The practice page labels point-update problems and larger order-statistics problems as extensions. Use <code>long long</code> for large sums and accumulated additions. Test a single-element array, a singleton query, and a full-array update before larger cases.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Earlier material</h2>
+      <p><a href="../class-13/">BST insertion and deletion</a> &middot; <a href="../class-14/">Tree traversals</a> &middot; <a href="../class-11/">Stacks</a></p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
