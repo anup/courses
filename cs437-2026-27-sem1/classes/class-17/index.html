@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 17: Back from the Break</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 17</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 17 &middot; Monday 26 October</p>
+      <h1>Back from the Break</h1>
+      <p class="lead">The last stretch: Agent Golf due tonight, a new progress board with every graded item on it, the hackathon checkpoint tomorrow, and Claude accounts for the rest of the course.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Agent Golf: both problems, by tonight</h2>
+      <p>Solve and submit both Class 16 problems on the <a href="https://agent-golf.csbasics.in/">board</a> by <strong>Monday 26 October, 23:59</strong>: Help me unpack and Brute force ZIP. A solve after that still counts, but shows as late on the progress board.</p>
+      <p>Tomorrow's Agent Golf exam is open only to students who have solved <strong>both</strong> problems on the board before it starts. Students who are away tomorrow sit a second sitting later this week, with the same rule.</p>
+      <p>The ZIP expires 30 seconds after it is fetched. If Hackattic replies "Time limit exceeded", your search was too slow: ask for a program that uses every CPU core, and time it on a six-character test password before you fetch.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. The progress board, updated</h2>
+      <p>The <a href="../../progress/">progress board</a> has new tables at the top: one row per group, then one row per student, for everything graded since Class 12. Find your row by your private code.</p>
+      <table class="rules">
+        <tr><th>Colour</th><th>Meaning</th></tr>
+        <tr><td>Green</td><td>Done on time.</td></tr>
+        <tr><td>Yellow</td><td>Done up to two days late.</td></tr>
+        <tr><td>Orange</td><td>Done more than two days late.</td></tr>
+        <tr><td>Red</td><td>Not done yet. It can still be done; it then turns yellow or orange.</td></tr>
+      </table>
+      <p><strong>Merged</strong> in the groups table counts the members who have at least one pull request <em>they wrote</em> reviewed and merged into the group's hackathon repo. The hackathon's work counts only for those members; merging someone else's pull request does not count.</p>
+      <p>If something on your row looks wrong, reply in the thread under the announcement in the CS437 space, with the link to your evidence.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Hackathon: the next checkpoint is Tuesday 27 October</h2>
+      <p>By Tuesday 27 October: at least half the statements in SPEC.md green, each merged through a pull request that another member reviewed, and a README a stranger can follow to run it. The full checkpoint list is on the <a href="../../hackathon/">hackathon page</a>.</p>
+      <p>Each group has a card in class today. Before you leave, every member names one statement they own this week.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Claude accounts</h2>
+      <p>We have Claude seats for the rest of the course, for the hackathon and anything else you build. The first sixteen went out today in order of class attendance; the rest follow over the next few days. Accept the invitation in your IITGN email.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>5. The rest of the semester</h2>
+      <table class="rules">
+        <tr><th>Date</th><th>What</th></tr>
+        <tr><td>Tue 27 Oct</td><td>Agent Golf exam, in class</td></tr>
+        <tr><td>This week</td><td>Second exam sitting for those away on Tuesday (time to be announced)</td></tr>
+        <tr><td>Tue 3, Mon 9, Tue 10 Nov</td><td>Evals. Docker must run on your laptop before 3 November.</td></tr>
+        <tr><td>Mon 16, Tue 17 Nov</td><td>Hackathon acceptance run and demos</td></tr>
+      </table>
+      <p>Grading was discussed in class. The weights are not final; they will be announced once both instructors agree.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Log</h2>
+      <p>In your own repo, <code>lab-notes/class-17.md</code>, in "I": what your group's statement for this week is and who owns it, and one thing on your progress-board row you will fix this week.</p>
+    </section>
+  </main>
+  <script>
+    document.querySelectorAll("pre[data-label]").forEach(function (pre) {
+      var box = document.createElement("div"); box.className = "cmd";
+      var head = document.createElement("div"); head.className = "cmd-head";
+      var label = document.createElement("span"); label.textContent = pre.dataset.label;
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "cmd-copy"; btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy: " + pre.dataset.label);
+      btn.addEventListener("click", function () {
+        var text = pre.innerText.replace(/\n+$/, "");
+        var done = function (ok) { btn.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { btn.textContent = "Copy"; }, 1600); };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        } else {
+          var r = document.createRange(); r.selectNodeContents(pre);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try { done(document.execCommand("copy")); } catch (e) { done(false); }
+        }
+      });
+      head.appendChild(label); head.appendChild(btn);
+      pre.parentNode.insertBefore(box, pre); box.appendChild(head); box.appendChild(pre);
+    });
+  </script>
+</body>
+</html>
