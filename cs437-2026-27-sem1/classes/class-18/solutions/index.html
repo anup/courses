@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 18: Touch-Tone solutions</title>
+  <link rel="stylesheet" href="../../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+      .sol{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:16px 0;background:var(--panel);}
+    .sol h3{margin:0 0 4px;font-size:1.05rem;}
+    .meta{color:var(--muted);font-size:.88rem;margin:0 0 10px;}
+    .sol pre{white-space:pre-wrap;word-break:break-word;margin:8px 0 0;padding:12px 14px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);font-size:.86rem;line-height:1.5;}
+    .note{font-size:.88rem;color:var(--muted);font-style:italic;}
+    .num{font-variant-numeric:tabular-nums;text-align:right;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../../">CS437</a>
+        <a href="../../">Classes</a>
+        <a href="../">Class 18</a>
+        <a href="./" aria-current="page">Solutions</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 18 &middot; Agent Golf exam, Tuesday 27 October</p>
+      <h1>Touch-Tone: what worked</h1>
+      <p class="lead">Every solver's best attempt at Touch-Tone dialing, fewest tokens first, with the exact prompt they typed. Read the short ones next to the long ones: the difference is almost always how precisely the prompt says what to do.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The ranking</h2>
+      <p>Best solved attempt per student, all with GitHub Copilot. Board names as on the <a href="https://agent-golf.csbasics.in/problems/touch_tone_dialing">live board</a>. Tokens or keys that appeared in a prompt are replaced by <code>&lt;token&gt;</code>. This is a learning page, not the final marks: marks follow the rules on the <a href="../">Class 18 page</a>.</p>
+      <div style="overflow-x:auto"><table class="rules">
+        <tr><th class="num">#</th><th>Player</th><th class="num">Tokens</th><th class="num">Prompts</th><th class="num">Tool calls</th><th>Model</th></tr>
+        <tr><td class="num">1</td><td><a href="#s1">devansh_lodha</a></td><td class="num">4,288</td><td class="num">1</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">2</td><td><a href="#s2">rajmo</a></td><td class="num">4,636</td><td class="num">1</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">3</td><td><a href="#s3">drishb</a></td><td class="num">4,704</td><td class="num">1</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">4</td><td><a href="#s4">anonymous07</a></td><td class="num">5,200</td><td class="num">1</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">5</td><td><a href="#s5">anurag</a></td><td class="num">6,973</td><td class="num">1</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">6</td><td><a href="#s6">amisha01</a></td><td class="num">7,348</td><td class="num">1</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">7</td><td><a href="#s7">kanchetiaparna</a></td><td class="num">7,440</td><td class="num">1</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">8</td><td><a href="#s8">feynman_algoking</a></td><td class="num">7,521</td><td class="num">1</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">9</td><td><a href="#s9">harshdhru_23</a></td><td class="num">8,051</td><td class="num">1</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">10</td><td><a href="#s10">nakshatra_lad</a></td><td class="num">9,294</td><td class="num">1</td><td class="num">3</td><td>gpt-5.3-codex</td></tr><tr><td class="num">11</td><td><a href="#s11">smrutee20</a></td><td class="num">10,093</td><td class="num">1</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">12</td><td><a href="#s12">manashreeash21</a></td><td class="num">10,547</td><td class="num">1</td><td class="num">2</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">13</td><td><a href="#s13">praneethrcls</a></td><td class="num">15,852</td><td class="num">1</td><td class="num">2</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">14</td><td><a href="#s14">maverick_05</a></td><td class="num">19,928</td><td class="num">1</td><td class="num">4</td><td>gpt-5.3-codex</td></tr><tr><td class="num">15</td><td><a href="#s15">saikrishna999</a></td><td class="num">85,441</td><td class="num">1</td><td class="num">9</td><td>gpt-5.3-codex</td></tr><tr><td class="num">16</td><td><a href="#s16">ananya_p</a></td><td class="num">140,557</td><td class="num">1</td><td class="num">9</td><td>mai-code-1.1-flash</td></tr>
+      </table></div>
+    </section>
+
+    <section class="content-section">
+      <h2>What to notice</h2>
+      <ul>
+        <li>The cheapest runs fetch, decode and submit in <strong>one</strong> tool call. Every extra turn re-sends the whole conversation.</li>
+        <li>They say exactly how to split the audio into key presses and which frequencies to test, so the agent never explores.</li>
+        <li>They read the token from <code>$HACKATTIC_TOKEN</code> and print only Hackattic's two replies.</li>
+        <li>After a first solve, every retry needs <code>&amp;playground=1</code> in the solve URL.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The prompts</h2>
+      <div class="sol" id="s1">
+        <h3>1. devansh_lodha</h3>
+        <p class="meta">4,288 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/gpt-5.3-codex &middot; 4:06 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/183">board entry</a></p>
+        <pre>Immediately run one short python3 command via bash using urllib.request, json, array, math, cmath:
+1. Read HACKATTIC_TOKEN from os.environ.
+2. GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=&lt;token&gt; and print the raw JSON response.
+3. Download wav_url and load bytes after the 44-byte header into a signed 16-bit integer array at 4000 Hz.
+4. Use a while loop with index i from 0: if sample i is non-zero, take the 159-sample slice starting at i as a segment and add 160 to i; else add 1 to i.
+5. For each segment, find the row frequency in 697, 770, 852, 941 and column frequency in 1209, 1336, 1477 with max DFT magnitude using cmath.rect at 4000 Hz, mapping to 123456789*0#.
+6. POST JSON key sequence to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=&lt;token&gt;&amp;playground=1 and print the raw JSON response.
+Print only those two JSON lines, then reply only done.</pre>
+      </div>
+      <div class="sol" id="s2">
+        <h3>2. rajmo</h3>
+        <p class="meta">4,636 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/gpt-5.3-codex &middot; 4:47 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/242">board entry</a></p>
+        <pre>EXECUTE Hackattic touch_tone_dialing NOW via ONE shell call: `~/.venvs/golf-dsp/bin/python - &lt;&lt;&#x27;PY&#x27;`. NumPy installed; HACKATTIC_TOKEN set. Do not just display code.
+
+GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=TOKEN&amp;playground=1; print JSON; download wav_url.
+
+Read 16-bit PCM WAV with wave/NumPy. Convert to 1D mono: `np.frombuffer(raw,&#x27;&lt;i2&#x27;).reshape(-1,ch).astype(float).mean(axis=1)`. Create sliding 40ms windows, 10ms hop using sliding_window_view.
+
+Compute RMS per window; threshold=max(q20+.3*(q80-q20),.06*maxRMS,1e-4). Exact DFT powers=`abs(frames @ exp(-2j*pi*outer(arange(win),freqs)/fs))**2`, freqs=[697,770,852,941,1209,1336,1477]. Split powers into low=first 4, high=last 3. Valid iff RMS&gt;=threshold and largest/second-largest power ratio&gt;=1.35 for BOTH groups.
+
+Map each valid frame to `keypad[low.argmax()][high.argmax()]`, keypad=[&#x27;123&#x27;,&#x27;456&#x27;,&#x27;789&#x27;,&#x27;*0#&#x27;]; invalid frames=None. Smooth isolated single-frame glitches using a COPY: replace center only when its two ORIGINAL neighbors are identical. CRITICAL: `groupby(smoothed_labels)`, NEVER groupby(valid). Append each non-None run &gt;=3 frames; preserve repeated digits across silence. `sequence=&#x27;&#x27;.join(digits)` MUST be string.
+
+POST JSON {&quot;sequence&quot;:sequence} to same base /solve?access_token=TOKEN&amp;playground=1; print raw response.
+
+Generate SHORT executable Python (~30–35 lines). No DC subtraction, comments, classes, wrappers, debug output, explanations, tests, installs or retries. Invoke shell immediately. After success final answer ONLY &quot;passed&quot;.</pre>
+      </div>
+      <div class="sol" id="s3">
+        <h3>3. drishb</h3>
+        <p class="meta">4,704 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/mai-code-1.1-flash &middot; 5:14 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/259">board entry</a></p>
+        <pre>Using the bash tool, run this exact Node 22 script, unchanged, with no narration before or after,  must print both Hackattic&#x27;s problem reply (the input) and its solve reply (right/wrong):
+
+node - &lt;&lt;&#x27;EOF&#x27;
+let t=process.env.HACKATTIC_TOKEN;if(!t){try{t=require(&#x27;fs&#x27;).readFileSync(require(&#x27;os&#x27;).homedir()+&#x27;/.hackattic_token&#x27;,&#x27;utf8&#x27;).trim()}catch{}}
+const B=&#x27;https://hackattic.com/challenges/touch_tone_dialing&#x27;,PG=&#x27;&amp;playground=1&#x27;,LO=[697,770,852,941],HI=[1209,1336,1477];
+const K={697:{1209:&#x27;1&#x27;,1336:&#x27;2&#x27;,1477:&#x27;3&#x27;},770:{1209:&#x27;4&#x27;,1336:&#x27;5&#x27;,1477:&#x27;6&#x27;},852:{1209:&#x27;7&#x27;,1336:&#x27;8&#x27;,1477:&#x27;9&#x27;},941:{1209:&#x27;*&#x27;,1336:&#x27;0&#x27;,1477:&#x27;#&#x27;}};
+function dec(buf){
+  const sr=buf.readUInt32LE(24),n=buf.readUInt32LE(40)/2,s=new Int16Array(buf.buffer,buf.byteOffset+44,n),sg=[];
+  let st=-1,z=0;
+  for(let i=0;i&lt;n;i++){z=s[i]===0?z+1:0;if(z&lt;=10){if(st&lt;0)st=i}else{if(st&gt;=0)sg.push(s.subarray(st,i));st=-1}}
+  if(st&gt;=0)sg.push(s.subarray(st,n));
+  const g=(sq,f)=&gt;{const c=2*Math.cos(2*Math.PI*f/sr);let q1=0,q2=0;for(const v of sq){const q0=c*q1-q2+v;q2=q1;q1=q0}return q1*q1+q2*q2-q1*q2*c};
+  const top=(sq,fr)=&gt;fr.map(f=&gt;[f,g(sq,f)]).reduce((a,b)=&gt;b[1]&gt;a[1]?b:a)[0];
+  return sg.map(sq=&gt;K[top(sq,LO)][top(sq,HI)]).join(&#x27;&#x27;);
+}
+(async()=&gt;{
+  const p=await(await fetch(`${B}/problem?access_token=${t}`)).json();
+  console.log(JSON.stringify(p));
+  const wav=Buffer.from(await(await fetch(p.wav_url)).arrayBuffer());
+  const sequence=dec(wav);
+  const r=await fetch(`${B}/solve?access_token=${t}${PG}`,{method:&#x27;POST&#x27;,headers:{&#x27;Content-Type&#x27;:&#x27;application/json&#x27;},body:JSON.stringify({sequence})});
+  console.log(await r.text());
+})();
+EOF</pre>
+      </div>
+      <div class="sol" id="s4">
+        <h3>4. anonymous07</h3>
+        <p class="meta">5,200 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/mai-code-1.1-flash &middot; 4:36 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/221">board entry</a></p>
+        <pre>One bash call only: python3 heredoc, shortest script, no comments/functions/checks/extra prints, no thinking aloud. Spec is final.
+Line 1: import json,io,wave,array,cmath,os,itertools,urllib.request as q
+T=os.environ[&#x27;HACKATTIC_TOKEN&#x27;]; B=&#x27;https://hackattic.com/challenges/touch_tone_dialing/&#x27;
+p=q.urlopen(B+&#x27;problem?access_token=&#x27;+T).read().decode(); print(p) (single GET). wav=q.urlopen(json.loads(p)[&#x27;wav_url&#x27;]).read(); w=wave.open(io.BytesIO(wav)); sr=w.getframerate(); x=array.array(&#x27;h&#x27;,w.readframes(w.getnframes()))[::w.getnchannels()].
+ws=sr//200; e=[sum(v*v for v in x[i:i+ws])/ws for i in range(0,len(x)-ws+1,ws)]; active = e[k]&gt;.04*max(e).
+Presses: itertools.groupby over range(len(e)) with key active; keep groups where active and len&gt;=4; block range [a,b): s=x[a*ws:b*ws]; s=s[len(s)//4:3*len(s)//4].
+g=lambda f:abs(sum(v*cmath.exp(-2j*cmath.pi*f*n/sr) for n,v in enumerate(s))); rows 697,770,852,941; cols 1209,1336,1477; R=index of max g over rows, C=index of max g over cols; key=&quot;123 456 789 *0#&quot;.split()[R][C].
+s2=&#x27;&#x27;.join(keys in order); print(s2).
+r=q.urlopen(q.Request(B+&#x27;solve?access_token=&#x27;+T+&#x27;&amp;playground=1&#x27;,json.dumps({&#x27;sequence&#x27;:s2}).encode(),{&#x27;Content-Type&#x27;:&#x27;application/json&#x27;})); print(r.read().decode()).
+Then reply only: done</pre>
+      </div>
+      <div class="sol" id="s5">
+        <h3>5. anurag</h3>
+        <p class="meta">6,973 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/mai-code-1.1-flash &middot; 4:39 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/224">board entry</a></p>
+        <pre>Act immediately. No planning, no thinking aloud, no explanation, no summary. Make exactly one terminal call, then reply with only the word: done
+
+In that call run inline Python using only the standard library, with no files and no installs. Use the python command. In PowerShell, pipe a single-quoted here-string into python with a dash; in bash, use a heredoc. Write the code golfed: one-letter names, all imports on one line, no comments, no error handling, no checks, no prints except the last one.
+
+Steps:
+1. Load JSON from https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=&lt;token&gt; and take wav_url.
+2. Download wav_url once into memory and open it with wave through BytesIO. It is always 16-bit mono; read all frames and unpack them as little-endian signed shorts. Use the file&#x27;s frame rate.
+3. Group consecutive equal samples with itertools groupby. A group of zeros of length 3 or more ends the current tone. Every other group, including zero groups of length 1 or 2, is added to the current tone. Skip tones shorter than 50 samples.
+4. For each tone, compute Goertzel power at rows 697, 770, 852, 941 and columns 1209, 1336, 1477 only. Take the strongest row index and the strongest column index, and pick the key from a list of four strings 123, 456, 789, *0# indexed by row then column.
+5. Join the keys into one string. POST it as JSON with the key sequence and a JSON content type to the same URL with problem replaced by solve and &amp;playground=1 added. Print only the response body.
+
+One bash call, terse stdlib python3 heredoc: GET hackattic touch_tone_dialing problem using env HACKATTIC_TOKEN, print raw reply, fetch wav_url (16-bit mono). Tones are the slices between runs of 3+ zero samples. Goertzel-decode each to DTMF 0-9*#. POST JSON key &quot;sequence&quot; to solve with &amp;playground=1, print raw reply. Then say done.</pre>
+      </div>
+      <div class="sol" id="s6">
+        <h3>6. amisha01</h3>
+        <p class="meta">7,348 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/gpt-5.3-codex &middot; 4:23 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/203">board entry</a></p>
+        <pre>The token is in environment variable HACKATTIC_TOKEN. Do everything in ONE shell command that writes and runs a Node.js script (built-in modules only), so it is one tool call. Minimal reasoning, no commentary. Try to achieve with short code not lengthy The challenge is Hackattic&#x27;s touch tone dialing (slug: the three words touch, tone, dialing joined by underscores). GET its problem endpoint on hackattic.com with the token as the access token query parameter. The problem JSON has one key holding a one-time WAV URL; download it into a Buffer. Decode the DTMF sequence. Parse the WAV by scanning RIFF chunks to find the fmt and data chunks (no fixed offset); read sample rate, bits per sample, channels; take signed 16-bit PCM from one channel. Keys use digits 0 to 9, star, hash. Each key is two tones. Low group 697, 770, 852, 941 Hz; high group 1209, 1336, 1477, 1633 Hz. Keypad: (697,1209)=1 (697,1336)=2 (697,1477)=3 (770,1209)=4 (770,1336)=5 (770,1477)=6 (852,1209)=7 (852,1336)=8 (852,1477)=9 (941,1209)=star (941,1336)=0 (941,1477)=hash. Use Goertzel at the header sample rate: slide a 10 to 20 ms window with overlap; per window compute Goertzel magnitudes at the 8 frequencies plus energy; mark low-energy windows as silence; otherwise the digit is the strongest low-group and high-group frequency via the keypad. Collapse consecutive same-digit windows into one character and drop silence, so repeats split by a silence gap stay separate. Output star as * and hash as #. POST JSON with one field sequence to the solve endpoint using the same token, and add playground=1 as a second query parameter on that solve URL. Print the problem JSON then the solve response JSON; the solve reply must contain the word passed.</pre>
+      </div>
+      <div class="sol" id="s7">
+        <h3>7. kanchetiaparna</h3>
+        <p class="meta">7,440 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/gpt-5.3-codex &middot; 4:37 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/223">board entry</a></p>
+        <pre>Make exactly one tool call. The Python command is py -3; never use python. Do not plan or deliberate; every rule below is exact.
+
+Read the token from HACKATTIC_TOKEN and never print it. The token goes only in the access_token query parameter; send no Authorization header. Fetch the problem from https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=TOKEN, download the WAV at wav_url, and read it with the wave module into a numpy array.
+
+Decode with every combination of: window length 30, 40, 50 or 60 ms; ratio 4, 6 or 8; minimum press length 1 or 2 frames. Slide a Hann window in steps of half a window. In each frame, measure the strength of the row tones 697, 770, 852, 941 Hz and the column tones 1209, 1336, 1477 Hz by correlating the frame with a complex sine at each frequency. A frame counts only if its strongest row plus strongest column is at least a tenth of the loudest frame in the whole recording, its strongest row beats the second strongest row by the ratio, and its strongest column beats the second strongest column by the ratio. A run of counted frames with the same key is one press, and an uncounted frame or a different key ends the run. Keep presses of at least the minimum length, so frames 1 1 1 2 2 3 give &quot;12&quot; when the minimum is 2. The keypad rows are 1 2 3, 4 5 6, 7 8 9, * 0 #.
+
+Rank the decoded sequences by how many combinations produced them. POST them in that order as JSON with a sequence field to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=TOKEN&amp;playground=1, stopping at the first reply containing passed or after 5 tries. Print only the final reply. If anything fails, print only the last line of the error.</pre>
+      </div>
+      <div class="sol" id="s8">
+        <h3>8. feynman_algoking</h3>
+        <p class="meta">7,521 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/gpt-5.3-codex &middot; 4:50 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/246">board entry</a></p>
+        <pre>Solve Hackattic touch_tone_dialing with exactly one bash tool call and no write tool: create solve.py via a quoted heredoc and run it with python in the same command. Standard library only, under 60 lines, no comments. No planning text, pip, browsing, or listing.
+
+solve.py reads HACKATTIC_TOKEN (exit if missing) and never prints it or any URL or error containing it. Send a browser User-Agent. Base URL: https://hackattic.com/challenges/touch_tone_dialing. GET /problem?access_token=TOKEN and print the JSON. Save wav_url as input.wav, decode it, and print the sequence. POST JSON with key sequence to /solve?access_token=TOKEN&amp;playground=1 and print the reply JSON.
+
+Decode with wave at the file&#x27;s sample rate, first channel only, 8-bit unsigned or 16-bit signed PCM. For each 20 ms frame, compute Goertzel power at rows 697, 770, 852, 941 Hz and columns 1209, 1336, 1477 Hz; keypad rows are 123, 456, 789, *0#. A frame is a key only if its RMS exceeds 0.1 times the loudest frame&#x27;s RMS and the top row and top column each exceed twice their runner-up; otherwise it is silence. Group identical consecutive labels into runs, drop key runs under 2 frames, merge runs that become adjacent and identical, and output one symbol per key run.
+
+Claim success only if the reply contains &quot;result&quot;: &quot;passed&quot;; otherwise debug with input.wav, fix, and rerun. Final message: one sentence.</pre>
+      </div>
+      <div class="sol" id="s9">
+        <h3>9. harshdhru_23</h3>
+        <p class="meta">8,051 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/mai-code-1.1-flash &middot; 4:46 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/237">board entry</a></p>
+        <pre>EXECUTE Hackattic touch_tone_dialing in ONE shell call using `python3 - &lt;&lt;&#x27;PY&#x27;`, Python stdlib + installed NumPy. HACKATTIC_TOKEN set.
+
+GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=TOKEN&amp;playground=1; print JSON; download wav_url into memory.
+
+Use wave + numpy. Assume 16-bit PCM. Convert to mono with np.frombuffer(raw,dtype=&#x27;&lt;i2&#x27;).reshape(-1,channels).mean(axis=1).
+
+IMPORTANT: Use the proven 5ms RMS segmentation, NOT sliding 40ms windows. Divide audio into nonoverlapping 5ms frames, calculate RMS; active = RMS &gt; 0.1*max(RMS). Find contiguous active runs; merge adjacent runs if next_start - previous_end &lt;= 3 frames. Preserve distinct keypresses and repeated digits.
+
+For each merged segment trim 10% of frames from BOTH ends. On the remaining samples compute exact-frequency DFT powers using NumPy: abs(chunk @ exp(-2j*pi*outer(arange(len(chunk)),freqs)/fs))**2, freqs=[697,770,852,941,1209,1336,1477]. Choose maximum among first 4 and last 3 frequencies. Map keypad=[&#x27;123&#x27;,&#x27;456&#x27;,&#x27;789&#x27;,&#x27;*0#&#x27;]. Emit exactly ONE digit per segment; sequence=&#x27;&#x27;.join(digits).
+
+DO NOT use percentile thresholds, power ratios, 40ms windows, frame-label majority voting, or in-place mask smoothing. Validate nonempty sequence containing only 0-9*#.
+
+POST {&quot;sequence&quot;:sequence} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=TOKEN&amp;playground=1 with JSON content-type. Print raw POST response. Treat response.result starting with &quot;passed&quot; as success.
+
+Generate concise, syntactically valid inline Python and EXECUTE immediately. One shell tool call, no explanations, installations, progress logs, extra calls or retries.</pre>
+      </div>
+      <div class="sol" id="s10">
+        <h3>10. nakshatra_lad</h3>
+        <p class="meta">9,294 tokens &middot; 1 prompt &middot; 3 tool calls &middot; github-copilot/gpt-5.3-codex &middot; 4:07 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/185">board entry</a></p>
+        <pre>Solve the Hackattic touch_tone_dialing challenge. My access token is in the environment variable HACKATTIC_TOKEN.
+
+Fetch the problem from https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=$HACKATTIC_TOKEN to get the wav_url. Download that WAV file.
+
+Decode the DTMF tones using scipy: read the WAV with scipy.io.wavfile, then compute a spectrogram with scipy.signal.stft. At each time frame check the power at the 8 DTMF frequencies — rows 697, 770, 852, 941 Hz and columns 1209, 1336, 1477, 1633 Hz. A frame is a valid tone when the strongest row frequency and strongest column frequency both exceed the noise floor. Use a state machine to emit each digit exactly once per tone — only on the silence-to-tone transition, never repeatedly. The digits are 0-9, *, and #.
+
+POST {&quot;sequence&quot;:&quot;&lt;decoded&gt;&quot;} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=$HACKATTIC_TOKEN. Print both the problem JSON and the solve response.</pre>
+      </div>
+      <div class="sol" id="s11">
+        <h3>11. smrutee20</h3>
+        <p class="meta">10,093 tokens &middot; 1 prompt &middot; 1 tool call &middot; github-copilot/mai-code-1.1-flash &middot; 7:20 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/264">board entry</a></p>
+        <p class="note">Re-run after the exam (7:20 pm); her exam-time session has not reached the board.</p><pre>Token is in HACKATTIC_TOKEN. Write and run one fast Python 3 script using numpy and wave, no explanation, run nothing after it. Keep the script minimal: no comments, no functions, short variable names, no extra prints or error handling. Use a 10 second timeout on every request. GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=$HACKATTIC_TOKEN&amp;playground=1, print the raw reply, and load wav_url as mono floats. Vectorized only: use 20 ms frames of length L with a 10 ms hop, as an (n, L) array. A frame is silence if its RMS is under 20% of the 95th-percentile RMS. Otherwise get its energy at 697 770 852 941 1209 1336 1477 Hz as abs(frames @ M)**2, where M is an (L, 7) matrix of complex exponentials. It is a key if, in each group, the top tone is at least 4x the second-highest; rows by columns give 123 456 789 *0#. Only silence ends a press. Ignore unclear frames, and emit keys that last at least 3 frames. POST JSON {&quot;sequence&quot;: &quot;&lt;keys joined into one string&gt;&quot;} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=$HACKATTIC_TOKEN&amp;playground=1 and print the raw reply. Say nothing after running it.</pre>
+      </div>
+      <div class="sol" id="s12">
+        <h3>12. manashreeash21</h3>
+        <p class="meta">10,547 tokens &middot; 1 prompt &middot; 2 tool calls &middot; github-copilot/mai-code-1.1-flash &middot; 5:04 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/255">board entry</a></p>
+        <pre>Task: Solve the Hackattic “Touch-Tone dialing” challenge with one Python script.
+
+Rules (follow exactly):
+
+Make exactly two tool calls: write solve.py, then run python solve.py. Use python, not python3.
+Your shell is already in the right folder. Never use cd, /mnt or /tmp paths, absolute paths, ls, file reads or environment checks.
+Standard library only. Do not use audioop (it doesn’t exist in this Python) or numpy.
+No comments, no error handling, under 50 lines. Don’t plan out loud.
+
+The script must:
+
+Read the token from HACKATTIC_TOKEN.
+GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=TOKEN (15 s timeout), print the reply, and take wav_url.
+Download the WAV as raw bytes. Never decode it as text and never save it to disk. Open it with the wave module from an in-memory buffer.
+Unpack the frames with struct according to the sample width (8-bit is unsigned with 128 subtracted, 16-bit is signed little-endian), and average the channels to mono.
+Split into 10 ms windows using the WAV’s real sample rate. A window is loud if its RMS is at least 25% of the loudest window’s RMS.
+Group consecutive loud windows into tones, and drop tones shorter than 30 ms. Each tone is exactly one key press. Don’t use overlapping windows or per-window voting.
+For each tone, run Goertzel over all of its samples at 697, 770, 852, 941, 1209, 1336 and 1477 Hz, with coefficient 2·cos(2π·f / sample rate). No rounding to bins and no factor of 2 on the frequency.
+Map the strongest row and strongest column with the standard keypad (1 2 3 / 4 5 6 / 7 8 9 / * 0 #), and join the keys in order.
+Print the sequence, POST it as JSON with the field “sequence” to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=TOKEN&amp;playground=1 (15 s timeout), and print the reply.
+
+After running: If the sequence is empty or the reply isn’t passed, fix the script and run python solve.py again. Otherwise reply with exactly “Done” and nothing else.</pre>
+      </div>
+      <div class="sol" id="s13">
+        <h3>13. praneethrcls</h3>
+        <p class="meta">15,852 tokens &middot; 1 prompt &middot; 2 tool calls &middot; github-copilot/mai-code-1.1-flash &middot; 4:46 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/238">board entry</a></p>
+        <pre>Solve Hackattic &quot;touch_tone_dialing&quot; with one small Python script (standard library only), written once and run once. No exploring, no tests, no plots, no explaining, no reading files back.My token is in env var HACKATTIC_TOKEN (never print it). The script must: GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=&lt;token&gt;&amp;playground=1, download the wav_url file, decode the DTMF sequence (digits 0-9, * and #), POST JSON {&quot;sequence&quot;: &quot;...&quot;} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=&lt;token&gt;&amp;playground=1, and print both Hackattic replies. Also print the decoded sequence and its length before submitting.Decoder design (follow it, do not sweep parameters):
+- Read the sample rate and channels from the file. It is low (a few kHz) and the tones are very short, so don&#x27;t assume anything about timing.
+- Slide a short window (about 20-25 ms, hop about 5 ms) over the audio, apply a Hann window, and run Goertzel at the exact frequencies (don&#x27;t round to integer bins) for lows 697, 770, 852, 941 and highs 1209, 1336, 1477, 1633.- A window is a valid key only if the best low and best high frequency each clearly beat the runner-up in their group (for example at least 3x the power) and their combined power is a reasonable fraction of the loudest window in the file. Otherwise it is &quot;no tone&quot;. Map the (low, high) pair to the keypad: rows 1 2 3 / 4 5 6 / 7 8 9 / * 0 #.
+- Group consecutive identical valid labels into one key. A &quot;no tone&quot; window or a different key ends the group, so a repeated digit separated by a gap stays two digits. Drop groups shorter than about half the typical group length.
+- Do not collapse repeated digits any other way and do not post-filter the result.If the reply is not &quot;result&quot;: &quot;passed&quot;, make the smallest fix and rerun. Final reply: one line.</pre>
+      </div>
+      <div class="sol" id="s14">
+        <h3>14. maverick_05</h3>
+        <p class="meta">19,928 tokens &middot; 1 prompt &middot; 4 tool calls &middot; github-copilot/gpt-5.3-codex &middot; 3:53 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/176">board entry</a></p>
+        <pre>solve this: https://hackattic.com/challenges/touch_tone_dialing, use hackattic_token set as env write a single script to solve it, minimal tool calls, no iteration,  no explanation, minimum verbosity, print the response by hackattic and stop</pre>
+      </div>
+      <div class="sol" id="s15">
+        <h3>15. saikrishna999</h3>
+        <p class="meta">85,441 tokens &middot; 1 prompt &middot; 9 tool calls &middot; github-copilot/gpt-5.3-codex &middot; 4:47 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/240">board entry</a></p>
+        <pre>STRICT DIRECTIVE: Do NOT output any thinking process, reasoning steps, code commentary, markdown text, or conversational output before, during, or after execution. Immediately write and run the solution script.
+
+Solve Hackattic &quot;touch_tone_dialing&quot;:
+1. Access token to use: &quot;96f5389ff0a29bfc&quot;.
+2. GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=&lt;token&gt; and download wav_url.
+3. Use built-in wave and struct modules to extract 16-bit PCM audio samples and framerate.
+4. Process audio in contiguous non-overlapping 20ms chunks. Ignore chunks with RMS volume &lt; 500.
+5. Compute Goertzel magnitude for low freqs (697, 770, 852, 941 Hz) and high freqs (1209, 1336, 1477 Hz).
+6. Map peak low/high freq pair to DTMF grid: (697,1209)-&gt;1, (697,1336)-&gt;2, (697,1477)-&gt;3, (770,1209)-&gt;4, (770,1336)-&gt;5, (770,1477)-&gt;6, (852,1209)-&gt;7, (852,1336)-&gt;8, (852,1477)-&gt;9, (941,1209)-&gt;*, (941,1336)-&gt;0, (941,1477)-&gt;#.
+7. Deduplicate adjacent identical digits separated by silence to form the final sequence string.
+8. POST {&quot;sequence&quot;: seq} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=&lt;token&gt;&amp;playground=1 and print only the final response.
+
+Execute the script immediately in one single tool call.</pre>
+      </div>
+      <div class="sol" id="s16">
+        <h3>16. ananya_p</h3>
+        <p class="meta">140,557 tokens &middot; 1 prompt &middot; 9 tool calls &middot; github-copilot/mai-code-1.1-flash &middot; 4:00 pm</p>
+        <p class="note">Uploaded separately: her laptop could not reach the board.</p><pre>Use HACKATTIC_TOKEN env var as the access token.
+
+GET https://hackattic.com/challenges/touch_tone_dialing/problem?access_token=$HACKATTIC_TOKEN
+
+Download the wav_url immediately. Decode DTMF tones using Python with numpy. DTMF frequency pairs: 1=697+1209, 2=697+1336, 3=697+1477, 4=770+1209, 5=770+1336, 6=770+1477, 7=852+1209, 8=852+1336, 9=852+1477, *=941+1209, 0=941+1336, #=941+1477. Use Goertzel or FFT on short windows. Deduplicate consecutive same-tone detections.
+
+POST {&quot;sequence&quot;: &quot;&lt;result&gt;&quot;} to https://hackattic.com/challenges/touch_tone_dialing/solve?access_token=$HACKATTIC_TOKEN immediately after decoding. Print the response.</pre>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
