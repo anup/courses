@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 17: Graphs</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 17</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 17 &middot; Tuesday 27 October 2026</p>
+      <h1>Graphs</h1>
+      <p class="lead">A graph is a set of vertices and a set of edges between them. Read a graph from an edge list and store it so you can list a vertex's neighbours quickly. Then count simple structures: degrees, two-way pairs, triangles and paths of length two.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="graphs.pptx">Download Graphs slides (PowerPoint)</a></p>
+      <p>The 33-slide deck works on one six-vertex graph throughout. Slides 2&ndash;16 cover undirected graphs and how to store them, 20&ndash;23 cover directed graphs, and 24&ndash;33 pose three counting problems. The blank slides after each problem are space for working it out.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the material covers</h2>
+      <ul class="compact-list">
+        <li><strong>Input format</strong> &mdash; the first line gives <code>n m</code>, the number of vertices and edges. Each of the next m lines gives one edge as two vertex numbers. Vertices are numbered 0 to n&minus;1.</li>
+        <li><strong>Adjacency matrix</strong> &mdash; an n &times; n array of 0s and 1s. It is easy to write, and checking whether an edge exists takes O(1). It always uses O(n<sup>2</sup>) space, and listing a vertex's neighbours takes O(n), even when the vertex has few.</li>
+        <li><strong>Adjacency list</strong> &mdash; an array of n linked lists; list i holds the neighbours of vertex i. It uses O(n + m) space and lists the neighbours of v in O(d(v)), where d(v) is the degree of v. It is harder to write, and checking whether an edge exists means scanning a list.</li>
+        <li><strong>A 2D array with a degree count</strong> &mdash; row i stores the neighbours of i, and <code>degree[i]</code> records where the row ends. It is easy to write but wastes space, because every row must be as long as the largest degree.</li>
+        <li><strong>Directed graphs</strong> &mdash; each edge goes from one vertex to another. Store only the forward edge, and keep separate out-degree and in-degree counts.</li>
+        <li><strong>Two-way pairs</strong> &mdash; in a directed graph, count unordered pairs {u, v} where both u&rarr;v and v&rarr;u exist. Count each pair once.</li>
+        <li><strong>Triangles</strong> &mdash; in an undirected graph, count sets of three vertices with all three edges present. The sample graph has two.</li>
+        <li><strong>Paths of length two</strong> &mdash; count paths u&mdash;v&mdash;w, treating u&mdash;v&mdash;w and w&mdash;v&mdash;u as the same path. Report the count mod 5, in O(n + m) time. The count can overflow an <code>int</code>, so reduce as you add: (a + b) mod 5 = (a mod 5 + b mod 5) mod 5.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice route</h2>
+      <ol class="compact-list">
+        <li>Store a graph both ways: AtCoder ABC343 B (Adjacency Matrix), then ABC276 B (Adjacency List), where n reaches 100,000 and a matrix will not fit.</li>
+        <li>Count degrees: AtCoder ABC061 B (Counting Roads), then LeetCode 1791 (Find Center of Star Graph).</li>
+        <li>Use in-degree and out-degree: LeetCode 997 (Find the Town Judge).</li>
+        <li>Count triangles: AtCoder ABC262 B (Triangle (Easier)), then Codeforces 574B (Bear and Three Musketeers).</li>
+      </ol>
+      <p><a class="action-link" href="../../resources/practice/#graphs">All 13 graph practice problems across AtCoder, LeetCode and Codeforces, with local C exercises</a></p>
+      <p>Before submitting, check three things in each statement. Are vertices numbered from 0 or 1? Can the same edge appear twice? Is the graph directed? Test a vertex with no edges and a graph with m = 0.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Earlier material</h2>
+      <p><a href="../class-10/">Linked lists</a> &middot; <a href="../class-14/">Tree traversals</a> &middot; <a href="../class-16/">Augmenting data structures</a></p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>

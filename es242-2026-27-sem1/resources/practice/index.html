@@ -39,7 +39,51 @@
     <section class="hero">
       <p class="eyebrow">Study and practice</p>
       <h1>Practice Problems by Topic</h1>
-      <p class="lead">Public practice problems from LeetCode, HackerRank, CSES and SPOJ for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+      <p class="lead">Public practice problems from LeetCode, HackerRank, CSES, SPOJ, AtCoder and Codeforces for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+    </section>
+
+    <section class="content-section" id="graphs">
+      <h2>Graphs <span class="section-tag">Class 17</span></h2>
+      <p class="lead">From <a href="../../classes/class-17/">Graphs</a>: read an edge list, store the graph as an adjacency matrix or adjacency list, and count what the lecture counted. These 13 public problems come from AtCoder, LeetCode and Codeforces. Start with sections 1 and 2, then choose from the rest.</p>
+      <p>Use C. AtCoder and Codeforces read standard input in the lecture's <code>n m</code> format, but number vertices from 1; LeetCode passes the edges to a function as <code>int** edges</code>, with <code>edgesSize</code> rows of two numbers each. Submitting requires a free account on each site. The statements are publicly readable.</p>
+
+      <h3>1. Store a graph: start here</h3>
+      <ol class="compact-list">
+        <li><a href="https://atcoder.jp/contests/abc343/tasks/abc343_b">AtCoder ABC343 B: Adjacency Matrix</a> &mdash; you are given the matrix; print each vertex's neighbours in increasing order. Scanning row i takes O(n), the cost slide 7 warns about. n &le; 100.</li>
+        <li><a href="https://atcoder.jp/contests/abc276/tasks/abc276_b">AtCoder ABC276 B: Adjacency List</a> &mdash; build the list from an edge list and print each vertex's degree followed by its neighbours in increasing order. With n and m up to 100,000, an n &times; n matrix needs 10<sup>10</sup> cells, so you must use a list. Sort each list before printing.</li>
+      </ol>
+
+      <h3>2. Count degrees</h3>
+      <ol class="compact-list">
+        <li><a href="https://atcoder.jp/contests/abc061/tasks/abc061_b">AtCoder ABC061 B: Counting Roads</a> &mdash; print the degree of every vertex. The same pair of cities can be joined by more than one road, and each road counts. You need no matrix or list, only a <code>degree</code> array.</li>
+        <li><a href="https://leetcode.com/problems/find-center-of-star-graph/">LeetCode 1791. Find Center of Star Graph</a> &mdash; Easy. The centre is the vertex with degree n&minus;1. Counting degrees works; so does looking at just the first two edges.</li>
+        <li><a href="https://atcoder.jp/contests/abc225/tasks/abc225_b">AtCoder ABC225 B: Star or Not</a> &mdash; an alternative to the previous problem. Decide whether some vertex has degree n&minus;1.</li>
+        <li><a href="https://leetcode.com/problems/maximum-total-importance-of-roads/">LeetCode 2285. Maximum Total Importance of Roads</a> &mdash; Medium, extension. Each vertex's value counts once per edge it touches, so give the largest values to the highest-degree vertices. Sort the degrees. The total can exceed 2<sup>31</sup>; use <code>long long</code>.</li>
+      </ol>
+
+      <h3>3. Directed graphs: in-degree and out-degree</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/find-the-town-judge/">LeetCode 997. Find the Town Judge</a> &mdash; Easy. Edge a&rarr;b means a trusts b. The judge has out-degree 0 and in-degree n&minus;1. Vertices are numbered 1 to n, and n = 1 with no edges is a valid input.</li>
+        <li><a href="https://leetcode.com/problems/minimum-number-of-vertices-to-reach-all-nodes/">LeetCode 1557. Minimum Number of Vertices to Reach All Nodes</a> &mdash; Medium, but one pass. The graph has no cycles, so the answer is every vertex with in-degree 0.</li>
+        <li><a href="https://leetcode.com/problems/node-with-highest-edge-score/">LeetCode 2374. Node With Highest Edge Score</a> &mdash; Medium. Each vertex has exactly one outgoing edge. Add the source's label to the target's score. Scores can reach about 5 &times; 10<sup>9</sup>; use <code>long long</code>. Break ties by smallest index.</li>
+      </ol>
+
+      <h3>4. Check edges and count triangles</h3>
+      <p>These need the adjacency matrix's O(1) edge check, so n is kept small.</p>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/maximal-network-rank/">LeetCode 1615. Maximal Network Rank</a> &mdash; Medium. For every pair u, v, the rank is d(u) + d(v), minus 1 if u and v are joined. Keep a degree array and a matrix. n &le; 100.</li>
+        <li><a href="https://atcoder.jp/contests/abc262/tasks/abc262_b">AtCoder ABC262 B: Triangle (Easier)</a> &mdash; the lecture's triangle count. With n &le; 100, try every a &lt; b &lt; c and check three matrix entries: about 160,000 triples.</li>
+        <li><a href="https://codeforces.com/problemset/problem/574/B">Codeforces 574B: Bear and Three Musketeers</a> &mdash; rated 1500. Find the triangle with the smallest sum of degrees, minus 6 for the triangle's own edges. Here n reaches 4,000, so the triple loop is too slow. Instead, for each edge (u, v), try every w: m &times; n = 16 million checks. A 4000 &times; 4000 <code>char</code> matrix uses 16&nbsp;MB, which fits.</li>
+        <li><a href="https://leetcode.com/problems/minimum-degree-of-a-connected-trio-in-a-graph/">LeetCode 1761. Minimum Degree of a Connected Trio in a Graph</a> &mdash; Hard, but the same problem as 574B with n &le; 400. Return &minus;1 if there is no triangle.</li>
+      </ol>
+
+      <h3>Local C exercises from the slides</h3>
+      <ul class="compact-list">
+        <li><strong>Build all three structures:</strong> read the slide 4 graph (<code>6 8</code> and its eight edges) into an adjacency matrix, an array of linked lists, and a 2D array with a degree count. Print each vertex's neighbours from all three and check that they agree. The degrees should be 2, 2, 4, 3, 2, 3.</li>
+        <li><strong>Two-way pairs:</strong> read the directed graph from slide 21 (<code>6 9</code>) and count unordered pairs joined in both directions. The answer is 1: the pair {0, 1}. Then add the edge 4&rarr;2 and check that the answer becomes 2.</li>
+        <li><strong>Triangles:</strong> count the triangles in the slide 4 graph. The answer is 2: {2, 3, 4} and {2, 3, 5}. Make sure your loop does not count {2, 3, 4} three or six times.</li>
+        <li><strong>Paths of length two, mod 5:</strong> every such path has a middle vertex v, and v is the middle of d(v)(d(v)&minus;1)/2 paths. Sum this over all vertices in O(n + m). For the slide 4 graph the total is 15, so print 0. Compute each term in <code>long long</code> before taking it mod 5, and test a star with 100,000 leaves.</li>
+      </ul>
     </section>
 
     <section class="content-section" id="augmentation">
