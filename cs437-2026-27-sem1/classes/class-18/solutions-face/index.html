@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 18: Face detection solutions</title>
+  <link rel="stylesheet" href="../../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+      .sol{border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:16px 0;background:var(--panel);}
+    .sol h3{margin:0 0 4px;font-size:1.05rem;}
+    .meta{color:var(--muted);font-size:.88rem;margin:0 0 10px;}
+    .sol pre{white-space:pre-wrap;word-break:break-word;margin:8px 0 0;padding:12px 14px;border-radius:8px;background:var(--code-bg);border:1px solid var(--line);font-size:.86rem;line-height:1.5;}
+    .num{font-variant-numeric:tabular-nums;text-align:right;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../../">CS437</a>
+        <a href="../../">Classes</a>
+        <a href="../">Class 18</a>
+        <a href="./" aria-current="page">Face detection solutions</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 18 &middot; Agent Golf exam, Friday 30 October</p>
+      <h1>Face detection: what worked</h1>
+      <p class="lead">Every solver's counted attempt at Basic face detection &mdash; their best plain-English prompt, fewest tokens first &mdash; with the exact prompt they typed. Compare the short ones with the long ones.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>The ranking</h2>
+      <p>All GitHub Copilot, submitted between 6:56 and 8:30 pm. Tokens typed into a prompt are replaced by <code>&lt;token&gt;</code>. Official marks are on the <a href="../results/">results page</a>.</p>
+      <div style="overflow-x:auto"><table class="rules">
+        <tr><th class="num">#</th><th>Player</th><th class="num">Tokens</th><th class="num">Prompts</th><th>Model</th></tr>
+        <tr><td class="num">1</td><td><a href="#s1">rajmo</a></td><td class="num">1,847</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">2</td><td><a href="#s2">harshdhru_23</a></td><td class="num">3,264</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">3</td><td><a href="#s3">arpan</a></td><td class="num">3,358</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">4</td><td><a href="#s4">drishb</a></td><td class="num">3,574</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">5</td><td><a href="#s5">yyzg5q</a></td><td class="num">3,694</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">6</td><td><a href="#s6">deepanjalikumari</a></td><td class="num">3,713</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">7</td><td><a href="#s7">ananya_p</a></td><td class="num">3,956</td><td class="num">1</td><td>gpt-5.3-codex</td></tr><tr><td class="num">8</td><td><a href="#s8">manashreeash21</a></td><td class="num">4,308</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">9</td><td><a href="#s9">v2t4zk</a></td><td class="num">4,359</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">10</td><td><a href="#s10">gomtesh2002</a></td><td class="num">4,492</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">11</td><td><a href="#s11">jshah</a></td><td class="num">4,550</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">12</td><td><a href="#s12">shivangi</a></td><td class="num">4,642</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">13</td><td><a href="#s13">maverick_05</a></td><td class="num">5,644</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">14</td><td><a href="#s14">arka</a></td><td class="num">7,508</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">15</td><td><a href="#s15">aryan</a></td><td class="num">20,655</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr><tr><td class="num">16</td><td><a href="#s16">saikrishna999</a></td><td class="num">128,462</td><td class="num">1</td><td>mai-code-1.1-flash</td></tr>
+      </table></div>
+    </section>
+
+    <section class="content-section">
+      <h2>What to notice</h2>
+      <ul>
+        <li>The cheapest run names the tool precisely (OpenCV's bundled frontal-face Haar cascade, scale 1.1, neighbours 5) and says how to map a face to its tile, so the agent never experiments.</li>
+        <li>Detecting once on the whole image and mapping each face centre to a tile is shorter than running the detector 64 times.</li>
+        <li>One tool call, one script: fetch, detect, submit, print both replies.</li>
+        <li>Every one of these is plain English. Writing the code into the prompt does not count.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>The prompts</h2>
+      <div class="sol" id="s1">
+        <h3>1. rajmo</h3>
+        <p class="meta">1,847 tokens &middot; 1 prompt &middot; github-copilot/gpt-5.3-codex &middot; 8:15 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/468">board entry</a></p>
+        <pre>Run Hackattic basic_face_detection in ONE bash call using a short Python3 heredoc. Single-letter variables, no comments or with blocks. Reply only ok.
+
+Import os, json, numpy, cv2 and urlopen. Read HACKATTIC_TOKEN.
+
+GET https://hackattic.com/challenges/basic_face_detection/problem with access_token in URL; print raw JSON. Immediately fetch image_url and decode as grayscale.
+
+Run OpenCV&#x27;s bundled frontal-face Haar cascade ONCE on the entire image, scale 1.1, neighbors 5.
+
+Use a set comprehension to map each detected rectangle&#x27;s center to an 8x8 grid row and column using image dimensions. Convert both to native Python integers. Sort unique pairs into lists.
+
+POST JSON key face_tiles directly using urlopen&#x27;s data argument, replacing problem with solve and appending playground=1. Print raw response.
+
+One tool call, minimal code, no Request wrapper, files, checks, retries or explanations.</pre>
+      </div>
+      <div class="sol" id="s2">
+        <h3>2. harshdhru_23</h3>
+        <p class="meta">3,264 tokens &middot; 1 prompt &middot; github-copilot/gpt-5.3-codex &middot; 8:17 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/473">board entry</a></p>
+        <pre>Run one python3 heredoc (&lt;&lt;’E’) in bash without thinking, one-letter names, no comments, shortest code, then reply only ok.
+
+Import os, json, numpy, cv2, urlopen; t is env HACKATTIC_TOKEN.
+Read b from https://hackattic.com/challenges/basic_face_detection/problem?access_token= plus t; print it.
+cv2.imdecode the bytes of b’s image_url, grayscale.
+Default frontalface Haar cascade, positional 1.1, 5.
+s is a set comprehension over boxes x, y, w, h of (int of (y+h/2)*8 over height, int of (x+w/2)*8 over width).
+Read and print urlopen of that URL with problem replaced by solve plus &amp;playground=1, data the JSON with key face_tiles holding sorted s as int lists.</pre>
+      </div>
+      <div class="sol" id="s3">
+        <h3>3. arpan</h3>
+        <p class="meta">3,358 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 7:34 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/359">board entry</a></p>
+        <pre>Immediately run one bash command: quietly install opencv-python below version 5 via python3&#x27;s pip module, allowing breaking system packages, output discarded; then a tiny golfed python3 script (one-letter names, no checks) using urllib.request, json, numpy, cv2:
+GET https://hackattic.com/challenges/basic_face_detection/problem?access_token= plus HACKATTIC_TOKEN from os.environ; print the raw reply. Download image_url, imdecode directly as grayscale. Detect with cv2.data haarcascade_frontalface_alt2, scaleFactor 1.1, minNeighbors 5; tiles = unique [row, col] ints of face centres divided by 100. POST JSON face_tiles to the same URL with problem replaced by solve plus &amp;playground=1; print the raw reply.
+Then reply only done.</pre>
+      </div>
+      <div class="sol" id="s4">
+        <h3>4. drishb</h3>
+        <p class="meta">3,574 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:29 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/513">board entry</a></p>
+        <pre>Immediately make exactly one bash tool call running a python (not python3) script passed in a quoted here-document. No files, installs, tests or explanations. Use requests, numpy and OpenCV, imported at the top. One-letter names, no comments, no error handling, no functions.
+
+Read the token from the HACKATTIC_TOKEN environment variable. Load OpenCV&#x27;s bundled frontal face alt2 Haar cascade.
+GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=&lt;token&gt; and print the raw text.
+Download image_url immediately and decode it directly as grayscale.
+Tile size is image height divided by 8, rounded down.
+Detect faces on the whole image with scale factor 1.1, min neighbours 5, min size 30 by 30.
+Each face&#x27;s tile is its box centre&#x27;s vertical then horizontal position divided by tile size, rounded down, as plain Python integers. Keep unique sorted tiles as two-element lists.
+POST them using the requests JSON option as field face_tiles to https://hackattic.com/challenges/basic_face_detection/solve?access_token=&lt;token&gt;&amp;playground=1 and print the raw text once. Reply only done</pre>
+      </div>
+      <div class="sol" id="s5">
+        <h3>5. yyzg5q</h3>
+        <p class="meta">3,694 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 7:53 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/397">board entry</a></p>
+        <pre>No planning or reasoning; call the tool immediately. One bash call only: run ~/golf/python-env/bin/python with an inline heredoc, no file. Terse script: one-letter names, no functions, comments, checks or error handling; import numpy; urllib only, no requests. Token is env HACKATTIC_TOKEN. GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=TOKEN, read the body once, print it, parse it. Download image_url, decode with cv2, split into 8x8 equal tiles. Per tile: grayscale, equalize histogram, OpenCV&#x27;s bundled haarcascade_frontalface_default, scale 1.1, min neighbors 5, min size a fifth of the tile; face if len of detections above zero. POST JSON face_tiles, a list of [row, col] ints, with a JSON content-type header, to the same URL with /solve instead of /problem plus &amp;playground=1. Print the reply. Then answer only: ok</pre>
+      </div>
+      <div class="sol" id="s6">
+        <h3>6. deepanjalikumari</h3>
+        <p class="meta">3,713 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:09 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/452">board entry</a></p>
+        <pre>Run a single bash tool call executing inline python to solve basic_face_detection. Read HACKATTIC_TOKEN from environment. Immediately fetch a fresh problem JSON from https://hackattic.com/challenges/basic_face_detection/problem?access_token=$HACKATTIC_TOKEN, download image_url, and decode with OpenCV. Slice into an 8x8 grid of tiles. For each tile at row y and column x (from 0 to 7), detect faces using cv2.CascadeClassifier with cv2.data.haarcascades + &#x27;haarcascade_frontalface_default.xml&#x27; (scaleFactor 1.05, minNeighbors 2). Append [y, x] coordinate lists to face_tiles whenever faces are detected. Immediately POST JSON payload {&quot;face_tiles&quot;: face_tiles} to https://hackattic.com/challenges/basic_face_detection/solve?access_token=$HACKATTIC_TOKEN&amp;playground=1 and print the exact JSON response. Execute directly in one step without delay or writing files.</pre>
+      </div>
+      <div class="sol" id="s7">
+        <h3>7. ananya_p</h3>
+        <p class="meta">3,956 tokens &middot; 1 prompt &middot; github-copilot/gpt-5.3-codex &middot; 7:11 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/316">board entry</a></p>
+        <pre>HACKATTIC_TOKEN is set. pip install opencv-python -q, then in one python3 script: GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=$HACKATTIC_TOKEN&amp;playground=1, immediately download image_url, split into 8x8 grid, detect faces in each tile using cv2 haarcascade_frontalface_default.xml with detectMultiScale, POST {&quot;face_tiles&quot;:[[row,col],...]} to https://hackattic.com/challenges/basic_face_detection/solve?access_token=$HACKATTIC_TOKEN&amp;playground=1, print response. Reply only &quot;passed&quot;.</pre>
+      </div>
+      <div class="sol" id="s8">
+        <h3>8. manashreeash21</h3>
+        <p class="meta">4,308 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 7:23 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/337">board entry</a></p>
+        <pre>use under 2000 tokens. No thinking, no explanation. One terminal call, then reply only “done”. OpenCV 4 is installed; install nothing. Run terse inline Python with python through a heredoc, no files. GET https://hackattic.com/challenges/basic_face_detection/problem?access_token= plus the HACKATTIC_TOKEN env var, and download image_url immediately (it expires in 5 s). Decode it in grayscale and run OpenCV’s bundled frontal-face Haar cascade with scale 1.1 and neighbours 5. The image is an 8x8 grid; map each face centre to its tile (row from y, column from x, rounded down). POST the unique tiles as JSON key face_tiles, a list of [row, column] lists of plain ints, to the same URL with “solve” instead of “problem” plus &amp;playground=1, and print the reply.</pre>
+      </div>
+      <div class="sol" id="s9">
+        <h3>9. v2t4zk</h3>
+        <p class="meta">4,359 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:10 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/454">board entry</a></p>
+        <pre>$HACKATTIC_TOKEN has the token. No thinking, no explanation, no files. ONE tool call: python (not python3) script via stdin heredoc, short plain code: requests, short names, no checks, no timeouts, no comments, no tricks. 1. GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=TOKEN. 2. Immediately download image_url as grayscale with OpenCV, split it into 8x8 equal tiles, run cv2.data.haarcascades + &quot;haarcascade_frontalface_default.xml&quot; on each tile with scaleFactor 1.1, minNeighbors 5, minSize 20x20; a tile counts if len() of the detections is above 0; collect zero-based integer [row, col]. 3. Same script: POST {&quot;face_tiles&quot;: [[row, col], ...]} to https://hackattic.com/challenges/basic_face_detection/solve?access_token=TOKEN&amp;playground=1 . Print only the reply.</pre>
+      </div>
+      <div class="sol" id="s10">
+        <h3>10. gomtesh2002</h3>
+        <p class="meta">4,492 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:27 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/505">board entry</a></p>
+        <pre>Shortest possible python3 program, one bash command, one tool call, no explanation, minimal variable names, use requests and cv2. Solve Hackattic basic_face_detection in playground mode. Read the token from env HACKATTIC_TOKEN. Get the basic_face_detection problem passing the token as access_token; take image_url. Download it, decode grayscale. Detect faces with the default frontal-face Haar cascade, scale 1.1, 5 neighbours, min 30. On an eight by eight grid map each face centre to row and column from the top-left from zero, clamp 0 to 7, unique. Post to the basic_face_detection solve endpoint with query parameters access_token the token and playground one, JSON body only face_tiles. Print the reply, then reply ok.</pre>
+      </div>
+      <div class="sol" id="s11">
+        <h3>11. jshah</h3>
+        <p class="meta">4,550 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:09 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/449">board entry</a></p>
+        <pre>Solve Hackattic basic_face_detection with one shell command and no exploring: run a tiny python3 script using urllib, token in HACKATTIC_TOKEN. It first loads the bundled alt2 frontal face Haar cascade from OpenCV, then fetches the problem, loads image_url as greyscale, detects on the whole image with scale 1.05, 5 neighbours, min size 20, maps each box centre to its 8 by 8 cell as row then column, dedupes, and posts JSON face_tiles as a list of two-number lists to the solve URL, adding playground 1 to that URL beside the token, printing the reply. Then answer only: done</pre>
+      </div>
+      <div class="sol" id="s12">
+        <h3>12. shivangi</h3>
+        <p class="meta">4,642 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:28 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/511">board entry</a></p>
+        <pre>Hackattic basic_face_detection. No thinking. One bash call, then reply &quot;done&quot;.
+
+The call pipes a tiny Python script, by quoted heredoc, into E:/v/Scripts/python. No comments, checks or headers. Import cv2, numpy, json, urllib.request. Token is the text of E:/t, sent as access_token in the query. Get hackattic.com/challenges/basic_face_detection/problem, load its image_url as grayscale, and on each 100px tile of the 8x8 grid run OpenCV&#x27;s bundled frontalface_default cascade with default settings; a tile is a face if the result length is above zero. POST JSON face_tiles, [row, col] ints, to the solve path with playground=1 too. Print the reply.</pre>
+      </div>
+      <div class="sol" id="s13">
+        <h3>13. maverick_05</h3>
+        <p class="meta">5,644 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 7:58 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/413">board entry</a></p>
+        <pre>Act immediately, no planning, no explanation. Exactly one bash call, then reply with only the final solve reply.
+In that one command: make a venv with python3, quietly pip install &quot;opencv-python-headless&lt;5&quot; (output discarded), write solve.py via a heredoc whose quoted end marker is alone on its line, then run it with the venv python on the next line.
+solve.py, urllib only, token from env HACKATTIC_TOKEN. Hackattic gives only a few seconds after the GET, so keep it fast: GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=TOKEN, print the raw response text unchanged, download image_url at once. Grayscale, split into 8x8 tiles (each tile is a separate picture), run OpenCV&#x27;s bundled frontalface_default Haar cascade on each tile (scale 1.1, min neighbors 5, min size a quarter of the tile). POST {&quot;face_tiles&quot;: [[row, col], ...]} to the same path with /solve?access_token=TOKEN&amp;playground=1 and print the raw reply text unchanged (never parse and re-print it).</pre>
+      </div>
+      <div class="sol" id="s14">
+        <h3>14. arka</h3>
+        <p class="meta">7,508 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:07 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/440">board entry</a></p>
+        <pre>Solve Hackattic basic_face_detection in one bash tool call; do not explain or explore. Use the Python at /home/arka/miniconda3/envs/story/bin/python (it has numpy and OpenCV). Read the token from env HACKATTIC_TOKEN and never print it. GET the basic_face_detection problem with the token as the access token, print the JSON, then at once download the image_url and decode it in colour. The image is an eight by eight tile grid; each tile is the height over eight by the width over eight; make a grayscale copy. Using OpenCV&#x27;s default-frontal, alt2-frontal and profile Haar cascades with scale factor 1.1, min neighbours 5 and min size a quarter of a tile, count a tile as a face if any cascade finds a face in it or in its left-to-right mirror. Collect the row and column of each face tile as integer pairs and POST them to the solve endpoint as a JSON body whose single key face_tiles holds that list, with playground mode on; print the reply. Print only the problem JSON and the reply, and stop on the word passed.
+</pre>
+      </div>
+      <div class="sol" id="s15">
+        <h3>15. aryan</h3>
+        <p class="meta">20,655 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 8:30 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/519">board entry</a></p>
+        <pre>Solve the Hackattic challenge basic_face_detection in Python with a single tool call: write one program into the current working directory and run it from there. Do not change directories, do not cd into any other folder, and do not use absolute paths — create and run the file in whatever folder you are already in. OpenCV with FaceDetectorYN is already installed in the interpreter, so just import and use it; do not install it, check it, or run any probe or test command. Work silently, with no explanation or narration. Do not re-run the program to retry a rejected submission or to tune detection; the only re-run allowed is to fix a crash that happened before anything was submitted, and before re-running for that reason, read your own file and confirm the fix is correct.
+
+Use these exact OpenCV names, which are case-sensitive: the detector is created with cv2.FaceDetectorYN.create, its settings are applied with setScoreThreshold, setNMSThreshold (capital N, M, S), and setTopK, and detection is done with the detect method.
+
+Have the program first make sure the model file is present: if face_detection_yunet_2023mar.onnx is not already in the current folder, download it there from https://media.githubusercontent.com/media/opencv/opencv_zoo/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx, which returns the real file of about 227 KB. Then read the Hackattic access token from the HACKATTIC_TOKEN environment variable.
+
+Next, fetch the problem and act on it without any delay, because it expires quickly. Send a GET request to https://hackattic.com/challenges/basic_face_detection/problem?access_token=TOKEN, parse the JSON reply, take the image_url field from it, immediately download the image bytes from that URL, and decode them with cv2.imdecode as a color image.
+
+Build the detector by calling cv2.FaceDetectorYN.create with the model file path, an empty string for the config, and the image’s width and height as the input size, in that order. Then set its score threshold to 0.8, its NMS threshold to 0.3, and its top-k to 500 using the setter names above. Do not also call setInputSize, since the size is already given to create. Run the detect method on the image; it returns a two-element tuple, of which you use the second element as the array of faces and ignore the first. That faces array is None when there are no faces; otherwise it has one row per face, and each row carries more than five numbers, so read only the first five as left, top, width, and height followed by the score.
+
+Map each face to a tile on an eight-by-eight grid. The tile width is the image width divided by eight and the tile height is the image height divided by eight. For a face, the center is its left plus half its width, and its top plus half its height. The column is the horizontal center divided by the tile width and rounded down, and the row is the vertical center divided by the tile height and rounded down, each clamped to the range zero through seven. Collect these as a set of unique row-and-column pairs using plain Python integers, so that two faces in the same tile count once.
+
+Finally, submit exactly once. Send a POST request to https://hackattic.com/challenges/basic_face_detection/solve?access_token=TOKEN&amp;playground=1 with the content type application/json and a JSON body that has a single field named face_tiles holding your list of row-column pairs. Do not submit a second time and do not retry with a different threshold. Then print only two things: the problem JSON and the solve reply. An OpenCV warning line on the error stream is expected and should be ignored.
+
+A pass is a solve reply that contains the word passed, including the form “passed (playground mode)”. If this run is rejected rather than crashing, do not retry it in the same session — start a fresh session on a new problem instead.</pre>
+      </div>
+      <div class="sol" id="s16">
+        <h3>16. saikrishna999</h3>
+        <p class="meta">128,462 tokens &middot; 1 prompt &middot; github-copilot/mai-code-1.1-flash &middot; 7:14 pm &middot; <a href="https://agent-golf.csbasics.in/submissions/320">board entry</a></p>
+        <pre>Immediately run one short python3 command via bash. First run `pip install -q opencv-python-headless` so cv2 is available. Then in that same command use cv2, numpy, urllib.request, json, os:
+1. Read HACKATTIC_TOKEN from os.environ.
+2. GET https://hackattic.com/challenges/basic_face_detection/problem?access_token=&lt;token&gt; and print the raw JSON response. Read image_url from it.
+3. Immediately download image_url bytes (the link expires in 5 seconds) and decode with cv2.imdecode to a grayscale image; record its height H and width W.
+4. Load the Haar cascade at cv2.data.haarcascades + &#x27;haarcascade_frontalface_default.xml&#x27; and run detectMultiScale with scaleFactor 1.1 and minNeighbors 5 to get face rectangles (x, y, w, h).
+5. For each face, compute center cx=x+w/2, cy=y+h/2, then tile row=int(cy/(H/8)) and col=int(cx/(W/8)); collect the unique [row, col] pairs as integers.
+6. POST JSON {&quot;face_tiles&quot;: pairs} to https://hackattic.com/challenges/basic_face_detection/solve?access_token=&lt;token&gt;&amp;playground=1 and print the raw JSON response.
+Print only those two JSON lines, then reply only done.</pre>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
