@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 19: Guest Session and Hackathon Check-ins</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 19</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 19 &middot; Monday 2 November</p>
+      <h1>Guest Session and Hackathon Check-ins</h1>
+      <p class="lead">Prof. Neeldhara Misra on AI agents, then a check-in with every hackathon group.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Guest session: Neeldhara Misra</h2>
+      <p>Slides: <a href="https://slides.neeldhara.com/hermes">slides.neeldhara.com/hermes</a></p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. Hackathon: what will be marked</h2>
+      <p>Most of the hackathon marks go to <strong>usability</strong>: an app that is deployed, and that people outside your group actually use. A deployed app with real users counts for much more than code or tests that nobody else runs.</p>
+      <p>At every check-in, from today, we will ask two things:</p>
+      <ul>
+        <li>Where is it deployed? Show us the link.</li>
+        <li>Who outside your group has used it, and how many people?</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Group check-ins</h2>
+      <p>We meet each group in turn after the guest session. Bring your deployed link (or what stops you deploying), your repo open, and what each member has merged since 26 October.</p>
+    </section>
+  </main>
+</body>
+</html>
