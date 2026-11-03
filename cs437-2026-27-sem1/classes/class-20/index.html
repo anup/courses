@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 20: Teach Your Agent</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .rules{border-collapse:collapse;width:100%;margin:16px 0;}
+    .rules td,.rules th{padding:8px 12px;border-bottom:1px solid rgba(128,128,128,.25);vertical-align:top;text-align:left;}
+    .steps{counter-reset:s;list-style:none;padding-left:0;}
+    .steps>li{counter-increment:s;padding:6px 0 6px 2.4em;position:relative;}
+    .steps>li::before{content:counter(s);position:absolute;left:0;top:6px;width:1.6em;height:1.6em;border-radius:50%;
+      border:1px solid currentColor;text-align:center;line-height:1.6em;font-size:.85em;opacity:.7;}
+    .cmd{margin:12px 0 16px;border:1px solid var(--line);border-radius:8px;background:var(--code-bg);overflow:hidden;}
+    .cmd-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 10px 6px 14px;border-bottom:1px solid var(--line);font-size:.8rem;color:var(--muted);}
+    .cmd-copy{font:inherit;font-size:.8rem;font-weight:600;padding:3px 10px;border:1px solid var(--line-strong);border-radius:5px;background:var(--panel);color:var(--accent-ink);cursor:pointer;}
+    .cmd-copy:hover{border-color:var(--accent);}
+    .cmd pre{margin:0;padding:12px 14px;overflow-x:auto;background:transparent;border:0;}
+    .cmd pre code{background:transparent;padding:0;font-size:.9rem;line-height:1.55;white-space:pre;}
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 20</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 20 &middot; Tuesday 3 November</p>
+      <h1>Teach Your Agent</h1>
+      <p class="lead">Your group writes two skills, one helper agent and a short memory file for your own hackathon project, in Claude Code, and then uses them to do real work on it. One file per member, each merged through a reviewed pull request.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What you hand in</h2>
+      <table class="rules">
+        <tr><th>What</th><th>Who</th><th>By</th></tr>
+        <tr><td>One of the files in section 4, in your group's hackathon repo, merged through a pull request that <strong>another member approved on GitHub</strong></td><td>Every member, one file each</td><td>Pull request opened in class today; merged by <strong>Thursday 5 November, 23:59</strong></td></tr>
+        <tr><td><code>lab-notes/class-20.md</code> in your own course repo</td><td>Every member</td><td>Thursday 5 November, 23:59</td></tr>
+      </table>
+    </section>
+
+    <section class="content-section">
+      <h2>1. Three words</h2>
+      <table class="rules">
+        <tr><th>Word</th><th>What it is</th><th>Where it lives in your repo</th></tr>
+        <tr><td><strong>Skill</strong></td><td>A written procedure: how your group does one kind of job. Claude reads its one-line description, and loads the full steps only when that job comes up. You can also run it by name, e.g. <code>/spec-status</code>.</td><td>One folder per skill, named after it: <code>.claude/skills/spec-status/SKILL.md</code></td></tr>
+        <tr><td><strong>Agent</strong> (subagent)</td><td>A helper with its own instructions and a limited set of tools. The main Claude hands it one task; it works separately and reports back.</td><td>One file per agent, named after it: <code>.claude/agents/test-breaker.md</code></td></tr>
+        <tr><td><strong>Memory</strong></td><td>Short facts Claude should know in every session: what the app is, how to run and test it.</td><td><code>CLAUDE.md</code> (top folder)</td></tr>
+      </table>
+      <p>All of them are plain text files. They go into the repo through a pull request like any other change, so the whole group gets them. Neeldhara showed the same ideas (memory, history, skills) in Hermes yesterday; today you build them in Claude Code.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>2. What a good result looks like</h2>
+      <p>Real output from these three files on Group 9&rsquo;s cab-sharing project. Yours will show your own statements.</p>
+      <h3><code>/spec-status</code></h3>
+      <pre data-label="spec-status output (shortened)"><code>| ID  | Statement                                | Tests                        | Result |
+|-----|------------------------------------------|------------------------------|--------|
+| S1  | Posting a request                        | S1_PostAndSeeWaiting (2)     | green  |
+| S2  | Never: outsiders cannot post             | S2_NonIITGNCannotPost (3)    | green  |
+| ... |                                          |                              |        |
+| S12 | Never: a raw phone number is exposed     | S12_NeverRawPhone (1)        | green  |
+
+12 green, 0 red, 0 with no test. All 26 tests passed.</code></pre>
+      <h3>&ldquo;Use the test-breaker agent on S2.&rdquo;</h3>
+      <pre data-label="test-breaker report (shortened)"><code>Statement: S2 (only @iitgn.ac.in addresses can post)
+What I broke: loosened the email check in app/store.py, so x@iitgn-ac.in is accepted
+Did the tests notice? NO. The tests only try gmail.com and a few look-alike domains.
+Put back: app/ restored, all tests pass again.
+Test to add: also try x@iitgn-ac.in and expect a refusal.</code></pre>
+      <p>That &ldquo;NO&rdquo; is the useful answer: a test that looks fine but would not catch this break. Add the test it suggests.</p>
+      <h3><code>/new-feature</code> with an unclear request</h3>
+      <pre data-label="new-feature asks instead of guessing (shortened)"><code>Request: "A student should not be able to post a trip whose time window has already ended."
+
+I stopped at step 1. A trip request stores no date, only a time of day,
+so "ended" has no fixed meaning: 08:00-09:00 posted at 22:00 could be
+13 hours ago or tomorrow morning. Should every request count as a trip
+for today, or should requests get a travel date?</code></pre>
+      <p>With a clear request (&ldquo;each sees the fare per person: the full fare split in two; airport 800, station 500 ...&rdquo;) it went all the way: new statement S13 in SPEC.md, a test that failed, the code, all 27 tests passing, one commit on <code>feature/S13-...</code>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>3. Before you start (10 minutes)</h2>
+      <ol class="steps">
+        <li><strong>Install Claude Code</strong> if you have not. On a Mac or Linux:
+          <pre data-label="Mac / Linux"><code>curl -fsSL https://claude.ai/install.sh | bash</code></pre>
+          On Windows (PowerShell). Install <a href="https://git-scm.com/downloads/win">Git for Windows</a> first if you do not have it; Claude Code needs it:
+          <pre data-label="Windows PowerShell"><code>irm https://claude.ai/install.ps1 | iex</code></pre></li>
+        <li><strong>Get your group&rsquo;s hackathon repo up to date</strong> (clone it if you have not):
+          <pre data-label="Terminal"><code>git clone &lt;your group&#x27;s hackathon repo URL&gt;
+cd &lt;repo folder&gt;
+git switch main
+git pull</code></pre></li>
+        <li><strong>Start Claude Code inside that folder</strong> by typing <code>claude</code>. The first time, choose to sign in with your Claude account and use the email your Claude seat was sent to. No seat yet? Sit with a member who has one, but write and commit your own file.</li>
+        <li><strong>Check it can see your project.</strong> Ask: <em>&ldquo;What command runs this app, and what command runs its tests? Cite the files.&rdquo;</em> Write the two commands down; you will need them.</li>
+        <li><strong>Decide who writes which file</strong> (first 5 minutes, in your group). Three members, three files: spec-status, test-breaker, new-feature. Whoever finishes first also writes CLAUDE.md. Only one person in your group is active? Tell us in class today.</li>
+      </ol>
+    </section>
+
+    <section class="content-section">
+      <h2>4. Your file: write it, run it, merge it</h2>
+      <ol class="steps">
+        <li><strong>Make a branch</strong> named after your file:
+          <pre data-label="Terminal"><code>git switch -c class20-&lt;file-name&gt;</code></pre></li>
+        <li><strong>Create the folder and the file</strong>, and paste the template below into it:
+          <pre data-label="Terminal"><code>mkdir -p .claude/skills/spec-status     # File 1
+mkdir -p .claude/agents                 # File 2
+mkdir -p .claude/skills/new-feature     # File 3
+# File 4 (CLAUDE.md) goes in the top folder</code></pre></li>
+        <li><strong>Change the template to fit your repo.</strong> The templates are written for Group 9 (Python). Check every one of these:
+          <ul>
+            <li>The <strong>test command</strong> (from section 3, step 4): e.g. <code>npm test</code>, <code>pytest</code>, <code>python3 -m unittest discover -s tests -v</code>.</li>
+            <li>Where the <strong>tests</strong> live, and how a test is linked to a statement (a class or a <code>describe</code> named after it, a comment, a file per statement).</li>
+            <li>Where the <strong>code</strong> lives (<code>app/</code>, <code>src/</code>, <code>server/</code> ...). The test-breaker uses this folder in its steps 1, 2 and 5.</li>
+            <li>How your statements are <strong>numbered</strong> (S1, CP-01, R1 ...).</li>
+          </ul>
+          You can ask Claude to adapt it: <em>&ldquo;Adapt this file to this repo. Keep its steps; change only commands, folders and names.&rdquo;</em> Then read what it changed.</li>
+        <li><strong>Restart Claude Code</strong> (type <code>/exit</code>, then <code>claude</code>). A new agent file is only picked up at start. Check yours is listed: <code>/agents</code> for the agent, or type <code>/</code> and look for your skill.</li>
+        <li><strong>Run it on your repo</strong> and check the result yourself. Fix the file until the result is right.
+          <ul>
+            <li>spec-status: <code>/spec-status</code></li>
+            <li>test-breaker: <em>&ldquo;Use the test-breaker agent on &lt;one of your statement IDs&gt;.&rdquo;</em></li>
+            <li>new-feature: <strong>first commit your skill file</strong> (<code>git add .claude</code>, <code>git commit -m "Class 20: new-feature (&lt;your name&gt;)"</code>), then run <code>/new-feature</code> followed by a request in one sentence. The skill makes its own <code>feature/S&lt;n&gt;-...</code> branch for that trial; afterwards go back with <code>git switch class20-new-feature</code> before you push.</li>
+          </ul></li>
+        <li><strong>Commit, push, and open a pull request</strong> on GitHub titled <code>Class 20: &lt;file&gt; (&lt;your name&gt;)</code>. Paste what the run printed into the description. (new-feature: you committed already, so just run the last line, <code>git push -u origin HEAD</code>.)
+          <pre data-label="Terminal"><code>git add .claude          # if you wrote CLAUDE.md: git add CLAUDE.md
+git commit -m &quot;Class 20: &lt;file&gt; (&lt;your name&gt;)&quot;
+git push -u origin HEAD</code></pre></li>
+        <li><strong>Another member reviews and approves it on GitHub, then it is merged.</strong> Merging your own pull request without a teammate&rsquo;s approval does not count.</li>
+      </ol>
+
+      <h3>No tests or code in your repo yet?</h3>
+      <p><code>/spec-status</code> will say &ldquo;no test&rdquo; for every statement: that is the right answer. Use <code>/new-feature</code> to write your first statements, their tests and the code. Write the test-breaker file today and run it once you have code.</p>
+
+      <h3>File 1: <code>.claude/skills/spec-status/SKILL.md</code></h3>
+      <pre data-label="spec-status/SKILL.md"><code>---
+name: spec-status
+description: Report which SPEC.md statements are green, red, or untested in this repo. Use when someone asks &quot;where are we&quot;, &quot;what is left&quot;, &quot;is the spec green&quot;, or before opening a pull request.
+---
+
+# Spec status
+
+1. Read `SPEC.md`. List every statement ID (S1, S2, ...) with its one-line title.
+2. Find the tests for each statement. In this repo a statement&#x27;s tests live in
+   `tests/test_spec.py`, in the class whose name starts with the statement ID
+   (for example `S4_NeverMatchedTwice`).
+3. Run the whole suite once:
+   `python3 -m unittest discover -s tests -v`
+4. Print one table, nothing else before it:
+
+   | ID | Statement | Tests | Result |
+   |----|-----------|-------|--------|
+
+   Result is **green** (all its tests pass), **red** (any test fails, give the
+   first line of the failure), or **no test**.
+5. Under the table, at most three lines: the count of green / red / no test,
+   and the one statement to work on next (the first red, else the first
+   untested).
+
+Do not edit any file. Do not fix anything. This skill only reports.
+</code></pre>
+
+      <h3>File 2: <code>.claude/agents/test-breaker.md</code></h3>
+      <pre data-label="agents/test-breaker.md"><code>---
+name: test-breaker
+description: Checks whether the tests really protect the spec. Breaks one SPEC.md promise in the code on purpose, runs the tests, reports whether they noticed, then puts the code back. Use before a checkpoint or after tests are written.
+tools: Read, Grep, Glob, Edit, Bash
+---
+
+You check that this repo&#x27;s tests are honest. You are given one statement ID
+from SPEC.md (or pick the one you think is weakest).
+
+1. Run `git status --porcelain -- app/`. If it prints anything, stop and say so.
+   (Uncommitted files elsewhere, such as this agent file, are fine.)
+2. Read the statement in SPEC.md and find the code in `app/` that keeps that
+   promise.
+3. Make the **smallest** change to that code that breaks the promise for a
+   real user (for example: allow a gmail.com address; match the same
+   request twice). Change code only, never tests.
+4. Run `python3 -m unittest discover -s tests`.
+5. Put the code back with `git checkout -- app/` and run the tests again to
+   confirm they pass.
+6. Report in this shape:
+   - **Statement:** S?
+   - **What I broke:** one sentence, file and line.
+   - **Did the tests notice?** yes (name the failing test) / **no**
+   - **If no:** the test that should be added, in one sentence.
+
+Never leave the code broken. Never edit tests.
+</code></pre>
+
+      <h3>File 3: <code>.claude/skills/new-feature/SKILL.md</code></h3>
+      <pre data-label="new-feature/SKILL.md"><code>---
+name: new-feature
+description: Turn a plain-English feature request into a new SPEC.md statement, a failing test, and the code that makes it pass. Use when a user or the acceptance run asks for a new feature.
+---
+
+# New feature, spec first
+
+Work in this order. Do not skip ahead.
+
+0. **Branch.** Create and switch to a new branch
+   `feature/S&lt;n&gt;-&lt;short-name&gt;` (S&lt;n&gt; = the next free statement ID) before
+   touching any file.
+1. **Restate.** Write the request back as one checkable sentence, in the
+   style of the existing statements in `SPEC.md`. If it is ambiguous, ask
+   one question and stop.
+2. **Spec.** Add it to `SPEC.md` as S&lt;n&gt; and a
+   *Test:* line saying how it will be checked.
+3. **Failing test.** Add a test class named after the ID in
+   `tests/test_spec.py`. Run the suite and show that this new test fails and
+   every old test still passes. If the new test passes already, the test is
+   wrong: fix the test, not the code.
+4. **Code.** Change the smallest amount of code in `app/` that makes it pass.
+5. **Check.** Run the full suite. Then run the `spec-status` skill, if it
+   is in the repo yet.
+6. **Commit** on that branch, one commit, message `S&lt;n&gt;: &lt;statement&gt;`. Do not push and do not merge: a
+   teammate reviews the pull request.
+
+Never edit or delete an existing test to make the suite pass.
+</code></pre>
+
+      <h3>File 4: <code>CLAUDE.md</code> (top folder; whoever finishes first)</h3>
+      <p>Under 15 lines: what the app is, the one command to run it, the one command to test it, where the code and tests live, and any rule Claude keeps forgetting. Group 9&rsquo;s, as an example:</p>
+      <pre data-label="CLAUDE.md"><code># Campus cab sharing (Group 9)
+
+Python standard library only. Nothing to install.
+
+- Run:  `python3 app/server.py`  (then open http://localhost:8000)
+- Test: `python3 -m unittest discover -s tests -v`
+- Spec: `SPEC.md`, statements S1, S2, ... Each has a test class in `tests/test_spec.py` named after it.
+- Code: matching rule in `app/matching.py`, storage and rules in `app/store.py`, web app in `app/server.py` + `index.html`.
+- Never edit an existing test to make the suite pass.
+</code></pre>
+    </section>
+
+    <section class="content-section">
+      <h2>5. Then make them work for you</h2>
+      <ul>
+        <li>Run <code>/spec-status</code>. Work on what it says is next.</li>
+        <li>Run the test-breaker on your two most important &ldquo;never&rdquo; statements. Where the tests did not notice, add the test it suggests, in a reviewed pull request.</li>
+        <li><strong>New statements:</strong> if your spec has fewer than ten statements, add the missing ones with <code>/new-feature</code>. If your spec is complete, it is frozen as of today: try <code>/new-feature</code> on a branch for practice, but do not merge it.</li>
+      </ul>
+      <p>Remember what gets most of the hackathon marks: an app that is deployed and used by people outside your group (Class 19). A useful extra skill once you deploy: <code>deploy</code>, the exact steps that put your app online and check the link works.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>6. Log</h2>
+      <p>In your own course repo, <code>lab-notes/class-20.md</code>, in &ldquo;I&rdquo;: which file you wrote, the link to its pull request, and one thing Claude did wrong before you fixed the file.</p>
+    </section>
+  </main>
+
+  <script>
+    document.querySelectorAll("pre[data-label]").forEach(function (pre) {
+      var box = document.createElement("div"); box.className = "cmd";
+      var head = document.createElement("div"); head.className = "cmd-head";
+      var label = document.createElement("span"); label.textContent = pre.dataset.label;
+      var btn = document.createElement("button"); btn.type = "button"; btn.className = "cmd-copy"; btn.textContent = "Copy";
+      btn.setAttribute("aria-label", "Copy: " + pre.dataset.label);
+      btn.addEventListener("click", function () {
+        var text = pre.innerText.replace(/\n+$/, "");
+        var done = function (ok) { btn.textContent = ok ? "Copied" : "Select and copy"; setTimeout(function () { btn.textContent = "Copy"; }, 1600); };
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+        } else {
+          var r = document.createRange(); r.selectNodeContents(pre);
+          var sel = window.getSelection(); sel.removeAllRanges(); sel.addRange(r);
+          try { done(document.execCommand("copy")); } catch (e) { done(false); }
+        }
+      });
+      head.appendChild(label); head.appendChild(btn);
+      pre.parentNode.insertBefore(box, pre); box.appendChild(head); box.appendChild(pre);
+    });
+  </script>
+</body>
+</html>
