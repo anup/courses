@@ -24,7 +24,7 @@
     <section class="hero">
       <p class="eyebrow">Semester II, 2026-27</p>
       <h1>Course Plan</h1>
-      <p class="lead">ES248: Introduction to DSA in C Programming. You will write C programs every week, starting from the basics. If you have never coded before, the course starts where you are.</p>
+      <p class="lead">ES248: Introduction to DSA in C Programming. Programming in C on Linux, from your first program to linked lists, stacks, queues and graph search.</p>
     </section>
 
     <section class="agenda" aria-label="Course information">
@@ -59,126 +59,28 @@
     </section>
 
     <section class="slide-band">
-      <h2>Week 1: the baseline test</h2>
-      <p class="lead">In the first week everyone takes a short coding test. It carries no marks. It tells us how much C you already know, so we can teach you at the right pace.</p>
+      <h2>Who this course is for</h2>
+      <p class="lead">ES248 is an elective, and it is beginner friendly. You do not need to know how to code. We start from the basics and spend a lot of time on them, so that everyone who registers can keep up. If you already code, you will still get plenty of practice: you will write and run C programs every week.</p>
     </section>
 
-    <section class="agenda" aria-label="Groups">
-      <article class="agenda-item">
-        <div class="marker">A</div>
-        <div>
-          <h2>Foundation group</h2>
-          <p>For students who are new to coding or scored low on the baseline test. We start from the very beginning: what a program is, variables, <code>printf</code> and <code>scanf</code>, conditions and loops. Foundation sessions are extra to the regular classes, and attendance is required. When you can solve the weekly contest problems on your own, you move to the core group.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">B</div>
-        <div>
-          <h2>Core group</h2>
-          <p>For students who can already write simple C programs. You attend the regular classes and are expected to solve more of each weekly contest.</p>
-        </div>
-      </article>
-    </section>
     <section class="content-section">
-      <p>Both groups follow the same topics, take the same exams and are graded the same way. The foundation group gets extra time and help at the start.</p>
-    </section>
-
-    <section class="slide-band">
       <h2>Topics</h2>
-      <p class="lead">The same topics as last semester, with more time for graph search at the end.</p>
-    </section>
-
-    <section class="content-section">
-      <h2>Before the mid-semester exam</h2>
-      <ol class="compact-list">
-        <li><strong>Linux basics</strong> &mdash; moving around the filesystem, running commands, compiling with <code>gcc</code>.</li>
-        <li><strong>C basics</strong> &mdash; data types, variables, input and output, operators, conditions.</li>
-        <li><strong>Loops</strong> &mdash; <code>for</code>, <code>while</code>, and nested loops.</li>
-        <li><strong>Arrays</strong> &mdash; how arrays sit in memory, passing them to functions, inserting, deleting and simple sorting.</li>
-        <li><strong>Strings</strong> &mdash; characters and ASCII, the null terminator, <code>scanf</code>, and <code>strlen</code>, <code>strcpy</code>, <code>strcat</code>, <code>strcmp</code>.</li>
-        <li><strong>Pointers, part I</strong> &mdash; addresses, pointer arithmetic, pointers and arrays, call by reference.</li>
-        <li><strong>Endianness</strong> &mdash; how multi-byte values are stored in memory.</li>
-      </ol>
-    </section>
-
-    <section class="content-section">
-      <h2>After the mid-semester exam</h2>
-      <ol class="compact-list" start="8">
-        <li><strong>Pointers, parts II and III</strong> &mdash; 2D arrays, <code>malloc</code> and <code>free</code>, function pointers.</li>
+      <ul class="compact-list">
+        <li><strong>Linux basics</strong> &mdash; working in the terminal and compiling with <code>gcc</code>.</li>
+        <li><strong>C basics</strong> &mdash; data types, variables, input and output, operators, conditions and loops.</li>
+        <li><strong>Arrays and strings</strong></li>
+        <li><strong>Pointers and memory</strong> &mdash; addresses, pointer arithmetic, 2D arrays, <code>malloc</code> and <code>free</code>, function pointers, endianness.</li>
         <li><strong>Structures and unions</strong></li>
         <li><strong>Time complexity</strong> &mdash; counting steps and Big O.</li>
-        <li><strong>Linked lists</strong></li>
-        <li><strong>Stacks</strong></li>
-        <li><strong>Queues</strong></li>
-        <li><strong>BFS, DFS and backtracking</strong> &mdash; searching grids and graphs. Two weeks this time, not one.</li>
-      </ol>
-      <p>Last semester's slides for each topic are on the <a href="../../es248/">previous offering's page</a>. Updated slides will be posted as we reach each topic.</p>
+        <li><strong>Linked lists, stacks and queues</strong></li>
+        <li><strong>BFS, DFS and backtracking</strong> &mdash; searching grids and graphs.</li>
+      </ul>
+      <p>Slides from the last offering are on the <a href="../../es248/">Semester II, 2025-26 page</a>.</p>
     </section>
 
-    <section class="slide-band">
+    <section class="content-section">
       <h2>Grading</h2>
-      <p class="lead">Two exams, a weekly contest, regular practice and attendance. Total 100 marks.</p>
-    </section>
-
-    <section class="agenda" aria-label="Grading">
-      <article class="agenda-item">
-        <div class="marker">25</div>
-        <div>
-          <h2>Mid-semester exam</h2>
-          <p>Held in the lab. Part A is multiple-choice questions; Part B is coding problems in C.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">30</div>
-        <div>
-          <h2>End-semester exam</h2>
-          <p>Same format as the mid-semester exam. It covers the whole course.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">25</div>
-        <div>
-          <h2>Weekly contest</h2>
-          <p>Every week, take part in one rated contest: CodeChef Starters (Wednesday, 8:00&ndash;10:00&nbsp;PM) or the AtCoder Beginner Contest (usually Saturday, 5:30&nbsp;PM). Starts in week 2. Your three weakest weeks are dropped. Scoring is below.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">10</div>
-        <div>
-          <h2>Regular practice</h2>
-          <p>Take part in more contests on CodeChef, AtCoder, LeetCode or Codeforces. You get 1 mark for each extra contest where you solve at least one problem in C, up to 10 marks. The contest you use for your weekly mark does not count again here.</p>
-        </div>
-      </article>
-      <article class="agenda-item">
-        <div class="marker">10</div>
-        <div>
-          <h2>Attendance</h2>
-          <p>Marks for attending your classes. If you are in the foundation group, this includes the foundation sessions.</p>
-        </div>
-      </article>
-    </section>
-
-    <section class="content-section">
-      <h2>How each weekly contest is scored</h2>
-      <p>Each week is scored out of 10, by the number of problems you solve <strong>in C</strong> during the contest. Your rating, rank and division do not matter.</p>
-      <ul class="compact-list">
-        <li>Take part but solve nothing: <strong>2</strong></li>
-        <li>Solve 1 problem: <strong>4</strong></li>
-        <li>Solve 2 problems: <strong>7</strong></li>
-        <li>Solve 3 problems: <strong>9</strong></li>
-        <li>Solve 4 or more: <strong>10</strong></li>
-      </ul>
-      <p>If you take both contests in a week, the better one counts. Your weekly contest mark is the average of your best weeks (all weeks except your three weakest), scaled to 25.</p>
-      <p><strong>Use the username you registered.</strong> We track your contests automatically using the CodeChef and AtCoder usernames you submit in the first week. Contests on any other account do not count.</p>
-    </section>
-
-    <section class="content-section">
-      <h2>Rules</h2>
-      <ul class="compact-list">
-        <li>Only solutions written in C count, for both the weekly contest and regular practice.</li>
-        <li>You may be asked to explain any solution you submitted in a short viva. If you cannot explain it, it does not count.</li>
-        <li>Do the work yourself. Copied or insincere work can lose marks.</li>
-      </ul>
+      <p>We will decide the grading policy in the first week, together with the students who join the course. Expect to practise every week on online contest sites such as CodeChef and AtCoder, writing your solutions in C.</p>
     </section>
   </main>
   <script src="../../assets/course-theme.js"></script>
