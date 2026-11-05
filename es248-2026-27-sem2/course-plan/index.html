@@ -24,7 +24,29 @@
     <section class="hero">
       <p class="eyebrow">Semester II, 2026-27</p>
       <h1>Course Plan</h1>
-      <p class="lead">ES248: Introduction to DSA in C Programming. Programming in C on Linux, from your first program to linked lists, stacks, queues and graph search.</p>
+      <p class="lead">ES248: Introduction to Data Structures and Algorithms. The bridge between Computing in Python and DSA&nbsp;1 in C.</p>
+    </section>
+
+    <section class="slide-band">
+      <h2>Why take this course</h2>
+      <p class="lead">You learned to program in Python in ES&nbsp;112/113. DSA&nbsp;1 (ES242) is taught in C and expects you to be comfortable with it. ES248 fills the gap between the two.</p>
+      <pre class="code-block">ES 112/113 (Python)  &rarr;  ES248 (C + basic DSA)  &rarr;  DSA 1 (DSA in C)</pre>
+      <p>If you have ever wondered what really happens when your Python code runs, this course shows you. Python hides memory, pointers and how data is laid out. In C you handle all of it yourself, so you see how data structures actually work on the machine.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Beginner friendly</h2>
+      <p>This is an elective, and we want it to stay beginner friendly. A lot of the course is foundations: writing, compiling and fixing small C programs until they feel natural. If Python still feels shaky, you are welcome here. If you are already confident, you will still get plenty of practice: you will write C programs every week.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Who should take it</h2>
+      <ul class="compact-list">
+        <li>Students planning to take DSA&nbsp;1 or other systems courses.</li>
+        <li>Anyone interested in systems programming, embedded systems or IoT.</li>
+        <li>Students preparing for technical interviews, many of which test C and how memory works.</li>
+        <li>Anyone curious about low-level programming and how a computer runs a program.</li>
+      </ul>
     </section>
 
     <section class="agenda" aria-label="Course information">
@@ -46,41 +68,66 @@
         <div class="marker">TEAM</div>
         <div>
           <h2>Instructor</h2>
-          <p>Anup Kalbalia &mdash; <a class="email-link" href="mailto:anup.kalbalia@iitgn.ac.in">anup.kalbalia@iitgn.ac.in</a>.</p>
+          <p>Anup Kalbalia &mdash; <a class="email-link" href="mailto:anup.kalbalia@iitgn.ac.in">anup.kalbalia@iitgn.ac.in</a> &middot; Office AB13/401D.</p>
         </div>
       </article>
       <article class="agenda-item">
         <div class="marker">SYS</div>
         <div>
           <h2>You need Linux</h2>
-          <p>Install Ubuntu on your laptop before the first class. A MacBook also works, since macOS already runs Unix commands. We compile with <code>gcc</code> in the terminal.</p>
+          <p>Install Ubuntu on your laptop before the first class. A MacBook also works, since macOS already runs Unix commands. Help with setup is given in the first lab.</p>
         </div>
       </article>
     </section>
 
-    <section class="slide-band">
-      <h2>Who this course is for</h2>
-      <p class="lead">ES248 is an elective, and it is beginner friendly. You do not need to know how to code. We start from the basics and spend a lot of time on them, so that everyone who registers can keep up. If you already code, you will still get plenty of practice: you will write and run C programs every week.</p>
+    <section class="content-section">
+      <h2>What you will be able to do</h2>
+      <ol class="compact-list">
+        <li>Write, compile and debug C programs on Linux.</li>
+        <li>Explain how memory works: the stack and the heap, pointers, and <code>malloc</code> and <code>free</code>.</li>
+        <li>Build linked lists, stacks and queues in C, using both arrays and pointers.</li>
+        <li>Work out how the running time of a program grows with its input.</li>
+        <li>Search a grid or graph with BFS and DFS.</li>
+        <li>Start DSA&nbsp;1 ready to work in C.</li>
+      </ol>
     </section>
 
     <section class="content-section">
       <h2>Topics</h2>
       <ul class="compact-list">
-        <li><strong>Linux basics</strong> &mdash; working in the terminal and compiling with <code>gcc</code>.</li>
-        <li><strong>C basics</strong> &mdash; data types, variables, input and output, operators, conditions and loops.</li>
-        <li><strong>Arrays and strings</strong></li>
-        <li><strong>Pointers and memory</strong> &mdash; addresses, pointer arithmetic, 2D arrays, <code>malloc</code> and <code>free</code>, function pointers, endianness.</li>
-        <li><strong>Structures and unions</strong></li>
-        <li><strong>Time complexity</strong> &mdash; counting steps and Big O.</li>
+        <li><strong>Linux basics</strong> &mdash; the command line, the filesystem, compiling with <code>gcc</code>.</li>
+        <li><strong>From Python to C</strong> &mdash; compiling, types, input and output, conditions and loops.</li>
+        <li><strong>Arrays and strings</strong> &mdash; how they sit in memory and what each operation costs.</li>
+        <li><strong>Pointers and memory</strong> &mdash; pointer arithmetic, 2D arrays, dynamic memory, function pointers, endianness.</li>
+        <li><strong>Structures and unions</strong> &mdash; your own data types and how they are laid out in memory.</li>
+        <li><strong>Time complexity</strong></li>
         <li><strong>Linked lists, stacks and queues</strong></li>
-        <li><strong>BFS, DFS and backtracking</strong> &mdash; searching grids and graphs.</li>
+        <li><strong>BFS, DFS and backtracking</strong></li>
       </ul>
-      <p>Slides from the last offering are on the <a href="../../es248/">Semester II, 2025-26 page</a>.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>How the course is taught</h2>
+      <ul class="compact-list">
+        <li><strong>Lectures:</strong> concepts and live demonstrations, often comparing Python with C.</li>
+        <li><strong>Labs and practice:</strong> hands-on coding every week, including online contests on sites such as CodeChef and AtCoder, solved in C.</li>
+        <li>Some topics may be flipped: watch a short video before class, then code during class.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Resources</h2>
+      <ul class="compact-list">
+        <li><strong>Main resource:</strong> Charles Severance, <a href="https://www.cc4e.com/">C Programming for Everybody</a>. Free online, and written for people who learned Python first.</li>
+        <li><strong>Videos:</strong> <a href="https://www.youtube.com/@mycodeschool">mycodeschool</a> playlists on C, pointers and data structures.</li>
+        <li><strong>Books for reference:</strong> Kernighan and Ritchie, <em>The C Programming Language</em>; K.&nbsp;N.&nbsp;King, <em>C Programming: A Modern Approach</em>; Langsam, Augenstein and Tenenbaum, <em>Data Structures Using C and C++</em>.</li>
+        <li><strong>Last offering:</strong> slides from <a href="../../es248/">Semester II, 2025-26</a>.</li>
+      </ul>
     </section>
 
     <section class="content-section">
       <h2>Grading</h2>
-      <p>The grading policy will be decided by the students present in class. Expect to practise every week on online contest sites such as CodeChef and AtCoder, writing your solutions in C.</p>
+      <p>The grading policy will be decided by the students present in class.</p>
     </section>
   </main>
   <script src="../../assets/course-theme.js"></script>
