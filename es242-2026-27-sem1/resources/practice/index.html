@@ -39,7 +39,73 @@
     <section class="hero">
       <p class="eyebrow">Study and practice</p>
       <h1>Practice Problems by Topic</h1>
-      <p class="lead">Public practice problems from LeetCode, HackerRank, CSES, SPOJ, AtCoder and Codeforces for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+      <p class="lead">Public practice problems from LeetCode, HackerRank, CSES, SPOJ, AtCoder, Codeforces and CodeChef for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
+    </section>
+
+    <section class="content-section" id="bfs">
+      <h2>Breadth-first search <span class="section-tag">Class 18</span></h2>
+      <p class="lead">From <a href="../../classes/class-18/">Breadth-First Search</a>: shortest paths with a queue, the BFS tree, bipartite graphs, connected components, grids and other implicit graphs, and strong connectivity. These 22 public problems come from CSES, LeetCode, Codeforces, AtCoder, SPOJ, HackerRank and CodeChef. Start with section 1, then follow the lecture's order.</p>
+      <p>Use C. CSES, Codeforces, AtCoder, SPOJ and CodeChef read standard input and number vertices from 1, so either use arrays of size n+1 or subtract 1 as you read. LeetCode passes the graph to a function. Store the graph as an adjacency list, or as the lecture's 2D array with a degree count when the largest degree is small; with n = 100,000 an n &times; n matrix will not fit. Submitting requires a free account on each site. The statements are publicly readable.</p>
+
+      <h3>1. Write BFS: start here</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1667">CSES 1667: Message Route</a> &mdash; the lecture's algorithm from computer 1 to computer n, plus the route itself. Store each vertex's parent when you discover it, then walk back from n and print the path in reverse. Print <code>IMPOSSIBLE</code> if n is never discovered. n &le; 100,000, m &le; 200,000.</li>
+        <li><a href="https://www.hackerrank.com/challenges/bfsshortreach/problem">HackerRank: Breadth First Search: Shortest Reach</a> &mdash; distances from a start node to every other node, in node order, with &minus;1 for unreachable nodes and the start left out. Every edge counts 6, so print 6 &times; distance. Several graphs come in one input: reset your arrays for each.</li>
+        <li><a href="https://leetcode.com/problems/find-if-path-exists-in-graph/">LeetCode 1971. Find if Path Exists in Graph</a> &mdash; Easy. Vertices are numbered from 0. Run BFS from <code>source</code> and report whether <code>destination</code> was discovered.</li>
+      </ol>
+
+      <h3>2. Use the BFS tree</h3>
+      <ol class="compact-list">
+        <li><a href="https://atcoder.jp/contests/abc168/tasks/abc168_d">AtCoder ABC168 D: .. (Double Dots)</a> &mdash; each room's signpost must start a shortest route to room 1. That is the room that discovered it: its parent in the BFS tree. The cave is connected, so the answer is always <code>Yes</code>.</li>
+        <li><a href="https://codeforces.com/problemset/problem/1037/D">Codeforces 1037D: Valid BFS?</a> &mdash; rated 1700, extension. Decide whether a given order of a tree's vertices can be printed by BFS from vertex 1. Children of each vertex must appear together and in the order their parents were processed.</li>
+      </ol>
+
+      <h3>3. Grids and implicit graphs</h3>
+      <ol class="compact-list">
+        <li><a href="https://www.spoj.com/problems/NAKANJ/">SPOJ NAKANJ: Minimum Knight moves !!!</a> &mdash; the lecture's knight problem on an 8 &times; 8 board. Squares are given as <code>a1</code> to <code>h8</code>: convert the letter and the digit to (i, j). Up to 4,096 test cases, each a fresh BFS over 64 squares. a1 to h8 takes 6 moves.</li>
+        <li><a href="https://cses.fi/problemset/task/1193">CSES 1193: Labyrinth</a> &mdash; shortest path from A to B through floor squares, moving up, down, left and right; print the length and the moves as <code>L R U D</code>. Store how you entered each square and walk back from B. The grid is up to 1000 &times; 1000, so the queue holds up to a million pairs.</li>
+        <li><a href="https://leetcode.com/problems/shortest-path-in-binary-matrix/">LeetCode 1091. Shortest Path in Binary Matrix</a> &mdash; Medium. Move in 8 directions through 0-cells from the top-left to the bottom-right. The answer counts cells, not moves, and is &minus;1 if either end is blocked.</li>
+        <li><a href="https://codeforces.com/problemset/problem/520/B">Codeforces 520B: Two Buttons</a> &mdash; rated 1400. Each number is a vertex; its neighbours are 2n and n&minus;1. BFS from n until you reach m. Values above about 2 &times; 10<sup>4</sup> are never useful.</li>
+        <li><a href="https://leetcode.com/problems/open-the-lock/">LeetCode 752. Open the Lock</a> &mdash; Medium. The 10,000 lock settings are the vertices; each turn of one wheel by one step is an edge, giving 8 neighbours. Dead ends are vertices you must not enter, including possibly <code>"0000"</code> itself.</li>
+      </ol>
+
+      <h3>4. Bipartite graphs</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1668">CSES 1668: Building Teams</a> &mdash; split pupils into two teams with no friends in the same team: a bipartite check that prints team 1 for even levels and 2 for odd. The graph can be disconnected, so start a new BFS from every undiscovered pupil. Print <code>IMPOSSIBLE</code> if an edge joins two pupils on the same level.</li>
+        <li><a href="https://leetcode.com/problems/is-graph-bipartite/">LeetCode 785. Is Graph Bipartite?</a> &mdash; Medium. The graph is given as adjacency lists, numbered from 0, and may be disconnected. Same check as the lecture, from every undiscovered vertex.</li>
+        <li><a href="https://www.spoj.com/problems/BUGLIFE/">SPOJ BUGLIFE: A Bug&rsquo;s Life</a> &mdash; each interaction is an edge; the scenario is suspicious when the graph is not bipartite. Print <code>Scenario #i:</code> and then the verdict line exactly as the statement gives it. Several scenarios per input, the graph can be disconnected, and a scenario can have up to 2,000 bugs and a million interactions, so read with <code>scanf</code>.</li>
+        <li><a href="https://codeforces.com/problemset/problem/862/B">Codeforces 862B: Mahmoud and Ehab and the bipartiteness</a> &mdash; rated 1300. A tree is bipartite: colour it by level parity, count the two sides a and b, and print a &times; b &minus; (n &minus; 1). With n up to 100,000 this needs <code>long long</code>.</li>
+      </ol>
+
+      <h3>5. Connected components</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1666">CSES 1666: Building Roads</a> &mdash; count the components k, then print k&minus;1 new roads joining one city from each component to one from the next.</li>
+        <li><a href="https://cses.fi/problemset/task/1192">CSES 1192: Counting Rooms</a> &mdash; components of a grid: each floor square is a vertex joined to its floor neighbours. Start a BFS from every undiscovered floor square and count them.</li>
+        <li><a href="https://leetcode.com/problems/number-of-provinces/">LeetCode 547. Number of Provinces</a> &mdash; Medium. The graph comes as an adjacency matrix, so listing neighbours takes O(n) and the whole count O(n<sup>2</sup>). n &le; 200.</li>
+        <li><a href="https://www.codechef.com/problems/FIRESC">CodeChef FIRESC: Fire Escape Routes</a> &mdash; difficulty 1671. Print the number of components and the product of their sizes modulo 10<sup>9</sup>+7. Multiply in <code>long long</code> and reduce after each step. Up to 5 test cases, each with up to 100,000 employees.</li>
+      </ol>
+
+      <h3>6. Directed graphs and strong connectivity</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/keys-and-rooms/">LeetCode 841. Keys and Rooms</a> &mdash; Medium. Room i's keys are its outgoing edges. Check whether BFS from room 0 discovers every room: half of the lecture's test.</li>
+        <li><a href="https://cses.fi/problemset/task/1682">CSES 1682: Flight Routes Check</a> &mdash; the lecture's algorithm exactly: BFS from city 1 in the graph and in the reversed graph. If the first misses city v, print <code>NO</code> and <code>1 v</code>; if the second misses v, print <code>NO</code> and <code>v 1</code>. Otherwise print <code>YES</code>.</li>
+      </ol>
+
+      <h3>7. Extension: BFS from many sources</h3>
+      <p>Put every source in the queue at distance 0 before the loop starts. The rest of BFS is unchanged.</p>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/rotting-oranges/">LeetCode 994. Rotting Oranges</a> &mdash; Medium. All rotten oranges start in the queue; the answer is the largest distance, or &minus;1 if some fresh orange is never reached.</li>
+        <li><a href="https://cses.fi/problemset/task/1194">CSES 1194: Monsters</a> &mdash; harder. First run one BFS from all monsters at once to find when each square becomes dangerous. Then BFS from A, entering a square only if you reach it strictly before any monster, and stop at the edge of the map.</li>
+      </ol>
+
+      <h3>Local C exercises from the slides</h3>
+      <ul class="compact-list">
+        <li><strong>Trace the queue:</strong> fill in the blanks in the code that slides 11&ndash;37 build up, and run it on the six-vertex graph from slide 2 with source 0. Print <code>distance[]</code> and the queue after each vertex is processed, and compare with the trace on slides 18&ndash;37 and the distances on slide 3.</li>
+        <li><strong>BFS tree:</strong> add a <code>parent[]</code> array, set it when a vertex is discovered, and print the tree level by level. Check it against slide 48. Then check the slide 54 property: for every edge (u, v), |distance[u] &minus; distance[v]| &le; 1.</li>
+        <li><strong>Bipartite and components:</strong> complete the slide 67 and slide 74 code. The slide 55 graph is bipartite; add one edge between two vertices on the same level and check the answer changes. The slide 70 graph has 2 components.</li>
+        <li><strong>Knight moves:</strong> complete the slide 89 code for an n &times; n board. On 8 &times; 8, a corner to the opposite corner takes 6 moves; on a 3 &times; 3 board the centre can never be reached, so print &minus;1 rather than reading an unset distance.</li>
+        <li><strong>Strongly connected:</strong> complete the slide 102 code with its <code>bfs</code> function. Test the graphs on slides 90 (No) and 91 (Yes), and a single vertex with no edges (Yes).</li>
+      </ul>
     </section>
 
     <section class="content-section" id="graphs">

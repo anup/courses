@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 18: Breadth-First Search</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 18</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 18 &middot; Tuesday 3 and Friday 6 November 2026</p>
+      <h1>Breadth-First Search</h1>
+      <p class="lead">Find the shortest path from a source to every vertex of an unweighted graph by discovering vertices one distance at a time, with a queue to keep them in order. Then use the BFS tree it builds to test whether a graph is bipartite, count connected components, move a knight across a chessboard, and check whether a directed graph is strongly connected.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="bfs.pptx">Download BFS slides (PowerPoint)</a></p>
+      <p>The 102-slide deck builds the algorithm step by step on one six-vertex graph. Slides 2&ndash;41 develop BFS and its queue, 42&ndash;54 the BFS tree, and 55&ndash;102 apply it to four problems: bipartite graphs (55&ndash;67), connected components (68&ndash;74), knight moves (75&ndash;89) and strong connectivity (90&ndash;102). The code slides leave the variable names blank for you to fill in.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the material covers</h2>
+      <ul class="compact-list">
+        <li><strong>Shortest paths in an unweighted graph</strong> &mdash; the source is the only vertex at distance 0. Using all the vertices at distance i&minus;1, find every vertex at distance i. Set a vertex's distance only the first time you discover it; never change it afterwards.</li>
+        <li><strong>The queue</strong> &mdash; as soon as you set a vertex's distance, add it to the queue, and process the queue in order until it is empty. Vertices then come out at distance 0, then 1, then 2. Each vertex enters the queue once, so an array of size n with two indices, <code>first</code> and <code>last</code>, is enough. <code>distance[v] = -1</code> marks a vertex not yet discovered.</li>
+        <li><strong>Running time</strong> &mdash; processing vertex u scans its d(u) neighbours. Summed over all vertices this is O(n + m), with an adjacency list.</li>
+        <li><strong>The BFS tree</strong> &mdash; join each vertex to the vertex that discovered it. Level i of the tree holds the vertices at distance i. For every edge (u, v), tree or not, the levels of u and v differ by at most 1.</li>
+        <li><strong>Bipartite graphs</strong> &mdash; split the vertices into two sets so every edge crosses between them. Run BFS: the graph is bipartite exactly when no edge joins two vertices on the same level, that is, when no edge has <code>distance[u] == distance[v]</code>.</li>
+        <li><strong>Connected components</strong> &mdash; a BFS from one vertex reaches only its own component. Start a new BFS from each vertex that is still undiscovered and count the BFS trees.</li>
+        <li><strong>Implicit graphs: knight moves</strong> &mdash; each square (i, j) of an n &times; n board is a vertex, and its neighbours are the up to 8 squares a knight can jump to. Generate them on the fly with two displacement arrays and a bounds check; the queue holds pairs (i, j).</li>
+        <li><strong>Strongly connected graphs</strong> &mdash; a directed graph is strongly connected if every vertex can reach every other. A BFS from each vertex costs O(n(n + m)). Instead, run one BFS from s in the graph and one from s in the reversed graph: if both reach every vertex, any u can reach v through s.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice route</h2>
+      <ol class="compact-list">
+        <li>Write BFS: CSES Message Route, then HackerRank Breadth First Search: Shortest Reach.</li>
+        <li>Grids and implicit graphs: SPOJ NAKANJ (Minimum Knight moves !!!), then CSES Labyrinth.</li>
+        <li>Bipartite: CSES Building Teams, then LeetCode 785 (Is Graph Bipartite?).</li>
+        <li>Components: CSES Building Roads and Counting Rooms.</li>
+        <li>Strong connectivity: CSES Flight Routes Check, the lecture's two-BFS algorithm exactly.</li>
+      </ol>
+      <p><a class="action-link" href="../../resources/practice/#bfs">All 22 BFS practice problems across CSES, LeetCode, Codeforces, AtCoder, SPOJ, HackerRank and CodeChef, with local C exercises</a></p>
+      <p>Before submitting, check three things in each statement. Are vertices numbered from 0 or 1? Is the graph directed? Can it be disconnected? Then test a graph with one vertex, a vertex with no edges, and a source that cannot reach the target.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Earlier material</h2>
+      <p><a href="../class-12/">Queues</a> &middot; <a href="../class-14/">Tree traversals</a> &middot; <a href="../class-17/">Graphs</a></p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
