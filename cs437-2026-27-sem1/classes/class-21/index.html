@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 21: Ship It, Then Make It Better</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .c21 { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.55; }
+    .c21 .hero { margin-bottom: 22px; }
+    .c21 h1 { font-size: clamp(1.9rem, 4.6vw, 2.6rem); line-height: 1.08; margin: 0 0 10px; }
+    .c21 .lead { font-size: 1rem; max-width: 640px; }
+    .c21 h2 { font-size: 1.05rem; letter-spacing: .01em; margin: 0 0 4px; }
+    .c21 .sec { margin-top: 30px; }
+    .c21 .sec > .hint { color: var(--muted); margin: 0 0 14px; font-size: .92rem; }
+    .c21 code { font-size: .86em; }
+
+    /* at a glance */
+    .glance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 6px 0 0; }
+    .glance div { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 12px 14px; }
+    .glance b { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--accent-ink); margin-bottom: 4px; }
+    .glance span { font-size: .93rem; color: var(--ink); }
+
+    /* ladder */
+    .ladder { list-style: none; margin: 0; padding: 0; position: relative; }
+    .ladder::before { content: ""; position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: var(--line); }
+    .ladder li { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; margin: 0 0 10px; }
+    .ladder .n { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); color: var(--accent-ink);
+                 display: grid; place-items: center; font-weight: 700; font-size: .95rem; position: relative; z-index: 1; }
+    .ladder .card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 12px 16px; box-shadow: var(--shadow); }
+    .ladder h3 { margin: 0 0 4px; font-size: 1rem; }
+    .ladder p { margin: 0; color: var(--ink); font-size: .93rem; }
+    .ladder .proof { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); font-size: .86rem; }
+    .ladder .proof b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
+
+    /* plan */
+    .plan { display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 10px; }
+    .plan div { border-radius: 10px; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--line); }
+    .plan .t { display: block; font-weight: 700; color: var(--accent-ink); font-size: .85rem; margin-bottom: 4px; }
+    .plan p { margin: 0; font-size: .9rem; }
+
+    /* rules */
+    .rules2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .rules2 div { border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: .9rem; }
+    .rules2 b { display: block; margin-bottom: 2px; font-size: .92rem; }
+
+    .log { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; background: var(--panel); font-size: .92rem; }
+    .log b { color: var(--accent-ink); }
+
+    @media (max-width: 640px) {
+      .glance, .plan, .rules2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell c21" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 21</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 21 &middot; Monday 9 November &middot; Hackathon</p>
+      <h1>Ship it, then make it better</h1>
+      <p class="lead">Your app has been code-reviewed: the findings are waiting as issues in your repo. Prof. Neeldhara Misra will also try your app today and give design and usability feedback. Work through both, then keep climbing the five levels.</p>
+      <div class="glance">
+        <div><b>Reviewed groups</b><span>Every Critical and High issue answered today: fixed, or explained.</span></div>
+        <div><b>Not live yet?</b><span>G2, G7: get live (level 1). CodeGPT: your review issues arrive soon.</span></div>
+        <div><b>End of class</b><span>Captain posts level, and issues closed, in the InsIIT chat.</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>Your code review</h2>
+      <p class="hint">For SAAB, git_happens, MADHAM, Last_3_Brain_Cells, TriMind and DevFlow. Open your hackathon repo&rsquo;s Issues tab and filter by the label <code>code-review</code>.</p>
+      <ol class="ladder">
+        <li><span class="n">a</span><div class="card"><h3>Read each issue and decide</h3>
+          <p>Start with the ones marked <strong>[Critical]</strong> and <strong>[High]</strong>. Use the &ldquo;How to see it&rdquo; steps to check the problem really happens in your app. A reviewer can be wrong.</p>
+          <div class="proof"><b>Decide</b>Real &rarr; fix it (b). Not real, or not worth fixing now &rarr; reply on the issue saying why, with evidence (a test, a log, a line of code). A reasoned reply counts as much as a fix.</div></div></li>
+        <li><span class="n">b</span><div class="card"><h3>Fix it the hackathon way</h3>
+          <p>Write the test the issue suggests and watch it fail. Then fix the code until it passes. Then a teammate reviews the pull request.</p>
+          <div class="proof"><b>Proof</b>A pull request that says <code>Fixes #&lt;issue number&gt;</code>, so the issue closes itself when it merges.</div></div></li>
+        <li><span class="n">c</span><div class="card"><h3>Share out the rest</h3>
+          <p>Assign each remaining issue to one member on GitHub, so everyone owns a part. The &ldquo;Smaller things&rdquo; checklist can be ticked off one box at a time.</p>
+          <div class="proof"><b>By 16 Nov</b>Every Critical and High issue closed or answered, and the rest assigned.</div></div></li>
+      </ol>
+    </section>
+
+    <section class="sec">
+      <h2>Prof. Neeldhara Misra visits today</h2>
+      <p class="hint">She will go round the groups during the work time and try your app as a user, then give feedback on its design and how easy it is to use.</p>
+      <ol class="ladder">
+        <li><span class="n">1</span><div class="card"><h3>Be ready before she reaches you</h3>
+          <p>Have the live app open on a phone (and a laptop), signed out, on its first screen. Pick the one thing your user comes to do, and be ready to say it in one sentence.</p>
+          <div class="proof"><b>Not live yet?</b>Show it running on a laptop; say what is blocking deployment.</div></div></li>
+        <li><span class="n">2</span><div class="card"><h3>Let her drive</h3>
+          <p>Hand her the phone and ask her to do that one thing. Don&rsquo;t explain or point unless she asks. Where she hesitates, gets stuck or asks a question is the feedback. One person writes it down word for word.</p>
+          <div class="proof"><b>Then ask</b>&ldquo;What was confusing?&rdquo; and &ldquo;What would you change first?&rdquo;</div></div></li>
+        <li><span class="n">3</span><div class="card"><h3>Turn it into issues, and fix one</h3>
+          <p>Each point becomes a GitHub issue labelled <code>usability</code>, with what she did and what she said. Pick the one that would most help a first-time user and fix it before you leave, through a reviewed pull request.</p>
+          <div class="proof"><b>Proof</b>The <code>usability</code> issues, and one of them closed today.</div></div></li>
+      </ol>
+    </section>
+
+    <section class="sec">
+      <h2>The five levels</h2>
+      <p class="hint">Each level has a proof. A level counts only when its proof exists.</p>
+      <ol class="ladder">
+        <li><span class="n">1</span><div class="card"><h3>Live</h3>
+          <p>Your app is online at a link anyone on campus can open on a phone, over HTTPS.</p>
+          <div class="proof"><b>Proof</b>The link, posted in the InsIIT integration chat.</div></div></li>
+        <li><span class="n">2</span><div class="card"><h3>Ships itself</h3>
+          <p>Every merge to <code>main</code> updates the live site automatically, after the tests pass. The README says where it runs and how a deploy happens.</p>
+          <div class="proof"><b>Proof</b>The deploy run (GitHub Actions or your host&rsquo;s log) for your latest merge.</div></div></li>
+        <li><span class="n">3</span><div class="card"><h3>Fixed</h3>
+          <p>Every Critical and High issue from your code review is fixed or answered, as described above.</p>
+          <div class="proof"><b>Proof</b>The <code>code-review</code> issues: closed by pull requests with their new tests, or answered with reasons.</div></div></li>
+        <li><span class="n">4</span><div class="card"><h3>Used</h3>
+          <p>At least five people outside your group have used the live app for its real purpose (Prof. Neeldhara counts as one). You noted what confused them and fixed one thing.</p>
+          <div class="proof"><b>Proof</b><code>USERS.md</code> in your repo: who (first name or role), when, what they did, what confused them, what you changed.</div></div></li>
+        <li><span class="n">5</span><div class="card"><h3>Ready for 16 November</h3>
+          <p>Another group asks for a small new feature in one sentence. You add it to SPEC.md, write a failing test, build it, get it reviewed and merged, and it is live, all within 30 minutes.</p>
+          <div class="proof"><b>Proof</b>The pull request, with the request quoted at the top and the time it took.</div></div></li>
+      </ol>
+      <p class="hint">Done with your Critical and High issues? Go to level 4: real users count most.</p>
+    </section>
+
+    <section class="sec">
+      <h2>Today, minute by minute</h2>
+      <p class="hint">80 minutes.</p>
+      <div class="plan">
+        <div><span class="t">First 10 min</span><p>Open your <code>code-review</code> issues and split the Critical and High ones between you.</p></div>
+        <div><span class="t">Next 60 min</span><p>Reviewed groups: Critical and High issues first, then climb. Not live yet: deploy. When Prof. Neeldhara reaches your group, stop and show her the app. Stuck? Call us over.</p></div>
+        <div><span class="t">Last 10 min</span><p>Captain posts in the InsIIT chat.</p></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>Rules that still hold</h2>
+      <p class="hint">Unchanged from the hackathon page.</p>
+      <div class="rules2">
+        <div><b>Reviewed pull requests only</b>Every change reaches <code>main</code> through a PR another member approved. Merging your own PR without that does not count.</div>
+        <div><b>Never bend a test</b>Don&rsquo;t edit or delete a test to make it pass. If a test is wrong, explain why in a reviewed PR.</div>
+        <div><b>No secrets anywhere</b>No passwords or keys in the repo or in group chats. Send test logins to us privately.</div>
+        <div><b>Both instructors on the repo</b>Keep <code>anup</code> and <code>arjunarul-iitgn</code> as collaborators on your hackathon repo.</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>Log</h2>
+      <div class="log">In your own course repo, <b><code>lab-notes/class-21.md</code></b>, in &ldquo;I&rdquo;: the code-review issue you worked on and what you did (the fix PR, or your reply), and the most useful thing Prof. Neeldhara noticed about your app.</div>
+    </section>
+  </main>
+</body>
+</html>
