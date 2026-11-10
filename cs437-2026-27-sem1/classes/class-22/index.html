@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS437 Class 22: Real Users, Real Feedback</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+  <style>
+    .c21 { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.55; }
+    .c21 .hero { margin-bottom: 22px; }
+    .c21 h1 { font-size: clamp(1.9rem, 4.6vw, 2.6rem); line-height: 1.08; margin: 0 0 10px; }
+    .c21 .lead { font-size: 1rem; max-width: 640px; }
+    .c21 h2 { font-size: 1.05rem; letter-spacing: .01em; margin: 0 0 4px; }
+    .c21 .sec { margin-top: 30px; }
+    .c21 .sec > .hint { color: var(--muted); margin: 0 0 14px; font-size: .92rem; }
+    .c21 code { font-size: .86em; }
+
+    /* at a glance */
+    .glance { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 6px 0 0; }
+    .glance div { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 12px 14px; }
+    .glance b { display: block; font-size: .72rem; text-transform: uppercase; letter-spacing: .06em; color: var(--accent-ink); margin-bottom: 4px; }
+    .glance span { font-size: .93rem; color: var(--ink); }
+
+    /* ladder */
+    .ladder { list-style: none; margin: 0; padding: 0; position: relative; }
+    .ladder::before { content: ""; position: absolute; left: 17px; top: 18px; bottom: 18px; width: 2px; background: var(--line); }
+    .ladder li { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 14px; margin: 0 0 10px; }
+    .ladder .n { width: 36px; height: 36px; border-radius: 50%; background: var(--panel); border: 2px solid var(--accent); color: var(--accent-ink);
+                 display: grid; place-items: center; font-weight: 700; font-size: .95rem; position: relative; z-index: 1; }
+    .ladder .card { border: 1px solid var(--line); border-radius: 10px; background: var(--panel); padding: 12px 16px; box-shadow: var(--shadow); }
+    .ladder h3 { margin: 0 0 4px; font-size: 1rem; }
+    .ladder p { margin: 0; color: var(--ink); font-size: .93rem; }
+    .ladder .proof { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--line); color: var(--muted); font-size: .86rem; }
+    .ladder .proof b { color: var(--accent-ink); font-weight: 600; margin-right: 4px; }
+
+    /* plan */
+    .plan { display: grid; grid-template-columns: 1fr 3fr 1fr; gap: 10px; }
+    .plan div { border-radius: 10px; padding: 12px 14px; background: var(--code-bg); border: 1px solid var(--line); }
+    .plan .t { display: block; font-weight: 700; color: var(--accent-ink); font-size: .85rem; margin-bottom: 4px; }
+    .plan p { margin: 0; font-size: .9rem; }
+
+    /* rules */
+    .rules2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .rules2 div { border-left: 3px solid var(--accent); background: var(--panel); border-radius: 0 8px 8px 0; padding: 10px 14px; font-size: .9rem; }
+    .rules2 b { display: block; margin-bottom: 2px; font-size: .92rem; }
+
+    .log { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; background: var(--panel); font-size: .92rem; }
+    .log b { color: var(--accent-ink); }
+
+    @media (max-width: 640px) {
+      .glance, .plan, .rules2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell c21" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">CS437</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 22</a>
+        <a href="../../progress/">Progress</a>
+      </nav>
+    </div>
+
+    <section class="hero">
+      <p class="eyebrow">Class 22 &middot; Tuesday 10 November &middot; Hackathon</p>
+      <h1>Real users, real feedback</h1>
+      <p class="lead">Most of you have closed your code-review issues. Today is about the person using your app: Prof. Neeldhara Misra&rsquo;s feedback, and another group trying your app for the first time.</p>
+      <div class="glance">
+        <div><b>Today&rsquo;s goal</b><span>Start on the usability points that stop a first-time user.</span></div>
+        <div><b>New in your repo</b><span>Issues labelled <code>usability</code>, from Prof. Neeldhara&rsquo;s review.</span></div>
+        <div><b>By 16 November</b><span>Every usability and code-review issue closed or answered. The sooner, the more rounds of feedback you get.</span></div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>1. Prof. Neeldhara&rsquo;s feedback</h2>
+      <p class="hint">She used your live app as a student would. Her points are now issues in your repo, labelled <code>usability</code>.</p>
+      <ol class="ladder">
+        <li><span class="n">a</span><div class="card"><h3>Fix first</h3>
+          <p>Issues marked <strong>[Fix]</strong>: something a first-time user gets stuck on or misreads. Fix these first, each through a reviewed pull request that says <code>Fixes #&lt;number&gt;</code>.</p></div></li>
+        <li><span class="n">b</span><div class="card"><h3>Ideas are optional</h3>
+          <p>Issues marked <strong>[Idea]</strong> are larger suggestions and optional. An idea that makes the app genuinely better for its users, built well and finished, earns more marks; a half-built one earns none. If you skip one, reply on the issue saying why.</p></div></li>
+        <li><span class="n">c</span><div class="card"><h3>The sooner, the better</h3>
+          <p>Close everything before <strong>16 November</strong>. Each time you close a batch, tell us in the InsIIT chat: we look at your app again and send fresh feedback, so an early start means more rounds and a better app.</p></div></li>
+      </ol>
+    </section>
+
+    <section class="sec">
+      <h2>2. Swap and test (30 minutes)</h2>
+      <p class="hint">Each group tries another group&rsquo;s live app on their phones, as a real user would.</p>
+      <div class="plan" style="grid-template-columns:1.3fr 1.7fr 1.3fr">
+        <div><span class="t">Pairs</span><p>SeshX &harr; CabShare &middot; Dhulai &harr; Palaj Bazaar &middot; CoursePath &harr; Lost &amp; Found &middot; Campus Recall, Anything and TreeGPT test each other.</p></div>
+        <div><span class="t">How</span><p>The owners say one sentence about what the app is for, then stay quiet. The testers try to do that one thing. Owners write down where they hesitate or get stuck, word for word.</p></div>
+        <div><span class="t">Then</span><p>Owners turn each point into a <code>usability</code> issue in their own repo, starting the issue with <em>&ldquo;Reported by &lt;tester&rsquo;s name&gt;&rdquo;</em>.</p></div>
+      </div>
+      <div class="log" style="margin-top:12px"><b>Why it is worth doing.</b> Testers: every problem you report that the owners accept (a <code>usability</code> issue that names you) counts towards your own hackathon marks. Owners: testers from other groups count as real users of your app.</div>
+    </section>
+
+    <section class="sec">
+      <h2>3. Code review again, after your fixes</h2>
+      <p class="hint">Once your usability fixes are in, we will review your code again and look at the app as a whole. Anything new arrives as a <code>code-review</code> issue, the same as before. Keep closing issues the hackathon way: failing test, fix, teammate&rsquo;s review.</p>
+    </section>
+
+    <section class="sec">
+      <h2>Rules that still hold</h2>
+      <div class="rules2">
+        <div><b>Reviewed pull requests only</b>Every change reaches <code>main</code> through a PR another member approved.</div>
+        <div><b>Never bend a test</b>Don&rsquo;t edit or delete a test to make it pass.</div>
+        <div><b>Google sign-in, IITGN only</b>Anything that needs an account uses Google sign-in, limited to @iitgn.ac.in.</div>
+        <div><b>No secrets anywhere</b>No passwords or keys in the repo or in group chats.</div>
+      </div>
+    </section>
+
+    <section class="sec">
+      <h2>Log</h2>
+      <div class="log">In your own course repo, <b><code>lab-notes/class-22.md</code></b>, in &ldquo;I&rdquo;: one thing a tester struggled with in your app, and what you changed because of it.</div>
+    </section>
+  </main>
+</body>
+</html>
