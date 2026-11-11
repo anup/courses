@@ -42,6 +42,69 @@
       <p class="lead">Public practice problems from LeetCode, HackerRank, CSES, SPOJ, AtCoder, Codeforces and CodeChef for each topic we cover in class, newest topic first. Each class page links here to its own section. New topics are added at the top as we reach them.</p>
     </section>
 
+    <section class="content-section" id="dfs">
+      <h2>Depth-first search <span class="section-tag">Class 19</span></h2>
+      <p class="lead">From <a href="../../classes/class-19/">Depth-First Search</a>: exploring as far as possible before backing up, the DFS tree and its non-tree edges, cycles in undirected and directed graphs, and topological sorting. These 22 public problems come from CSES, LeetCode, Codeforces, AtCoder, SPOJ and HackerRank. Start with section 1, then follow the lecture&rsquo;s order.</p>
+      <p>Use C. Write DFS as a recursive function over global arrays, as on the slides. CSES, Codeforces, AtCoder and SPOJ number vertices from 1; LeetCode numbers from 0 and passes the graph to a function. Recursion goes as deep as the longest path DFS follows, up to n, so test a long chain before submitting. Many problems here have no single correct order: any valid cycle or topological order is accepted unless the statement says otherwise.</p>
+
+      <h3>1. Write DFS: start here</h3>
+      <ol class="compact-list">
+        <li><a href="https://leetcode.com/problems/flood-fill/">LeetCode 733. Flood Fill</a> &mdash; Easy. From the starting pixel, recolour every pixel of the same colour connected to it up, down, left or right. If the new colour equals the old one, return at once, or the recursion never stops.</li>
+        <li><a href="https://leetcode.com/problems/number-of-islands/">LeetCode 200. Number of Islands</a> &mdash; Medium. Components of a grid: start a DFS from every unvisited land cell and count the starts, as on slides 46&ndash;47.</li>
+        <li><a href="https://leetcode.com/problems/max-area-of-island/">LeetCode 695. Max Area of Island</a> &mdash; Medium. The same search, but each DFS call returns the number of cells it visited, 1 plus the sum over its unvisited neighbours.</li>
+        <li><a href="https://www.hackerrank.com/challenges/connected-cell-in-a-grid/problem">HackerRank: Connected Cells in a Grid</a> &mdash; print the size of the largest region of 1s, where a cell touches all 8 cells around it. Two displacement arrays of length 8 generate the neighbours, as for the knight in Class 18.</li>
+      </ol>
+
+      <h3>2. Reachability and the DFS tree</h3>
+      <ol class="compact-list">
+        <li><a href="https://www.spoj.com/problems/PT07Y/">SPOJ PT07Y: Is it a tree</a> &mdash; a graph is a tree when m = n &minus; 1 and one DFS from vertex 1 visits all n vertices. Print <code>YES</code> or <code>NO</code>.</li>
+        <li><a href="https://leetcode.com/problems/all-paths-from-source-to-target/">LeetCode 797. All Paths From Source to Target</a> &mdash; Medium. The graph is acyclic, so no visited array is needed: DFS from 0, keep the current path in an array, and record it whenever you reach n &minus; 1.</li>
+        <li><a href="https://codeforces.com/problemset/problem/580/C">Codeforces 580C: Kefa and Park</a> &mdash; rated 1500. DFS from the root of a tree, passing down how many cats in a row lie just above the current vertex. Stop going deeper once it exceeds m; count the leaves you reach. The input is undirected, so skip the vertex you came from.</li>
+        <li><a href="https://atcoder.jp/contests/abc138/tasks/abc138_d">AtCoder ABC138 D: Ki</a> &mdash; each operation adds x to every counter in the subtree of p. Add x to p alone, then one DFS from the root adds each vertex&rsquo;s total to its children. Doing every operation on its whole subtree is O(nq) and too slow.</li>
+      </ol>
+
+      <h3>3. Undirected graphs: back edges are cycles</h3>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1669">CSES 1669: Round Trip</a> &mdash; find a cycle through at least 3 cities and print it, or <code>IMPOSSIBLE</code>. In an undirected graph every non-tree edge is a back edge (slide 61): when DFS meets a visited vertex that is not the parent, walk the parents back up to it to print the cycle.</li>
+        <li><a href="https://codeforces.com/problemset/problem/103/B">Codeforces 103B: Cthulhu</a> &mdash; rated 1500. The graph is Cthulhu when it is connected and has exactly one cycle, which for a connected graph means m = n. One DFS checks the connectivity.</li>
+      </ol>
+
+      <h3>4. Directed graphs: cycle detection</h3>
+      <p>Use the lecture&rsquo;s three states: 0 not started, 2 running, 1 finished. An edge to a vertex in state 2 is a back edge, and a back edge means a cycle.</p>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1678">CSES 1678: Round Trip II</a> &mdash; find a directed cycle and print it, or <code>IMPOSSIBLE</code>. When you find a back edge u &rarr; v, follow the parents from u back to v. Start a DFS from every unvisited vertex.</li>
+        <li><a href="https://leetcode.com/problems/course-schedule/">LeetCode 207. Course Schedule</a> &mdash; Medium. The courses can all be finished exactly when the prerequisite graph has no cycle. Note the edge direction: <code>[a, b]</code> means b must come before a.</li>
+        <li><a href="https://leetcode.com/problems/find-eventual-safe-states/">LeetCode 802. Find Eventual Safe States</a> &mdash; Medium. A vertex is safe when no path from it reaches a cycle. With the three states, a vertex that finishes (state 1) without meeting a back edge is safe; return the safe vertices in increasing order.</li>
+      </ol>
+
+      <h3>5. Topological sort</h3>
+      <p>Solve the first problem twice: once by removing vertices of indegree 0 with a queue, and once by DFS, printing the finishing order in reverse.</p>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1679">CSES 1679: Course Schedule</a> &mdash; print any order of the n courses that respects the requirements, or <code>IMPOSSIBLE</code> if there is a cycle. With the indegree method, a cycle shows up as fewer than n vertices ever reaching indegree 0.</li>
+        <li><a href="https://leetcode.com/problems/course-schedule-ii/">LeetCode 210. Course Schedule II</a> &mdash; Medium. The same problem on LeetCode: return an order, or an empty array if there is a cycle.</li>
+        <li><a href="https://atcoder.jp/contests/abc291/tasks/abc291_e">AtCoder ABC291 E: Find Permutation</a> &mdash; the order is unique exactly when, in the indegree method, there is only ever one vertex with indegree 0 to choose. If so, print each vertex&rsquo;s position; otherwise <code>No</code>.</li>
+        <li><a href="https://codeforces.com/problemset/problem/510/C">Codeforces 510C: Fox And Names</a> &mdash; rated 1600. Build a graph on the 26 letters: the first position where two neighbouring names differ gives an edge. Then topologically sort the letters. If a name is followed by its own prefix, the answer is <code>Impossible</code>.</li>
+        <li><a href="https://www.spoj.com/problems/TOPOSORT/">SPOJ TOPOSORT: Topological Sorting</a> &mdash; extension. Print the smallest topological order in dictionary order, so always remove the smallest vertex of indegree 0. That needs a min-heap instead of a queue (<a href="../../classes/class-06/">Class 06</a>). Print <code>Sandro fails.</code> if there is a cycle.</li>
+      </ol>
+
+      <h3>6. Extension: computing along a topological order</h3>
+      <p>In a directed acyclic graph, process the vertices in topological order (or, with DFS, compute each vertex&rsquo;s answer from its neighbours&rsquo; answers when its call finishes). Each value is then ready before it is needed.</p>
+      <ol class="compact-list">
+        <li><a href="https://cses.fi/problemset/task/1680">CSES 1680: Longest Flight Route</a> &mdash; the route from city 1 to city n that visits the most cities. Keep the best count and the previous city for each vertex, then walk back from n. Print <code>IMPOSSIBLE</code> if n cannot be reached.</li>
+        <li><a href="https://cses.fi/problemset/task/1681">CSES 1681: Game Routes</a> &mdash; count the routes from level 1 to level n modulo 10<sup>9</sup>+7: each vertex&rsquo;s count is the sum of its predecessors&rsquo;.</li>
+        <li><a href="https://atcoder.jp/contests/dp/tasks/dp_g">AtCoder Educational DP G: Longest Path</a> &mdash; the length of the longest directed path in an acyclic graph, starting anywhere. With DFS: the answer for u is 1 plus the largest answer among its out-neighbours, remembered once computed.</li>
+        <li><a href="https://leetcode.com/problems/longest-increasing-path-in-a-matrix/">LeetCode 329. Longest Increasing Path in a Matrix</a> &mdash; Hard. Edges go from a cell to a neighbour with a larger value, so the graph has no cycles. DFS with a remembered answer per cell, as in the previous problem.</li>
+      </ol>
+
+      <h3>Local C exercises from the slides</h3>
+      <ul class="compact-list">
+        <li><strong>Trace DFS:</strong> code the slide 26 function and run it on the graph of slides 30&ndash;42 from vertex 0. Print the vertices in the order their calls start and the order they finish, and compare with the trace.</li>
+        <li><strong>Not connected:</strong> wrap the call in a loop over all vertices that starts a new DFS from each unvisited one (slides 46&ndash;47), and print the parent of every vertex so you can draw the DFS forest.</li>
+        <li><strong>Cycle detection:</strong> complete the three-state code of slides 66&ndash;71 so it prints 1 only once: make <code>dfs</code> return whether it found a back edge, and stop at the first one. Test a directed triangle (cycle), the same three edges with one reversed (no cycle), and a single vertex with an edge to itself.</li>
+        <li><strong>Topological sort, two ways:</strong> implement the indegree algorithm of slides 73&ndash;81 with a queue, and the <code>finish[]</code> version of slides 88&ndash;93, printing <code>finish[]</code> from the end. On the slides&rsquo; graph, vertex 1 finishes first and vertex 5 second. Check both outputs: for every edge (u, v), u must come before v.</li>
+      </ul>
+    </section>
+
     <section class="content-section" id="bfs">
       <h2>Breadth-first search <span class="section-tag">Class 18</span></h2>
       <p class="lead">From <a href="../../classes/class-18/">Breadth-First Search</a>: shortest paths with a queue, the BFS tree, bipartite graphs, connected components, grids and other implicit graphs, and strong connectivity. These 22 public problems come from CSES, LeetCode, Codeforces, AtCoder, SPOJ, HackerRank and CodeChef. Start with section 1, then follow the lecture's order.</p>

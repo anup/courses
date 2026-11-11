@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ES242 Class 19: Depth-First Search</title>
+  <link rel="stylesheet" href="../../../assets/course-theme.css">
+  <script>
+    var storedTheme = localStorage.getItem("iitgn-course-theme");
+    document.documentElement.dataset.theme =
+      storedTheme === "dark" || storedTheme === "light" ? "dark" : "grid";
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main-content">Skip to main content</a>
+  <main class="shell" id="main-content">
+    <div class="topline">
+      <a class="brand" href="../../../">IITGN Courses</a>
+      <nav class="nav" aria-label="Course navigation">
+        <a href="../../">ES242</a>
+        <a href="../">Classes</a>
+        <a href="./" aria-current="page">Class 19</a>
+        <a href="../../resources/">Resources</a>
+      </nav>
+    </div>
+    <section class="hero">
+      <p class="eyebrow">Class 19 &middot; Tuesday 10 November 2026</p>
+      <h1>Depth-First Search</h1>
+      <p class="lead">Explore a graph the way a mouse explores a maze: go as far as you can along one path, and back up only when there is nowhere new to go. Then use the DFS tree it builds to classify edges, detect a cycle in a directed graph, and put the vertices of a directed acyclic graph in topological order.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Slides</h2>
+      <p><a class="action-link" href="dfs.pptx">Download DFS slides (PowerPoint)</a></p>
+      <p>The 93-slide deck starts from BFS (slides 2&ndash;7) and follows a mouse through a maze to reach DFS (8&ndash;24). Slides 25&ndash;42 give the algorithm, its code and a full trace, 43&ndash;47 the DFS tree and graphs that are not connected, and 48&ndash;61 the kinds of non-tree edge in directed and undirected graphs. The last part applies DFS to two problems: cycle detection in a directed graph (62&ndash;71) and topological sorting (72&ndash;93), first by removing vertices of indegree 0 and then by the order in which DFS finishes.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>What the material covers</h2>
+      <ul class="compact-list">
+        <li><strong>The algorithm</strong> &mdash; <code>DFS(u)</code>: mark u visited, then for each unvisited neighbour v of u, call <code>DFS(v)</code>. The recursion is the mouse backing up. Each vertex is visited once and each adjacency list scanned once, so DFS takes O(n + m) with an adjacency list.</li>
+        <li><strong>What DFS gives you</strong> &mdash; DFS does not find shortest paths; use BFS for that. It does tell you which vertices are reachable from the source, so it checks whether a graph is connected.</li>
+        <li><strong>The DFS tree</strong> &mdash; join each vertex to the vertex whose call discovered it. If the graph is not connected, start a new DFS from each vertex that is still unvisited, in order; you get one tree per start.</li>
+        <li><strong>Non-tree edges in a directed graph</strong> &mdash; draw the trees and sibling subtrees left to right in the order they were discovered. Every other edge is a <em>forward</em> edge (to a descendant), a <em>back</em> edge (to an ancestor) or a <em>cross</em> edge from right to left. A cross edge from left to right cannot exist: DFS would have followed it.</li>
+        <li><strong>Non-tree edges in an undirected graph</strong> &mdash; forward and back edges are the same thing, and cross edges cannot exist. Every non-tree edge is a back edge.</li>
+        <li><strong>Cycle detection in a directed graph</strong> &mdash; a directed graph has a cycle exactly when DFS finds a back edge. Keep three states per vertex: 0 = not started, 2 = DFS running (on the call stack), 1 = DFS finished. An edge to a vertex in state 2 is a back edge. No tree needs to be built.</li>
+        <li><strong>Topological sort, by removing vertices</strong> &mdash; in a directed acyclic graph, repeatedly take a vertex with indegree 0, append it to the order, and remove it with its outgoing edges. With indegree counts and a queue this runs in O(n + m).</li>
+        <li><strong>Topological sort, by DFS</strong> &mdash; record each vertex in <code>finish[]</code> when its DFS call ends. A vertex finishes only after everything it can reach, so the reverse of the finishing order is a topological order.</li>
+      </ul>
+    </section>
+
+    <section class="content-section">
+      <h2>Practice route</h2>
+      <ol class="compact-list">
+        <li>Write DFS: LeetCode 733 (Flood Fill), then LeetCode 200 (Number of Islands).</li>
+        <li>The DFS tree on a rooted tree: Codeforces 580C (Kefa and Park).</li>
+        <li>Cycles: CSES Round Trip (undirected), then CSES Round Trip II (directed, the three-state DFS).</li>
+        <li>Topological sort: CSES Course Schedule, solved once with indegrees and once with the DFS finishing order.</li>
+        <li>Extension: dynamic programming in topological order, CSES Longest Flight Route.</li>
+      </ol>
+      <p><a class="action-link" href="../../resources/practice/#dfs">All 22 DFS practice problems across CSES, LeetCode, Codeforces, AtCoder, SPOJ and HackerRank, with local C exercises</a></p>
+      <p>Recursion depth equals the length of the longest path DFS follows, which can be n. With n = 100,000 a chain graph can overflow the stack, so on CSES test a long path; if it crashes, keep your arrays global and the recursive function short.</p>
+    </section>
+
+    <section class="content-section">
+      <h2>Earlier material</h2>
+      <p><a href="../class-14/">Tree traversals</a> &middot; <a href="../class-17/">Graphs</a> &middot; <a href="../class-18/">Breadth-first search</a></p>
+    </section>
+  </main>
+  <script src="../../../assets/course-theme.js"></script>
+</body>
+</html>
