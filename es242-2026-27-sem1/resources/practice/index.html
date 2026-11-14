@@ -44,7 +44,7 @@
 
     <section class="content-section" id="dfs">
       <h2>Depth-first search <span class="section-tag">Class 19</span></h2>
-      <p class="lead">From <a href="../../classes/class-19/">Depth-First Search</a>: exploring as far as possible before backing up, the DFS tree and its non-tree edges, cycles in undirected and directed graphs, and topological sorting. These 22 public problems come from CSES, LeetCode, Codeforces, AtCoder, SPOJ and HackerRank. Start with section 1, then follow the lecture&rsquo;s order.</p>
+      <p class="lead">From <a href="../../classes/class-19/">Depth-First Search</a>: exploring as far as possible before backing up, the DFS tree and its non-tree edges, cycles in undirected and directed graphs, topological sorting, and bridges. These 29 public problems come from CSES, LeetCode, Codeforces, AtCoder, SPOJ and HackerRank. Start with section 1, then follow the lecture&rsquo;s order.</p>
       <p>Use C. Write DFS as a recursive function over global arrays, as on the slides. CSES, Codeforces, AtCoder and SPOJ number vertices from 1; LeetCode numbers from 0 and passes the graph to a function. Recursion goes as deep as the longest path DFS follows, up to n, so test a long chain before submitting. Many problems here have no single correct order: any valid cycle or topological order is accepted unless the statement says otherwise.</p>
 
       <h3>1. Write DFS: start here</h3>
@@ -96,12 +96,25 @@
         <li><a href="https://leetcode.com/problems/longest-increasing-path-in-a-matrix/">LeetCode 329. Longest Increasing Path in a Matrix</a> &mdash; Hard. Edges go from a cell to a neighbour with a larger value, so the graph has no cycles. DFS with a remembered answer per cell, as in the previous problem.</li>
       </ol>
 
+      <h3>7. Bridges (Friday 13 November)</h3>
+      <p>Start with the slow algorithm of slide 95 on a small graph, then write the one-pass DFS of slide 114. The slide code skips the parent by vertex, which is right when there is at most one edge between two vertices; if a problem allows two parallel roads, neither of them is a bridge, so skip the parent edge by its index instead.</p>
+      <ol class="compact-list">
+        <li><a href="https://atcoder.jp/contests/abc075/tasks/abc075_c">AtCoder ABC075 C: Bridge</a> &mdash; count the bridges in a connected graph with at most 50 vertices. Small enough for slide 95: remove each edge, run a DFS, and check whether every vertex is still reached.</li>
+        <li><a href="https://cses.fi/problemset/task/2076">CSES 2076: Necessary Roads</a> &mdash; print every bridge, with up to 100,000 cities and 200,000 roads, so only the one-pass DFS is fast enough. Test a long chain for recursion depth.</li>
+        <li><a href="https://leetcode.com/problems/critical-connections-in-a-network/">LeetCode 1192. Critical Connections in a Network</a> &mdash; Hard. Return all bridges of a connected graph numbered from 0, in any order.</li>
+        <li><a href="https://www.spoj.com/problems/EC_P/">SPOJ EC_P: Critical Edges</a> &mdash; several test cases; print the number of bridges and then each bridge with the smaller vertex first, sorted. When there are none, print the statement&rsquo;s Spanish message exactly.</li>
+        <li><a href="https://codeforces.com/problemset/problem/118/E">Codeforces 118E: Bertown roads</a> &mdash; rated 2000, extension. Make every road one-way so that every junction can still reach every other. Possible exactly when there is no bridge; then direct each tree edge downward and each back edge upward, in DFS order.</li>
+        <li><a href="https://codeforces.com/problemset/problem/1000/E">Codeforces 1000E: We Need More Bosses</a> &mdash; rated 2100, extension. Find the bridges, merge the vertices joined without bridges into single nodes, and the bridges form a tree; the answer is the longest path in that tree, found with two BFS runs (Class 18).</li>
+        <li><a href="https://cses.fi/problemset/task/2077">CSES 2077: Necessary Cities</a> &mdash; extension. The vertex version: a city whose removal disconnects the network. Same returned value, but the test becomes &ldquo;greater than or equal to&rdquo;, and the root is a special case.</li>
+      </ol>
+
       <h3>Local C exercises from the slides</h3>
       <ul class="compact-list">
         <li><strong>Trace DFS:</strong> code the slide 26 function and run it on the graph of slides 30&ndash;42 from vertex 0. Print the vertices in the order their calls start and the order they finish, and compare with the trace.</li>
         <li><strong>Not connected:</strong> wrap the call in a loop over all vertices that starts a new DFS from each unvisited one (slides 46&ndash;47), and print the parent of every vertex so you can draw the DFS forest.</li>
         <li><strong>Cycle detection:</strong> complete the three-state code of slides 66&ndash;71 so it prints 1 only once: make <code>dfs</code> return whether it found a back edge, and stop at the first one. Test a directed triangle (cycle), the same three edges with one reversed (no cycle), and a single vertex with an edge to itself.</li>
         <li><strong>Topological sort, two ways:</strong> implement the indegree algorithm of slides 73&ndash;81 with a queue, and the <code>finish[]</code> version of slides 88&ndash;93, printing <code>finish[]</code> from the end. On the slides&rsquo; graph, vertex 1 finishes first and vertex 5 second. Check both outputs: for every edge (u, v), u must come before v.</li>
+        <li><strong>Bridges:</strong> complete the slide 114 code and run it on the graph of slides 94&ndash;99, which has exactly two bridges, (3, 4) and (3, 5). Then compare it with the slide 95 algorithm on a cycle (no bridges), a path of n vertices (n &minus; 1 bridges) and two triangles joined by one edge (one bridge).</li>
       </ul>
     </section>
 
